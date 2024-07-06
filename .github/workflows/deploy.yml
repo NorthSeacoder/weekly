@@ -81,6 +81,14 @@ jobs:
               run: pnpm run build
               env:
                 NEXT_PUBLIC_BAIDU_TONGJI: ${{ vars.NEXT_PUBLIC_BAIDU_TONGJI }}
+                NEXT_PUBLIC_REPO: ${{ vars.NEXT_PUBLIC_REPO }}
+                NEXT_PUBLIC_REPOID: ${{ vars.NEXT_PUBLIC_REPOID }}
+                NEXT_PUBLIC_CATEGORY: ${{ vars.NEXT_PUBLIC_CATEGORY }}
+                NEXT_PUBLIC_CATEGORY_ID: ${{ vars.NEXT_PUBLIC_CATEGORY_ID }}
+                NEXT_PUBLIC_MAPPING: ${{ vars.NEXT_PUBLIC_MAPPING }}
+                NEXT_PUBLIC_INPUT_POSITION: ${{ vars.NEXT_PUBLIC_INPUT_POSITION }}
+                NEXT_PUBLIC_THEME: ${{ vars.NEXT_PUBLIC_THEME }}
+                NEXT_PUBLIC_LANG: ${{ vars.NEXT_PUBLIC_LANG }}
             - name: Deploy to Server
               uses: easingthemes/ssh-deploy@main
               with:
