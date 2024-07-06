@@ -28,7 +28,6 @@ export default async function RootLayout({
 }) {
   const { posts }: { posts: WeeklyPost[]; postsByMonth: PostsByMonth } =
     await getWeeklyPosts();
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
