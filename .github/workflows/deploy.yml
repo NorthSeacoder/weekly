@@ -61,6 +61,7 @@ jobs:
     deploy:
         # needs: build
         runs-on: ubuntu-latest
+        environment: production  # 指定使用的 Environment
         steps:
             - name: Checkout
               uses: actions/checkout@v4.1.1
@@ -78,6 +79,8 @@ jobs:
 
             - name: Run build task
               run: pnpm run build
+              env:
+                NEXT_PUBLIC_BAIDU_TONGJI: ${{ vars.NEXT_PUBLIC_BAIDU_TONGJI }}
             - name: Deploy to Server
               uses: easingthemes/ssh-deploy@main
               with:
