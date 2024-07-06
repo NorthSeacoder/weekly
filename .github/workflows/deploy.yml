@@ -83,7 +83,7 @@ jobs:
               with:
                   SSH_PRIVATE_KEY: ${{ secrets.ALIYUN_SERVER_ACCESS_TOKEN }}
                   ARGS: '-rlgoDzvc -i --delete'
-                  SOURCE: 'dist/'
+                  SOURCE: 'out/'
                   SCRIPT_BEFORE: |
                       whoami
                       ls -al
