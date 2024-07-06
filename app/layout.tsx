@@ -5,11 +5,11 @@ import Header from "@/components/header/Header";
 import { TailwindIndicator } from "@/components/theme/TailwindIndicator";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { siteConfig } from "@/config/site";
-import { getWeeklyPosts } from "@/lib/weekly";
+import { generateWeeklyPosts } from "@/lib/weekly";
 import "@/styles/globals.css";
 import "@/styles/loading.css";
 import { PostsByMonth, WeeklyPost } from "@/types/weekly";
-import { Analytics } from "@vercel/analytics/react";
+// import { Analytics } from "@vercel/analytics/react";
 import { Viewport } from "next";
 
 export const metadata = {
@@ -27,7 +27,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const { posts }: { posts: WeeklyPost[]; postsByMonth: PostsByMonth } =
-    await getWeeklyPosts();
+    await generateWeeklyPosts();
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -41,7 +41,7 @@ export default async function RootLayout({
           <Header posts={posts} />
           <main className="flex flex-col items-center py-6">{children}</main>
           <Footer />
-          <Analytics />
+          {/* <Analytics /> */}
           <TailwindIndicator />
         </ThemeProvider>
         {process.env.NODE_ENV === "development" ? (

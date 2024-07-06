@@ -3,7 +3,6 @@
 import Script from "next/script";
 
 const BaiDuAnalytics = () => {
-  console.log('BaiDuAnalytics',process.env.NEXT_PUBLIC_BAIDU_TONGJI)
   return (
     <>
       {process.env.NEXT_PUBLIC_BAIDU_TONGJI ? (

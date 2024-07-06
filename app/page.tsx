@@ -1,7 +1,7 @@
 import DeveloperCard from "@/components/DeveloperCard";
 import TimeLine from "@/components/TimeLine";
 import WeeklyList from "@/components/WeeklyList";
-import { getWeeklyPosts } from "@/lib/weekly";
+import { generateWeeklyPosts } from "@/lib/weekly";
 import { PostsByMonth, WeeklyPost } from "@/types/weekly";
 
 export default async function Home() {
@@ -9,7 +9,7 @@ export default async function Home() {
     posts,
     postsByMonth,
   }: { posts: WeeklyPost[]; postsByMonth: PostsByMonth } =
-    await getWeeklyPosts();
+    await generateWeeklyPosts();
 
   return (
     <div className="flex flex-row w-full pt-12">

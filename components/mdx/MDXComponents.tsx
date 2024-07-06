@@ -84,7 +84,7 @@ const MDXComponents: MDXComponentsProps = {
     />
   ),
   img: (props) => (
-    <img width="70%" className="rounded border-4 border-main" {...props} />
+    <img width="70%" className="rounded" {...props} />
   ),
   strong: (props) => <strong className="font-bold" {...props} />,
   table: (props) => (

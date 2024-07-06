@@ -4,7 +4,7 @@ import WeeklyList from "@/components/WeeklyList";
 import MDXComponents from "@/components/mdx/MDXComponents";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/site";
-import { getWeeklyPosts } from "@/lib/weekly";
+import { generateWeeklyPosts } from "@/lib/weekly";
 import { WeeklyPost } from "@/types/weekly";
 import dayjs from "dayjs";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -51,21 +51,21 @@ const options = {
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = params;
-  const { posts }: { posts: WeeklyPost[] } = await getWeeklyPosts();
+  const { posts }: { posts: WeeklyPost[] } = await generateWeeklyPosts();
   const post: WeeklyPost | undefined = posts.find(
-    (post) => post.metadata.slug === slug
+    (post) => post.slug === slug
   );
 
   return {
     ...siteConfig,
-    title: `${post?.metadata.title || "404"} | ${siteConfig.name}`,
+    title: `${post?.title || "404"} | ${siteConfig.name}`,
   };
 }
 
 export default async function WeeklyDetailsPage({ params }: Props) {
   const { slug } = params;
-  const { posts }: { posts: WeeklyPost[] } = await getWeeklyPosts();
-  const postIndex = posts.findIndex((post) => post.metadata.slug === slug);
+  const { posts }: { posts: WeeklyPost[] } = await generateWeeklyPosts();
+  const postIndex = posts.findIndex((post) => post.slug === slug);
   const post = posts[postIndex];
   // Reverse list order, thus invert condition check
   const nextPost = postIndex - 1 >= 0 ? posts[postIndex - 1] : null;
@@ -75,7 +75,7 @@ export default async function WeeklyDetailsPage({ params }: Props) {
     notFound();
   }
 
-  const { content, metadata } = post;
+  const { content, title,date } = post;
 
   return (
     <div className="flex flex-row w-full pt-12">
@@ -84,7 +84,7 @@ export default async function WeeklyDetailsPage({ params }: Props) {
       </aside>
       <div className="w-full md:w-3/5 px-6">
         <article id={`article`}>
-          <h1>{metadata.title}</h1>
+          <h1>{title}</h1>
           <MDXRemote
             source={content}
             components={MDXComponents}
@@ -93,17 +93,17 @@ export default async function WeeklyDetailsPage({ params }: Props) {
         </article>
         <Separator className="my-12 bg-gray-600" />
         <div className="flex justify-between">
-          <div>发布时间：{dayjs(metadata.date).format("YYYY-MM-DD")}</div>
+          <div>发布时间：{dayjs(date).format("YYYY-MM-DD")}</div>
           <div className="flex gap-2 flex-col sm:flex-row">
             {prevPost ? (
-              <Link href={prevPost.metadata.slug} className="link-underline">
+              <Link href={prevPost.slug} className="link-underline">
                 上一篇
               </Link>
             ) : (
               <></>
             )}
             {nextPost ? (
-              <Link href={nextPost.metadata.slug} className="link-underline">
+              <Link href={nextPost.slug} className="link-underline">
                 下一篇
               </Link>
             ) : (
@@ -132,9 +132,9 @@ export default async function WeeklyDetailsPage({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  const { posts }: { posts: WeeklyPost[] } = await getWeeklyPosts();
+  const { posts }: { posts: WeeklyPost[] } = await generateWeeklyPosts();
 
   return posts.map((post) => ({
-    slug: post.metadata.slug,
+    slug: post.slug,
   }));
 }

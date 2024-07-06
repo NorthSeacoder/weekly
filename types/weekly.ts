@@ -1,14 +1,11 @@
-
 export type WeeklyPost = {
-  id?: string
-  slug?: string
-  title?: string
-  content: string
-  metadata: {
-    [key: string]: any
-  },
-}
+    content: string;
+    tags: string[];
+    source: string[];
+    id: string;
+    slug: string;
+    date: string;
+    title: string;
+};
 
-export type PostsByMonth = {
-  [key: string]: WeeklyPost[];
-}
+export type PostsByMonth = string[];

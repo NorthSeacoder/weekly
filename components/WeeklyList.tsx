@@ -14,21 +14,21 @@ export default async function WeeklyList({
       {posts.map((post) => (
         <li
           id={post.id}
-          key={post.metadata.slug}
+          key={post.slug}
           className="flex flex-col sm:flex-row gap-4 items-start"
         >
           {isSide ? (
             <></>
           ) : (
             <span className="text-[#8585a8] min-w-28">
-              {dayjs(post.metadata.date).format("YYYY-MM-DD")}
+              {dayjs(post.date).format("YYYY-MM-DD")}
             </span>
           )}
           <Link
-            href={`/weekly/${post.metadata.slug}`}
+            href={`/weekly/${post.slug}`}
             className="link-default truncate transition-colors duration-500 ease-in-out"
           >
-            {post.metadata.title}
+            {post.title}
           </Link>
         </li>
       ))}
