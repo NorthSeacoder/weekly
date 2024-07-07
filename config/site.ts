@@ -11,12 +11,12 @@ const baseSiteConfig = {
     keywords: ['weekly'],
     authors: [
         {
-            name: 'weijunext',
-            url: 'https://weijunext.com',
-            twitter: 'https://twitter.com/weijunext'
+            name: 'mengpeng',
+            url: 'https://www.mengpeng.tech',
+            // twitter: 'https://x.com/noethseacoder'
         }
     ],
-    creator: '@weijunext',
+    creator: '@northseacoder',
     defaultNextTheme: 'dark', // next-theme option: system | dark | light
     icons: {
         icon: '/favicon.ico',
@@ -24,27 +24,16 @@ const baseSiteConfig = {
         apple: '/logo.png'
     },
     headerLinks: [
-        {name: 'repo', href: 'https://github.com/weijunext/weekly-boilerplate', icon: BsGithub},
-        {name: 'twitter', href: 'https://twitter.com/weijunext', icon: BsTwitterX},
-        {name: 'buyMeCoffee', href: 'https://www.buymeacoffee.com/weijunext', icon: SiBuymeacoffee}
+        {name: 'repo', href: 'https://github.com/northseacoder/weekly', icon: BsGithub},
+        // {name: 'twitter', href: 'https://x.com/noethseacoder', icon: BsTwitterX},
     ],
     footerLinks: [
-        {name: 'email', href: 'mailto:weijunext@gmail.com', icon: MdEmail},
-        {name: 'twitter', href: 'https://twitter.com/weijunext', icon: BsTwitterX},
+        {name: 'email', href: 'mailto:mengpeng_bj@foxmail.com', icon: MdEmail},
+        // {name: 'twitter', href: 'https://x.com/noethseacoder', icon: BsTwitterX},
         {name: 'github', href: 'https://github.com/weijunext/', icon: BsGithub},
-        {name: 'buyMeCoffee', href: 'https://www.buymeacoffee.com/weijunext', icon: SiBuymeacoffee},
-        {name: 'juejin', href: 'https://juejin.cn/user/26044008768029', icon: SiJuejin},
-        {name: 'weChat', href: 'https://weijunext.com/make-a-friend', icon: BsWechat}
+        {name: 'juejin', href: 'https://juejin.cn/user/2101921962025421', icon: SiJuejin},
     ],
     footerProducts: [
-        {url: 'https://weijunext.com/', name: 'J实验室'},
-        {url: 'https://smartexcel.cc/', name: 'Smart Excel'},
-        {url: 'https://weekly.weijunext.com/', name: 'Weekly Boilerplate'},
-        {url: 'https://landingpage.weijunext.com/', name: 'Landing Page Boilerplate'},
-        {url: 'https://nextjs.weijunext.com/', name: 'Next.js Practice'},
-        {url: 'https://starter.weijunext.com/', name: 'Next.js Starter'},
-        {url: 'https://githubbio.com', name: 'Github Bio Generator'},
-        {url: 'https://github.com/weijunext/indie-hacker-tools', name: 'Indie Hacker Tools'}
     ]
 };
 

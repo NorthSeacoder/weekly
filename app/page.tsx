@@ -10,7 +10,7 @@ export default async function Home() {
     postsByMonth,
   }: { posts: WeeklyPost[]; postsByMonth: PostsByMonth } =
     await generateWeeklyPosts();
-
+  
   return (
     <div className="flex flex-row w-full pt-12">
       <div className="hidden md:block md:w-1/5 pl-6"></div>

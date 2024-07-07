@@ -12,31 +12,31 @@ export default function DeveloperCard() {
         </CardHeader>
         <CardBody>
           <div className="pb-4 pt-6">
-            <p className="text-large font-medium">weijunext/程普</p>
+            <p className="text-large font-medium">northseacoder</p>
             <p className="max-w-[90%] text-small text-default-400">
-              @weijunext
+              @northseacoder
             </p>
             <div className="flex gap-2 pb-1 pt-2">
-              <Chip variant="flat">👨‍💻前端</Chip>
-              <Chip variant="flat">🛠️全栈</Chip>
-              <Chip variant="flat">✨AI</Chip>
-              <Chip variant="flat">⛵️出海</Chip>
+              <Chip variant="flat">JavaScript</Chip>
+              <Chip variant="flat">React</Chip>
+              <Chip variant="flat">Umi</Chip>
+              <Chip variant="flat">Next.js</Chip>
             </div>
             <p className="py-2 text-small text-foreground">
-              Next.js开源手艺人｜掘金签约作者｜出海鼓励师
+              高级复制粘贴工程师 | 收集控 | 代码搬运工
             </p>
             <div className="w-full text-center mt-4 flex justify-evenly">
-              <FollowButton
+              {/* <FollowButton
                 name="Twitter/X"
-                href="https://twitter.com/weijunext/"
-              ></FollowButton>
+                href="https://x.com/noethseacoder/"
+              ></FollowButton> */}
               <FollowButton
                 name="Github"
-                href="https://github.com/weijunext/"
+                href="https://github.com/northseacoder"
               ></FollowButton>
               <FollowButton
                 name="掘金"
-                href="https://juejin.cn/user/26044008768029"
+                href="https://juejin.cn/user/2101921962025421"
               ></FollowButton>
             </div>
           </div>

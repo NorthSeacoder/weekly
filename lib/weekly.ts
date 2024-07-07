@@ -47,13 +47,15 @@ interface Metadata {
     tags: string[];
     source: string;
     date: string;
+    category: string;
 }
 
 interface DataItem {
     metadata: Metadata;
     content: string;
 }
-
+// 固定的 category 顺序
+const categoryOrder = ['工具', '文章', '教程', '面试题'];
 
 function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: PostsByMonth} {
     // 获取一周的开始和结束日期
@@ -87,11 +89,24 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
             const contentParts: string[] = [];
             const tags: Set<string> = new Set();
             const source: Set<string> = new Set();
+            const categories: Record<string, string[]> = {};
 
             items.forEach((item) => {
-                contentParts.push(item.content);
+                const category = item.metadata.category;
+                if (!categories[category]) {
+                    categories[category] = [];
+                }
+                categories[category].push(item.content);
                 item.metadata.tags.forEach((tag) => tags.add(tag));
                 source.add(item.metadata.source);
+            });
+
+            // 按照固定的 category 顺序拼接内容
+            categoryOrder.forEach((category) => {
+                if (categories[category]) {
+                    contentParts.push(`## ${category} \n`);
+                    contentParts.push(...categories[category]);
+                }
             });
 
             const [startOfWeek, endOfWeek] = week.split(' to ');
