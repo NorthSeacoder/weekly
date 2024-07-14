@@ -16,7 +16,7 @@ interface DataItem {
     content: string;
 }
 // 固定的 category 顺序
-const categoryOrder = ['工具', '文章', '教程', '面试题'];
+const categoryOrder = ['工具', '文章', '教程','言论', 'bug','面试题'];
 
 function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: PostsByMonth} {
     // 获取一周的开始和结束日期
@@ -38,10 +38,9 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
         acc[weekKey].push(item);
         return acc;
     }, {});
-
     const posts: WeeklyPost[] = [];
     const postsByMonth: string[] = [];
-    const baseDate = dayjs('2024-07-07');
+    const baseDate = dayjs('2024-07-01');
 
     Object.keys(weeklyData)
         .sort()
@@ -73,7 +72,7 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
             const [startOfWeek, endOfWeek] = week.split(' to ');
             const startOfWeekDate = dayjs(startOfWeek);
             const month = startOfWeekDate.format('YYYY-MM');
-            const weekNumber = Math.floor(startOfWeekDate.diff(baseDate, 'week')) + 1;
+            const weekNumber = Math.floor(startOfWeekDate.diff(baseDate, 'week'));
             postsByMonth.push(month);
             posts.push({
                 content: contentParts.join(''),
@@ -85,7 +84,6 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
                 title: `我不知道的周刊第 ${weekNumber} 期`
             });
         });
-
     return {posts, postsByMonth};
 }
 export async function generateWeeklyPosts() {
