@@ -1,0 +1,54 @@
+---
+tags: [bug, css, 兼容性, layer]
+category: bug
+source: work
+date: 2024-07-16
+---
+
+### 企微自建应用的 css 兼容性 bug
+
+#### 背景
+
+-   企微自建应用,基于 @umijs/max + tailwindcss + antd
+-   为了处理 antd 和 tailwindcss 的样式冲突,使用了 @layer 来分层
+
+```css
+// tailwind.css
+@layer tailwind-base, antd;
+
+@layer tailwind-base {
+    @tailwind base;
+}
+
+@tailwind components;
+@tailwind utilities;
+```
+
+#### bug 表现
+
+-   在企微内置浏览器中打开的页面样式缺失
+
+#### 产生的原因分析
+
+-   部分人会稳定触发
+
+    -   多人测试后发现与企微版本无关
+    -   macOS 12.0.1/10.xx 稳定复现
+
+-   查看 ua 后发现,企微内置浏览器在 macOS 内为 Safari 浏览器,对应当前系统内的版本
+-   @layer 在 Safari 15.4 beta 版本(macOS12.4)后才稳定支持
+    ![img](/sections/009.caniuse.png)
+
+#### 解决方案
+
+-   使用 postcss 插件`postcss-preset-env`
+-   umi 支持 extraPostCSSPlugins,可以直接传所需要的插件
+
+```js
+import {defineConfig} from '@umijs/max';
+const postcssPresetEnv = require('postcss-preset-env');
+
+export default defineConfig({
+    extraPostCSSPlugins: [postcssPresetEnv()]
+});
+```

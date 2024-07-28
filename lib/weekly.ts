@@ -16,7 +16,7 @@ interface DataItem {
     content: string;
 }
 // 固定的 category 顺序
-const categoryOrder = ['工具', '文章', '教程','言论', 'bug','面试题'];
+const categoryOrder = ['工具', '文章', '教程','言论', 'bug','面试题','repos','bigones'];
 
 function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: PostsByMonth} {
     // 获取一周的开始和结束日期
@@ -60,11 +60,10 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
                 item.metadata.tags.forEach((tag) => tags.add(tag));
                 source.add(item.metadata.source);
             });
-
             // 按照固定的 category 顺序拼接内容
             categoryOrder.forEach((category) => {
                 if (categories[category]) {
-                    contentParts.push(`## ${category} \n`);
+                    contentParts.push(`\n## ${category} \n`);
                     contentParts.push(...categories[category]);
                 }
             });
@@ -73,8 +72,8 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
             const startOfWeekDate = dayjs(startOfWeek);
             const month = startOfWeekDate.format('YYYY-MM');
             const weekNumber = Math.floor(startOfWeekDate.diff(baseDate, 'week'));
-            postsByMonth.push(month);
-            posts.push({
+            postsByMonth.unshift(month);
+            posts.unshift({
                 content: contentParts.join(''),
                 tags: Array.from(tags),
                 source: Array.from(source),
