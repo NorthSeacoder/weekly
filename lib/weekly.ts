@@ -16,7 +16,7 @@ interface DataItem {
     content: string;
 }
 // 固定的 category 顺序
-const categoryOrder = ['工具', '文章', '教程','言论', 'bug','面试题','repos','bigones'];
+const categoryOrder = ['工具', '文章', '教程', '言论', 'bug', '面试题', 'repos', 'bigones', '网站'];
 
 function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: PostsByMonth} {
     // 获取一周的开始和结束日期
