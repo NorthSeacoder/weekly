@@ -1,0 +1,244 @@
+[
+    {
+        "metadata": {
+            "tags": ["工具", "开源", "视频下载"],
+            "category": "工具",
+            "source": "科技爱好者周刊",
+            "date": "2024-07-06T00:00:00.000Z",
+            "title": "cobalt",
+            "contentId": "001-cobalt"
+        },
+        "content": "\n### [cobalt](https://cobalt.tools/)\n\n来源:[科技爱好者周刊（第 302 期）](https://www.ruanyifeng.com/blog/2024/05/weekly-issue-302.html)\n\n![img](/sections/001.cobalt.png)\n\n一个开源的视频下载网址，支持多个视频网站，包括 B 站、Youtube、instagram 和 Twitter。\n"
+    },
+    {
+        "metadata": {
+            "tags": ["git", "配置"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-07-06T00:00:00.000Z",
+            "title": "git alias",
+            "contentId": "002-git-alias"
+        },
+        "content": "\n### 特别好用的三个 git alias\n\n来源: [Viking](https://x.com/vikingmute/status/1809039941915324622?s=09&t=uYO26Ua57eTkXbjFXN1yWA)  \n\n![img](/sections/002.git-alias.png)\n"
+    },
+    {
+        "metadata": {
+            "tags": ["入门", "教程", "综合"],
+            "category": "教程",
+            "source": "Twitter",
+            "date": "2024-07-06T00:00:00.000Z",
+            "title": "千古前端图文教程",
+            "contentId": "003-web-tutorial"
+        },
+        "content": "\n### [千古前端图文教程](https://web.qianguyihao.com/)\n \n来源: [Geek](https://x.com/geekbb/status/1804771690293145661?s=09&t=K2X7E-URwZVF4u3EUFKQDg)  \n\n![img](/sections/003.web-tutorial.png)\n\n适合初学者的超详细的 Web 前端入门到进阶知识库\n"
+    },
+    {
+        "metadata": {
+            "tags": ["学习", "技巧"],
+            "category": "言论",
+            "source": "Twitter",
+            "date": "2024-07-14T00:00:00.000Z",
+            "title": "学习技巧",
+            "contentId": "004-learn-skills"
+        },
+        "content": "\n### 几个有效的学习技巧\n\n来源: [@Cryptoeth10w](https://x.com/Cryptoeth10w/status/1811562949133357100)\n\n-   阅读时避免在大脑中阅读出声\n-   预习学会 20%,上课学会 50%,回顾学会 100%\n-   写下问题,写的越清楚,得到的答案越透彻\n-   先看佐证或例子,有些抽象概念要有一定的积累才能理解\n-   将大事拆解成小步骤,更易完成,且更有成就感\n-   新的知识多用几次才会变成自己的\n-   优柔寡断才是浪费时间,做判断不要超过 60 秒\n"
+    },
+    {
+        "metadata": {
+            "tags": ["js", "下载", "油猴"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-07-14T00:00:00.000Z",
+            "title": "豆瓣资源下载大师",
+            "contentId": "005-scripts"
+        },
+        "content": "\n### 豆瓣资源下载大师\n\n来源: [Geek](https://x.com/geekbb/status/1811734042997408009)\n\n![img](/sections/005.png)\n\n> 聚合数百家资源网站，通过右侧边栏 1 秒告诉你哪些网站能下载豆瓣页面上的电影|电视剧|纪录片|综艺|动画|音乐|图书等，有资源的网站显示绿色，没资源的网站显示黄色，就这么直观！所有豆瓣条目均提供在线播放|阅读、字幕|歌词下载及 PT|NZB|BT|磁力|百度盘|115 网盘等下载链接，加入官网打死也不出的豆列搜索功能，此外还能给豆瓣条目额外添加 IMDB 评分|IMDB TOP 250|Metascore 评分|烂番茄评分|AniDB 评分|Bgm 评分|MAL|亚马逊评分等更多评分形式。  \n\n需要给权限去调三方接口,外国网站还会自动转换成电影对应的英文名取查找,挺好用的\n"
+    },
+    {
+        "metadata": {
+            "tags": ["rust", "入门", "教程", "英语"],
+            "category": "教程",
+            "source": "Twitter",
+            "date": "2024-07-14T00:00:00.000Z",
+            "title": "简单英语来学习 Rust",
+            "contentId": "006-rust"
+        },
+        "content": "\n### [简单英语来学习 Rust](https://github.com/Dhghomon/easy_rust)\n\n来源: [Tw93](https://x.com/HiTw93/status/1811550036120994026)\n\n![img](/sections/006.png)\n\n> 用简单英语来学习 Rust 的教程,挺有意思，很适合中文程序员去阅读，甚至没有太大压力的方式可以跟着教程学习，即可当做 Rust 基础了解，也可以当做英语复习，挺不错。\n\n\n下面还看到一个学习 rust 的方法:\n\n-   用 rust 去刷 leetcode,不会的就问 ai“rust 要实现类似 js 里的 xx 功能怎么写”，多做几次基础语法就差不多会了。\n"
+    },
+    {
+        "metadata": {
+            "tags": ["AI", "工具", "开源"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-07-15T00:00:00.000Z",
+            "title": "Transformers.js",
+            "contentId": "007-transformer"
+        },
+        "content": "\n### [直接在浏览器中运行的Transformers](https://github.com/xenova/transformers.js)\n\n来源: [@Gorden_Sun](https://x.com/Gorden_Sun/status/1811413444853416290)\n\n![img](/sections/007.png)\n\n- 第一次运行时会从HuggingFace Hub下载相应的模型。所有后续的请求都将使用缓存的模型\n- API 类似Hugging Face的transformers python库\n- 当前支持以下功能:\n    - 自然语言处理：文本分类、命名实体识别、问题回答、语言建模、摘要、翻译、多项选择和文本生成\n    - 计算机视觉：图像分类，目标检测和分割。\n    - 音频：自动语音识别和音频分类。\n    - 多模态:基于文本答疑,图像到文本,文本到图像\n"
+    },
+    {
+        "metadata": {
+            "tags": ["mac", "工具", "软件"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-07-16T00:00:00.000Z",
+            "title": "mac 软件",
+            "contentId": "008-app"
+        },
+        "content": "\n### mac 上的一些好用的软件\n\n来源: [@chaosflutt28952](https://x.com/chaosflutt28952/status/1812368066195730824)\n\n{/* - 梯子:Clash Verge,single box */}\n\n-   终端:Warp,iterm2\n-   项目管理:[Linear](https://linear.app/)\n-   分屏:Rectangle\n-   输入法自动切换:Input Source Pro\n-   容器运行:OrbStack\n-   Code Playground:Replit\n-   切屏:[AltTab](https://alt-tab-macos.netlify.app/)\n-   AI+\n    -   稍后阅读:[Cubox](https://cubox.pro/)\n    -   快捷笔记:[craft](https://www.craft.do/)\n    -   代办:[Superlist](https://www.superlist.com/)\n    -   PPT:[gamma](https://gamma.app/)\n    -   口语:[speak](https://www.speak.com/cn)\n"
+    },
+    {
+        "metadata": {
+            "tags": ["bug", "css", "layer", "兼容性"],
+            "category": "bug",
+            "source": "work",
+            "date": "2024-07-16T00:00:00.000Z",
+            "title": "企微自建应用的 css 兼容性 bug",
+            "contentId": "009-bug-css"
+        },
+        "content": "\n### 企微自建应用的 css 兼容性 bug\n\n#### 背景\n\n-   企微自建应用,基于 @umijs/max + tailwindcss + antd\n-   为了处理 antd 和 tailwindcss 的样式冲突,使用了 @layer 来分层\n\n```css\n// tailwind.css\n@layer tailwind-base, antd;\n\n@layer tailwind-base {\n    @tailwind base;\n}\n\n@tailwind components;\n@tailwind utilities;\n```\n\n#### bug 表现\n\n-   在企微内置浏览器中打开的页面样式缺失\n\n#### 产生的原因分析\n\n-   部分人会稳定触发\n\n    -   多人测试后发现与企微版本无关\n    -   macOS 12.0.1/10.xx 稳定复现\n\n-   查看 ua 后发现,企微内置浏览器在 macOS 内为 Safari 浏览器,对应当前系统内的版本\n-   @layer 在 Safari 15.4 beta 版本(macOS12.4)后才稳定支持\n    ![img](/sections/009.caniuse.png)\n\n#### 解决方案\n\n-   使用 postcss 插件`postcss-preset-env`\n-   umi 支持 extraPostCSSPlugins,可以直接传所需要的插件\n\n```js\nimport {defineConfig} from '@umijs/max';\nconst postcssPresetEnv = require('postcss-preset-env');\n\nexport default defineConfig({\n    extraPostCSSPlugins: [postcssPresetEnv()]\n});\n```\n"
+    },
+    {
+        "metadata": {
+            "tags": ["AI", "chrome", "github", "vscode", "工具", "开源"],
+            "category": "repos",
+            "source": "Twitter",
+            "date": "2024-07-28T00:00:00.000Z",
+            "title": "devv.ai 团队的扩展仓库",
+            "contentId": "010-devv"
+        },
+        "content": "\n### [devv.ai 团队的扩展仓库](https://github.com/devv-ai/devv)\n\n来源: [@forrestzh_](https://x.com/forrestzh_/status/1816005351910883747)\n\n![img](/sections/010.png)\n\ndevv.ai 是一个非常好用的基于 ai 的搜索工具,最近提供了 vscode 的扩展,也很好用,\n而且基础功能免费,后续会在仓库里开源对应的 vscode 扩展,chrome extension等源码\n"
+    },
+    {
+        "metadata": {
+            "tags": ["前端", "博客", "大神", "订阅"],
+            "category": "bigones",
+            "source": "Github",
+            "date": "2024-07-28T00:00:00.000Z",
+            "title": "云谦",
+            "contentId": "011-sorrycc"
+        },
+        "content": "\n### [云谦](https://sorrycc.com/)\n\n来源: [github](https://github.com/sorrycc)\n\n![img](/sections/011.png)\n\n最近工作上用 [umi](https://github.com/umijs),偶然在 issue 里发现了作者的博客,有一大批文章,而且查了下更新记录,一直在活跃更新的状态.\n订阅源+1.\n"
+    },
+    {
+        "metadata": {
+            "tags": ["AI", "工具", "视频", "软件"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-07-28T00:00:00.000Z",
+            "title": "AI 视频软件",
+            "contentId": "012-app"
+        },
+        "content": "\n### AI 视频软件\n\n来源: [@Yangyixxxx](https://x.com/Yangyixxxx/status/1816391443747119385)\n\n-   veed io 自动翻译自动字幕\n-   clipchamp 微软的 AI 版剪映\n-   typeframes 类似 invideoAI，内容呈现文本主体比重更多\n-   captions 做口播视频有优势\n-   Opusclip 长视频自动剪短视频\n-   Raskai 短视频多语言\n-   invideoAI 自动分镜生成视频 并支持二次编辑\n-   filmora 翻译搬运 支持通过文本检索视频关键帧\n-   descript PPT 做视频 屏幕录制或播客制作视频\n-   heygen 主要突出一个虚拟人视频\n-   google vids 一口大饼暂未能用\n-   memo 下载转录+翻译 加导出，X 友开发的\n"
+    },
+    {
+        "metadata": {
+            "tags": ["ai", "llm", "本地"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-07-28T00:00:00.000Z",
+            "title": "AI 本地部署",
+            "contentId": "013-ai"
+        },
+        "content": "\n### [lmstudio.ai](https://lmstudio.ai/)\n\n来源: [@tuturetom](https://x.com/tuturetom/status/1816105404562338082)\n\n![img](/sections/013.png)\n\n在 2 分钟之内将 「Llama-3.1」 部署在本地运行 ⚡️ 并创建类似 OpenAI 格式的 API 调用！\n"
+    },
+    {
+        "metadata": {
+            "tags": ["AI", "search", "工具"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-08-04T00:00:00.000Z",
+            "title": "Felo Search",
+            "contentId": "014-felo"
+        },
+        "content": "\n### [Felo Search](https://felo.ai/zh-Hans/search)\n\n来源: [@FeloSearch](https://x.com/FeloSearch/status/1819638488469520626)\n\n![img](/sections/014.png)\n\nFelo Search 是一款 AI 驱动的搜索引擎，使用起来有点类似于 devv.ai,都是使用 AI 技术来提高搜索的准确性和效率.\n暂时先试用着,看看效果\n"
+    },
+    {
+        "metadata": {
+            "tags": ["vue3", "教程", "编译"],
+            "category": "教程",
+            "source": "Twitter",
+            "date": "2024-08-04T00:00:00.000Z",
+            "title": "vue3编译原理揭秘",
+            "contentId": "015-vue"
+        },
+        "content": "\n### [vue3编译原理揭秘](https://vue-compiler.iamouyang.cn/)\n\n来源: [@yjj47261552](https://x.com/yjj47261552/status/1819274367714709595)\n\n![img](/sections/015.png)\n\n基于 vue@3.4.19版本的源码解析,主要集中在编译部分,非常详细的写作风格,非常抽象的手绘.....\n"
+    },
+    {
+        "metadata": {
+            "tags": ["AI", "prompt", "工具"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-08-04T00:00:00.000Z",
+            "title": "PromptHub",
+            "contentId": "016-prompt"
+        },
+        "content": "\n### [PromptHub](https://www.prompthub.us/)\n\n来源: [@shao__meng](https://x.com/shao__meng/status/1819762864129008089)\n\n![img](/sections/016.png)\n\n💥PromptHub 主要特性💥\n\n- 提示链 (Prompt Chaining)\n轻松创建提示链，无需任何代码。整合不同的模型，快速测试并创造下一级的 AI 体验。\n\n- 批量测试 (Batches)\n确保你的 Prompt 在任何情况下都能表现良好的最简单方法。上传你的数据集，在不同模型间进行测试，并确信你的输出是可靠和安全的。\n\n- Prompt 版本控制 (Prompt Versioning)\n以版本化代码的方式对 Prompt 进行版本控制。提交 Prompt，开启合并请求，并通过一个团队中任何人都能使用的版本控制系统使协作变得无缝。\n\n- 表单 (Forms)\n只需点击几下，就能将你的提示转化为可共享的表单。链接你自己的文档，控制访问权限，并分发 AI 的力量。\n\n- 聊天测试 (Chat Testing)\n在最灵活的 Prompt 测试平台上测试你的聊天提示。同时流式传输并比较两个聊天交互，以微调不同的模型、系统消息或聊天模板。\n"
+    },
+    {
+        "metadata": {
+            "tags": ["TypeScript", "交互式", "教程"],
+            "category": "教程",
+            "source": "Twitter",
+            "date": "2024-08-04T00:00:00.000Z",
+            "title": "TotalTypescript",
+            "contentId": "017-ts"
+        },
+        "content": "\n### [TotalTypescript](https://www.totaltypescript.com/)\n\n来源: [@Mokkapps](https://x.com/Mokkapps/status/1819765173290189210)\n\n![img](/sections/017.png)\n\n一个酷炫的 ts 教程,有交互式,有视频,有文章,免费的部分暂时够用\n"
+    },
+    {
+        "metadata": {
+            "tags": ["小技巧", "生活", "网站"],
+            "category": "网站",
+            "source": "Twitter",
+            "date": "2024-08-04T00:00:00.000Z",
+            "title": "有用经验",
+            "contentId": "018-web"
+        },
+        "content": "\n### [有用经验](https://yyjingyan.com/)\n\n来源: [@abskoop](https://x.com/abskoop/status/1819360250073620583)\n\n![img](/sections/018.png)\n\n分享有用经验，打破信息茧房,各种生活中能用到的小技巧\n"
+    },
+    {
+        "metadata": {
+            "tags": ["search", "工具"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-08-04T00:00:00.000Z",
+            "title": "AskHackers",
+            "contentId": "019-ask"
+        },
+        "content": "\n### [AskHackers](https://askhackers.com/query/clzf9d73u001jscgsvbryqw5p)\n\n来源: [@aigclink](https://x.com/aigclink/status/1819687147412353512)\n\n![img](/sections/019.png)\n\n一个基于Hacker News的AI搜索工具：AskHackers，搜索的问题会基于Hacker News的评论区内容生成答案\n\n给出的观点附有Hacker News原帖地址\n"
+    },
+    {
+        "metadata": {
+            "tags": ["AI", "工具", "面试"],
+            "category": "工具",
+            "source": "Twitter",
+            "date": "2024-08-04T00:00:00.000Z",
+            "title": "AI 面试工具",
+            "contentId": "020-interview"
+        },
+        "content": "\n### 一些面试相关的 AI 工具\n\n来源: [@raycat2021](https://x.com/raycat2021/status/1819359897114529826)\n\n#### [Final Round AI](https://app.finalroundai.com/app/dashboard)\n\n求职者的 AI 助理，有自动简历生成、求职信写作和模拟面试等各种工具\n\n#### [Ecoute](https://github.com/SevaSk/ecoute)\n\nEcoute 是一个实时转录工具，在文本框中为用户的麦克风输入（You）和用户的扬声器输出（Speaker）提供实时转录。\n它还使用 OpenAI 的 GPT-3.5 生成一个建议的响应，让用户根据对话的实时转录进行发言。\n"
+    },
+    {
+        "metadata": {
+            "tags": ["教程", "网站", "英语"],
+            "category": "网站",
+            "source": "Twitter",
+            "date": "2024-08-04T00:00:00.000Z",
+            "title": "英语学习工具",
+            "contentId": "021-english"
+        },
+        "content": "\n### 大圣推荐的一些英语学习工具\n\n来源: [shengxj1](https://x.com/shengxj1)\n\n-   [YouZack 英语听力逐句精听](https://www.youzack.com/ListeningExercise/ListeningIndex/)\n-   [专为程序员编写的英语学习指南](https://a-programmers-guide-to-english.harryyu.me/)\n-   [离谱的英语学习指南/英语学习教程](https://byoungd.github.io/English-level-up-tips/#/)\n"
+    },
+    {
+        "metadata": {
+            "tags": ["AI", "UI", "github", "工具", "开源"],
+            "category": "repos",
+            "source": "Twitter",
+            "date": "2024-08-04T00:00:00.000Z",
+            "title": "开源版 v0.dev",
+            "contentId": "022-ui"
+        },
+        "content": "\n### [OpenUI](https://github.com/wandb/openui)\n\n来源: [信息差——独立开发者出海周刊](https://gapis.money/weekly/2024-07-29_012)\n\n![img](/sections/022.ui.gif)\n\n这是开源版 v0.dev，核心功能是用户通过自然语言描述，AI 就能生成 UI 并实时渲染。\n支持多种 LLM 服务，包括 OpenAI、Groq、Gemini、Anthropic 等。\n"
+    }
+]

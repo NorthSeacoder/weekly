@@ -13,6 +13,7 @@ import {PostsByMonth, WeeklyPost} from '@/types/weekly';
 import {Viewport} from 'next';
 import dayjs from 'dayjs';
 import updateLocale from 'dayjs/plugin/updateLocale';
+import {ViewTransitions} from 'next-view-transitions';
 dayjs.extend(updateLocale);
 
 dayjs.updateLocale('en', {
@@ -30,29 +31,31 @@ export const viewport: Viewport = {
 export default async function RootLayout({children}: {children: React.ReactNode}) {
     const {posts}: {posts: WeeklyPost[]; postsByMonth: PostsByMonth} = await generateWeeklyPosts();
     return (
-        <html lang='en' suppressHydrationWarning>
-            <head />
-            <body className='min-h-screen bg-background antialiased'>
-                <ThemeProvider
-                    attribute='class'
-                    enableSystem={false}
-                    defaultTheme={siteConfig.defaultNextTheme}
-                    forcedTheme={siteConfig.defaultNextTheme}>
-                    <Header posts={posts} />
-                    <main className='flex flex-col items-center py-6'>{children}</main>
-                    <Footer />
-                    {/* <Analytics /> */}
-                    <TailwindIndicator />
-                </ThemeProvider>
-                {process.env.NODE_ENV === 'development' ? (
-                    <></>
-                ) : (
-                    <>
-                        <GoogleAnalytics />
-                        <BaiDuAnalytics />
-                    </>
-                )}
-            </body>
-        </html>
+        <ViewTransitions>
+            <html lang='en' suppressHydrationWarning>
+                <head />
+                <body className='min-h-screen bg-background antialiased'>
+                    <ThemeProvider
+                        attribute='class'
+                        enableSystem={false}
+                        defaultTheme={siteConfig.defaultNextTheme}
+                        forcedTheme={siteConfig.defaultNextTheme}>
+                        <Header posts={posts} />
+                        <main className='flex flex-col items-center py-6'>{children}</main>
+                        <Footer />
+                        {/* <Analytics /> */}
+                        <TailwindIndicator />
+                    </ThemeProvider>
+                    {process.env.NODE_ENV === 'development' ? (
+                        <></>
+                    ) : (
+                        <>
+                            <GoogleAnalytics />
+                            <BaiDuAnalytics />
+                        </>
+                    )}
+                </body>
+            </html>
+        </ViewTransitions>
     );
 }

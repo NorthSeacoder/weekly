@@ -70,7 +70,8 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
 
             const [startOfWeek, endOfWeek] = week.split(' to ');
             const startOfWeekDate = dayjs(startOfWeek);
-            const month = startOfWeekDate.format('YYYY-MM');
+            const endOfWeekDate = dayjs(endOfWeek);
+            const month = endOfWeekDate.format('YYYY-MM');
             const weekNumber = Math.floor(startOfWeekDate.diff(baseDate, 'week'));
             postsByMonth.unshift(month);
             posts.unshift({
