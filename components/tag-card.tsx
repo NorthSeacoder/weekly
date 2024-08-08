@@ -55,7 +55,7 @@ const SingleCard = ({cardInfo}: {cardInfo: CardInfo}) => {
 };
 export default function TagCard({infoList}: {infoList: CardInfo[]}) {
     return (
-        <Spotlight className='max-w-2xl mx-auto  columns-1 gap-2 space-y-2 md:columns-2 lg:columns-3 group'>
+        <Spotlight className='max-w-2xl mx-auto  columns-1 gap-2 space-y-2 sm:columns-2 md:columns-3 lg:columns-4 group'>
             {infoList.map((cardInfo) => (
                 <SingleCard key={`${cardInfo.metadata.date}-${cardInfo.metadata.title}`} cardInfo={cardInfo} />
             ))}

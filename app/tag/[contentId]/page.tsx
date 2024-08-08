@@ -57,7 +57,7 @@ export default async function ContentDetailsPage({params}: Props) {
     }
     const {
         content,
-        metadata: {title, date}
+        metadata: {title, date,lastUpdated}
     } = post;
 
     return (
@@ -70,6 +70,7 @@ export default async function ContentDetailsPage({params}: Props) {
                 <Separator className='my-12 bg-gray-600' />
                 <div className='flex justify-between'>
                     <div>发布时间：{dayjs(date).format('YYYY-MM-DD')}</div>
+                    <div>最后更新时间：{dayjs(lastUpdated).format('YYYY-MM-DD')}</div>
                 </div>
                 <Comments />
             </div>
