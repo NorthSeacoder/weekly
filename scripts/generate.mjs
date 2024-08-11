@@ -13,7 +13,7 @@ function getGitLastUpdatedTime(filePath) {
         const output = execSync(`git log -1 --pretty="format:%ci" ${filePath}`).toString().trim();
         return new Date(output).toISOString();
     } catch (error) {
-        console.error(`Error getting Git last updated time for file ${filePath}:`, error);
+        // console.error(`Error getting Git last updated time for file ${filePath}:`, error);
         return new Date().toISOString(); // 如果出错，返回当前时间
     }
 }
