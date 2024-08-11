@@ -3,7 +3,7 @@ import dayjs, {Dayjs} from 'dayjs';
 import fs from 'fs';
 import matter from 'gray-matter';
 import path from 'path';
-
+import {getContents} from './content';
 interface Metadata {
     tags: string[];
     source: string;
@@ -87,20 +87,6 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
     return {posts, postsByMonth};
 }
 export async function generateWeeklyPosts() {
-    const postsDirectory = path.join(process.cwd(), 'sections');
-    let filenames = await fs.promises.readdir(postsDirectory);
-    const sections: DataItem[] = await Promise.all(
-        filenames.map(async (filename) => {
-            const fullPath = path.join(postsDirectory, filename);
-            const fileContents = await fs.promises.readFile(fullPath, 'utf8');
-
-            const {data, content} = matter(fileContents);
-
-            return {
-                metadata: data,
-                content
-            } as DataItem;
-        })
-    );
+    const sections: DataItem[] = await getContents();
     return processData(sections);
 }

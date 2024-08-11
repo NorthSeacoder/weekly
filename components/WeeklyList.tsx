@@ -16,7 +16,7 @@ export default async function WeeklyList({
         <li
           id={post.id}
           key={post.slug}
-          className="flex flex-col sm:flex-row gap-4 items-start"
+          className="flex flex-col sm:flex-row gap-4 items-start scroll-mt-16"
         >
           {isSide ? (
             <></>
