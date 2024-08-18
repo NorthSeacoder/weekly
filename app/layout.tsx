@@ -14,6 +14,7 @@ import {Viewport} from 'next';
 import dayjs from 'dayjs';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import {ViewTransitions} from 'next-view-transitions';
+import UmamiAnalysis from './umami-analysis'
 dayjs.extend(updateLocale);
 
 dayjs.updateLocale('en', {
@@ -52,6 +53,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
                         <>
                             <GoogleAnalytics />
                             <BaiDuAnalytics />
+                            <UmamiAnalysis />
                         </>
                     )}
                 </body>

@@ -89,6 +89,7 @@ jobs:
                 NEXT_PUBLIC_INPUT_POSITION: ${{ vars.NEXT_PUBLIC_INPUT_POSITION }}
                 NEXT_PUBLIC_THEME: ${{ vars.NEXT_PUBLIC_THEME }}
                 NEXT_PUBLIC_LANG: ${{ vars.NEXT_PUBLIC_LANG }}
+                NEXT_PUBLIC_UMAMI: ${{ vars.NEXT_PUBLIC_UMAMI }}
             - name: Deploy to Server
               uses: easingthemes/ssh-deploy@main
               with:
