@@ -26,7 +26,8 @@ const Tag = ({text}: any) => (
 );
 const SingleCard = ({cardInfo}: {cardInfo: CardInfo}) => {
     const {
-        metadata: {title, contentId, date}
+        metadata: {title, contentId, date},
+        content
     } = cardInfo;
     const router = useTransitionRouter();
     const handleClick = () => {
@@ -37,11 +38,11 @@ const SingleCard = ({cardInfo}: {cardInfo: CardInfo}) => {
             {/* <Link className='p-1 h-full' href='tag/feature'> */}
             <div
                 onClick={handleClick}
-                className='relative h-full bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 p-3 pb-4 rounded-[inherit] z-20 overflow-hidden cursor-pointer'>
+                className='relative h-full  p-3 pb-4 rounded-[inherit] z-20 overflow-hidden cursor-pointer'>
                 <div className='flex flex-col h-full items-center text-center'>
                     <div className='grow mb-5'>
-                        <h2 className='text-xl text-slate-200 font-bold mb-5'>{title}</h2>
-                        <div className='flex flex-wrap max-w-40'>
+                        <h5 className='text-xl text-slate-200 font-bold mb-5 line-clamp-1'>{title}</h5>
+                        <div className='flex flex-wrap max-w-50'>
                             {cardInfo.metadata.tags.map((tag) => (
                                 <Tag key={`${date}-${title}-${tag}`} text={tag} />
                             ))}
