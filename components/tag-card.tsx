@@ -41,7 +41,7 @@ const SingleCard = ({cardInfo}: {cardInfo: CardInfo}) => {
                 className='relative h-full  p-3 pb-4 rounded-[inherit] z-20 overflow-hidden cursor-pointer'>
                 <div className='flex flex-col h-full items-center text-center'>
                     <div className='grow mb-5'>
-                        <h5 className='text-xl text-slate-200 font-bold mb-5 line-clamp-1'>{title}</h5>
+                        <h5 className='text-xl text-slate-200 font-bold mb-5'>{title}</h5>
                         <div className='flex flex-wrap max-w-50'>
                             {cardInfo.metadata.tags.map((tag) => (
                                 <Tag key={`${date}-${title}-${tag}`} text={tag} />
