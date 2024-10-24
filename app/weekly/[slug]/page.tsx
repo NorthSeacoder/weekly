@@ -76,7 +76,7 @@ export default async function WeeklyDetailsPage({ params }: Props) {
   }
 
   const { content, title,date } = post;
-  console.log(content)
+  console.log('WeeklyDetailsPage',postIndex,post)
   return (
     <div className="flex flex-row w-full pt-12">
       <aside className="hidden md:block md:w-1/5 pl-6 max-h-[100vh] h-full overflow-auto sticky top-0 left-0">

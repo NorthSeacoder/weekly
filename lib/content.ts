@@ -1,6 +1,6 @@
+import type {CardInfo} from '@/types/content';
 import {promises as fs} from 'fs';
 import path from 'path';
-import type {CardInfo} from '@/types/content';
 
 const getDataByname = async (name: string) => {
     const jsonDirectory = path.join(process.cwd(), 'public/data');
