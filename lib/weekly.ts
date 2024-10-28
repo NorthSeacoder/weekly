@@ -1,8 +1,5 @@
 import {PostsByMonth, WeeklyPost} from '@/types/weekly';
 import dayjs, {Dayjs} from 'dayjs';
-import fs from 'fs';
-import matter from 'gray-matter';
-import path from 'path';
 import {getContents} from './content';
 interface Metadata {
     tags: string[];

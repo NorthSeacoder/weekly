@@ -2,6 +2,10 @@
     "name": "weekly",
     "version": "0.1.0",
     "private": true,
+    "type": "module",
+    "bin": {
+        "create-weekly": "./bin/create-weekly.mjs"
+    },
     "scripts": {
         "cl": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
         "cz": "git add . && git-cz",
