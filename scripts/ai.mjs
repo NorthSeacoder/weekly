@@ -3,30 +3,8 @@ import {ChatOpenAI} from '@langchain/openai';
 import {StructuredOutputParser} from 'langchain/output_parsers';
 import {z} from 'zod';
 
-interface AIProcessorData {
-    url: string;
-    date: string;
-    title: string;
-    tags: string[];
-    category: string;
-    summary: string;
-    baseURL: string;
-}
-
-// 定义输出类型接口
-interface AnalysisOutput {
-    title: string;
-    tags: string[];
-    category: string;
-    summary: string;
-}
-
 export class AIProcessor {
-    private apiKey: string;
-    private model: ChatOpenAI;
-    private outputParser: StructuredOutputParser<AnalysisOutput>;
-
-    constructor(apiKey: string) {
+    constructor(apiKey) {
         this.apiKey = apiKey;
         this.model = new ChatOpenAI({
             openAIApiKey: apiKey,
@@ -37,8 +15,7 @@ export class AIProcessor {
             }
         });
 
-        // 使用泛型参数指定输出类型
-        this.outputParser = StructuredOutputParser.fromZodSchema<AnalysisOutput>(
+        this.outputParser = StructuredOutputParser.fromZodSchema(
             z.object({
                 title: z.string().min(2).max(20),
                 tags: z.array(z.string()).min(3).max(5),
@@ -48,7 +25,7 @@ export class AIProcessor {
         );
     }
 
-    async analyze(content: string): Promise<AnalysisOutput> {
+    async analyze(content) {
         const formatInstructions = this.outputParser.getFormatInstructions();
 
         const promptTemplate = new PromptTemplate({
@@ -65,14 +42,13 @@ export class AIProcessor {
 
 {format_instructions}`,
             inputVariables: ['content'],
-            partialVariables: {format_instructions: formatInstructions}
+            partialVariables: { format_instructions: formatInstructions }
         });
 
         try {
             const chain = promptTemplate.pipe(this.model).pipe(this.outputParser);
-            const result = await chain.invoke({content});
-            // 使用类型断言确保返回类型符合 AnalysisOutput
-            return result as AnalysisOutput;
+            const result = await chain.invoke({ content });
+            return result;
         } catch (error) {
             console.error('AI 分析失败:', error);
             return {
@@ -84,21 +60,41 @@ export class AIProcessor {
         }
     }
 
-    generateMDX(data: AIProcessorData) {
-        const source = new URL(data.url).hostname;
-        return `---
+    generateMDX(data) {
+        try {
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid data object provided to generateMDX');
+            }
+
+            const requiredFields = ['title', 'tags', 'category', 'url', 'date', 'imagePath'];
+            const missingFields = requiredFields.filter(field => !data[field]);
+            
+            if (missingFields.length > 0) {
+                throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+            }
+
+            const imagePathParts = data.imagePath.split('public/');
+            const relativeImagePath = imagePathParts[1] || data.imagePath;
+
+            const mdxContent = `---
 tags: [${data.tags.join(', ')}]
 category: ${data.category}
-source: ${source}
+source: ${new URL(data.url).hostname}
 date: ${data.date}
 title: ${data.title}
 ---
 
 ### [${data.title}](${data.url})
 
-来源: [${source}](${data.url})
+![img](/${relativeImagePath})
 
-${data.summary}
+${data.summary || ''}
 `;
+            return mdxContent;
+        } catch (error) {
+            console.error('Error generating MDX:', error);
+            console.error('Data received:', JSON.stringify(data, null, 2));
+            throw error;
+        }
     }
-}
+} 

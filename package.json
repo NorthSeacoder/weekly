@@ -13,7 +13,8 @@
         "build": "npm run generate && next build",
         "start": "next start",
         "lint": "next lint",
-        "generate": "node ./scripts/generate.mjs"
+        "generate": "node ./scripts/generate.mjs",
+        "generateDraft": "node ./scripts/generateDraft.mjs"
     },
     "dependencies": {
         "@giscus/react": "^3.0.0",
@@ -62,8 +63,14 @@
         "eslint-config-next": "14.1.0",
         "next-sitemap": "^4.2.3",
         "postcss": "^8",
+        "puppeteer": "^23.8.0",
         "tailwindcss": "^3.3.0",
-        "typescript": "^5"
+        "typescript": "^5",
+        "@langchain/core": "^0.1.48",
+        "@langchain/openai": "^0.0.14",
+        "langchain": "^0.1.28",
+        "zod": "^3.22.4",
+        "dotenv": "^16.0.0"
     },
     "config": {
         "commitizen": {
