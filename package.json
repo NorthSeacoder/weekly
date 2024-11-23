@@ -10,11 +10,12 @@
         "cl": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
         "cz": "git add . && git-cz",
         "dev": "next dev",
-        "build": "next build",
+        "build": "next build && npm run generate:rss",
         "start": "next start",
         "lint": "next lint",
         "generateDraft": "node ./scripts/generateDraft.mjs",
-        "blog": "node ./bin/create-blog.mjs"
+        "blog": "node ./bin/create-blog.mjs",
+        "generate:rss": "node generateRSS.mjs"
     },
     "dependencies": {
         "@giscus/react": "^3.0.0",
@@ -48,7 +49,11 @@
         "remark-gfm": "3.0.1",
         "remark-math": "^6.0.0",
         "tailwind-merge": "^2.2.1",
-        "tailwindcss-animate": "^1.0.7"
+        "tailwindcss-animate": "^1.0.7",
+        "feed": "^4.2.2",
+        "remark": "^15.0.1",
+        "remark-html": "^16.0.1",
+        "remark-gemoji": "^8.0.0"
     },
     "devDependencies": {
         "@types/node": "^20",
