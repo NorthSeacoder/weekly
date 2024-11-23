@@ -34,7 +34,9 @@ function handleDir(dirPath: string) {
         const fullPath = path.join(dirPath, item);
         const stat = fs.statSync(fullPath);
 
-        if (!stat.isDirectory()) {
+        if (stat.isDirectory()) {
+            content.push(...handleDir(fullPath));
+        } else {
             const fileContent = handleFile(fullPath);
             if (fileContent) {
                 content.push(fileContent);
@@ -60,7 +62,10 @@ export async function GET() {
         const content = handleDir(blogsDir);
         return Response.json({content});
     } catch (error) {
-        console.error('Error generating blog content:', error);
-        return Response.json({error: 'Failed to generate blog content'}, {status: 500});
+        console.error('Error in blogs API:', error);
+        return Response.json({
+            error: 'Internal Server Error',
+            content: []
+        });
     }
 }

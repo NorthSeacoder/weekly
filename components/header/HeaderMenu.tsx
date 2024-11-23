@@ -17,6 +17,17 @@ const HeaderMenu = () => {
       </Link>
       <div className="hidden md:block text-gray-600">|</div>
       <Link
+        href="/blogs"
+        title="博客"
+        className={cn(
+          "link-default",
+          pathname === "/blogs" ? "link-underline" : ""
+        )}
+      >
+        博客
+      </Link>
+      <div className="hidden md:block text-gray-600">|</div>
+      <Link
         href="/tag"
         className={cn(
           "link-default",

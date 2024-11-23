@@ -54,7 +54,8 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
                 if (!categories[category]) {
                     categories[category] = [];
                 }
-                categories[category].push(item.content);
+                const contentWithoutFrontmatter = removeFrontmatter(item.content);
+                categories[category].push(contentWithoutFrontmatter);
                 item.metadata.tags.forEach((tag) => tags.add(tag));
                 source.add(item.metadata.source);
             });
@@ -83,6 +84,13 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
             });
         });
     return {posts, postsByMonth};
+}
+
+// 添加一个新的辅助函数来移除 frontmatter
+function removeFrontmatter(content: string): string {
+    // 匹配开头的 frontmatter 部分
+    const frontmatterRegex = /^---\n[\s\S]*?\n---\n/;
+    return content.replace(frontmatterRegex, '');
 }
 
 export async function generateWeeklyPosts() {

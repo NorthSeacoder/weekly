@@ -3,7 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "bin": {
-        "create-weekly": "./bin/create-weekly.mjs"
+        "create-weekly": "./bin/create-weekly.mjs",
+        "create-blog": "./bin/create-blog.mjs"
     },
     "scripts": {
         "cl": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
@@ -12,7 +13,8 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "generateDraft": "node ./scripts/generateDraft.mjs"
+        "generateDraft": "node ./scripts/generateDraft.mjs",
+        "blog": "node ./bin/create-blog.mjs"
     },
     "dependencies": {
         "@giscus/react": "^3.0.0",
@@ -25,7 +27,7 @@
         "@radix-ui/react-dropdown-menu": "^2.0.6",
         "@radix-ui/react-scroll-area": "^1.0.5",
         "@radix-ui/react-separator": "^1.0.3",
-        "@sentry/nextjs": "^8",
+        "@sentry/nextjs": "^8.0.0",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.0",
         "dayjs": "^1.11.10",

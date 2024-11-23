@@ -13,7 +13,6 @@ function isWeeklyPost(post: WeeklyPost | BlogPost): post is WeeklyPost {
   return 'title' in post && !('metadata' in post);
 }
 
-// 从文章中提取所需信息的辅助函数
 function getPostInfo(post: WeeklyPost | BlogPost) {
   if (isWeeklyPost(post)) {
     return {
@@ -27,54 +26,35 @@ function getPostInfo(post: WeeklyPost | BlogPost) {
     title: post.metadata.title,
     date: post.metadata.date,
     slug: post.metadata.slug,
-    tags: [] // 博客文章暂时不显示标签
+    tags: [] 
   };
 }
 
 export default function WeeklyList({ posts, isSide, sectionType = "weekly" }: WeeklyListProps) {
   return (
-    <div className="grid gap-4">
+    <div className={`${isSide ? 'space-y-2' : 'space-y-4'}`}>
       {posts.map((post) => {
-        const { title, date, slug, tags } = getPostInfo(post);
-
+        const { title, slug } = getPostInfo(post);
         return (
-          <div key={slug} className="group">
+          <div 
+            key={slug} 
+            className={`
+              ${isSide ? 'py-1' : 'py-2'} 
+              hover:bg-gray-800/50 
+              rounded-lg 
+              transition-colors
+            `}
+          >
             <Link
               href={`/${sectionType}/${slug}`}
-              className={`block rounded-lg border bg-card p-6 text-card-foreground shadow transition-colors hover:bg-accent hover:text-accent-foreground ${
-                isSide ? "p-4" : ""
-              }`}
+              className={`
+                block 
+                ${isSide ? 'px-2 text-sm' : 'px-4'} 
+                text-gray-300 
+                hover:text-gray-100
+              `}
             >
-              <h2
-                className={`mb-2 font-medium tracking-tight ${
-                  isSide ? "text-base" : "text-xl"
-                }`}
-              >
-                {title}
-              </h2>
-              {!isSide && (
-                <>
-                  {tags.length > 0 && (
-                    <div className="mb-2 flex flex-wrap gap-2">
-                      {tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold text-muted-foreground transition-colors group-hover:border-accent-foreground/20 group-hover:text-accent-foreground"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <div className="text-sm text-muted-foreground">
-                    {new Date(date).toLocaleDateString("zh-CN", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </div>
-                </>
-              )}
+              {title}
             </Link>
           </div>
         );
