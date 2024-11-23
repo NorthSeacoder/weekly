@@ -9,11 +9,9 @@
         "cl": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
         "cz": "git add . && git-cz",
         "dev": "next dev",
-        "postbuild": "next-sitemap",
-        "build": "npm run generate && next build",
+        "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "generate": "node ./scripts/generate.mjs",
         "generateDraft": "node ./scripts/generateDraft.mjs"
     },
     "dependencies": {

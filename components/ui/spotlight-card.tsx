@@ -1,93 +1,90 @@
 'use client';
 
-import React, {useRef, useState, useEffect} from 'react';
-import MousePosition from '@/lib/mouse-position';
-import {cn} from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import React, { memo, useRef, useState } from "react";
 
-type SpotlightProps = {
-    children: React.ReactNode;
-    className?: string;
-};
-
-export default function Spotlight({children, className = ''}: SpotlightProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const mousePosition = MousePosition();
-    const mouse = useRef<{x: number; y: number}>({x: 0, y: 0});
-    const containerSize = useRef<{w: number; h: number}>({w: 0, h: 0});
-    const [boxes, setBoxes] = useState<Array<HTMLElement>>([]);
-
-    useEffect(() => {
-        containerRef.current && setBoxes(Array.from(containerRef.current.children).map((el) => el as HTMLElement));
-    }, []);
-
-    useEffect(() => {
-        initContainer();
-        window.addEventListener('resize', initContainer);
-
-        return () => {
-            window.removeEventListener('resize', initContainer);
-        };
-    }, [boxes]);
-
-    useEffect(() => {
-        onMouseMove();
-    }, [mousePosition]);
-
-    const initContainer = () => {
-        if (containerRef.current) {
-            containerSize.current.w = containerRef.current.offsetWidth;
-            containerSize.current.h = containerRef.current.offsetHeight;
-        }
-    };
-
-    const onMouseMove = () => {
-        if (containerRef.current) {
-            const rect = containerRef.current.getBoundingClientRect();
-            const {w, h} = containerSize.current;
-            const x = mousePosition.x - rect.left;
-            const y = mousePosition.y - rect.top;
-            const inside = x < w && x > 0 && y < h && y > 0;
-            if (inside) {
-                mouse.current.x = x;
-                mouse.current.y = y;
-                boxes.forEach((box) => {
-                    const boxX = -(box.getBoundingClientRect().left - rect.left) + mouse.current.x;
-                    const boxY = -(box.getBoundingClientRect().top - rect.top) + mouse.current.y;
-                    box.style.setProperty('--mouse-x', `${boxX}px`);
-                    box.style.setProperty('--mouse-y', `${boxY}px`);
-                });
-            }
-        }
-    };
-
-    return (
-        <div className={cn(className)} ref={containerRef}>
-            {children}
-        </div>
-    );
+interface SpotlightCardProps {
+  children: React.ReactNode;
+  className?: string;
 }
 
-type SpotlightCardProps = {
-    children: React.ReactNode;
-    className?: string;
-};
+const SpotlightCard = memo(({ children, className }: SpotlightCardProps) => {
+  const divRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
 
-export function SpotlightCard({children, className = ''}: SpotlightCardProps) {
-    return (
-        <div
-            className={cn(
-                'relative h-full border border-slate-500 rounded-3xl p-px         overflow-hidden',
-                'before:absolute before:w-80 before:h-80 before:-left-40 before:-top-40 before:bg-slate-700 before:rounded-full',
-                'before:opacity-0 before:pointer-events-none before:transition-opacity before:duration-500',
-                'before:translate-x-[var(--mouse-x)] before:translate-y-[var(--mouse-y)] before:group-hover:opacity-100',
-                'before:z-10 before:blur-[100px]',
-                'after:absolute after:w-96 after:h-96 after:-left-48 after:-top-48 after:bg-indigo-900 ',
-                'after:rounded-full after:opacity-0 after:pointer-events-none after:transition-opacity after:duration-500',
-                'after:translate-x-[var(--mouse-x)] after:translate-y-[var(--mouse-y)]  after:hover:opacity-10 after:z-30 after:blur-[100px]',
-                'break-inside-avoid',
-                className
-            )}>
-            {children}
-        </div>
-    );
-}
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current || !isHovered) return;
+
+    const div = divRef.current;
+    const rect = div.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    setPosition({ x, y });
+  };
+
+  return (
+    <div
+      ref={divRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={cn(
+        "group relative overflow-hidden rounded-xl border border-gray-800/40",
+        "bg-gradient-to-b from-gray-900/50 to-gray-900/30",
+        "transition-all duration-300",
+        className
+      )}
+    >
+      {/* 光效层 */}
+      <div 
+        className={cn(
+          "absolute inset-0 opacity-0 transition-opacity duration-300",
+          isHovered ? "opacity-100" : "opacity-0"
+        )}
+        style={{
+          background: `radial-gradient(
+            600px circle at ${position.x}px ${position.y}px,
+            rgba(29, 78, 216, 0.15),
+            transparent 80%
+          )`
+        }}
+      />
+
+      {/* 内容层 */}
+      <div className="relative p-4 backdrop-blur-sm transition-colors duration-300">
+        {children}
+      </div>
+
+      {/* 边框光效 */}
+      <div
+        className={cn(
+          "absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300",
+          isHovered ? "opacity-100" : "opacity-0"
+        )}
+        style={{
+          background: `linear-gradient(
+            var(--border-angle),
+            rgba(29, 78, 216, 0.15),
+            rgba(124, 58, 237, 0.15)
+          )`,
+          maskImage: 'linear-gradient(black, black), linear-gradient(black, black)',
+          maskSize: '100% calc(100% - 1px), 100% 1px',
+          maskPosition: '0 0, 0 100%',
+          maskRepeat: 'no-repeat',
+          WebkitMaskImage: 'linear-gradient(black, black), linear-gradient(black, black)',
+          WebkitMaskSize: '100% calc(100% - 1px), 100% 1px',
+          WebkitMaskPosition: '0 0, 0 100%',
+          WebkitMaskRepeat: 'no-repeat',
+          '--border-angle': isHovered ? '360deg' : '0deg',
+          transition: 'all 4s linear'
+        }}
+      />
+    </div>
+  );
+});
+
+SpotlightCard.displayName = 'SpotlightCard';
+
+export default SpotlightCard;

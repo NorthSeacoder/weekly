@@ -1,6 +1,6 @@
 import {PostsByMonth, WeeklyPost} from '@/types/weekly';
 import dayjs, {Dayjs} from 'dayjs';
-import {getContents} from './content';
+
 interface Metadata {
     tags: string[];
     source: string;
@@ -12,6 +12,7 @@ interface DataItem {
     metadata: Metadata;
     content: string;
 }
+
 // 固定的 category 顺序
 const categoryOrder = ['工具', '文章', '教程', '言论', 'bug', '面试题', 'repos', 'bigones', '网站'];
 
@@ -83,7 +84,21 @@ function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: Post
         });
     return {posts, postsByMonth};
 }
+
 export async function generateWeeklyPosts() {
-    const sections: DataItem[] = await getContents();
-    return processData(sections);
+    // 获取当前环境的 URL
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const host = process.env.VERCEL_URL || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}`;
+
+    const res = await fetch(`${baseUrl}/api/content`, {
+        // 在服务端请求时需要设置 cache 选项
+        cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache'
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch content');
+    }
+    const {content} = await res.json();
+    return processData(content);
 }

@@ -1,25 +1,42 @@
 import type {CardInfo} from '@/types/content';
-import {promises as fs} from 'fs';
-import path from 'path';
-
-const getDataByname = async (name: string) => {
-    const jsonDirectory = path.join(process.cwd(), 'public/data');
-    const filePath = path.join(jsonDirectory, `${name}.json`);
-    const fileContents = await fs.readFile(filePath, 'utf8');
-    return JSON.parse(fileContents);
-};
 
 export const getContents = async () => {
-    const data = await getDataByname('content');
-    return data;
+    // 获取当前环境的 URL
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const host = process.env.VERCEL_URL || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}`;
+
+    const res = await fetch(`${baseUrl}/api/content`, {
+        cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache'
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch content');
+    }
+
+    const {content} = await res.json();
+    return content;
 };
 
 export const getContent = async (contentId: string) => {
-    const data = await getDataByname('content');
-    return data.find(({metadata}: CardInfo) => metadata.contentId === contentId);
+    const contents = await getContents();
+    return contents.find(({metadata}: CardInfo) => metadata.contentId === contentId);
 };
 
 export const getTagGroup = async () => {
-    const data = await getDataByname('tagGroup');
+    // 获取当前环境的 URL
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const host = process.env.VERCEL_URL || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}`;
+
+    const res = await fetch(`${baseUrl}/api/tag`, {
+        cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache'
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch tag group');
+    }
+
+    const {data} = await res.json();
     return data;
 };
