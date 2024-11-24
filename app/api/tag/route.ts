@@ -6,7 +6,7 @@ export async function GET() {
         // 按标签组织内容
         const tagMap = new Map();
 
-        contents.forEach((item) => {
+        contents.forEach((item: any) => {
             item.metadata.tags.forEach((tag: string) => {
                 if (!tagMap.has(tag)) {
                     tagMap.set(tag, {

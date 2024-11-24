@@ -1,6 +1,6 @@
+import {handleDir} from '@/lib/file';
 import dotenv from 'dotenv';
 import path from 'path';
-import {handleDir} from '../app/api/content/route';
 import {processData} from '../lib/weekly';
 
 dotenv.config();
