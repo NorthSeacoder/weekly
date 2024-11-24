@@ -2,12 +2,11 @@ import colors from 'ansi-colors';
 import cliProgress from 'cli-progress';
 import fs from 'fs';
 import path from 'path';
-import sharp from 'sharp';
 import {uploadImage} from './upload';
 
 const SECTIONS_DIR = path.join(process.cwd(), 'sections');
 const BACKUP_DIR = path.join(process.cwd(), 'backups', 'sections');
-const MAX_CONCURRENT = 10;
+const MAX_CONCURRENT = 1;
 const MAX_RETRIES = 3;
 
 /**
@@ -33,31 +32,31 @@ async function withRetry<T>(fn: () => Promise<T>, retries = MAX_RETRIES): Promis
 /**
  * 备份文件
  */
-function backupFile(filePath: string) {
-    const relativePath = path.relative(SECTIONS_DIR, filePath);
-    const backupPath = path.join(BACKUP_DIR, relativePath);
+// function backupFile(filePath: string) {
+//     const relativePath = path.relative(SECTIONS_DIR, filePath);
+//     const backupPath = path.join(BACKUP_DIR, relativePath);
 
-    // 创建备份目录
-    fs.mkdirSync(path.dirname(backupPath), {recursive: true});
+//     // 创建备份目录
+//     fs.mkdirSync(path.dirname(backupPath), {recursive: true});
 
-    // 复制文件
-    fs.copyFileSync(filePath, backupPath);
-    return backupPath;
-}
+//     // 复制文件
+//     fs.copyFileSync(filePath, backupPath);
+//     return backupPath;
+// }
 
 /**
  * 将 PNG 转换为 WebP
  */
-async function convertToWebp(pngPath: string): Promise<Buffer> {
-    return withRetry(async () => {
-        try {
-            return await sharp(pngPath).webp({quality: 80}).toBuffer();
-        } catch (error) {
-            console.error(`转换图片失败: ${pngPath}`, error);
-            throw error;
-        }
-    });
-}
+// async function convertToWebp(pngPath: string): Promise<Buffer> {
+//     return withRetry(async () => {
+//         try {
+//             return await sharp(pngPath).webp({quality: 100}).toBuffer();
+//         } catch (error) {
+//             console.error(`转换图片失败: ${pngPath}`, error);
+//             throw error;
+//         }
+//     });
+// }
 
 /**
  * 处理单个 MDX 文件
@@ -65,11 +64,15 @@ async function convertToWebp(pngPath: string): Promise<Buffer> {
 async function processMdxFile(mdxPath: string) {
     try {
         // 备份原文件
-        const backupPath = backupFile(mdxPath);
-        console.log(`已备份文件: ${path.relative(process.cwd(), backupPath)}`);
+        // const backupPath = backupFile(mdxPath);
+        // console.log(`已备份文件: ${path.relative(process.cwd(), backupPath)}`);
 
         let content = fs.readFileSync(mdxPath, 'utf-8');
-        const imgRegex = /!\[.*?\]\((\/sections\/.*?\.png)\)/g;
+
+        // 修改正则表达式以匹配 PNG 和 GIF
+        // 1. 匹配 ![xxx](/sections/xxx.png) 或 ![xxx](/sections/xxx.gif)
+        // 2. 匹配 ![img](/sections/xxx.png) 或 ![img](/sections/xxx.gif)
+        const imgRegex = /!\[(.*?)\]\((\/sections\/.*?\.(png|gif))\)/g;
         const matches = Array.from(content.matchAll(imgRegex));
 
         if (matches.length === 0) {
@@ -84,7 +87,7 @@ async function processMdxFile(mdxPath: string) {
 
         for (const match of matches) {
             try {
-                const imgPath = match[1];
+                const [fullMatch, altText, imgPath] = match;
                 const fullImgPath = path.join(process.cwd(), 'public', imgPath);
 
                 if (!fs.existsSync(fullImgPath)) {
@@ -95,20 +98,20 @@ async function processMdxFile(mdxPath: string) {
 
                 await withRetry(async () => {
                     // 转换为 WebP
-                    const webpBuffer = await convertToWebp(fullImgPath);
+                    // const webpBuffer = await convertToWebp(fullImgPath);
 
                     // 创建临时文件
-                    const tempWebpPath = fullImgPath.replace('.png', '.webp');
-                    fs.writeFileSync(tempWebpPath, webpBuffer);
+                    // const tempWebpPath = fullImgPath.replace('.png', '.webp');
+                    // fs.writeFileSync(tempWebpPath, webpBuffer);
 
                     // 上传到图床
-                    const {markdown} = await uploadImage(tempWebpPath);
+                    const {markdown} = await uploadImage(fullImgPath);
 
-                    // 替换 MDX 中的引用
-                    content = content.replace(match[0], markdown);
+                    // 使用完整匹配进行替换,确保只替换当前处理的图片
+                    content = content.replace(fullMatch, markdown);
 
                     // 清理临时文件
-                    fs.unlinkSync(tempWebpPath);
+                    // fs.unlinkSync(tempWebpPath);
                     processed++;
                 });
             } catch (error) {
@@ -214,7 +217,7 @@ async function main() {
                 .filter((r) => !r.success)
                 .forEach((r) => {
                     console.log(`- ${path.relative(process.cwd(), r.file)}`);
-                    if (r.error) console.log(`  错误: ${r.error.message}`);
+                    if (r.error) console.log(`  错误: ${(r.error as Error).message}`);
                 });
         }
     } catch (error) {
