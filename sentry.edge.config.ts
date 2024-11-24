@@ -6,11 +6,13 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: "https://f1fd4111ba88cbf5e60ce740cccd251f@o4507597779107840.ingest.us.sentry.io/4507598140932096",
+    dsn: 'https://f1fd4111ba88cbf5e60ce740cccd251f@o4507597779107840.ingest.us.sentry.io/4507598140932096',
 
-  // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+    // 降低采样率
+    tracesSampleRate: 0.1,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
+    // 关闭调试
+    debug: false,
+
+    enabled: process.env.NODE_ENV === 'production'
 });

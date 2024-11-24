@@ -21,7 +21,8 @@
         "paths": {
             "@/*": ["./*"]
         },
-        "outDir": "./dist"
+        "outDir": "./dist",
+        "types": ["react/next", "./types/css.d.ts"]
     },
     "include": [
         "next-env.d.ts",
