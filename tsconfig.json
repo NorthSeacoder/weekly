@@ -22,7 +22,7 @@
             "@/*": ["./*"]
         },
         "outDir": "./dist",
-        "types": ["react/next", "./types/css.d.ts"]
+        "types": ["@types/react", "next", "./types/css.d.ts"]
     },
     "include": [
         "next-env.d.ts",

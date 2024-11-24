@@ -100,7 +100,7 @@ export default async function BlogDetailsPage({ params }: Props) {
             >
               <span className="hidden lg:flex items-center">
                 版权声明
-                <IoIosLink className="hidden lg:flex" />
+                <IoIosLink />
               </span>
               <span className="flex lg:hidden">
                 版权声明：CC BY-NC-ND 3.0 DEED

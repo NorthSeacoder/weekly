@@ -20,7 +20,7 @@ export default function SiteCard() {
             href="/rss.xml"
             className="inline-flex items-center gap-2 rounded-full bg-orange-500/10 px-4 py-2 text-sm text-orange-400 transition-colors hover:bg-orange-500/20"
           >
-            <BsRss className="h-4 w-4" />
+            <BsRss />
             RSS 订阅
           </Link>
           <Link
@@ -29,7 +29,7 @@ export default function SiteCard() {
             target="_blank"
             rel="noopener noreferrer nofollow"
           >
-            <MdEmail className="h-4 w-4" />
+            <MdEmail />
             邮件订阅
           </Link>
         </div>

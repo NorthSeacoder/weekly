@@ -59,13 +59,22 @@ jobs:
     #           run: pnpm run build
 
     deploy:
-        # needs: build
         runs-on: ubuntu-latest
-        environment: production  # 指定使用的 Environment
+        environment: production
         steps:
             - name: Checkout
               uses: actions/checkout@v4.1.1
               
+            - name: Cache Next.js build
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.npm
+                      ${{ github.workspace }}/.next/cache
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            
             - name: Install Node.js
               uses: actions/setup-node@v3
               with:
