@@ -84,13 +84,21 @@ async function takeScreenshot(url, imagePath) {
       }
     }));
     
-    await page.screenshot({ path: imagePath });
+    await page.screenshot({ 
+      path: imagePath,
+      type: 'webp',  // 指定输出格式为 webp
+      quality: 80    // webp 质量，范围 0-100
+    });
   } catch (error) {
     console.error(`Screenshot failed for ${url}:`, error);
     // 如果失败，尝试只截取可见区域
     try {
       console.log('Attempting fallback screenshot...');
-      await page.screenshot({ path: imagePath });
+      await page.screenshot({ 
+        path: imagePath,
+        type: 'webp',
+        quality: 80
+      });
     } catch (fallbackError) {
       console.error('Fallback screenshot also failed:', fallbackError);
       throw error;
@@ -199,7 +207,7 @@ async function processUrl(url, month) {
     // 2. 生成文件名
     const nextNumber = getNextNumber(month);
     const paddedNumber = nextNumber.toString().padStart(3, '0');
-    const imageName = `${paddedNumber}.png`;
+    const imageName = `${paddedNumber}.webp`;
     const imagePath = path.join(imageDir, imageName);
 
     // 3. 截图

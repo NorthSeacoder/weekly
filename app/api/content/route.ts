@@ -32,7 +32,7 @@ function handleFile(filePath: string) {
     return null;
 }
 
-function handleDir(dirPath: string) {
+export function handleDir(dirPath: string) {
     const content: any[] = [];
     const items = fs.readdirSync(dirPath);
 
