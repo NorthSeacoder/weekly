@@ -96,7 +96,7 @@ function removeFrontmatter(content: string): string {
 export async function generateWeeklyPosts() {
     // 获取当前环境的 URL
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    const host = process.env.VERCEL_URL || 'localhost:3000';
+    const host = process.env.NEXT_PUBLIC_SITE_URL || 'localhost:3000';
     const baseUrl = `${protocol}://${host}`;
 
     const res = await fetch(`${baseUrl}/api/content`, {
