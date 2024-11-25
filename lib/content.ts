@@ -2,9 +2,7 @@ import type {CardInfo} from '@/types/content';
 
 export const getContents = async () => {
     // 获取当前环境的 URL
-    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    const host = process.env.NEXT_PUBLIC_SITE_URL || 'localhost:3000';
-    const baseUrl = `${protocol}://${host}`;
+    const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.NEXT_PUBLIC_SITE_URL;
 
     const res = await fetch(`${baseUrl}/api/content`, {
         cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache'
@@ -25,9 +23,7 @@ export const getContent = async (contentId: string) => {
 
 export const getTagGroup = async () => {
     // 获取当前环境的 URL
-    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    const host = process.env.NEXT_PUBLIC_SITE_URL || 'localhost:3000';
-    const baseUrl = `${protocol}://${host}`;
+    const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.NEXT_PUBLIC_SITE_URL;
 
     const res = await fetch(`${baseUrl}/api/tag`, {
         cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache'

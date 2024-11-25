@@ -95,9 +95,8 @@ function removeFrontmatter(content: string): string {
 
 export async function generateWeeklyPosts() {
     // 获取当前环境的 URL
-    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    const host = process.env.NEXT_PUBLIC_SITE_URL || 'localhost:3000';
-    const baseUrl = `${protocol}://${host}`;
+    console.log(process.env.NODE_ENV);
+    const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.NEXT_PUBLIC_SITE_URL;
 
     const res = await fetch(`${baseUrl}/api/content`, {
         // 在服务端请求时需要设置 cache 选项
