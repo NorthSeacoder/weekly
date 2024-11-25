@@ -21,16 +21,8 @@
         "paths": {
             "@/*": ["./*"]
         },
-        "outDir": "./dist",
-        "types": ["@types/react", "next", "./types/css.d.ts"]
+        "types": ["@types/react", "next"]
     },
-    "include": [
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        ".next/types/**/*.ts",
-        "scripts/generate.mjs",
-        "scripts/generateMetadata.mjs"
-    ],
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
     "exclude": ["node_modules"]
 }

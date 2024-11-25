@@ -164,7 +164,7 @@ async function main() {
     try {
         // 递归获取所有 MDX 文件
         const mdxFiles: string[] = [];
-        function findMdxFiles(dir: string) {
+        const findMdxFiles = (dir: string) => {
             const files = fs.readdirSync(dir);
             for (const file of files) {
                 const fullPath = path.join(dir, file);
@@ -174,7 +174,7 @@ async function main() {
                     mdxFiles.push(fullPath);
                 }
             }
-        }
+        };
 
         findMdxFiles(SECTIONS_DIR);
 

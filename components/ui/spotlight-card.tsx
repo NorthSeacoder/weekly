@@ -77,7 +77,7 @@ const SpotlightCard = memo(({ children, className }: SpotlightCardProps) => {
           WebkitMaskSize: '100% calc(100% - 1px), 100% 1px',
           WebkitMaskPosition: '0 0, 0 100%',
           WebkitMaskRepeat: 'no-repeat',
-          '--border-angle': isHovered ? '360deg' : '0deg',
+          ['--border-angle' as string]: isHovered ? '360deg' : '0deg',
           transition: 'all 4s linear'
         }}
       />
