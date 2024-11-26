@@ -1,15 +1,15 @@
-import {getContent, getContents} from '@/lib/content';
 import Comments from '@/components/Comments';
-import dayjs from 'dayjs';
-import {MDXRemote} from 'next-mdx-remote/rsc';
-import {siteConfig} from '@/config/site';
-import type {CardInfo} from '@/types/content';
-import {notFound} from 'next/navigation';
 import MDXComponents from '@/components/mdx/MDXComponents';
+import { Separator } from '@/components/ui/separator';
+import { siteConfig } from '@/config/site';
+import { getContent, getContents } from '@/lib/content';
+import type { CardInfo } from '@/types/content';
+import dayjs from 'dayjs';
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import { notFound } from 'next/navigation';
+import rehypePrettyCode from 'rehype-pretty-code';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import rehypePrettyCode from 'rehype-pretty-code';
-import {Separator} from '@/components/ui/separator';
 type Props = {
     params: {
         contentId: string;
@@ -44,10 +44,29 @@ export async function generateMetadata({params}: Props) {
     };
 }
 export async function generateStaticParams() {
-    const posts: CardInfo[] = await getContents();
-    return posts.map((post) => ({
-        contentId: post.metadata.contentId
-    }));
+    try {
+        const posts: CardInfo[] = await getContents();
+        
+        if (!posts || !Array.isArray(posts)) {
+            console.error('Invalid content data:', posts);
+            return [];
+        }
+
+        console.log('Generating static params for content:', posts.length);
+        
+        return posts.map((post) => {
+            if (!post.metadata?.contentId) {
+                console.warn('Content missing contentId:', post);
+                return null;
+            }
+            return {
+                contentId: post.metadata.contentId,
+            };
+        }).filter(Boolean);
+    } catch (error) {
+        console.error('Error in content generateStaticParams:', error);
+        return [];
+    }
 }
 export default async function ContentDetailsPage({params}: Props) {
     const {contentId} = params;

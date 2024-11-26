@@ -19,6 +19,9 @@ const nextConfig = {
         };
         return config;
     },
+    experimental: {
+        serverComponentsExternalPackages: ['undici'],
+    },
 };
 
 const withMDX = createMDX({

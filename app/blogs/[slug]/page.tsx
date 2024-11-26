@@ -155,9 +155,27 @@ export default async function BlogDetailsPage({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  const { posts }: { posts: BlogPost[] } = await getBlogs();
+  try {
+    const { posts }: { posts: BlogPost[] } = await getBlogs();
+    
+    if (!posts || !Array.isArray(posts)) {
+      console.error('Invalid blog posts data:', posts);
+      return [];
+    }
 
-  return posts.map((post) => ({
-    slug: post.metadata.slug,
-  }));
+    console.log('Generating static params for blog posts:', posts.length);
+    
+    return posts.map((post) => {
+      if (!post.metadata?.slug) {
+        console.warn('Blog post missing slug:', post);
+        return null;
+      }
+      return {
+        slug: post.metadata.slug,
+      };
+    }).filter(Boolean);
+  } catch (error) {
+    console.error('Error in blog generateStaticParams:', error);
+    return [];
+  }
 }
