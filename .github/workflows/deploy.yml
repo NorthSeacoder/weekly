@@ -64,6 +64,12 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4.1.1
+            # 添加环境变量检查
+            - name: Check env
+              run: |
+                echo "Checking environment variables..."
+                # 列出所有环境变量（注意不要打印敏感信息）
+                env | grep -v -i "secret" | grep -v -i "token"
               
             - name: Cache Next.js build
               uses: actions/cache@v4
@@ -99,6 +105,9 @@ jobs:
                 NEXT_PUBLIC_THEME: ${{ vars.NEXT_PUBLIC_THEME }}
                 NEXT_PUBLIC_LANG: ${{ vars.NEXT_PUBLIC_LANG }}
                 NEXT_PUBLIC_UMAMI: ${{ vars.NEXT_PUBLIC_UMAMI }}
+                NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+                NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+                NEXT_PUBLIC_AUTHOR_NAME: ${{ vars.NEXT_PUBLIC_AUTHOR_NAME }}
             - name: Deploy to Server
               uses: easingthemes/ssh-deploy@main
               with:

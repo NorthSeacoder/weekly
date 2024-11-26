@@ -7,7 +7,18 @@ const nextConfig = {
     // Configure `pageExtensions`` to include MDX files
     pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
     // Optionally, add any other Next.js config below
-    output: 'export'
+    output: 'export',
+    webpack: (config, { isServer }) => {
+        config.ignoreWarnings = [
+            { module: /@opentelemetry/ },
+            { module: /@sentry/ }
+        ];
+        config.watchOptions = {
+            ...config.watchOptions,
+            ignored: /extension\/.*/
+        };
+        return config;
+    },
 };
 
 const withMDX = createMDX({

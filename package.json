@@ -10,7 +10,7 @@
         "cl": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
         "cz": "git add . && git-cz",
         "dev": "next dev",
-        "build": "next build && npm run generate:rss",
+        "build": "next build",
         "start": "next start",
         "lint": "next lint",
         "generateDraft": "node ./scripts/generateDraft.mjs",
@@ -18,7 +18,7 @@
         "generate:rss": "node generateRSS.mjs",
         "publish:quail": "tsx scripts/publishToQuail.ts",
         "upload": "tsx scripts/upload.ts",
-        "postbuild": "npm run generate:rss && npm run publish:quail",
+        "postbuild": "pnpm run generate:rss",
         "convertImages": "tsx scripts/convertImages.ts"
     },
     "dependencies": {

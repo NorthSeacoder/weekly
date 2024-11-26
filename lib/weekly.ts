@@ -1,5 +1,5 @@
-import {PostsByMonth, WeeklyPost} from '@/types/weekly';
-import dayjs, {Dayjs} from 'dayjs';
+import { PostsByMonth, WeeklyPost } from '@/types/weekly';
+import dayjs, { Dayjs } from 'dayjs';
 
 interface Metadata {
     tags: string[];
@@ -95,8 +95,7 @@ function removeFrontmatter(content: string): string {
 
 export async function generateWeeklyPosts() {
     // 获取当前环境的 URL
-    console.log(process.env.NODE_ENV);
-    const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.NEXT_PUBLIC_SITE_URL;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const res = await fetch(`${baseUrl}/api/content`, {
         // 在服务端请求时需要设置 cache 选项
