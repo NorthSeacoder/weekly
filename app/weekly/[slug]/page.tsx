@@ -123,9 +123,28 @@ export default async function WeeklyDetailsPage({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  const { posts }: { posts: WeeklyPost[] } = await generateWeeklyPosts();
+  try {
+    const { posts }: { posts: WeeklyPost[] } = await generateWeeklyPosts();
+    
+    if (!posts || !Array.isArray(posts)) {
+      console.error('Invalid posts data:', posts);
+      return [];
+    }
 
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+    console.log('Generating static params for posts:', posts.length);
+    
+    return posts.map((post) => {
+      if (!post.slug) {
+        console.warn('Post missing slug:', post);
+        return null;
+      }
+      return {
+        slug: post.slug,
+      };
+    }).filter(Boolean);
+  } catch (error) {
+    console.error('Error in generateStaticParams:', error);
+    // 在构建时出错返回空数组而不是抛出错误
+    return [];
+  }
 }
