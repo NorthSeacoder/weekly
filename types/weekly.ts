@@ -1,7 +1,7 @@
 export type WeeklyPost = {
     content: string;
     tags: string[];
-    category: string;
+    category?: string;
     source: string[];
     id: string;
     slug: string;
