@@ -2,19 +2,20 @@ import Comments from '@/components/Comments';
 import MDXComponents from '@/components/mdx/MDXComponents';
 import { Separator } from '@/components/ui/separator';
 import { siteConfig } from '@/config/site';
-import { getContent, getContents } from '@/lib/content';
-import type { CardInfo } from '@/types/content';
+import { getTagData } from '@/lib/tag';
 import dayjs from 'dayjs';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { notFound } from 'next/navigation';
 import rehypePrettyCode from 'rehype-pretty-code';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
+
 type Props = {
     params: {
         contentId: string;
     };
 };
+
 const options = {
     parseFrontmatter: true,
     mdxOptions: {
@@ -34,49 +35,63 @@ const options = {
     }
 };
 
-export async function generateMetadata({params}: Props) {
+export function generateMetadata({params}: Props) {
     const {contentId} = params;
-    const post: CardInfo = await getContent(contentId);
+    const tagData = getTagData();
+    const post = tagData
+        .flatMap(item => item.contents)
+        .find(content => content.metadata.contentId === contentId);
 
     return {
         ...siteConfig,
         title: `${post?.metadata?.title ?? '404'} | ${siteConfig.name}`
     };
 }
-export async function generateStaticParams() {
+
+export function generateStaticParams() {
     try {
-        const posts: CardInfo[] = await getContents();
+        const tagData = getTagData();
         
-        if (!posts || !Array.isArray(posts)) {
-            console.error('Invalid content data:', posts);
+        if (!tagData || !Array.isArray(tagData)) {
+            console.error('Invalid tag data:', tagData);
             return [];
         }
+        const post = tagData.flatMap(item => 
+            item.contents.map((content:any) => ({
+                contentId: content.metadata.contentId
+            }))
+        );
 
-        console.log('Generating static params for content:', posts.length);
-        
-        return posts.map((post) => {
-            if (!post.metadata?.contentId) {
-                console.warn('Content missing contentId:', post);
+        console.log('Generating static params for tags:', post.length);
+        return post.map((item) => {
+            if (!item.contentId) {
+                console.warn('Tag item missing contentId:', item);
                 return null;
             }
             return {
-                contentId: post.metadata.contentId,
+                contentId: item.contentId,
             };
         }).filter(Boolean);
     } catch (error) {
-        console.error('Error in content generateStaticParams:', error);
+        console.error('Error in tag generateStaticParams:', error);
         return [];
     }
 }
-export default async function ContentDetailsPage({params}: Props) {
+
+export default function ContentDetailsPage({params}: Props) {
     const {contentId} = params;
-    const post: CardInfo = await getContent(contentId);
+    const tagData = getTagData();
+    const post = tagData
+        .flatMap(item => item.contents)
+        .find(content => content.metadata.contentId === contentId);
+
     if (!post) {
         notFound();
     }
+
     const {
         content,
-        metadata: {title, date,lastUpdated}
+        metadata: {title, date, lastUpdated}
     } = post;
 
     return (

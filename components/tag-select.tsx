@@ -4,23 +4,20 @@ import './tag-select.css';
 
 interface TagSelectProps {
     tags: string[];
-    onChange: (selectedTags: string[]) => void;
+    onTagsChange: (selectedTags: string[]) => void;
 }
 
-export default function TagSelect({ tags, onChange }: TagSelectProps) {
-    const handleTagClick = (tag: string) => {
-        const checkbox = document.getElementById(tag) as HTMLInputElement;
-        if (checkbox) {
-            checkbox.checked = !checkbox.checked;
-            const selectedTags = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(
-                (checkbox) => (checkbox as HTMLInputElement).value
-            );
-            onChange(selectedTags);
-        }
+export default function TagSelect({ tags, onTagsChange }: TagSelectProps) {
+    const handleTagClick = (tag: string, checked: boolean) => {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+        const selectedTags = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked || (checkbox.id === tag && checked))
+            .map(checkbox => checkbox.value);
+        onTagsChange(selectedTags);
     };
 
     return (
-        <div className="flex flex-col gap-2 p-4 rounded-lg bg-black/20 backdrop-blur-sm border border-gray-800">
+        <div className="flex flex-col gap-2 p-4 rounded-lg bg-black/20 backdrop-blur-sm border border-gray-800 max-h-[calc(100vh-12rem)] overflow-y-auto">
             {tags.map((tag) => (
                 <label
                     key={tag}
@@ -30,19 +27,13 @@ export default function TagSelect({ tags, onChange }: TagSelectProps) {
                         "hover:bg-gray-800/50",
                         "group"
                     )}
-                    onClick={() => handleTagClick(tag)}
                 >
                     <input
                         type="checkbox"
                         id={tag}
                         value={tag}
                         className="peer hidden"
-                        onChange={(e) => {
-                            const selectedTags = Array.from(
-                                document.querySelectorAll('input[type="checkbox"]:checked')
-                            ).map((checkbox) => (checkbox as HTMLInputElement).value);
-                            onChange(selectedTags);
-                        }}
+                        onChange={(e) => handleTagClick(tag, e.target.checked)}
                     />
                     <div
                         className={cn(

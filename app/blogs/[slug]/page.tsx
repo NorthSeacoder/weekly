@@ -40,10 +40,10 @@ const options = {
   },
 };
 
-export async function generateMetadata({ params }: Props) {
+export function generateMetadata({ params }: Props) {
   const { slug } = params;
-  const { posts }: { posts: BlogPost[] } = await getBlogs();
-  const post = posts.find((post) => post.metadata.slug === slug);
+  const { posts } = getBlogs();
+  const post = posts.find((post: BlogPost) => post.metadata.slug === slug);
 
   return {
     ...siteConfig,
@@ -59,10 +59,10 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-export default async function BlogDetailsPage({ params }: Props) {
+export default function BlogDetailsPage({ params }: Props) {
   const { slug } = params;
-  const { posts }: { posts: BlogPost[] } = await getBlogs();
-  const postIndex = posts.findIndex((post) => post.metadata.slug === slug);
+  const { posts } = getBlogs();
+  const postIndex = posts.findIndex((post: BlogPost) => post.metadata.slug === slug);
   const post = posts[postIndex];
   // Reverse list order, thus invert condition check
   const nextPost = postIndex - 1 >= 0 ? posts[postIndex - 1] : null;
@@ -154,9 +154,9 @@ export default async function BlogDetailsPage({ params }: Props) {
   );
 }
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   try {
-    const { posts }: { posts: BlogPost[] } = await getBlogs();
+    const { posts } = getBlogs();
     
     if (!posts || !Array.isArray(posts)) {
       console.error('Invalid blog posts data:', posts);
@@ -165,7 +165,7 @@ export async function generateStaticParams() {
 
     console.log('Generating static params for blog posts:', posts.length);
     
-    return posts.map((post) => {
+    return posts.map((post: BlogPost) => {
       if (!post.metadata?.slug) {
         console.warn('Blog post missing slug:', post);
         return null;

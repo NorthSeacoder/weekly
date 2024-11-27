@@ -1,5 +1,8 @@
-import { PostsByMonth, WeeklyPost } from '@/types/weekly';
-import dayjs, { Dayjs } from 'dayjs';
+import {getCachedData} from '@/lib/cache';
+import {handleDir} from '@/lib/file';
+import {PostsByMonth, WeeklyPost} from '@/types/weekly';
+import dayjs, {Dayjs} from 'dayjs';
+import path from 'path';
 
 interface Metadata {
     tags: string[];
@@ -12,6 +15,8 @@ interface DataItem {
     metadata: Metadata;
     content: string;
 }
+
+const contentDir = path.join(process.cwd(), 'sections');
 
 // 固定的 category 顺序
 const categoryOrder = ['工具', '文章', '教程', '言论', 'bug', '面试题', 'repos', 'bigones', '网站'];
@@ -93,18 +98,34 @@ function removeFrontmatter(content: string): string {
     return content.replace(frontmatterRegex, '');
 }
 
-export async function generateWeeklyPosts() {
-    // 获取当前环境的 URL
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+export function getWeeklyPosts(): WeeklyPost[] {
+    return getCachedData<WeeklyPost[]>(
+        'weekly-posts',
+        () => {
+            try {
+                if (!contentDir) {
+                    throw new Error('Content directory path is not defined');
+                }
 
-    const res = await fetch(`${baseUrl}/api/content`, {
-        // 在服务端请求时需要设置 cache 选项
-        cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache'
-    });
+                const content = handleDir(contentDir);
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch content');
-    }
-    const {content} = await res.json();
-    return processData(content);
+                if (!content || content.length === 0) {
+                    console.warn('No content found in directory');
+                    return [];
+                }
+
+                const {posts} = processData(content);
+                return posts;
+            } catch (error) {
+                console.error('Error generating weekly posts:', error);
+                console.error('Error details:', {
+                    message: (error as Error).message,
+                    stack: (error as Error).stack,
+                    contentDir
+                });
+                return [];
+            }
+        },
+        {debug: true}
+    );
 }

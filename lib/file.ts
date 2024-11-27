@@ -1,12 +1,12 @@
-import {execSync} from 'child_process';
 import fs from 'fs';
 import matter from 'gray-matter';
 import path from 'path';
-// 获取文件的最后 Git 更新时间
-export function getGitLastUpdatedTime(filePath: string) {
+
+// 获取文件的最后更新时间
+export function getLastUpdatedTime(filePath: string) {
     try {
-        const output = execSync(`git log -1 --pretty="format:%ci" ${filePath}`).toString().trim();
-        return new Date(output).toISOString();
+        const stats = fs.statSync(filePath);
+        return stats.mtime.toISOString();
     } catch (error) {
         return new Date().toISOString();
     }
@@ -19,15 +19,16 @@ export function handleFile(filePath: string) {
         return {
             metadata: {
                 ...data,
-                tags: data.tags.sort(),
+                tags: data?.tags?.sort() ?? [],
                 contentId: path.basename(filePath, '.mdx').replace('.', '-'),
-                lastUpdated: getGitLastUpdatedTime(filePath)
+                lastUpdated: getLastUpdatedTime(filePath)
             },
             content: fileContent
         };
     }
     return null;
 }
+
 export function handleDir(dirPath: string) {
     const content: any[] = [];
     const items = fs.readdirSync(dirPath);

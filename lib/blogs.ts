@@ -1,15 +1,25 @@
-export async function getBlogs() {
-    // 获取当前环境的 URL
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+import {getCachedData} from '@/lib/cache';
+import {handleDir} from '@/lib/file';
+import path from 'path';
 
-    const res = await fetch(`${baseUrl}/api/blogs`, {
-        cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache'
-    });
+const blogsDir = path.join(process.cwd(), 'blogs');
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch blogs');
-    }
-
-    const {content} = await res.json();
-    return {posts: content};
+export function getBlogs() {
+    return getCachedData(
+        'blog-posts',
+        () => {
+            try {
+                const content = handleDir(blogsDir);
+                if (!content || content.length === 0) {
+                    console.warn('No blogs found in directory');
+                    return {posts: []};
+                }
+                return {posts: content};
+            } catch (error) {
+                console.error('Error getting blogs:', error);
+                return {posts: []};
+            }
+        },
+        {debug: true}
+    );
 }

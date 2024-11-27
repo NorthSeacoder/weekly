@@ -1,10 +1,9 @@
 import DeveloperCard from "@/components/DeveloperCard";
 import WeeklyList from "@/components/WeeklyList";
 import { getBlogs } from "@/lib/blogs";
-import { BlogPost } from "@/types/blog";
 
-export default async function BlogsHome() {
-  const { posts }: { posts: BlogPost[] } = await getBlogs();
+export default function BlogsHome() {
+  const { posts } = getBlogs();
 
   return (
     <div className="flex flex-row w-full pt-0">

@@ -2,15 +2,14 @@ import DeveloperCard from "@/components/DeveloperCard";
 import SiteCard from "@/components/SiteCard";
 import TimeLine from "@/components/TimeLine";
 import WeeklyList from "@/components/WeeklyList";
-import { generateWeeklyPosts } from "@/lib/weekly";
-import { PostsByMonth, WeeklyPost } from "@/types/weekly";
+import { getWeeklyPosts } from "@/lib/weekly";
 
-export default async function Home() {
-  const {
-    posts,
-    postsByMonth,
-  }: { posts: WeeklyPost[]; postsByMonth: PostsByMonth } =
-    await generateWeeklyPosts();
+export default function Home() {
+  const posts = getWeeklyPosts();
+  // 从 posts 中提取月份数据
+  const postsByMonth = Array.from(
+    new Set(posts.map(post => post.id))
+  );
   
   return (
     <div className="flex flex-row w-full pt-6">

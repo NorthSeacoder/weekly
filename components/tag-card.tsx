@@ -21,12 +21,19 @@ interface TagCardProps {
 const TagCard: React.FC<TagCardProps> = ({ infoList }) => {
     const router = useTransitionRouter();
 
+    const handleCardClick = (contentId: string, event: React.MouseEvent) => {
+        // 阻止事件冒泡
+        event.stopPropagation();
+        // 使用正确的路由路径
+        router.push(`/tag/${contentId}`);
+    };
+
     return (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
             {infoList.map((cardInfo) => (
                 <div
                     key={`${cardInfo.metadata.date}-${cardInfo.metadata.title}`}
-                    onClick={() => router.push(`/tag/${cardInfo.metadata.contentId}`)}
+                    onClick={(e) => handleCardClick(cardInfo.metadata.contentId, e)}
                     className="relative h-full p-3 pb-4 rounded-lg border border-gray-800 bg-black/50 backdrop-blur-sm cursor-pointer
                              hover:bg-black/70 transition-all duration-200">
                     <div className="flex flex-col h-full items-center text-center">

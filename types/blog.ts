@@ -8,6 +8,7 @@ export interface BlogPost {
         slug: string;
         date: string;
         visible?: string;
-        pin?: boolean;
+        category?: string;
+        tags?: string[];
     };
 }

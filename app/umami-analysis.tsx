@@ -1,8 +1,4 @@
-'use client';
-
-import Script from 'next/script';
-
-const BaiDuAnalytics = () => {
+const UmamiAnalytics = () => {
     return (
         <>
             {process.env.NEXT_PUBLIC_UMAMI ? (
@@ -17,4 +13,4 @@ const BaiDuAnalytics = () => {
     );
 };
 
-export default BaiDuAnalytics;
+export default UmamiAnalytics;

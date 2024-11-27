@@ -47,6 +47,7 @@
         "next-mdx-remote": "^4.4.1",
         "next-themes": "^0.2.1",
         "next-view-transitions": "^0.3.0",
+        "node-cache": "^5.1.2",
         "react": "^18",
         "react-dom": "^18",
         "react-hot-toast": "^2.4.1",
