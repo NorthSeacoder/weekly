@@ -197,3 +197,6 @@ weekly/
 ## 许可证
 
 MIT License
+
+## 注意
+- 每个 section 的文件名最终会成为 tag 的contentId

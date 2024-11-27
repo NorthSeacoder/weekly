@@ -19,7 +19,8 @@
         "publish:quail": "tsx scripts/publishToQuail.ts",
         "upload": "tsx scripts/upload.ts",
         "postbuild": "pnpm run generate:rss",
-        "convertImages": "tsx scripts/convertImages.ts"
+        "convertImages": "tsx scripts/convertImages.ts",
+        "generate-rss": "node generateRSS.mjs"
     },
     "dependencies": {
         "@giscus/react": "^3.0.0",
@@ -92,12 +93,6 @@
     "config": {
         "commitizen": {
             "path": "cz-conventional-changelog"
-        }
-    },
-    "pnpm": {
-        "overrides": {
-            "react": "^18.0.0",
-            "react-dom": "^18.0.0"
         }
     }
 }

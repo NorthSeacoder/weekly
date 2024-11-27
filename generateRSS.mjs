@@ -7,13 +7,14 @@ import path from "path";
 import {remark} from "remark";
 import gemoji from "remark-gemoji";
 import html from "remark-html";
-import {siteConfig} from './config/site';
 
 dotenv.config({ path: "./.env" });
 
 // 使用已有的环境变量和站点配置
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || siteConfig.url;
-const AUTHOR_NAME = process.env.NEXT_PUBLIC_AUTHOR_NAME || siteConfig.authors[0].name;
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+const AUTHOR_NAME = process.env.NEXT_PUBLIC_AUTHOR_NAME;
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME;
+const SITE_DESCRIPTION = process.env.NEXT_PUBLIC_SITE_DESCRIPTION;
 
 const markdownToHtml = (markdown) =>
   remark().use(html).use(gemoji).processSync(markdown).toString();
@@ -21,14 +22,14 @@ const markdownToHtml = (markdown) =>
 const generateRssFeed = async () => {
   const author = {
     name: AUTHOR_NAME,
-    link: siteConfig.authors[0].url,
+    link: SITE_URL,
   };
   const { posts } = await getWeeklyPosts();
 
   const latestPosts = posts.slice(0, 12).filter((i) => i);
   const feed = new Feed({
-    title: siteConfig.name,
-    description: siteConfig.description,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
     id: SITE_URL,
     link: SITE_URL,
     generator: SITE_URL,

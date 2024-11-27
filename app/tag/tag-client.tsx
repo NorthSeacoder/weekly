@@ -16,7 +16,7 @@ interface TagClientProps {
 export default function TagClient({ tagData }: TagClientProps) {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const tags = tagData.map(item => item.tag);
-
+    console.log(tagData);
     return (
         <div className='flex flex-row w-full pt-6'>
             <div className='hidden md:block md:w-1/4 pl-6'>
