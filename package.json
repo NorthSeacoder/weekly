@@ -13,14 +13,13 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "generateDraft": "node ./scripts/generateDraft.mjs",
-        "blog": "node ./bin/create-blog.mjs",
-        "generate:rss": "node generateRSS.mjs",
-        "publish:quail": "tsx scripts/publishToQuail.ts",
-        "upload": "tsx scripts/upload.ts",
+        "generate:rss": "tsx generateRSS.ts",
         "postbuild": "pnpm run generate:rss",
-        "convertImages": "tsx scripts/convertImages.ts",
-        "generate-rss": "tsx generateRSS.ts"
+        "publish:quail": "tsx scripts/publishToQuail.ts",
+        "generate:draft": "node ./scripts/generateDraft.mjs",
+        "generate:blog": "node ./bin/create-blog.mjs",
+        "upload": "tsx scripts/upload.ts",
+        "convertImages": "tsx scripts/convertImages.ts"
     },
     "dependencies": {
         "@giscus/react": "^3.0.0",
