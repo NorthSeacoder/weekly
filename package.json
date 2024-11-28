@@ -20,7 +20,7 @@
         "upload": "tsx scripts/upload.ts",
         "postbuild": "pnpm run generate:rss",
         "convertImages": "tsx scripts/convertImages.ts",
-        "generate-rss": "node generateRSS.mjs"
+        "generate-rss": "tsx generateRSS.ts"
     },
     "dependencies": {
         "@giscus/react": "^3.0.0",
