@@ -8,7 +8,7 @@ export default function DeveloperCard() {
     <div className="flex w-full items-start justify-center mt-12">
       <Card className="mt-10 w-[400px]">
         <CardHeader className="relative flex h-[100px] flex-col justify-end overflow-visible bg-gradient-to-br from-indigo-300 via-Cyan-300 to-blue-400">
-          <Avatar className="h-20 w-20 translate-y-12" src="/avatar.jpg" />
+          <Avatar className="h-20 w-20 translate-y-12" src="https://img.mengpeng.tech/i/2024/11/28/6747cb43b3b0b.webp" />
         </CardHeader>
         <CardBody>
           <div className="pb-4 pt-6">

@@ -49,7 +49,7 @@ const generateRssFeed = async () => {
         });
     });
 
-    fs.writeFileSync(`./public/rss.xml`, feed.rss2(), 'utf8');
+    fs.writeFileSync(`./out/rss.xml`, feed.rss2(), 'utf8');
 };
 
 generateRssFeed();
