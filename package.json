@@ -16,7 +16,7 @@
         "generate:rss": "tsx generateRSS.ts",
         "postbuild": "pnpm run generate:rss",
         "publish:quail": "tsx scripts/publishToQuail.ts",
-        "generate:draft": "node ./scripts/generateDraft.mjs",
+        "generate:draft": "tsx ./scripts/generateDraft.ts",
         "generate:blog": "node ./bin/create-blog.mjs",
         "upload": "tsx scripts/upload.ts",
         "convertImages": "tsx scripts/convertImages.ts"

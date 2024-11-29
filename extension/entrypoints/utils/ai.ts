@@ -11,6 +11,7 @@ interface AIProcessorData {
     category: string;
     summary: string;
     baseURL: string;
+    imageUrl: string;
 }
 
 // 定义输出类型接口
@@ -89,12 +90,14 @@ export class AIProcessor {
         return `---
 tags: [${data.tags.join(', ')}]
 category: ${data.category}
-source: ${source}
+source: ai-generated
 date: ${data.date}
 title: ${data.title}
 ---
 
 ### [${data.title}](${data.url})
+
+![img](/${data.imageUrl})
 
 来源: [${source}](${data.url})
 

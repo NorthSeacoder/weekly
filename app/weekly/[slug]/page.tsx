@@ -119,7 +119,7 @@ export function generateStaticParams() {
       return [];
     }
 
-    console.log('Generating static params for posts:', posts.length);
+    console.log('Generating static params for posts:', posts.length, posts[0]);
     return posts.map((post: WeeklyPost) => {
       if (!post.slug) {
         console.warn('Post missing slug:', post);
