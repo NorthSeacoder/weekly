@@ -44,6 +44,37 @@ export function Settings() {
                     className='bg-background/50 backdrop-blur-sm border-border/50'
                 />
             </div>
+
+            <div className='space-y-2'>
+                <label className='text-sm font-medium'>视觉模型名称</label>
+                <Input
+                    value={config.visionModel}
+                    onChange={(e) => setConfig({visionModel: e.target.value})}
+                    placeholder='输入视觉模型名称'
+                    className='bg-background/50 backdrop-blur-sm border-border/50'
+                />
+            </div>
+
+            <div className='space-y-2'>
+                <label className='text-sm font-medium'>视觉 API Base URL (可选)</label>
+                <Input
+                    value={config.visionBaseUrl || ''}
+                    onChange={(e) => setConfig({visionBaseUrl: e.target.value})}
+                    placeholder='输入视觉 API Base URL，留空则使用主 URL'
+                    className='bg-background/50 backdrop-blur-sm border-border/50'
+                />
+            </div>
+
+            <div className='space-y-2'>
+                <label className='text-sm font-medium'>视觉 API Key (可选)</label>
+                <Input
+                    type='password'
+                    value={config.visionKey || ''}
+                    onChange={(e) => setConfig({visionKey: e.target.value})}
+                    placeholder='输入视觉 API Key，留空则使用主 Key'
+                    className='bg-background/50 backdrop-blur-sm border-border/50'
+                />
+            </div>
         </div>
     );
 }

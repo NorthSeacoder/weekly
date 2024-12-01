@@ -288,7 +288,7 @@ async function processUrl(url: string, month: string): Promise<boolean> {
         }
 
         console.log('Starting AI analysis...');
-        const aiProcessor = new AIProcessor(apiKey);
+        const aiProcessor = new AIProcessor({apiKey});
         const analysis = await aiProcessor.analyze(pageData.content);
 
         if (!analysis) {
