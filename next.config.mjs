@@ -8,6 +8,7 @@ const nextConfig = {
     pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
     // Optionally, add any other Next.js config below
     output: 'export',
+    trailingSlash: true,
     images: {
         unoptimized: true
     },
