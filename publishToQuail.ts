@@ -1,7 +1,7 @@
 import {handleDir} from '@/lib/file';
+import {processData} from '@/lib/weekly';
 import dotenv from 'dotenv';
 import path from 'path';
-import {processData} from '../lib/weekly';
 
 dotenv.config();
 const contentDir = path.join(process.cwd(), 'sections');

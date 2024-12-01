@@ -39,36 +39,35 @@ const withMDX = createMDX({
 export default withSentryConfig(
     withMDX(nextConfig),
     {
-        // Sentry webpack 插件配置
         org: "nsea",
         project: "weekly",
         
-        // 关闭源码映射上传，因为是静态导出
-        sourcemaps: false,
+        // 开启源码映射上传
+        sourcemaps: true,
         
-        // 静默模式
-        silent: true,
+        // 允许访问源码映射
+        hideSourceMaps: false,
         
-        // 禁用文件上传
-        widenClientFileUpload: false,
+        // 允许文件上传
+        widenClientFileUpload: true,
         
-        // 隐藏源码映射
-        hideSourceMaps: true,
+        // 开启日志
+        disableLogger: false,
         
-        // 禁用日志
-        disableLogger: true,
-        
-        // 关闭自动监控，因为是静态导出
-        automaticVercelMonitors: false
+        // 开启自动监控
+        automaticVercelMonitors: true,
+
+        // 添加 auth token
+        authToken: process.env.NEXT_PUBLIC_SENTRY_AUTH_TOKEN
     },
     {
-        // 运行时配置
-        silent: true,
+        // 开启错误处理
+        errorHandler: true,
         
-        // 关闭错误处理，因为是静态导出
-        errorHandler: false,
+        // 开启性能监控
+        tracesSampleRate: 0.1,
         
-        // 关闭性能监控
-        tracesSampleRate: 0
+        // 关闭静默模式以查看上传日志
+        silent: false
     }
 );
