@@ -10,7 +10,7 @@ export default async function TimeLine({
 }) {
   return (
     <ScrollArea
-      className="h-72 w-32 rounded-md border border-gray-600 sticky top-0"
+      className="h-fit w-32 rounded-md border border-border sticky top-0"
       style={{ position: "sticky" }}
     >
       <div className="p-4">
@@ -20,7 +20,7 @@ export default async function TimeLine({
         {[...new Set(postsByMonth)].map((month) => (
           <div key={month}>
             <Link href={`#${month}`}>{month}</Link>
-            <Separator className="my-2 bg-gray-600" />
+            <Separator className="my-2 bg-border" />
           </div>
         ))}
       </div>

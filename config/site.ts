@@ -1,5 +1,5 @@
 import {SiteConfig} from '@/types/siteConfig';
-import {BsGithub, BsTwitterX, BsWechat} from 'react-icons/bs';
+import {BsGithub} from 'react-icons/bs';
 import {MdEmail} from 'react-icons/md';
 import {SiJuejin} from 'react-icons/si';
 
@@ -12,7 +12,7 @@ const baseSiteConfig = {
     authors: [
         {
             name: 'mengpeng',
-            url: 'https://www.mengpeng.tech',
+            url: 'https://www.mengpeng.tech'
             // twitter: 'https://x.com/noethseacoder'
         }
     ],
@@ -24,17 +24,16 @@ const baseSiteConfig = {
         apple: '/logo.png'
     },
     headerLinks: [
-        {name: 'repo', href: 'https://github.com/northseacoder/weekly', icon: BsGithub},
+        {name: 'repo', href: 'https://github.com/northseacoder/weekly', icon: BsGithub}
         // {name: 'twitter', href: 'https://x.com/noethseacoder', icon: BsTwitterX},
     ],
     footerLinks: [
         {name: 'email', href: 'mailto:mengpeng_bj@foxmail.com', icon: MdEmail},
         // {name: 'twitter', href: 'https://x.com/noethseacoder', icon: BsTwitterX},
         {name: 'github', href: 'https://github.com/weijunext/', icon: BsGithub},
-        {name: 'juejin', href: 'https://juejin.cn/user/2101921962025421', icon: SiJuejin},
+        {name: 'juejin', href: 'https://juejin.cn/user/2101921962025421', icon: SiJuejin}
     ],
-    footerProducts: [
-    ]
+    footerProducts: []
 };
 
 export const siteConfig: SiteConfig = {

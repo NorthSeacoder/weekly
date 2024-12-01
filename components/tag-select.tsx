@@ -1,6 +1,6 @@
 'use client';
 import { cn } from "@/lib/utils";
-import './tag-select.css';
+// import './tag-select.css';
 
 interface TagSelectProps {
     tags: string[];
@@ -17,14 +17,16 @@ export default function TagSelect({ tags, onTagsChange }: TagSelectProps) {
     };
 
     return (
-        <div className="flex flex-col gap-2 p-4 rounded-lg bg-black/20 backdrop-blur-sm border border-gray-800 max-h-[calc(100vh-12rem)] overflow-y-auto">
+        <div className="flex flex-col gap-2 p-4 rounded-lg bg-background backdrop-blur-sm border border-border max-h-[calc(100vh-12rem)] overflow-y-auto">
             {tags.map((tag) => (
                 <label
                     key={tag}
                     className={cn(
                         "flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer",
                         "transition-all duration-200",
-                        "hover:bg-gray-800/50",
+                        "border border-border",
+                        "hover:border-gray-400",
+                        "hover:bg-background/50",
                         "group"
                     )}
                 >
@@ -38,7 +40,7 @@ export default function TagSelect({ tags, onTagsChange }: TagSelectProps) {
                     <div
                         className={cn(
                             "w-4 h-4 rounded-md transition-all duration-200",
-                            "border border-gray-600",
+                            "border border-border",
                             "group-hover:border-gray-400",
                             "peer-checked:border-blue-500",
                             "peer-checked:bg-gradient-to-br peer-checked:from-blue-400 peer-checked:to-blue-600",

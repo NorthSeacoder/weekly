@@ -82,7 +82,7 @@ html {
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
   
-    --border: 217.2 32.6% 17.5%;
+    --border: 235 11.4% 27.1%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
@@ -111,7 +111,7 @@ h1 {
   @apply text-4xl font-bold mt-6 mb-4
 }
 h2 {
-  @apply text-3xl font-semibold mt-6 mb-4 border-b-2 border-gray-200 pb-2
+  @apply text-3xl font-semibold mt-6 mb-4 border-b border-gray-200 pb-2
 }
 h3 {
   @apply text-2xl font-semibold mt-6 mb-4
@@ -136,5 +136,32 @@ h6 {
   .scrollbar-hide {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+  }
+}
+@layer components {
+  .tech-card {
+    @apply relative;
+    --x: 50%;
+    --y: 50%;
+    --intensity: 0;
+  }
+  
+  .tech-card::before {
+    content: '';
+    @apply absolute -inset-[1px] rounded-[inherit] p-[1px] pointer-events-none transition-opacity duration-150 ease-in;
+    background: radial-gradient(
+      200px circle at var(--x) var(--y),
+      rgba(103, 232, 249, calc(0.08 * var(--intensity))),
+      rgba(103, 232, 249, 0.02) 30%,
+      transparent 50%
+    );
+    mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
   }
 }

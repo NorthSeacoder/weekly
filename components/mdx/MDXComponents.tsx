@@ -1,7 +1,7 @@
-import {Aside} from '@/components/mdx/Aside';
-import {Callout} from '@/components/mdx/Callout';
-import {MdxCard} from '@/components/mdx/MdxCard';
-import React, {ReactNode} from 'react';
+import { Aside } from '@/components/mdx/Aside';
+import { Callout } from '@/components/mdx/Callout';
+import { MdxCard } from '@/components/mdx/MdxCard';
+import React, { ReactNode } from 'react';
 
 interface HeadingProps {
     level: 1 | 2 | 3 | 4 | 5 | 6;
@@ -26,7 +26,7 @@ interface MDXComponentsProps {
 const MDXComponents: MDXComponentsProps = {
     h1: (props) => <Heading level={1} className='text-4xl font-bold mt-6 mb-4' {...props} />,
     h2: (props) => (
-        <Heading level={2} className='text-3xl font-semibold mt-6 mb-4 border-b-2 border-gray-200 pb-2' {...props} />
+        <Heading level={2} className='text-3xl font-semibold mt-6 mb-4 border-b border-gray-200 pb-2' {...props} />
     ),
     h3: (props) => <Heading level={3} className='text-2xl font-semibold mt-6 mb-4' {...props} />,
     h4: (props) => <Heading level={4} className='text-xl font-semibold mt-6 mb-4' {...props} />,

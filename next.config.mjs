@@ -1,5 +1,5 @@
 import createMDX from '@next/mdx';
-import { withSentryConfig } from '@sentry/nextjs';
+import {withSentryConfig} from '@sentry/nextjs';
 import remarkGfm from 'remark-gfm';
 
 /** @type {import('next').NextConfig} */
@@ -8,6 +8,9 @@ const nextConfig = {
     pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
     // Optionally, add any other Next.js config below
     output: 'export',
+    images: {
+        unoptimized: true
+    },
     webpack: (config, { isServer }) => {
         config.ignoreWarnings = [
             { module: /@opentelemetry/ },

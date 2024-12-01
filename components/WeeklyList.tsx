@@ -40,7 +40,7 @@ export default function WeeklyList({ posts, isSide, sectionType = "weekly" }: We
             key={slug} 
             className={`
               ${isSide ? 'py-1' : 'py-2'} 
-              hover:bg-gray-800/50 
+              hover:bg-background/50 
               rounded-lg 
               transition-colors
             `}
@@ -50,8 +50,8 @@ export default function WeeklyList({ posts, isSide, sectionType = "weekly" }: We
               className={`
                 block 
                 ${isSide ? 'px-2 text-sm' : 'px-4'} 
-                text-gray-300 
-                hover:text-gray-100
+                text-muted-foreground 
+                hover:text-foreground
               `}
             >
               {title}
