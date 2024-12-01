@@ -8,6 +8,7 @@ dotenv.config();
 interface Links {
     markdown: string;
     url: string;
+    key: string;
 }
 
 interface UploadResponse {
@@ -17,6 +18,7 @@ interface UploadResponse {
         name: string;
         links: Links;
         pathname: string;
+        key: string;
     };
 }
 
@@ -144,7 +146,8 @@ export async function uploadImage(file: File | string): Promise<Links> {
             throw new Error(result.message || '上传失败');
         }
         console.log(result);
-        return result.data.links;
+        const {links, key} = result.data;
+        return {...links, key};
     } catch (error: unknown) {
         if (error instanceof Error) {
             throw new Error(`上传图片失败: ${error.message}`);
@@ -182,7 +185,6 @@ async function getAllImages(): Promise<ImageInfo[]> {
             if (!result.status) {
                 throw new Error(result.message || '获取图片列表失败');
             }
-
             images.push(...result.data.data);
 
             // 如果已经获取所有页面,退出循环
@@ -205,7 +207,7 @@ async function getAllImages(): Promise<ImageInfo[]> {
 /**
  * 删除单张图片
  */
-async function deleteImage(key: string): Promise<boolean> {
+export async function deleteImage(key: string): Promise<boolean> {
     try {
         const token = process.env.LSKY_TOKEN;
         const response = await fetch(`https://img.mengpeng.tech/api/v1/images/${key}`, {
@@ -284,6 +286,6 @@ export async function clearAllImages(): Promise<void> {
         throw error;
     }
 }
-
+getAllImages();
 // 使用示例:
 // clearAllImages().catch(console.error);
