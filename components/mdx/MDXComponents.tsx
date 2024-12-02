@@ -1,5 +1,7 @@
 import { Aside } from '@/components/mdx/Aside';
 import { Callout } from '@/components/mdx/Callout';
+import {CodeDemo} from '@/components/mdx/CodeDemo';
+import {DemoLoader} from '@/components/mdx/DemoLoader';
 import { MdxCard } from '@/components/mdx/MdxCard';
 import React, { ReactNode } from 'react';
 
@@ -66,7 +68,9 @@ const MDXComponents: MDXComponentsProps = {
     ),
     Aside,
     Callout,
-    Card: MdxCard
+    Card: MdxCard,
+    CodeDemo,
+    DemoLoader
 };
 
 export default MDXComponents;

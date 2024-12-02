@@ -1,0 +1,6 @@
+{
+    "title": "按钮悬停效果",
+    "description": "一个简单的按钮悬停效果示例",
+    "height": 200,
+    "dependencies": ["https://unpkg.com/animate.css@4.1.1/animate.min.css"]
+}

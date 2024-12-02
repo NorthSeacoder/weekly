@@ -1,6 +1,11 @@
 import createMDX from '@next/mdx';
 import {withSentryConfig} from '@sentry/nextjs';
+import path from 'path';
 import remarkGfm from 'remark-gfm';
+import {fileURLToPath} from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -21,6 +26,14 @@ const nextConfig = {
             ...config.watchOptions,
             ignored: /extension\/.*/
         };
+        config.module.rules.push({
+            test: /demos\/.*\/index\.(js|ts)$/,
+            use: [
+                {
+                    loader: path.resolve(__dirname, 'lib/demo-loader.js')
+                }
+            ]
+        });
         return config;
     },
     experimental: {
