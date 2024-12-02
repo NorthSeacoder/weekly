@@ -9,7 +9,8 @@ interface Screenshot {
     dataUrl?: string; // 本地预览用
     url?: string; // 图床URL
     key?: string; // 图床图片ID
-    content?: string; // AI识别的内容
+    content?: string; // AI识别的内容或选中的文本
+    type?: 'image' | 'text'; // 添加类型标识
     analysis?: {
         title: string;
         tags: string[];
@@ -28,18 +29,30 @@ export function ElementSelector({onMdxGenerated}: ElementSelectorProps) {
     const [isLoading, setIsLoading] = React.useState(false);
     const [error, setError] = React.useState<string>('');
 
-    // 初始化时从storage加载截图数据
+    // 初始化时从storage加载数据
     React.useEffect(() => {
         chrome.storage.local
-            .get(['screenshot'])
+            .get(['screenshot', 'selectedContent'])
             .then((result) => {
-                if (result.screenshot?.dataUrl) {
-                    setScreenshot(result.screenshot);
+                console.log('Storage data:', result);
+                if (result.selectedContent) {
+                    // 文本选择的情况
+                    setScreenshot({
+                        content: result.selectedContent.text,
+                        type: 'text',
+                        dataUrl: result.screenshot?.dataUrl // 文本选择时的截图
+                    });
+                } else if (result.screenshot?.dataUrl) {
+                    // 图片选择的情况
+                    setScreenshot({
+                        dataUrl: result.screenshot.dataUrl,
+                        type: 'image'
+                    });
                 }
             })
             .catch((err) => {
-                console.error('Failed to load screenshot from storage:', err);
-                setError('加载截图失败');
+                console.error('Failed to load data from storage:', err);
+                setError('加载数据失败');
             });
     }, []);
 
@@ -70,8 +83,35 @@ export function ElementSelector({onMdxGenerated}: ElementSelectorProps) {
         }
     };
 
+    const handleTextSelect = async () => {
+        try {
+            setError('');
+            // Hide popup
+            window.close();
+
+            // Start text selector
+            const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+            if (!tab.id) return;
+
+            await chrome.scripting.executeScript({
+                target: {tabId: tab.id},
+                func: () => {
+                    if (!(window as any).TextSelector) {
+                        console.error('TextSelector not found');
+                        return;
+                    }
+                    const selector = new (window as any).TextSelector();
+                    selector.start();
+                }
+            });
+        } catch (err) {
+            console.error('Error in handleTextSelect:', err);
+            setError('文本选择失败，请重试');
+        }
+    };
+
     const handleGenerate = async () => {
-        if (!screenshot?.dataUrl) return;
+        if (!screenshot) return;
 
         try {
             setIsLoading(true);
@@ -85,7 +125,6 @@ export function ElementSelector({onMdxGenerated}: ElementSelectorProps) {
             const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
             const currentUrl = tab.url || window.location.href;
 
-            // 1. 使用AI识别图片内容
             const ai = new AIProcessor({
                 apiKey: config.openaiKey,
                 baseUrl: config.apiBaseUrl,
@@ -95,18 +134,31 @@ export function ElementSelector({onMdxGenerated}: ElementSelectorProps) {
                 visionKey: config.visionKey
             });
 
-            const content = await ai.recognizeImage(screenshot.dataUrl);
+            // 根据类型处理内容
+            let content = '';
+            if (screenshot.type === 'text') {
+                // 文本类型直接使用选中的内容
+                content = screenshot.content || '';
+            } else if (screenshot.type === 'image' && screenshot.dataUrl) {
+                // 图片类型需要进行识别
+                content = await ai.recognizeImage(screenshot.dataUrl);
+            }
 
-            // 2. 分析内容
+            if (!content) {
+                throw new Error('没有可分析的内容');
+            }
+
+            // 分析内容
             const analysis = await ai.analyze(content);
 
-            // 3. 上传图片到图床
-            const res = await fetch(screenshot.dataUrl);
-            const blob = await res.blob();
-            const file = new File([blob], 'screenshot.png', {type: 'image/png'});
-            const uploadResult = await uploadImage(file);
+            // 上传图片到图床
+            const uploadResult = await uploadImage(
+                await fetch(screenshot.dataUrl!)
+                    .then((res) => res.blob())
+                    .then((blob) => new File([blob], 'screenshot.png', {type: 'image/png'}))
+            );
 
-            // 4. 生成MDX
+            // 生成MDX
             const mdx = ai.generateMDX({
                 url: currentUrl,
                 date: new Date().toISOString().split('T')[0],
@@ -115,7 +167,7 @@ export function ElementSelector({onMdxGenerated}: ElementSelectorProps) {
                 ...analysis
             });
 
-            // 5. 更新状态
+            // 更新状态
             const newScreenshot = {
                 ...screenshot,
                 url: uploadResult.url,
@@ -125,10 +177,9 @@ export function ElementSelector({onMdxGenerated}: ElementSelectorProps) {
             };
 
             setScreenshot(newScreenshot);
-            // 直接传递MDX内容给父组件
             onMdxGenerated(mdx);
         } catch (err) {
-            console.error('Failed to process screenshot:', err);
+            console.error('Failed to process content:', err);
             setError(err instanceof Error ? err.message : '处理失败，请重试');
         } finally {
             setIsLoading(false);
@@ -168,6 +219,13 @@ export function ElementSelector({onMdxGenerated}: ElementSelectorProps) {
                     disabled={isLoading}>
                     {isLoading ? '处理中...' : '截图'}
                 </Button>
+                <Button
+                    onClick={handleTextSelect}
+                    variant='outline'
+                    className='flex-1 bg-background/50 hover:bg-muted/80'
+                    disabled={isLoading}>
+                    {isLoading ? '处理中...' : '选择文本'}
+                </Button>
             </div>
 
             {error && <div className='text-sm text-destructive text-center'>{error}</div>}
@@ -183,14 +241,26 @@ export function ElementSelector({onMdxGenerated}: ElementSelectorProps) {
                             disabled={isLoading}>
                             <X className='h-4 w-4' />
                         </Button>
-                        <img
-                            src={screenshot.url || screenshot.dataUrl}
-                            alt='Screenshot'
-                            className='w-full h-auto rounded-lg'
-                        />
+                        {screenshot.type === 'text' ? (
+                            <div className='prose prose-sm max-w-none'>
+                                {screenshot.dataUrl && (
+                                    <img
+                                        src={screenshot.dataUrl}
+                                        alt='Selected area'
+                                        className='mt-4 w-full h-auto rounded-lg'
+                                    />
+                                )}
+                            </div>
+                        ) : (
+                            <img
+                                src={screenshot.url || screenshot.dataUrl}
+                                alt='Screenshot'
+                                className='w-full h-auto rounded-lg'
+                            />
+                        )}
                     </>
                 ) : (
-                    <div className='text-muted-foreground text-center'>截图将在这里预览</div>
+                    <div className='text-muted-foreground text-center'>选择的内容将在这里预览</div>
                 )}
             </div>
 

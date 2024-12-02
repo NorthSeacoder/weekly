@@ -69,6 +69,13 @@ export class ScreenshotSelector {
             devicePixelRatio: window.devicePixelRatio
         };
 
+        // 临时隐藏选择器UI
+        this.overlay.style.display = 'none';
+        this.selection.style.display = 'none';
+
+        // 等待一帧以确保UI已隐藏
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+
         // 发送消息到 background 进行截图
         chrome.runtime.sendMessage({
             action: 'captureSelected',
