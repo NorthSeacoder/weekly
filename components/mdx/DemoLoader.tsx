@@ -8,7 +8,6 @@ interface DemoLoaderProps {
 }
 
 export function DemoLoader({demoPath}: DemoLoaderProps) {
-    // 动态导入 demo 文件
     const demo = require(`@/demos/${demoPath}/index`).default as CodeExample;
     return <CodeDemo {...demo} />;
 }

@@ -2,6 +2,7 @@ import {handleDir} from '@/lib/file';
 import {processData} from '@/lib/weekly';
 import dotenv from 'dotenv';
 import path from 'path';
+import {getDemoFallbackContent} from './lib/demo-utils';
 
 dotenv.config();
 const contentDir = path.join(process.cwd(), 'sections');
@@ -51,6 +52,15 @@ async function request(endpoint: string, method: string, data?: any) {
     return json.data;
 }
 
+function transformContent(content: string): string {
+    console.log('[DEBUG] Transforming content', content);
+
+    // Replace DemoLoader components with their fallback content
+    return content.replace(/<DemoLoader\s+demoPath="([^"]+)"\s*\/>/g, (_, demoPath) => {
+        return getDemoFallbackContent(demoPath);
+    });
+}
+
 async function publishToQuail() {
     const QUAIL_API_KEY = process.env.QUAIL_API_KEY;
     const LIST_ID = process.env.QUAIL_LIST_ID;
@@ -76,7 +86,7 @@ async function publishToQuail() {
 
     const postData: PostData = {
         title: latestPost.title,
-        content: latestPost.content,
+        content: transformContent(latestPost.content),
         status: 'published',
         tags: latestPost.tags.join(','),
         excerpt: generateExcerpt(latestPost.content),

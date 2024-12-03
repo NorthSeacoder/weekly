@@ -1,5 +1,7 @@
 'use client';
 
+import {CodeBlock} from '@/components/ui/code-block';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {CodeExample} from '@/lib/codeExamples/types';
 import {cn} from '@/lib/utils';
 import {Check, Code, Copy} from 'lucide-react';
@@ -22,23 +24,25 @@ export function CodeDemo({
     className
 }: CodeDemoProps) {
     const [showCode, setShowCode] = useState(false);
-    const [copied, setCopied] = useState(false);
+    const [copiedMap, setCopiedMap] = useState<Record<string, boolean>>({});
 
     // 组合完整的代码
     const fullCode = `<!-- HTML -->
 ${html}
 
-/* CSS */
+/* ${cssType.toUpperCase()} */
 ${css}
 
 // JavaScript
 ${js}`;
 
     // 处理复制功能
-    const handleCopy = async () => {
-        await navigator.clipboard.writeText(fullCode);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const handleCopy = async (code: string, type: string) => {
+        await navigator.clipboard.writeText(code);
+        setCopiedMap((prev) => ({...prev, [type]: true}));
+        setTimeout(() => {
+            setCopiedMap((prev) => ({...prev, [type]: false}));
+        }, 2000);
     };
 
     // 创建预览内容
@@ -47,12 +51,8 @@ ${js}`;
         const scriptTag = js ? `<script>${js}</script>` : '';
         const dependencyTags = dependencies
             .map((dep) => {
-                if (dep.endsWith('.css')) {
-                    return `<link rel="stylesheet" href="${dep}">`;
-                }
-                if (dep.endsWith('.js')) {
-                    return `<script src="${dep}"></script>`;
-                }
+                if (dep.endsWith('.css')) return `<link rel="stylesheet" href="${dep}">`;
+                if (dep.endsWith('.js')) return `<script src="${dep}"></script>`;
                 return '';
             })
             .join('\n');
@@ -63,6 +63,15 @@ ${js}`;
                 <head>
                     ${dependencyTags}
                     ${styleTag}
+                    <style>
+                        body {
+                            margin: 0;
+                            min-height: 100vh;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                    </style>
                 </head>
                 <body>
                     ${html}
@@ -77,20 +86,12 @@ ${js}`;
             {/* 标题栏 */}
             <div className='flex items-center justify-between px-4 py-2 border-b border-border/50 bg-muted/30'>
                 <span className='text-sm font-medium'>{title || 'Demo'}</span>
-                <div className='flex items-center gap-2'>
-                    <button
-                        onClick={() => setShowCode(!showCode)}
-                        className='p-1.5 rounded-md hover:bg-muted/50 transition-colors'
-                        title='查看代码'>
-                        <Code className='h-4 w-4' />
-                    </button>
-                    <button
-                        onClick={handleCopy}
-                        className='p-1.5 rounded-md hover:bg-muted/50 transition-colors'
-                        title='复制代码'>
-                        {copied ? <Check className='h-4 w-4 text-green-500' /> : <Copy className='h-4 w-4' />}
-                    </button>
-                </div>
+                <button
+                    onClick={() => setShowCode(!showCode)}
+                    className='p-1.5 rounded-md hover:bg-muted/50 transition-colors'
+                    title='查看代码'>
+                    <Code className='h-4 w-4' />
+                </button>
             </div>
 
             {/* 添加描述 */}
@@ -109,32 +110,64 @@ ${js}`;
             {/* 代码区域 */}
             {showCode && (
                 <div className='border-t border-border/50'>
-                    <div className='grid grid-cols-1 md:grid-cols-3 gap-4 p-4'>
+                    <Tabs defaultValue='html' className='p-4'>
+                        <TabsList className='w-full justify-start bg-muted/30 p-0 h-10'>
+                            {html && <TabsTrigger value='html'>HTML</TabsTrigger>}
+                            {css && <TabsTrigger value='css'>{cssType.toUpperCase()}</TabsTrigger>}
+                            {js && <TabsTrigger value='js'>JavaScript</TabsTrigger>}
+                        </TabsList>
                         {html && (
-                            <div>
-                                <div className='text-xs font-medium mb-2'>HTML</div>
-                                <pre className='text-sm bg-muted/30 p-3 rounded-md overflow-x-auto'>
-                                    <code>{html}</code>
-                                </pre>
-                            </div>
+                            <TabsContent value='html' className='mt-2'>
+                                <div className='relative'>
+                                    <button
+                                        onClick={() => handleCopy(html, 'html')}
+                                        className='absolute right-2 top-2 p-1.5 rounded-md hover:bg-muted/50 transition-colors z-10 bg-background/80 backdrop-blur-sm'
+                                        title='复制代码'>
+                                        {copiedMap.html ? (
+                                            <Check className='h-4 w-4 text-green-500' />
+                                        ) : (
+                                            <Copy className='h-4 w-4' />
+                                        )}
+                                    </button>
+                                    <CodeBlock code={html} language='html' className='bg-muted/30' />
+                                </div>
+                            </TabsContent>
                         )}
                         {css && (
-                            <div>
-                                <div className='text-xs font-medium mb-2'>{cssType.toUpperCase()}</div>
-                                <pre className='text-sm bg-muted/30 p-3 rounded-md overflow-x-auto'>
-                                    <code>{css}</code>
-                                </pre>
-                            </div>
+                            <TabsContent value='css' className='mt-2'>
+                                <div className='relative'>
+                                    <button
+                                        onClick={() => handleCopy(css, 'css')}
+                                        className='absolute right-2 top-2 p-1.5 rounded-md hover:bg-muted/50 transition-colors z-10 bg-background/80 backdrop-blur-sm'
+                                        title='复制代码'>
+                                        {copiedMap.css ? (
+                                            <Check className='h-4 w-4 text-green-500' />
+                                        ) : (
+                                            <Copy className='h-4 w-4' />
+                                        )}
+                                    </button>
+                                    <CodeBlock code={css} language={cssType} className='bg-muted/30' />
+                                </div>
+                            </TabsContent>
                         )}
                         {js && (
-                            <div>
-                                <div className='text-xs font-medium mb-2'>JavaScript</div>
-                                <pre className='text-sm bg-muted/30 p-3 rounded-md overflow-x-auto'>
-                                    <code>{js}</code>
-                                </pre>
-                            </div>
+                            <TabsContent value='js' className='mt-2'>
+                                <div className='relative'>
+                                    <button
+                                        onClick={() => handleCopy(js, 'js')}
+                                        className='absolute right-2 top-2 p-1.5 rounded-md hover:bg-muted/50 transition-colors z-10 bg-background/80 backdrop-blur-sm'
+                                        title='复制代码'>
+                                        {copiedMap.js ? (
+                                            <Check className='h-4 w-4 text-green-500' />
+                                        ) : (
+                                            <Copy className='h-4 w-4' />
+                                        )}
+                                    </button>
+                                    <CodeBlock code={js} language='javascript' className='bg-muted/30' />
+                                </div>
+                            </TabsContent>
                         )}
-                    </div>
+                    </Tabs>
                 </div>
             )}
         </div>
