@@ -1,0 +1,40 @@
+---
+tags: [CSS, webdev, atan2, tan, scalar]
+category: 文章
+source: ai-generated
+date: 2024-09-08
+title: CSS Type Casting
+---
+
+### [CSS Type Casting](https://dev.to/janeori/css-type-casting-to-numeric-tanatan2-scalars-582j)
+
+![img](https://img.mengpeng.tech/i/2024/12/04/674fe00137e21.webp)
+
+来源: [dev.to](https://dev.to/janeori/css-type-casting-to-numeric-tanatan2-scalars-582j)
+
+本文介绍了一个巧妙的 CSS 技巧 - 使用三角函数将长度类型转换为纯数字。
+
+#### 核心原理
+
+通过 `tan(atan2(height, width))` 组合可以获得两个维度之间的标量值。比如要获取视口宽度的像素值,可以这样写: `:root { --100vw: 100vw; --px-width: tan(atan2(var(--100vw), 1px)); }`。
+
+这里的两个三角函数各自作用是:
+- atan2(y,x): 计算从x轴到点(x,y)的角度,返回值范围是 -π 到 π
+- tan(angle): 计算角度的正切值,即对边比邻边(y/x)
+
+两个函数组合使用时,atan2 先将两个长度转换为角度,然后 tan 再将角度转回比值,最终得到 y/x 的结果。这种方式比直接除法更可靠,因为 atan2 可以处理分母为0的情况。
+
+#### 实际应用
+
+1. 获取视口尺寸的像素值: `--vh-to-px: tan(atan2(100vh, 1px))`
+2. 计算容器查询单位: `--cqi-to-px: tan(atan2(100cqi, 1px))`
+3. 获取字体大小的像素值: `--em-to-px: tan(atan2(1em, 1px))`
+4. 处理混合单位计算: `--mixed: tan(atan2(10vh, 1vw))`
+
+#### 浏览器兼容性
+
+- Chrome: 会忽略单位直接进行除法
+- Firefox: 混合单位时返回0
+- Safari: 需要用 calc() 包裹 tan(atan2()) 才能工作
+
+这个技巧为解决 CSS 中的单位转换和计算提供了新思路,尤其在目前 CSS 不支持直接对长度类型进行除法运算的情况下非常有用。

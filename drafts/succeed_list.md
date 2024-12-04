@@ -1,1 +1,1 @@
-https://codepen.io/jh3y/pen/RwzWOqM
+https://github.com/mefengl/wxt-starter

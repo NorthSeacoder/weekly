@@ -311,7 +311,7 @@ async function processUrl(url: string, month: string): Promise<boolean> {
         }
 
         // 7. 使用编号和标题生成文件名
-        const fileName = `${paddedNumber}-${analysis.title.toLowerCase().replace(/\s+/g, '-')}.mdx`;
+        const fileName = `${paddedNumber}.${analysis.title.toLowerCase().replace(/\s+/g, '-')}.mdx`;
         const mdxPath = path.join(sectionsDir, fileName);
         fs.writeFileSync(mdxPath, mdxContent);
 
