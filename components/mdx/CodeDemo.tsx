@@ -5,7 +5,7 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {CodeExample} from '@/lib/codeExamples/types';
 import {cn} from '@/lib/utils';
 import {Check, Code, Copy} from 'lucide-react';
-import {useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 
 interface CodeDemoProps extends CodeExample {
     className?: string;
@@ -25,6 +25,7 @@ export function CodeDemo({
 }: CodeDemoProps) {
     const [showCode, setShowCode] = useState(false);
     const [copiedMap, setCopiedMap] = useState<Record<string, boolean>>({});
+    const [iframeContent, setIframeContent] = useState('');
 
     // 组合完整的代码
     const fullCode = `<!-- HTML -->
@@ -46,7 +47,7 @@ ${js}`;
     };
 
     // 创建预览内容
-    const createPreview = () => {
+    const createPreview = useCallback(() => {
         const styleTag = compiledCss ? `<style>${compiledCss}</style>` : '';
         const scriptTag = js ? `<script>${js}</script>` : '';
         const dependencyTags = dependencies
@@ -79,7 +80,12 @@ ${js}`;
                 </body>
             </html>
         `;
-    };
+    }, [html, compiledCss, js, dependencies]);
+
+    // 在客户端设置 iframe 内容
+    useEffect(() => {
+        setIframeContent(createPreview());
+    }, [createPreview]);
 
     return (
         <div className={cn('my-6 rounded-lg border border-border/50', className)}>
@@ -100,7 +106,7 @@ ${js}`;
             {/* 预览区域 */}
             <div className='p-4 bg-background'>
                 <iframe
-                    srcDoc={createPreview()}
+                    srcDoc={iframeContent}
                     className='w-full border-0'
                     style={{height: `${height}px`}}
                     title={title || 'Demo Preview'}

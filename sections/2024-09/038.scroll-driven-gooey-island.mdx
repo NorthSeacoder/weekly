@@ -1,0 +1,22 @@
+---
+tags: [css]
+category: demo
+source: Twitter
+date: 2024-09-08
+title: scroll-driven-gooey-island
+---
+
+### [酷炫的滚动效果](https://codepen.io/jh3y/pen/RwzWOqM)
+
+来源: [@jh3yy](https://x.com/jh3yy/status/1813319007048470840)
+
+<DemoLoader demoPath="scroll-driven-gooey-island" />
+
+1. 使用 SVG filters (fancy-goo) 创建液态效果 - 结合了 feGaussianBlur 和 feColorMatrix 实现
+   - feGaussianBlur: 对图形进行高斯模糊处理,创建柔和的边缘
+   - feColorMatrix: 通过颜色矩阵调整透明度,产生粘性液体的视觉效果
+2. CSS scroll timeline 动画 - 通过 `animation-timeline: scroll(root)` 将动画与页面滚动同步
+3. 固定定位的 island 容器和头像
+4. CSS transform 控制缩放和位移
+
+当页面滚动时,头像会逐渐缩小并模糊,文字同步缩放,同时保持液态连接效果。整个过程平滑自然,非常吸引眼球。

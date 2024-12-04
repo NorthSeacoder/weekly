@@ -10,7 +10,7 @@ function createDemoFiles(projectRoot, demoPath, title) {
   }
   
   // Create demo files
-  const files = ['index.html', 'style.css', 'script.js'];
+  const files = ['index.html', 'index.css', 'index.js'];
   files.forEach(file => {
     const filePath = path.join(demoDir, file);
     if (!fs.existsSync(filePath)) {
