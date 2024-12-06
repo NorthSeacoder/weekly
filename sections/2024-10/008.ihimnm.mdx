@@ -1,0 +1,32 @@
+---
+tags: [Node.js, CLI工具, 依赖管理, 开源项目, 开发工具]
+category: 开源
+source: github
+date: 2024-10-06
+title: ihimnm - 快速查找项目依赖位置
+---
+
+### [ihimnm - 快速查找项目依赖位置](https://github.com/bluwy/ihimnm)
+
+![img](https://img.mengpeng.tech/i/2024/12/05/6751937e72f69.webp)
+
+来源: [github.com](https://github.com/bluwy/ihimnm)
+
+ihimnm (I Have It, Maybe Not Mine) 是一个简单的 CLI 工具，用于查找和显示项目中最近的 package.json 及其依赖信息。特别适合在大型项目或 monorepo 中定位依赖的位置。
+
+#### 使用方式
+```bash
+# 查找最近的 package.json 并显示依赖信息
+npx ihimnm
+
+# 递归搜索所有 package.json 文件(适用于 monorepo)
+npx ihimnm -r
+```
+
+#### 工作原理
+- 向上查找：从当前目录向上查找最近的 package.json
+- 依赖显示：显示找到的 package.json 中的依赖信息
+- 递归模式：使用 -r 选项可以搜索所有子目录的依赖
+- 路径显示：显示找到的依赖文件具体位置
+
+这个工具的名字 "I Have It, Maybe Not Mine" 很好地描述了它的用途 - 帮你找到项目中的依赖位置，即使它可能不是直接安装在当前目录。正如作者所说："You know when you need this."（你知道什么时候需要它）。

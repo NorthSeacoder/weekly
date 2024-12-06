@@ -1,0 +1,88 @@
+---
+tags: [Prompt工程, AI提示词, 伪代码, LLM, 最佳实践]
+category: 教程
+source: blog
+date: 2024-09-29
+title: 使用伪代码精准控制LLM输出
+---
+
+### [使用伪代码精准控制LLM输出](https://baoyu.io/blog/prompt-engineering/advanced-prompting-using-pseudocode-to-control-llm-output)
+
+![img](https://img.mengpeng.tech/i/2024/12/05/6751388f6c165.webp)
+
+来源: [baoyu.io](https://baoyu.io/blog/prompt-engineering/advanced-prompting-using-pseudocode-to-control-llm-output)
+
+这篇文章介绍了一种高级的Prompt技巧 - 使用伪代码来精准控制LLM的输出结果和执行逻辑。
+
+#### Prompt的本质
+- 控制指令：本质是对LLM的控制指令
+- 自然语言：传统方式用自然语言描述
+- 局限性：复杂任务描述力不从心
+- 精确性：需要更精准的控制方式
+
+#### 伪代码优势
+- 结构清晰：类似编程语言的结构化描述
+- 流程控制：支持条件判断和循环
+- 变量定义：可存储中间结果
+- 任务分解：便于复杂任务拆解
+
+#### 实践案例
+- JSON生成：定义输出格式和结构
+- 文本处理：分步骤处理文本内容
+- 多图生成：批量控制图片生成
+- 对话整理：结构化处理对话文本
+
+#### 使用建议
+- 灵活运用：结合few-shot和CoT等技巧
+- 任务分解：将复杂任务分解为子任务
+- 清晰定义：明确变量和函数的作用
+- 结果验证：确保输出符合预期格式
+
+这种方法特别适合处理需要精确控制输出格式、多步骤执行或复杂逻辑的任务。通过伪代码，可以让LLM更准确地理解和执行我们的要求。 
+
+<details>
+<summary>分享一个帮你把视频文稿整理成方便阅读的格式，有章节和发言人的 prompt</summary>
+```
+You task is to re-organize video transcripts for readability, and recognize speakers for multi-person dialogues. Here are the pseudo-code on how to do it:
+
+def extract_subject(transcript):
+  # Find the subject in the transcript and return it as a string.
+
+def extract_chapters(transcript):
+  # Find the chapters in the transcript and return them as a list of strings.
+
+def extract_speakers(transcript):
+  # Find the speakers in the transcript and return them as a list of strings.
+
+def find_paragraphs_and_speakers_in_chapter(chapter):
+  # Find the paragraphs and speakers in a chapter and return them as a list of tuples.
+  # Each tuple contains the speaker and their paragraphs.
+
+def format_transcript(transcript):
+  # extract the subject, speakers, chapters and print them
+  subject = extract_subject(transcript)
+  print("Subject:", subject)
+  speakers = extract_speakers(transcript)
+  print("Speakers:", speakers)
+  chapters = extract_chapters(transcript)
+  print("Chapters:", chapters)
+
+  # format the transcript
+  formatted_transcript = f"# {subject}\n\n"
+  for chapter in chapters:
+    formatted_transcript += f"## {chapter}\n\n"
+    paragraphs_and_speakers = find_paragraphs_and_speakers_in_chapter(chapter)
+    for speaker, paragraphs in paragraphs_and_speakers:
+      # if there are multiple speakers, print the speaker's name before each paragraph
+      if speakers.size() > 1:
+        formatted_transcript += f"{speaker}:"
+      formatted_transcript += f"{speaker}:"
+      for paragraph in paragraphs:
+        formatted_transcript += f" {paragraph}\n\n"
+      formatted_transcript += "\n\n"
+
+  return formatted_transcript
+
+print(format_transcript($user_input))
+```
+</details>
