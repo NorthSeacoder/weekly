@@ -1,0 +1,38 @@
+---
+tags: [AI游戏, 视觉小说, ChatGPT, 开源项目, 游戏引擎]
+category: 开源
+source: github
+date: 2024-11-24
+title: ChatVisualNovel - ChatGPT驱动的视觉小说引擎
+---
+
+### [ChatVisualNovel - ChatGPT驱动的视觉小说引擎](https://github.com/prompt-engineering/chat-visual-novel)
+
+![img](https://img.mengpeng.tech/i/2024/12/07/67541ed20ebd3.webp)
+
+来源: [github.com](https://github.com/prompt-engineering/chat-visual-novel)
+
+一个基于 ChatGPT 的可定制视觉小说引擎，支持完整的游戏资源管理和多语言本地化。项目采用 Next.js 和 Prisma 构建，已有《原神》和《逆转裁判》同人演示，展示了引擎在不同场景下的应用潜力。
+
+#### 技术架构
+- 前端框架：采用 Next.js 和 React 构建用户界面，使用 Tailwind CSS 实现响应式设计
+- 数据存储：通过 Prisma ORM 连接 PlanetScale 数据库，实现可靠的数据持久化
+- AI 对话：深度集成 ChatGPT API，通过精心设计的提示词生成故事情节和对话内容
+- 部署方案：支持 Vercel 一键部署，提供 Docker 容器化方案满足自托管需求
+- 国际化：基于 i18n 实现完整的多语言支持，包括界面和游戏内容的本地化
+
+#### 游戏功能
+- 角色系统：支持玩家角色和 NPC 的自定义，包括立绘、表情和语音配置
+- 场景管理：提供背景图片切换和背景音乐系统，增强游戏氛围
+- 对话生成：利用 ChatGPT 生成符合角色设定的对话和剧情发展
+- 资源配置：通过 assets.json 统一管理游戏资源，支持热更新
+- 语音合成：集成在线 TTS ��务，为对话提供语音支持
+
+#### 开发指南
+- 环境配置：详细的本地开发环境搭建文档，包括数据库和密钥配置
+- 资源定制：完整的游戏资源配置说明，支持角色、场景和音效的自定义
+- 部署流程：提供 Vercel 和 PlanetScale 的详细部署步骤
+- 插件系统：支持功能扩展，可以根据需求添加新特性
+- 示例项目：包含多个实际案例，展示引擎的使用方法
+
+这是一个功能完整的视觉小说引擎，让创作者能够专注于故事和内容创作。通过 ChatGPT 的加持，大大降低了视觉小说开发的门槛，为独立游戏开发者提供了新的可能性。 

@@ -185,18 +185,24 @@ weekly/
 -   [x] Sentry 错误追踪
 -   [x] 标签系统
 -   [x] 统计分析集成
+-   [x] 周刊导航改进
+-   [x] 增加 blog/tag 页面
+-   [x] CSS Demo 支持
+-   [x] RSS 订阅功能
+-   [x] 邮件订阅功能
+-   [x] AI 内容生成
 
 ### 进行中
 
+-   [ ] 首页样式优化(月份放在背景,参考https://antfu.me/posts)
+-   [ ] 样式优化(https://github.com/CaliCastle/cali.so)
+-   [ ] 公众号/x 推送
 -   [ ] 404 页面优化
--   [ ] 周刊导航改进
--   [ ] CSS Demo 支持
--   [ ] RSS 订阅功能
--   [ ] AI 内容生成
 
 ## 许可证
 
 MIT License
 
 ## 注意
-- 每个 section 的文件名最终会成为 tag 的contentId
+
+-   每个 section 的文件名最终会成为 tag 的 contentId
