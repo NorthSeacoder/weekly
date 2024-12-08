@@ -1,13 +1,47 @@
 ---
-tags: [git,配置]
+tags: [git, 配置, 效率工具, 开发技巧, 版本控制]
 category: 工具
 source: Twitter
 date: 2024-07-06
-title: git alias
+title: 三个超实用的 Git 别名配置
 ---
 
-### 特别好用的三个 git alias
-
-来源: [Viking](https://x.com/vikingmute/status/1809039941915324622?s=09&t=uYO26Ua57eTkXbjFXN1yWA)  
+### [三个超实用的 Git 别名配置](https://x.com/vikingmute/status/1809039941915324622)
 
 ![002.git-alias.webp](https://img.mengpeng.tech/i/2024/11/24/6742f9ad78447.webp)
+
+来源: [Viking](https://x.com/vikingmute/status/1809039941915324622)  
+
+以下是三个能显著提升 Git 工作流效率的别名配置。这些配置都针对特定的常见操作场景，可以帮助你更快速地完成版本控制任务：
+
+#### undo = reset --soft HEAD^
+
+```bash
+git config --global alias.undo 'reset --soft HEAD^'
+```
+
+撤销最近一次提交，但保留文件修改。这个命令会将改动回退到暂存区，让你可以重新提交。
+
+#### cancel = reset --hard HEAD^
+
+```bash
+git config --global alias.cancel 'reset --hard HEAD^'
+```
+
+完全取消最近一次提交，包括文件改动。使用时需要谨慎，因为这会丢失所有未保存的更改。
+
+#### onemore = commit -a --amend --no-edit
+
+```bash
+git config --global alias.onemore 'commit -a --amend --no-edit'
+```
+
+快速将当前的改动添加到上一次提交中，不修改提交信息。适合处理遗漏的小改动或微调。
+
+#### 使用建议
+
+-   在使用 `cancel` 命令前，确保你真的想要丢弃这些改动
+-   `undo` 适合需要调整提交内容但不想丢失改动的情况
+-   `onemore` 非常适合在代码审查过程中快速添加反馈修改
+
+这些别名配置能让你的 Git 操作更加高效。建议将它们添加到全局配置中，这样在所有项目中都可以使用这些便捷命令。记住要根据实际需求谨慎使用这些命令，特别是那些会丢失改动的操作。
