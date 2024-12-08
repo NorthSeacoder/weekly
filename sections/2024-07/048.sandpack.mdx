@@ -1,0 +1,42 @@
+---
+tags: [代码编辑器, React组件, 在线IDE, 开源项目, CodeSandbox]
+category: 工具
+source: github
+date: 2024-07-21
+title: Sandpack - 在线代码编辑组件库
+---
+
+### [Sandpack - 在线代码编辑组件库](https://github.com/codesandbox/sandpack)
+
+![img](https://img.mengpeng.tech/i/2024/12/08/67557894c91d7.webp)
+
+来源: [github.com/codesandbox/sandpack](https://github.com/codesandbox/sandpack)
+
+一个由 CodeSandbox 开发的组件工具包，在 GitHub 上获得了超过 5k 的 Star。该项目让开发者能够轻松创建在线运行的代码编辑体验，提供了一套完整的 React 组件和主题系统。
+
+#### 核心组件
+- Sandpack Client：框架无关的基础包
+- Sandpack React：React 组件集合
+- Sandpack Themes：可定制的主题系统
+- 示例项目：丰富的使用案例
+
+#### 基本使用
+```jsx
+import { Sandpack } from "@codesandbox/sandpack-react";
+
+// 基础示例
+<Sandpack template="react" />
+
+// 使用主题
+import { githubLight } from "@codesandbox/sandpack-themes";
+<Sandpack theme={githubLight} />
+```
+
+#### 技术特点
+- 轻量级：最小化的核心包体积
+- ���扩展：支持自定义模板和主题
+- 实时预览：代码变更即时运行
+- TypeScript：完整的类型定义支持
+- 多框架：支持 React、Vue 等主流框架
+
+这是一个强大的代码编辑组件库，通过简单的 API 让开发者能够在自己的项目中集成在线代码编辑和运行功能。其开源特性和 CodeSandbox 的技术支持，使其成为构建交互式编程教程和文档的理想选择。 

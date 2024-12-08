@@ -43,7 +43,7 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
     }, {});
     const posts: WeeklyPost[] = [];
     const postsByMonth: string[] = [];
-    const baseDate = dayjs('2024-07-01');
+    const baseDate = dayjs('2024-06-24');
 
     Object.keys(weeklyData)
         .sort()

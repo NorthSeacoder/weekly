@@ -1,0 +1,57 @@
+---
+tags: [CSS, 前端开发, 动画效果, Web开发, 技术教程]
+category: 教程
+source: website
+date: 2024-07-14
+title: 纯 CSS 获取元素尺寸的技巧
+---
+
+### [纯 CSS 获取元素尺寸的技巧](https://frontendmasters.com/blog/how-to-get-the-width-height-of-any-element-in-only-css/)
+
+![img](https://img.mengpeng.tech/i/2024/12/08/67556d6e51f7e.webp)
+
+来源: [Frontend Masters](https://frontendmasters.com/blog/how-to-get-the-width-height-of-any-element-in-only-css/)
+
+一篇深入探讨如何使用纯 CSS 获取元素尺寸的技术文章。作者通过巧妙运用滚动驱动动画（Scroll-Driven Animations）特性，实现了无需 JavaScript 即可获取和显示元素尺寸的功能。
+
+#### 核心原理
+
+-   滚动时间线：利用 view-timeline 特性
+-   视图进度：基于元素可见性的进度计算
+-   数值转换：将进度值转换为实际尺寸
+-   动画范围：精确控制动画起止点
+-   变量注册：使用 @property 定义数值变量
+
+#### 实现细节
+
+```css
+/* 定义数值类型的 CSS 变量 */
+@property --x {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
+}
+
+/* 设置滚动时间线和动画 */
+.container {
+    timeline-scope: --cx;
+    animation: x linear;
+    animation-timeline: --cx;
+    animation-range: entry 100% exit 100%;
+}
+
+/* 计算实际尺寸 */
+.container {
+    --w: calc(1 / (1 - var(--x)));
+}
+```
+
+#### 使用场景
+
+-   元素尺寸：显示元素的实时尺寸
+-   屏幕尺寸：获取视口和滚动条尺寸
+-   文本计数：统计文本行数和字符数
+-   尺寸传递：在不同元素间传递尺寸信息
+-   动画控制：基于尺寸的动画效果
+
+这是一个创新的 CSS 技巧，展示了现代 CSS 特性的强大能力。虽然这种方法有一些局限性，但它为纯 CSS 解决方案提供了新的思路，特别适合实验性项目和特定场景使用。

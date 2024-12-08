@@ -1,0 +1,38 @@
+---
+tags: [图床工具, Cloudflare, 部署指南, 云存储, 开发工具]
+category: 工具
+source: website
+date: 2024-07-07
+title: ImgSaver - 在 Cloudflare 上部署图床服务
+---
+
+### [ImgSaver - 在 Cloudflare 上部署图床服务](https://docs.imgsaver.net/#/deploy-custom-cloud-storage-zh)
+
+![img](https://img.mengpeng.tech/i/2024/12/08/675542571b8c6.webp)
+
+来源: [docs.imgsaver.net](https://docs.imgsaver.net/#/deploy-custom-cloud-storage-zh)
+
+一份详细的技术文档，介绍了如何利用 Cloudflare 的各项服务来部署和运行 ImgSaver 图床。文档重点说明了如何结合 Cloudflare Pages、R2 存储和 Workers 来构建一个完整的图床服务。
+
+#### 部署步骤
+- Cloudflare Pages：部署前端应用
+- R2 存储：配置图片存储空间
+- Workers：设置自定义域名和路由
+- 域名绑定：配置 DNS 和 SSL 证书
+- 访问控制：设置图片访问权限
+
+#### 技术要求
+- Cloudflare 账号：需要一个有效的账户
+- R2 存储桶：创建专用的存储空间
+- Workers 配置：编写和部署 Worker 脚本
+- 自定义域名：准备一个可用的域名
+- API 密钥：配置必要的访问密钥
+
+#### 配置说明
+- 存储设置：R2 存储桶的创建和配置
+- Worker 部署：处理图片请求的脚本配置
+- 域名解析：DNS 记录的添加和配置
+- 安全设置：访问控制和防盗链配置
+- 性能优化：CDN 缓存和加速设置
+
+这份文档为开发者提供了在 Cloudflare 平台上部署 ImgSaver 的完整指南。通过结合 Cloudflare 的多个服务，可以构建一个安全、高效且经济的图床解决方案。 

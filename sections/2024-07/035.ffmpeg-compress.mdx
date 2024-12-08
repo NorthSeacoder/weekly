@@ -1,0 +1,46 @@
+---
+tags: [FFmpeg, 视频压缩, 命令行工具, 视频处理, 技术指南]
+category: 教程
+source: github
+date: 2024-07-14
+title: FFmpeg 视频压缩命令指南
+---
+
+### [FFmpeg 视频压缩命令指南](https://gist.github.com/lukehedger/277d136f68b028e22bed)
+
+![img](https://img.mengpeng.tech/i/2024/12/08/67556651c0876.webp)
+
+来源: [github.com/lukehedger](https://gist.github.com/lukehedger/277d136f68b028e22bed)
+
+一个实用的 FFmpeg 视频压缩命令集合，提供了多种压缩方案的具体命令和效果对比。这个 Gist 获得了超过 430 个 Star，收集了社区验证过的最佳实践。
+
+#### 基础命令
+```bash
+# 高质量压缩（H.264 编码）
+ffmpeg -i input.mp4 -vcodec h264 -acodec mp2 output.mp4
+
+# 中等质量压缩（调整分辨率）
+ffmpeg -i input.mp4 -s 1280x720 -acodec copy output.mp4
+
+# 低质量压缩（限制码率）
+ffmpeg -i input.mp4 -vcodec h264 -b:v 1000k -acodec mp3 output.mp4
+```
+
+#### 高级选项
+- H.265 编码：使用更高效的压缩算法
+```bash
+ffmpeg -i input.mp4 -c:v libx265 -preset fast -crf 28 -tag:v hvc1 -c:a eac3 -b:a 224k output.mp4
+```
+
+- 无音频压缩��仅处理视频流
+```bash
+ffmpeg -i input.mp4 -vcodec h264 -b:v 700k -an output.mp4
+```
+
+#### 压缩效果
+- 高质量：3.6GB → 556MB，画质接近原始视频
+- 中等质量：3.6GB → 62MB，可接受的画质损失
+- 低质量：3.6GB → 30MB，明显的画质降低
+- H.265：可实现 50-70% 的压缩率，保持较好画质
+
+这是一个面向开发者的实用指南，通过不同的压缩参数组合，帮助用户根据具体需求选择合适的压缩方案。命令示例简洁明了，并提供了实际的压缩效果参考。 

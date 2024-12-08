@@ -1,0 +1,41 @@
+---
+tags: [PyTorch, Metal, 机器学习, Apple Silicon, GPU加速]
+category: 技术
+source: Apple
+date: 2024-07-07
+title: PyTorch on Metal - Mac 上的 GPU 加速训练
+---
+
+### [PyTorch on Metal - Mac 上的 GPU 加速训练](https://developer.apple.com/metal/pytorch/)
+
+![img](https://img.mengpeng.tech/i/2024/12/08/6755115a845ea.webp)
+
+来源: [developer.apple.com](https://developer.apple.com/metal/pytorch/)
+
+Apple 官方推出的 PyTorch GPU 加速方案，通过 Metal Performance Shaders (MPS) 后端实现。该方案让 Mac 用户能够充分利用 Apple Silicon 或 AMD GPU 进行机器学习训练，显著提升训练性能。
+
+#### 系统要求
+- 硬件：搭载 Apple Silicon 或 AMD GPU 的 Mac
+- 系统：macOS 12.3 或更高版本
+- 环境：Python 3.7 或更高版本
+- 工具：Xcode 命令行工具
+- 框架：PyTorch 1.12 或更高版本
+
+#### 安装方式
+- Anaconda 安装：
+  ```bash
+  conda install pytorch torchvision torchaudio -c pytorch-nightly
+  ```
+- pip 安装：
+  ```bash
+  pip3 install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+  ```
+
+#### 技术特点
+- MPS 后端：优化的 Metal Performance Shaders
+- 图优化：通过 MPS Graph 框架优化计算图
+- 内核优化：针对不同 Metal GPU 系列优化的内核
+- 类型支持：完整的 PyTorch 操作支持
+- 开发工具：集成的性能分析和调试工具
+
+这是一个重要的技术突破，让 Mac 用户能够在本地进行高效的机器学习训练。通过 Metal 的硬件加速能力，PyTorch 在 Mac 上的性能得到了显著提升，为开发者提供了更好的本地开发体验。 

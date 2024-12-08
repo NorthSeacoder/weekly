@@ -1,0 +1,45 @@
+---
+tags: [JavaScript库, 拖拽功能, 前端开发, UI交互, 开源项目]
+category: 工具
+source: website
+date: 2024-07-07
+title: Swapy - 轻量级拖拽交换库
+---
+
+### [Swapy - 轻量级拖拽交换库](https://swapy.tahazsh.com/)
+
+![img](https://img.mengpeng.tech/i/2024/12/08/675551587cd06.webp)
+
+来源: [swapy.tahazsh.com](https://swapy.tahazsh.com/)
+
+一个框架无关的轻量级 JavaScript 库，只需几行代码即可为任何布局添加拖拽交换功能。通过简单的 HTML 属性标记和灵活的配置选项，让开发者能够轻松实现复杂的拖拽交互。
+
+#### 核心特性
+- 框架无关：支持 React、Vue、Svelte 等框架
+- 简单集成：通过 data 属性标记拖拽元素
+- 灵活配置：支持多种动画效果和交互方式
+- 类型支持：完整的 TypeScript 类型定义
+- 轻量级：最小化的代码体积和依赖
+
+#### 使用方式
+```javascript
+// NPM 安装
+pnpm install swapy
+
+// 或使用 CDN
+<script src="https://unpkg.com/swapy/dist/swapy.min.js"></script>
+
+// 基本使用
+const swapy = createSwapy(container, {
+  animation: 'dynamic' // 或 'spring' 或 'none'
+})
+```
+
+#### 实现细节
+- 插槽系统：通过 data-swapy-slot 定义可交换区域
+- 拖拽句柄：支持自定义拖拽触发区域
+- 事件监听：提供完整的交换事件回调
+- 动画效果：内置多种平滑的过渡动画
+- 状态管理：支持禁用/启用拖拽功能
+
+这是一个优雅的拖拽解决方案，通过简洁的 API 设计和灵活的配置选项，让开发者能够快速实现专业的拖拽交互功能。它的框架无关特性和完善的文档支持，使其成为实现拖拽功能的理想选择。 

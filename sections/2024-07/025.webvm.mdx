@@ -1,0 +1,38 @@
+---
+tags: [虚拟机, WebAssembly, Linux, 浏览器技术, 开源项目]
+category: 工具
+source: github
+date: 2024-07-07
+title: WebVM - 浏览器中运行的 Linux 虚拟机
+---
+
+### [WebVM - 浏览器中运行的 Linux 虚拟机](https://github.com/leaningtech/webvm)
+
+![img](https://img.mengpeng.tech/i/2024/12/08/675547e3b667d.webp)
+
+来源: [github.com/leaningtech/webvm](https://github.com/leaningtech/webvm)
+
+一个创新的开源项目，让用户能够在浏览器中运行完整的 Linux 虚拟机。该项目在 GitHub 上获得了超过 10.8k 的 Star，基于 CheerpX 虚拟化引擎，支持运行未经修改的 Debian 发行版。
+
+#### 核心特性
+- 完全客户端：无需服务器支持，全部在浏览器中运行
+- Linux 兼容：支持运行标准 Linux 二进制文件
+- 网络支持：通过 Tailscale 实现完整的网络功能
+- 文件系统：虚拟的基于块的文件系统
+- 系统调用：完整的 Linux 系统调用模拟
+
+#### 技术实现
+- WebAssembly：x86 到 WebAssembly 的 JIT 编译
+- 虚拟化：基于 CheerpX 的虚拟化引擎
+- 终端模拟：集成 xterm.js 终端
+- 网络栈：使用 lwIP TCP/IP 协议栈
+- 安全沙箱：浏览器级别的安全隔离
+
+#### 部署方式
+- GitHub Pages：支持一键部署到 GitHub Pages
+- 本地部署：提供完整的本地部署指南
+- Docker 支持：可自定义 Docker 镜像
+- 环境配置：灵活的环境变量配置
+- 扩展定制：支持自定义系统镜像
+
+这是一个突破性的技术项目，让浏览器具备了运行完整 Linux 系统的能力。通过 WebAssembly 和现代浏览器技术，为开发者提供了一个安全、便携的虚拟化环境。 
