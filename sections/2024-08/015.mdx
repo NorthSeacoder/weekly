@@ -1,23 +1,37 @@
 ---
-tags: [github, 开源,Product Hunt, GitHub Actions, AI]
+tags: [Product Hunt, GitHub Actions, AI翻译, 自动化工具, 开源项目]
 category: 工具
-source: Twitter
+source: github
 date: 2024-08-04
-title: Product Hunt 每日中文热榜
+title: Product Hunt 每日中文热榜 - AI驱动的产品发现工具
 ---
 
 ### [Product Hunt 每日中文热榜](https://github.com/ViggoZ/producthunt-daily-hot)
 
-来源: [@decohack](https://x.com/decohack/status/1821745270713151813)
+![img](https://img.mengpeng.tech/i/2024/11/24/6742f9c32d54a.webp)
 
-![028.webp](https://img.mengpeng.tech/i/2024/11/24/6742f9c32d54a.webp)
+来源: [github.com/ViggoZ/producthunt-daily-hot](https://github.com/ViggoZ/producthunt-daily-hot)
 
-**Product Hunt 每日中文热榜** 是一个基于 GitHub Actions 的自动化工具，旨在每天生成并提交 Product Hunt 上的热门产品榜单的 Markdown 文件。该项目的主要功能和特点如下：
+这是一个基于 GitHub Actions 和 GPT-4 的自动化工具，每天定时抓取 Product Hunt 热门产品，并生成中文榜单，帮助中文用户发现优质产品。
 
-- **自动获取数据**：每天自动获取前一天的 Product Hunt Top 30 产品数据。
-- **关键词生成**：生成简洁易懂的中文关键词，帮助用户更好地理解产品内容。
-- **高质量翻译**：使用 OpenAI 的 GPT-4 模型对产品描述进行高质量翻译。
-- **Markdown 文件生成**：生成包含产品数据、关键词和翻译描述的 Markdown 文件，方便在网站或其他平台上发布。
-- **每日自动化**：通过 GitHub Actions 自动生成并提交每日的 Markdown 文件。
-- **可配置工作流**：支持手动触发或通过 GitHub Actions 定时生成内容。
-- **灵活定制**：脚本易于扩展或修改，可以包括额外的产品细节或调整文件格式。
+#### 核心功能
+- 自动数据获取：每天抓取 Product Hunt Top 30 产品信息
+- AI 翻译优化：使用 GPT-4 进行高质量的产品描述翻译
+- 智能标签：自动生成中文关键词，便于产品分类和理解
+- 自动化发布：支持自动发布到 WordPress 站点
+- 定时更新：每天下午4点自动更新榜单内容
+
+#### 技术特点
+- GitHub Actions：利用工作流实现自动化部署
+- OpenAI 集成：使用 GPT-4 进行智能翻译和关键词提取
+- Markdown 生成：自动生成结构化的产品信息文档
+- WordPress API：支持自动发布到 WordPress 平台
+- 配置灵活：支持自定义更新时间和内容格式
+
+#### 使用场景
+- 产品经理：及时了解全球最新产品动态
+- 创业者：获取产品灵感和市场趋势
+- 开发者：学习优秀产品的设计思路
+- 内容创作者：获取高质量的产品资讯素材
+
+这是一个非常实用的工具，通过自动化和 AI 技术，帮助中文用户跨越语言障碍，更便捷地获取全球最新的产品资讯。
