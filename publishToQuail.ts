@@ -2,7 +2,7 @@ import {handleDir} from '@/lib/file';
 import {processData} from '@/lib/weekly';
 import dotenv from 'dotenv';
 import path from 'path';
-import {getDemoFallbackContent} from './lib/demo-utils';
+// import {getDemoFallbackContent} from './lib/demo-utils';
 
 dotenv.config();
 const contentDir = path.join(process.cwd(), 'sections');
@@ -56,9 +56,10 @@ function transformContent(content: string): string {
     console.log('[DEBUG] Transforming content', content);
 
     // Replace DemoLoader components with their fallback content
-    return content.replace(/<DemoLoader\s+demoPath="([^"]+)"\s*\/>/g, (_, demoPath) => {
-        return getDemoFallbackContent(demoPath);
-    });
+    // return content.replace(/<DemoLoader\s+demoPath="([^"]+)"\s*\/>/g, (_, demoPath) => {
+    //     return getDemoFallbackContent(demoPath);
+    // });
+    return content;
 }
 
 async function publishToQuail() {
