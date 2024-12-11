@@ -1,5 +1,6 @@
 'use client';
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 // import './tag-select.css';
 
 interface TagSelectProps {
@@ -7,7 +8,7 @@ interface TagSelectProps {
     onTagsChange: (selectedTags: string[]) => void;
 }
 
-export default function TagSelect({ tags, onTagsChange }: TagSelectProps) {
+const TagSelect = memo(function TagSelect({ tags, onTagsChange }: TagSelectProps) {
     const handleTagClick = (tag: string, checked: boolean) => {
         const checkboxes = document.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
         const selectedTags = Array.from(checkboxes)
@@ -62,4 +63,6 @@ export default function TagSelect({ tags, onTagsChange }: TagSelectProps) {
             ))}
         </div>
     );
-}
+});
+
+export default TagSelect;

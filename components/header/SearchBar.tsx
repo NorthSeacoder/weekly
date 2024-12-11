@@ -7,7 +7,7 @@ import { SearchResult } from "@/types/search";
 import { WeeklyPost } from "@/types/weekly";
 import { Transition } from "@headlessui/react";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { HighlightMatches } from "./HighlightMatches";
 
 const SearchBar = ({ posts }: { posts: WeeklyPost[] }) => {
@@ -71,6 +71,59 @@ const SearchBar = ({ posts }: { posts: WeeklyPost[] }) => {
     setShow(false);
   }, [handleChange]);
 
+  const searchResultsList = useMemo(() => (
+    <ul className={cn(
+      "scrollbar",
+      "rounded-md border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800",
+      "p-4 border border-gray-600 bg-gray-900",
+      "absolute top-full right-0 z-20 mt-2 overflow-auto overscroll-contain rounded-xl py-2.5 shadow-xl",
+      "min-h-[100px] max-h-[400px]",
+      "w-[90vw] sm:w-[400px]"
+    )}
+    style={{
+      transition: "max-height .2s ease",
+    }}>
+      {error ? (
+        <span className="block select-none p-8 text-center text-sm text-gray-400">
+          {error}
+        </span>
+      ) : results && results.length > 0 ? (
+        results.map((result, index) => (
+          <Link
+            key={`${result.id}_${index}`}
+            // get the right url
+            href={`/weekly/${result.id.split("_")[0]}`}
+            onClick={finishSearch}
+          >
+            <li
+              className={cn(
+                "break-words rounded-md cursor-default select-none",
+                "contrast-more:border",
+                "text-gray-800 contrast-more:border-transparent dark:text-gray-300",
+                "hover:bg-primary-500/10 hover:text-primary-600 contrast-more:hover:border-primary-500",
+                "block scroll-m-12 px-2.5 py-2"
+              )}
+            >
+              <div className="text-base font-semibold leading-5">
+                <HighlightMatches match={query} value={result.doc.title} />
+              </div>
+              <div className="excerpt mt-1 text-sm leading-[1.35rem] text-gray-600 dark:text-gray-400 contrast-more:dark:text-gray-50">
+                <HighlightMatches
+                  match={query}
+                  value={result.doc.content}
+                />
+              </div>
+            </li>
+          </Link>
+        ))
+      ) : (
+        <span className="block select-none p-8 text-center text-sm text-gray-400">
+          No results found.
+        </span>
+      )}
+    </ul>
+  ), [error, results, query, finishSearch])
+
   return (
     <>
       <Input
@@ -94,58 +147,7 @@ const SearchBar = ({ posts }: { posts: WeeklyPost[] }) => {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <ul
-          className={cn(
-            "scrollbar",
-            "rounded-md border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800",
-            "p-4 border border-gray-600 bg-gray-900",
-            "absolute top-full right-0 z-20 mt-2 overflow-auto overscroll-contain rounded-xl py-2.5 shadow-xl",
-            "min-h-[100px] max-h-[400px]",
-            "w-[90vw] sm:w-[400px]"
-          )}
-          style={{
-            transition: "max-height .2s ease", // don't work with tailwindcss
-          }}
-        >
-          {error ? (
-            <span className="block select-none p-8 text-center text-sm text-gray-400">
-              {error}
-            </span>
-          ) : results && results.length > 0 ? (
-            results.map((result, index) => (
-              <Link
-                key={`${result.id}_${index}`}
-                // get the right url
-                href={`/weekly/${result.id.split("_")[0]}`}
-                onClick={finishSearch}
-              >
-                <li
-                  className={cn(
-                    "break-words rounded-md cursor-default select-none",
-                    "contrast-more:border",
-                    "text-gray-800 contrast-more:border-transparent dark:text-gray-300",
-                    "hover:bg-primary-500/10 hover:text-primary-600 contrast-more:hover:border-primary-500",
-                    "block scroll-m-12 px-2.5 py-2"
-                  )}
-                >
-                  <div className="text-base font-semibold leading-5">
-                    <HighlightMatches match={query} value={result.doc.title} />
-                  </div>
-                  <div className="excerpt mt-1 text-sm leading-[1.35rem] text-gray-600 dark:text-gray-400 contrast-more:dark:text-gray-50">
-                    <HighlightMatches
-                      match={query}
-                      value={result.doc.content}
-                    />
-                  </div>
-                </li>
-              </Link>
-            ))
-          ) : (
-            <span className="block select-none p-8 text-center text-sm text-gray-400">
-              No results found.
-            </span>
-          )}
-        </ul>
+        {searchResultsList}
       </Transition>
     </>
   );

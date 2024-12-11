@@ -2,8 +2,9 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { MousePosition } from '@/hooks/useCardInteraction'
 import { cn } from '@/lib/utils'
+import { debounce } from 'lodash-es'
 import { useTransitionRouter } from 'next-view-transitions'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 interface TechCardProps {
   id: string
@@ -14,45 +15,71 @@ interface TechCardProps {
 
 const HIGHLIGHT_DISTANCE = 200
 
+const debouncedUpdateStyle = debounce((position: MousePosition | null, cardRef: React.RefObject<HTMLDivElement>, setStyle: (style: React.CSSProperties) => void) => {
+  if (!position || !cardRef.current) {
+    setStyle({})
+    return
+  }
+
+  const rect = cardRef.current.getBoundingClientRect()
+  const x = position.x - rect.left
+  const y = position.y - rect.top
+  
+  const centerX = rect.width / 2
+  const centerY = rect.height / 2
+  const distance = Math.sqrt(
+    Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+  )
+
+  if (distance <= HIGHLIGHT_DISTANCE) {
+    const intensity = Math.max(0, 1 - (distance / HIGHLIGHT_DISTANCE))
+    setStyle({
+      '--x': `${x}px`,
+      '--y': `${y}px`,
+      '--intensity': intensity.toString(),
+    } as React.CSSProperties)
+  } else {
+    setStyle({})
+  }
+}, 100)
+
 const TechCard: React.FC<TechCardProps> = ({ id, title, tags, mousePosition }) => {
   const cardRef = useRef<HTMLDivElement>(null)
   const [highlightStyle, setHighlightStyle] = useState<React.CSSProperties>({})
 
+  // Debounced function to handle mouse position updates
+  const updateHighlightStyle = useCallback((position: MousePosition | null) => {
+    debouncedUpdateStyle(position, cardRef, setHighlightStyle)
+  }, [])
+
   useEffect(() => {
-    if (!mousePosition || !cardRef.current) {
-      setHighlightStyle({})
-      return
-    }
+    updateHighlightStyle(mousePosition)
 
-    const rect = cardRef.current.getBoundingClientRect()
-    const x = mousePosition.x - rect.left
-    const y = mousePosition.y - rect.top
-    
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
-    const distance = Math.sqrt(
-      Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
-    )
-
-    if (distance <= HIGHLIGHT_DISTANCE) {
-      const intensity = Math.max(0, 1 - (distance / HIGHLIGHT_DISTANCE))
-      setHighlightStyle({
-        '--x': `${x}px`,
-        '--y': `${y}px`,
-        '--intensity': intensity.toString(),
-      } as React.CSSProperties)
-    } else {
-      setHighlightStyle({})
-    }
-  }, [mousePosition])
+    // Cleanup the debounce on unmount
+  }, [mousePosition, updateHighlightStyle])
 
   const router = useTransitionRouter();
-  const handleCardClick = (contentId: string, event: React.MouseEvent) => {
+  
+  const handleCardClick = useCallback((contentId: string, event: React.MouseEvent) => {
     // 阻止事件冒泡
     event.stopPropagation();
     // 使用正确的路由路径
     router.push(`/tag/${contentId}`);
-};
+  }, [router]);
+
+  const onClick = useCallback((event: React.MouseEvent) => {
+    handleCardClick(id, event)
+  }, [handleCardClick, id])
+
+  const memoizedHighlightStyle = useMemo(() => highlightStyle, [highlightStyle]);
+
+  const memoizedCardHeader = useMemo(() => (
+    <CardHeader>
+      <CardTitle className="text-xl text-gray-200 group-hover:text-cyan-300 transition-colors">
+        {title}
+      </CardTitle>
+    </CardHeader>
+  ), [title]);
 
   return (
     <Card
@@ -65,14 +92,10 @@ const TechCard: React.FC<TechCardProps> = ({ id, title, tags, mousePosition }) =
         "relative rounded-xl overflow-hidden",
         "tech-card cursor-pointer"
       )}
-      style={highlightStyle}
-      onClick={(event) => handleCardClick(id, event)}
+      style={memoizedHighlightStyle}
+      onClick={onClick}
     >
-      <CardHeader>
-        <CardTitle className="text-xl text-gray-200 group-hover:text-cyan-300 transition-colors">
-          {title}
-        </CardTitle>
-      </CardHeader>
+      {memoizedCardHeader}
       <CardContent>
         <div className="flex gap-2 flex-wrap">
           {tags.map((tag, index) => (

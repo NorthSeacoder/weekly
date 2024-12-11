@@ -1,6 +1,7 @@
 'use client';
 
 import CardGrid from '@/components/card-grid';
+import { useMemo } from 'react';
 
 interface TagContent {
     tag: string;
@@ -19,9 +20,12 @@ export default function TagList({ data, selectedTags }: TagListProps) {
 
     return (
         <div className='grid gap-8 max-h-[calc(100vh-6rem)] overflow-y-auto pr-4'>
-            {filteredData.map(({tag, contents}) => (
-                <CardGrid key={tag} title={tag} infoList={contents} />
-            ))}
+            {useMemo(() => 
+                filteredData.map(({ tag, contents }) => (
+                    <CardGrid key={tag} title={tag} infoList={contents} />
+                )),
+                [filteredData]
+            )}
         </div>
     );
 } 
