@@ -1,8 +1,7 @@
 import { Aside } from '@/components/mdx/Aside';
 import { Callout } from '@/components/mdx/Callout';
-import {CodeDemo} from '@/components/mdx/CodeDemo';
-import {DemoLoader} from '@/components/mdx/DemoLoader';
 import { MdxCard } from '@/components/mdx/MdxCard';
+import { CodePen } from '@/components/mdx/codepen';
 import React, { ReactNode } from 'react';
 
 interface HeadingProps {
@@ -69,8 +68,7 @@ const MDXComponents: MDXComponentsProps = {
     Aside,
     Callout,
     Card: MdxCard,
-    CodeDemo,
-    DemoLoader
+    CodePen: (props) => <CodePen {...props} />,
 };
 
 export default MDXComponents;

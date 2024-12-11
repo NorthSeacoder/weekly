@@ -1,36 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-function createDemoFiles(projectRoot, demoPath, title) {
-  const demoDir = path.join(projectRoot, 'demos', demoPath);
-  
-  // Create demo directory if it doesn't exist
-  if (!fs.existsSync(demoDir)) {
-    fs.mkdirSync(demoDir, { recursive: true });
-  }
-  
-  // Create demo files
-  const files = ['index.html', 'index.css', 'index.js'];
-  files.forEach(file => {
-    const filePath = path.join(demoDir, file);
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, '');
-    }
-  });
-
-  // Create meta.json with default values
-  const metaPath = path.join(demoDir, 'meta.json');
-  if (!fs.existsSync(metaPath)) {
-    const metaContent = {
-      height: 300,
-      dependencies: []
-    };
-    fs.writeFileSync(metaPath, JSON.stringify(metaContent, null, 2));
-  }
-  
-  return path.relative(projectRoot, demoDir);
-}
-
 function parseTitleAndPath(title) {
   const parts = title.split('/');
   return {
@@ -78,12 +48,6 @@ export function createNewWeeklyFile(projectRoot, month, title, tpl = 'common') {
   content = content.replace(/date:\s*\d{4}-\d{2}-\d{2}/, `date: ${today}`);
   content = content.replace(/{{title}}/g, displayTitle);
   content = content.replace(/{{date}}/g, today);
-
-  // 如果是 demo 模板，创建 demo 文件并替换 demoPath
-  if (tpl === 'demo') {
-    const relativeDemoPath = createDemoFiles(projectRoot, fullPath, displayTitle);
-    content = content.replace(/{{demoPath}}/g, fullPath);
-  }
 
   // 写入新文件
   fs.writeFileSync(newFilePath, content);

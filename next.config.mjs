@@ -27,14 +27,6 @@ const nextConfig = {
             ...config.watchOptions,
             ignored: /extension\/.*/
         };
-        config.module.rules.push({
-            test: /demos\/.*\/index\.(js|ts)$/,
-            use: [
-                {
-                    loader: path.resolve(__dirname, 'lib/demo-loader.js')
-                }
-            ]
-        });
         return config;
     },
     experimental: {

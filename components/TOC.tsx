@@ -18,7 +18,7 @@ const TOC = () => {
       id: heading.id || "",
       level: heading.nodeName, // 'H2' or 'H3'
     }));
-
+    console.log('TOC',extractedHeadings);
     setHeadings(extractedHeadings);
   }, []);
 
