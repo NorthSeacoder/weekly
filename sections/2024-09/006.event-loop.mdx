@@ -1,0 +1,36 @@
+---
+tags: [JavaScript, 性能优化, 事件循环, 异步编程]
+category: 教程
+source: website
+date: 2024-09-01
+title: JavaScript 事件循环与性能优化指南
+---
+
+### [Mastering the Event Loop for High-Performance JavaScript](https://dev.to/sarvabharan/mastering-the-event-loop-for-high-performance-javascript-2754)
+
+![img](https://img.mengpeng.tech/i/2024/12/11/6758d938ad800.webp)
+
+来源: [dev.to/sarvabharan](https://dev.to/sarvabharan/mastering-the-event-loop-for-high-performance-javascript-2754)
+
+这是一篇深入探讨 JavaScript 事件循环和性能优化的技术文章，介绍了如何通过理解事件循环机制来提升应用性能。
+
+#### 事件循环基础
+- 调用栈：执行同步代码
+- 任务队列：处理回调（setTimeout、I/O）
+- 微任务队列：处理 Promise、queueMicrotask
+- 事件循环：协调执行顺序
+
+#### 性能陷阱
+- 长时间运行的任务阻塞循环
+- 过多的 DOM 操作
+- 同步网络请求
+- 未优化的动画
+
+#### 优化技巧
+- 使用 async/await 优化异步代码
+- 使用 debounce 处理密集操作
+- Web Workers 处理 CPU 密集任务
+- requestAnimationFrame 实现流畅动画
+- 批量处理 DOM 更新
+
+这篇文章通过实例展示了如何利用事件循环机制优化 JavaScript 应用性能，特别适合想要深入理解 JavaScript 异步编程的开发者。 

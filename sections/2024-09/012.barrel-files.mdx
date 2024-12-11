@@ -1,0 +1,35 @@
+---
+tags: [JavaScript, TypeScript, 最佳实践, 性能优化]
+category: 教程
+source: blog
+date: 2024-09-01
+title: 为什么要停止使用 Barrel 文件
+---
+
+### [Please Stop Using Barrel Files](https://tkdodo.eu/blog/please-stop-using-barrel-files)
+
+![img](https://img.mengpeng.tech/i/2024/12/11/6758eef8ed244.webp)
+
+来源: [tkdodo.eu](https://tkdodo.eu/blog/please-stop-using-barrel-files)
+
+这篇文章深入探讨了为什么应该避免使用 Barrel 文件（index.ts 重导出文件），并分析了它们对项目性能和开发体验的影响。
+
+#### 主要问题
+- 循环依赖：容易产生意外的循环引用
+- 开发性能：导致不必要的模块加载
+- 优化限制：影响 Next.js 的包导入优化
+- 维护困难：增加代码复杂度
+
+#### 技术细节
+- Barrel 文件会同步加载所有重导出的模块
+- Next.js 项目中可能导致加载超过 11k 个模块
+- 移除 Barrel 文件可减少 68% 的模块加载
+- 非纯重导出的 Barrel 文件无法被优化
+
+#### 最佳实践
+- 直接从源文件导入模块
+- 使用 import/no-cycle 规则检测循环依赖
+- 仅在库开发中使用 Barrel 文件
+- 保持项目结构的一致性和可预测性
+
+这篇文章提供了重要的性能优化建议，特别适合使用 Next.js 和 TypeScript 的开发团队参考。作者通过实际案例说明了 Barrel 文件的潜在问题，并提供了具体的解决方案。 

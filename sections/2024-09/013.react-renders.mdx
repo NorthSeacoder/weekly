@@ -1,0 +1,35 @@
+---
+tags: [React, 性能优化, 渲染机制, 最佳实践]
+category: 教程
+source: blog
+date: 2024-09-01
+title: React 渲染机制完全指南
+---
+
+### [The Interactive Guide to Rendering in React](https://ui.dev/why-react-renders)
+
+![img](https://img.mengpeng.tech/i/2024/12/11/6758f00ec37d7.webp)
+
+来源: [ui.dev](https://ui.dev/why-react-renders)
+
+这是一篇深入浅出的 React 渲染机制指南，通过公式 `v = f(s)` 解释了 React 的核心工作原理，即视图是状态的函数。文章通过大量交互式示例，帮助读者理解 React 的渲染时机和原理。
+
+#### 核心概念
+- 渲染定义：React 调用组件并更新视图的过程
+- 状态变化：只有状态改变才会触发重渲染
+- 批处理：React 如何处理多个状态更新
+- 子组件渲染：父组件重渲染时的行为
+
+#### 重要特性
+- 快照机制：每次渲染都会创建组件快照
+- 批量更新：多个状态更新会被合并处理
+- StrictMode：开发环境下的双重渲染
+- React.memo：性能优化的正确使用
+
+#### 最佳实践
+- 避免不必要的状态更新
+- 合理使用 React.memo 优化性能
+- 理解批处理机制避免重复渲染
+- 正确处理事件处理器中的状态更新
+
+这是一篇非常实用的技术文章，通过清晰的解释和丰富的示例，帮助开发者深入理解 React 的渲染机制。对于想要优化 React 应用性能的开发者来说是必读资料。 
