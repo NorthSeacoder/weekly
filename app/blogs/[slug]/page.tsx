@@ -165,7 +165,7 @@ export function generateStaticParams() {
 
     console.log('Generating static params for blog posts:', posts.length);
     
-    return posts.map((post: BlogPost) => {
+    return posts.filter((post: BlogPost) => post.metadata?.visible).map((post: BlogPost) => {
       if (!post.metadata?.slug) {
         console.warn('Blog post missing slug:', post);
         return null;
