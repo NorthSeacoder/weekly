@@ -77,9 +77,13 @@ jobs:
                   path: |
                       ~/.npm
                       ${{ github.workspace }}/.next/cache
-                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+                      # 添加 node_modules 缓存
+                      **/node_modules
+                  # 优化缓存 key
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.{js,jsx,ts,tsx,mdx}') }}
                   restore-keys: |
                       ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+                      ${{ runner.os }}-nextjs-
             
             - name: Install Node.js
               uses: actions/setup-node@v3
@@ -90,9 +94,21 @@ jobs:
               run: npm install -g pnpm
 
             - name: Install pnpm dependencies
-              run: pnpm install
+              run: |
+                # 只安装生产依赖
+                pnpm install --prod --frozen-lockfile
+                # 或者使用 --prefer-offline 优先使用缓存
+                # pnpm install --prefer-offline
+
+            - name: Check changes
+              id: changes
+              run: |
+                # 检查是否有内容文件变更
+                git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changes.txt
+                echo "::set-output name=content_changed::$(grep -q 'sections/' changes.txt && echo 'true' || echo 'false')"
 
             - name: Run build task
+              if: steps.changes.outputs.content_changed == 'true'
               run: pnpm run build
               env:
                 NEXT_PUBLIC_BAIDU_TONGJI: ${{ vars.NEXT_PUBLIC_BAIDU_TONGJI }}

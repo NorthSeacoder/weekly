@@ -12,8 +12,8 @@ interface HeadingProps {
 
 const Heading: React.FC<HeadingProps> = ({level, className, children}) => {
     const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
-    let headingId = '';
-    if (level === 3 && React.isValidElement(children)) {
+    let headingId = children?.toString() ?? '';
+    if (React.isValidElement(children)) {
         headingId = children?.props?.children?.toString() ?? '';
     }
     return (

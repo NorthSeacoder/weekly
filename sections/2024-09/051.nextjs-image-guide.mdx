@@ -1,0 +1,49 @@
+---
+tags: [Next.js, 图片优化, 性能优化, Web开发]
+category: 教程
+source: twitter
+date: 2024-09-22
+title: Next.js 图片优化完全指南
+---
+
+### [Next.js 图片优化完全指南](https://x.com/leeerob/status/1827437428992622626)
+
+![img](https://img.mengpeng.tech/i/2024/12/13/675bc4bc98026.webp)
+
+来源: [leeerob](https://x.com/leeerob/status/1827437428992622626)
+
+这是一篇详细的 Next.js 图片优化指南，通过实际案例展示如何使用 next/image 组件优化网站图片加载性能。
+
+#### 核心优化
+- 自动转换：将大尺寸 JPG 自动转换为优化后的 WebP 格式
+- 尺寸控制：通过 width/height 或 fill 属性控制图片尺寸
+- 预加载：使用 priority 属性预加载首屏图片
+- 模糊占位：添加 blur-up 效果提升用户体验
+
+#### 代码示例
+```jsx
+// 基础用法
+<Image src="/cat.jpg" width={500} height={500} alt="Siamese cat" />
+
+// 填充容器
+<div className="relative h-[500px] w-[500px]">
+  <Image fill src="/cat.jpg" alt="Siamese cat" objectFit="cover" />
+</div>
+
+// 响应式优化
+<Image 
+  priority
+  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+  src="/cat.jpg"
+  alt="Siamese cat"
+  fill
+/>
+```
+
+#### 进阶技巧
+- 远程图片：存储图片 thumbhash 用于生成占位图
+- 响应式设计：使用 sizes 属性定义不同断点的图片尺寸
+- 自动导入：直接导入本地图片文件获取完整属性
+- 对象存储：处理远程存储的图片优化
+
+这篇指南通过实际案例展示了 Next.js 图片优化的最佳实践，帮助开发者提升网站性能和用户体验。特别适合需要处理大量图片资源的 Next.js 项目参考。 

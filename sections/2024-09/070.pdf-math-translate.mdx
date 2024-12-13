@@ -1,0 +1,33 @@
+---
+tags: [PDF翻译, AI工具, 开源项目, 文档处理]
+category: 开源
+source: github
+date: 2024-09-29
+title: PDFMathTranslate - 保留排版的 PDF 翻译工具
+---
+
+### [PDFMathTranslate - 保留排版的 PDF 翻译工具](https://github.com/Byaidu/PDFMathTranslate)
+
+![img](https://img.mengpeng.tech/i/2024/12/13/675bcdf813c4e.webp)
+
+PDFMathTranslate 是一个基于 AI 的 PDF 文档翻译工具，特别适合翻译学术论文。它能完整保留原文档的排版格式，支持多种翻译服务，并提供命令行、图形界面和 Docker 部署方式。
+
+#### 核心特性
+- 格式保留：完整保留公式、图表、目录和注释
+- 多语言支持：支持多种语言互译
+- 多种部署：提供 CLI、GUI 和 Docker 部署方式
+- 翻译服务：支持 Google、DeepL、Ollama、OpenAI 等多种翻译服务
+
+#### 部署方式
+- 命令行工具：`pip install pdf2zh`
+- 图形界面：`pdf2zh -i` 启动本地服务
+- Docker 部署：提供容器化部署方案
+- 在线服务：可直接使用 pdf2zh.com 在线服务
+
+#### 技术特点
+- 文档解析：使用 PyMuPDF 和 Pdfminer.six
+- 布局分析：基于 DocLayout-YOLO
+- 多线程翻译：支持并行处理提高效率
+- 字体处理：使用 Go Noto Universal 支持多语言
+
+这是一个功能强大的开源工具，获得了 4.8k+ stars。它不仅能准确翻译文档内容，还能完整保留学术论文中的数学公式和专业排版，是科研工作者的得力助手。 

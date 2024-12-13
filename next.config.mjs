@@ -1,4 +1,3 @@
-import MillionLint from "@million/lint";
 import createMDX from '@next/mdx';
 import {withSentryConfig} from '@sentry/nextjs';
 import path from 'path';
@@ -78,4 +77,5 @@ const withSentry = withSentryConfig(
         silent: false
     }
 );
-export default MillionLint.next({rsc:true})(withSentry)
+export default withSentry;
+// export default MillionLint.next({rsc:true})(withSentry)

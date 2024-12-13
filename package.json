@@ -9,7 +9,7 @@
     "scripts": {
         "cl": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
         "cz": "git add . && git-cz",
-        "dev": "next dev",
+        "dev": "next dev --turbo",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
