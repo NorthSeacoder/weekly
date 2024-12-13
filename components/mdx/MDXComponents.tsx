@@ -32,7 +32,6 @@ const MDXComponents: MDXComponentsProps = {
         <Heading level={2} className='text-3xl font-semibold mt-6 mb-4 border-b border-gray-200 pb-2' {...props} />
     ),
     h3: (props) => {
-        console.log('h3',props);
         return <Heading level={3} className='text-2xl font-semibold mt-6 mb-4' {...props} />;
     },
     h4: (props) => <Heading level={4} className='text-xl font-semibold mt-6 mb-4' {...props} />,
