@@ -12,8 +12,10 @@ interface HeadingProps {
 
 const Heading: React.FC<HeadingProps> = ({level, className, children}) => {
     const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
-    const headingId = children?.toString() ?? '';
-
+    let headingId = '';
+    if (level === 3 && React.isValidElement(children)) {
+        headingId = children?.props?.children?.toString() ?? '';
+    }
     return (
         <HeadingTag id={headingId} className={className}>
             {children}
@@ -29,7 +31,10 @@ const MDXComponents: MDXComponentsProps = {
     h2: (props) => (
         <Heading level={2} className='text-3xl font-semibold mt-6 mb-4 border-b border-gray-200 pb-2' {...props} />
     ),
-    h3: (props) => <Heading level={3} className='text-2xl font-semibold mt-6 mb-4' {...props} />,
+    h3: (props) => {
+        console.log('h3',props);
+        return <Heading level={3} className='text-2xl font-semibold mt-6 mb-4' {...props} />;
+    },
     h4: (props) => <Heading level={4} className='text-xl font-semibold mt-6 mb-4' {...props} />,
     h5: (props) => <Heading level={5} className='text-lg font-semibold mt-6 mb-4' {...props} />,
     h6: (props) => <Heading level={6} className='text-base font-semibold mt-6 mb-4' {...props} />,
