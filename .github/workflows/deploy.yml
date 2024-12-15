@@ -103,9 +103,15 @@ jobs:
             - name: Check changes
               id: changes
               run: |
-                # 检查是否有内容文件变更
-                git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changes.txt
-                echo "::set-output name=content_changed::$(grep -q 'sections/' changes.txt && echo 'true' || echo 'false')"
+                # 检查是否为首次推送
+                if git rev-parse --verify "${{ github.event.before }}" >/dev/null 2>&1; then
+                  # 如果不是首次推送，执行 diff
+                  git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changes.txt
+                else
+                  # 如果是首次推送，获取所有文件
+                  git ls-files > changes.txt
+                fi
+                echo "content_changed=$(grep -q 'sections/' changes.txt && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
 
             - name: Run build task
               if: steps.changes.outputs.content_changed == 'true'
