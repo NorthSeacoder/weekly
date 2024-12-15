@@ -103,12 +103,12 @@ jobs:
             - name: Check changes
               id: changes
               run: |
-                # 检查是否为首次推送
-                if git rev-parse --verify "${{ github.event.before }}" >/dev/null 2>&1; then
-                  # 如果不是首次推送，执行 diff
-                  git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changes.txt
+                # 获取当前分支最新的两次提交
+                if git rev-parse HEAD^1 >/dev/null 2>&1; then
+                  # 如果存在上一次提交，比较最近两次提交的差异
+                  git diff --name-only HEAD^1 HEAD > changes.txt
                 else
-                  # 如果是首次推送，获取所有文件
+                  # 如果是仓库的第一次提交，获取所有文件
                   git ls-files > changes.txt
                 fi
                 echo "content_changed=$(grep -q 'sections/' changes.txt && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
