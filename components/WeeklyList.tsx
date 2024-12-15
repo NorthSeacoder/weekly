@@ -34,7 +34,7 @@ export default function WeeklyList({ posts, isSide, sectionType = "weekly" }: We
   return (
     <div className={`${isSide ? 'space-y-2' : 'space-y-4'}`}>
       {posts.map((post) => {
-        const { title, slug } = getPostInfo(post);
+        const { title, slug,date } = getPostInfo(post);
         return (
           <div 
             key={slug} 
@@ -54,7 +54,7 @@ export default function WeeklyList({ posts, isSide, sectionType = "weekly" }: We
                 hover:text-foreground
               `}
             >
-              {title}
+             {date} {title}
             </Link>
           </div>
         );

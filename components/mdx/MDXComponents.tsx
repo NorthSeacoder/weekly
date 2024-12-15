@@ -2,6 +2,7 @@ import { Aside } from '@/components/mdx/Aside';
 import { Callout } from '@/components/mdx/Callout';
 import { MdxCard } from '@/components/mdx/MdxCard';
 import { CodePen } from '@/components/mdx/codepen';
+import { LinkPreview } from "@/components/ui/link-preview";
 import React, { ReactNode } from 'react';
 
 interface HeadingProps {
@@ -42,7 +43,7 @@ const MDXComponents: MDXComponentsProps = {
     a: (props) => {
         const {href, children} = props;
         if (href.includes('x.com')) return <span>{children}</span>;
-        return <a className='link-underline' target='_blank' rel='noopener noreferrer nofollow' {...props} />;
+        return <LinkPreview className='link-underline' url={href}  >{children}</LinkPreview>;
     },
     ul: (props) => <ul className='list-disc pl-5 mt-0 mb-4' {...props} />,
     ol: (props) => <ol className='list-decimal pl-5 mt-0 mb-4' {...props} />,

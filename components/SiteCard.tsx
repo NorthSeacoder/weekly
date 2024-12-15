@@ -2,16 +2,23 @@ import Link from "next/link";
 import { BsRss } from "react-icons/bs";
 import { MdEmail } from "react-icons/md";
 
+import { FlipWords } from "@/components/ui/flip-words";
+import { TextRevealCard } from "@/components/ui/text-reveal-card";
+
 export default function SiteCard() {
+  const words = ["不知道", "想知道","感兴趣",];
+
   return (
     <div className="mb-8 rounded-lg border border-gray-700 bg-gradient-to-r from-gray-900 to-gray-800 p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
       <div className="space-y-6">
         <div>
           <h1 className="mb-2 bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-3xl font-bold text-transparent">
-            我不知道的周刊
+            <TextRevealCard text="我不知道的周刊" revealText="我知道的周刊">
+              
+            </TextRevealCard>
           </h1>
           <p className="text-lg text-gray-300">
-            记录每周在各个地方遇到的我不知道的知识。
+            记录每周在各个地方遇到的我<FlipWords words={words} />的知识。
           </p>
         </div>
         
