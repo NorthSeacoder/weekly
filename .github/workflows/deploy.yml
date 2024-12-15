@@ -96,9 +96,7 @@ jobs:
             - name: Install pnpm dependencies
               run: |
                 # 只安装生产依赖
-                pnpm install --prod --frozen-lockfile
-                # 或者使用 --prefer-offline 优先使用缓存
-                # pnpm install --prefer-offline
+                pnpm install --frozen-lockfile --prefer-offline
 
             - name: Check changes
               id: changes
