@@ -1,0 +1,111 @@
+---
+tags: [AI开发, 全栈开发, LLM应用, 开源项目, 开发工具]
+category: 工具
+source: website
+date: 2024-12-15
+title: Bolt.diy - 浏览器中的 AI 驱动全栈开发工具
+---
+
+### [Bolt.diy - 浏览器中的 AI 驱动全栈开发工具](https://github.com/stackblitz-labs/bolt.diy)
+
+![img](https://img.mengpeng.tech/i/2024/12/15/675e5b6f4679b.webp)
+
+来源: [github.com](https://github.com/stackblitz-labs/bolt.diy)
+
+一个开源的 AI 驱动全栈开发工具，支持在浏览器中使用多种 LLM 模型进行开发。Bolt.diy 允许开发者选择不同的 AI 模型，包括 OpenAI、Anthropic、Ollama、Gemini 等，实现快速的应用开发和部署。
+
+#### 核心特性
+- 多模型支持：
+  - OpenAI/GPT 系列
+  - Anthropic/Claude
+  - Google/Gemini
+  - Ollama/本地模型
+  - Mistral/DeepSeek
+  - xAI/Groq/HuggingFace
+
+- 开发功能：
+  - 实时代码生成
+  - 项目管理集成
+  - 终端命令执行
+  - 版本控制支持
+  - 文件同步功能
+
+#### 使用方法
+1. 本地安装：
+   ```bash
+   # 克隆仓库
+   git clone https://github.com/stackblitz-labs/bolt.diy
+   
+   # 安装依赖
+   pnpm install
+   
+   # 启动开发服务器
+   pnpm run dev
+   ```
+
+2. Docker 部署：
+   ```bash
+   # 构建开发环境
+   npm run dockerbuild
+   
+   # 启动容器
+   docker-compose --profile development up
+   ```
+
+#### 核心问题问答
+Q1: Bolt.diy 与其他 AI 开发工具的区别是什么？
+A1: Bolt.diy 最大的特点是支持多种 LLM 模型，开发者可以根据需求选择不同的模型。同时，它完全在浏览器中运行，无需复杂的环境配置，支持实时代码生成和项目管理。
+
+Q2: 如何选择合适的 LLM 模型？
+A2: 根据具体需求选择。例如，需要强大的代码生成能力可以选择 GPT-4，需要本地部署可以使用 Ollama，需要经济实惠可以选择 Gemini 或 Mistral。
+
+#### 行动与改变
+实践建议：
+- 从简单项目开始尝试
+- 熟悉不同模型特点
+- 建立开发工作流
+- 参与社区贡献
+
+认知提升：
+- 理解 AI 辅助开发
+- 掌握多模型应用
+- 建立工程化思维
+
+#### 思维导图
+```
+Bolt.diy
+├── 核心功能
+│   ├── 多模型支持
+│   ├── 代码生成
+│   └── 项目管理
+├── 开发流程
+│   ├── 环境配置
+│   ├── 模型选择
+│   └── 项目部署
+└── 应用场景
+    ├── 原型开发
+    ├── 全栈应用
+    └── 学���实验
+```
+
+#### 最新进展
+- 已完成功能：
+  - OpenRouter 集成
+  - Gemini/Mistral 支持
+  - Docker 容器化
+  - GitHub 发布集成
+  - 终端输出支持
+  - 移动端适配
+
+- 开发计划：
+  - 文件锁定和差异比较
+  - 小型 LLM 优化
+  - 后端代理支持
+  - 平台部署集成
+
+#### 扩展资源
+- [项目文档](https://github.com/stackblitz-labs/bolt.diy/blob/main/README.md)
+- [社区讨论](https://thinktank.ottomator.ai)
+- [贡献指南](https://github.com/stackblitz-labs/bolt.diy/blob/main/CONTRIBUTING.md)
+
+这个项目展示了 AI 辅助开发的巨大潜力。通过支持多种 LLM 模型和提供完整的开发工具链，Bolt.diy 为开发者提供了一个灵活且强大的开发平台。它不仅可以加速开发过程，还能帮助开发者更好地理解和利用 AI 技术。 
