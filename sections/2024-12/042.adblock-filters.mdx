@@ -1,0 +1,82 @@
+---
+tags: [广告过滤, AdGuard, DNS过滤, 隐私保护, 开源项目]
+category: 工具
+source: website
+date: 2024-12-15
+title: AdBlock Filters - 自动更新的广告过滤规则合集
+---
+
+### [AdBlock Filters - 自动更新的广告过滤规则合集](https://github.com/217heidai/adblockfilters)
+
+![img](https://img.mengpeng.tech/i/2024/12/14/675d455f117d5.webp)
+
+来源: [github.com](https://github.com/217heidai/adblockfilters)
+
+一个自动化维护的广告过滤规则合集项目。通过定时从各个优质规则源获取更新，进行合并、去重和有效性验证，为用户提供高质量的广告过滤规则。项目每 8 小时自动更新一次，确保规则的时效性。
+
+#### 核心特性
+- 自动更新：
+  - 定时从上游规则源获取更新
+  - 自动合并去重处理
+  - 验证域名有效性
+  - 保持规则时效性
+
+- 规则分类：
+  - DNS 拦截规则
+  - 浏览器插件规则
+  - 国内外分流版本
+  - 轻量化规则集
+
+#### 使用方式
+1. AdGuard Home 配置：
+   ```plaintext
+   https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockdns.txt
+   ```
+
+2. AdGuard 浏览器插件配置：
+   ```plaintext
+   https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockfilters.txt
+   ```
+
+#### 核心问题问答
+Q1: 为什么需要规则合并？
+A1: 单一规则源可能存在覆盖不全面的问题。通过合并多个优质规则源，可以获得更全面的广告过滤效果，同时去重和验证过程确保了规则的质量。
+
+Q2: 如何选择合适的规则版本？
+A2: DNS 服务（如 AdGuard Home）使用 adblockdns.txt，浏览器插件使用 adblockfilters.txt。如果主要访问国内网站，可以选择 Lite 版本获得更好的性能。
+
+#### 行动与改变
+实践建议：
+- 根据使用场景选择合适的规则
+- 定期更新规则保持最新状态
+- 遇到误拦截及时反馈
+- 了解规则语法便于调试
+
+认知提升：
+- 理解广告过滤的工作原理
+- 掌握规则编写和调试方法
+- 建立网络隐私保护意识
+
+#### 思维导图
+```
+广告过滤规则
+├── 规则来源
+│   ├── AdGuard官方
+│   ├── EasyList
+│   └── 社区维护
+├── 使用场景
+│   ├── DNS过滤
+│   ├── 浏览器插件
+│   └── 应用过滤
+└── 维护机制
+    ├── 自动更新
+    ├── 合并去重
+    └── 有效性验证
+```
+
+#### 扩展资源
+- AdGuard 官方文档：过滤规则语法说明
+- GitHub 仓库：项目源码和自动化脚本
+- 问题反馈：GitHub Issues 系统
+
+这个项目通过自动化的方式维护了一个高质量的广告过滤规则集合。它不仅为用户提供了便利的规则订阅，还通过严格的验证确保了规则的有效性。对于想要获得更好广告过滤效果的用户来说，这是一个值得使用的工具。 
