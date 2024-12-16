@@ -1,0 +1,114 @@
+---
+tags: [IPTV, 直播源, 开源工具, Python工具, 自动化工具]
+category: 工具
+source: 潮流周刊
+date: 2024-12-16
+title: IPTV-API - 自动更新的电视直播源工具
+---
+
+### [IPTV-API - 自动更新的电视直播源工具](https://github.com/Guovin/iptv-api)
+
+![img](https://img.mengpeng.tech/i/2024/12/16/675fb434a5cb9.webp)
+
+来源: [潮流周刊](https://weekly.tw93.fun/posts/204-%E8%82%89%E6%A1%82%E6%8B%BF%E9%93%81/)
+
+一个开源的 IPTV 直播源更新工具，支持自动获取和验证各类电视频道的直播源。包含央视、卫视、港澳台等多个频道分类，支持 IPv4/IPv6，并提供多种运行方式，每天自动更新两次。
+
+#### 核心特性
+- 频道覆盖：
+  - 📺央视频道
+  - 💰央视付费频道
+  - 📡卫视频道
+  - ☘️广东及各省地方台
+  - 🌊港澳台频道
+  - 🎬电影频道
+  - 🎥咪咕直播
+  - 🏀体育频道
+  - 🪁动画频道
+  - 🎮游戏频道
+  - 🎵音乐频道
+  - 🏛经典剧场
+
+- 技术特点：
+  - 自定义频道模板
+  - 多种源获取方式
+  - 接口测速验证
+  - 自动定时更新
+  - IPv4/IPv6 支持
+
+#### 使用方法
+1. Docker 部署：
+   ```bash
+   # 完整版本
+   docker pull guovern/iptv-api:latest
+   docker run -d -p 8000:8000 guovern/iptv-api
+
+   # 精简版本
+   docker pull guovern/iptv-api:lite
+   docker run -d -p 8000:8000 guovern/iptv-api:lite
+   ```
+
+2. 命令行使用：
+   ```bash
+   pip install pipenv
+   pipenv install --dev
+   pipenv run dev
+   ```
+
+#### 核心问题问答
+Q1: 如何选择合适的部署方式？
+A1: 完整版本(iptv-api)适合需要稳定性和高成功率的场景，特别是酒店源、组播源和关键字搜索；精简版本(iptv-api:lite)更轻量，更新速度快，适合订阅源使用。
+
+Q2: 如何自定义频道和源？
+A2: 可以通过修改配置文件自定义频道模板，支持组播源、酒店源、订阅源和关键字搜索等多种获取方式。同时可以设置接口来源的优先级和数量。
+
+#### 行动与改变
+实践建议：
+- 选择合适的部署版本
+- 定制个���化频道列表
+- 配置自动更新任务
+- 定期验证源的有效性
+
+认知提升：
+- 理解直播源工作原理
+- 掌握自动化维护方法
+- 建立系统运维思维
+
+#### 思维导图
+```
+IPTV-API
+├── 频道类型
+│   ├── 央视系列
+│   ├── 卫视频道
+│   ├── 地方台
+│   └── 专题频道
+├── 核心功能
+│   ├── 源获取
+│   ├── 测速验证
+│   └── 自动更新
+└── 部署方式
+    ├── Docker
+    ├── 命令行
+    └── GUI界面
+```
+
+#### 关键特性
+- 自动化：每日定时更新两次
+- 多样化：支持多种源获取方式
+- 可定制：灵活的频道配置
+- 高可用：接口测速和验证
+
+#### 配置选项
+- open_driver：浏览器运行模式
+- open_ffmpeg：FFmpeg 测速支持
+- ipv_type：IPv4/IPv6 选择
+- min_resolution：最小分辨率要求
+- min_speed：最小速率要求
+- request_timeout：请求超时设置
+
+#### 扩展资源
+- [项目文档](https://github.com/Guovin/iptv-api)
+- [更新日志](https://github.com/Guovin/iptv-api/blob/master/CHANGELOG.md)
+- [问题反馈](https://github.com/Guovin/iptv-api/issues)
+
+这个项目为 IPTV 爱好者提供了一个强大的直播源管理工具。通过自动化的更新和验证机制，确保了直播源的可用性和稳定性���对于需要维护 IPTV 直播源的用户来说，这是一个值得使用的工具。 
