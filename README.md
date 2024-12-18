@@ -191,11 +191,12 @@ weekly/
 -   [x] RSS 订阅功能
 -   [x] 邮件订阅功能
 -   [x] AI 内容生成
+-   [x] 样式优化(https://github.com/CaliCastle/cali.so)
 
 ### 进行中
 
+-   [ ] code demo 优化,推送时使用截图([codepen 文档](https://blog.codepen.io/documentation/url-extensions/)),似乎可以直接使用远程的 html/js/css
 -   [ ] 首页样式优化(月份放在背景,参考https://antfu.me/posts)
--   [ ] 样式优化(https://github.com/CaliCastle/cali.so)
 -   [ ] 公众号/x 推送
 -   [ ] 404 页面优化
 
