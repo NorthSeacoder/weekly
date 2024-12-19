@@ -1,0 +1,126 @@
+---
+tags: [CSS, 新特性, 样式, 前端开发, 编程技巧]
+category: 技术
+source: twitter
+date: 2024-12-19
+title: CSS 的未来：使用 ident() 函数动态生成标识符
+---
+
+### [CSS 的未来：使用 ident() 函数动态生成标识符](https://www.bram.us/2024/12/18/the-future-of-css-construct-custom-idents-and-dashed-idents-with-ident/)
+
+![img](https://img.mengpeng.tech/i/2024/12/19/6763a50b8c85e.webp)
+
+来源: [bram.us](https://www.bram.us/2024/12/18/the-future-of-css-construct-custom-idents-and-dashed-idents-with-ident/)
+
+CSS 中，我们经常需要为元素指定唯一的标识符（ident），例如在使用视图过渡或滚动驱动动画时。手动为大量元素创建这些标识符既繁琐又容易出错。为了解决这个问题，CSS 工作组提出了 `ident()` 函数，它允许我们动态生成这些标识符。
+
+#### 核心概念
+
+-   标识符 (Ident)：CSS 中用于命名元素的字符串，例如 `view-transition-name` 的值。
+-   `ident()` 函数：一个 CSS 函数，用于动态构建标识符，可以是自定义标识符（`<custom-ident>`) 或虚线标识符（`<dashed-ident>`）。
+
+#### `ident()` 函数的意义
+
+`ident()` 函数的核心价值在于动态生成标识符。这意味着我们可以根据元素的属性、位置或其他条件，自动创建唯一的标识符，而无需手动编写大量的 CSS 代码。
+
+#### 解决的问题
+
+在 CSS 中，很多功能需要我们为元素指定一个名称，以便后续引用。例如：
+
+-   视图过渡 (View Transitions)：需要为每个过渡元素设置唯一的 `view-transition-name`。
+-   滚动驱动动画 (Scroll-driven Animations)：需要为每个动画元素设置唯一的 `view-timeline-name`。
+
+手动为大量元素设置这些名称非常繁琐，而且容易出错。`ident()` 函数通过动态生成标识符，大大简化了这一过程。
+
+#### `ident()` 函数的语法
+
+```css
+<ident-fn> = ident(<ident-args>#);
+<ident-args> = [<string> | <integer> | <ident>]+
+```
+
+`ident()` 函数接受一个或多个空格分隔的参数，参数类型可以是字符串、整数或其他标识符。函数的结果是一个由传入参数连接而成的标识符。
+
+#### 示例
+
+假设我们需要为多个列表项设置 `view-timeline-name`，传统方式需要这样写：
+
+```css
+main {
+  li:nth-child(1) { view-timeline-name: --tl-1; }
+  li:nth-child(2) { view-timeline-name: --tl-2; }
+  li:nth-child(3) { view-timeline-name: --tl-3; }
+}
+```
+
+使用 `ident()` 函数，可以简化为：
+
+```css
+main li {
+  view-timeline-name: ident("--tl-" sibling-index()); /* --tl-1, --tl-2, … */
+}
+```
+
+在这个例子中，`sibling-index()` 函数返回元素的兄弟节点索引，`ident()` 函数将字符串 `--tl-` 和索引连接起来，生成唯一的标识符。
+
+#### 更多应用场景
+
+`ident()` 函数可以与其他 CSS 函数结合使用，例如 `attr()`：
+
+```css
+.item {
+  view-timeline-name: ident("--item-" attr(id) "-tl");
+}
+```
+
+这个例子中，`attr(id)` 获取元素的 `id` 属性值，`ident()` 函数将其与字符串 `--item-` 和 `-tl` 连接起来，生成唯一的标识符。
+
+#### 常见问题解答
+
+-   为什么需要 `ident()` 函数？
+    -   为了动态生成标识符，简化 CSS 代码，并避免手动创建大量标识符的繁琐过程。
+-   `ident()` 函数和 `attr()` 函数有什么区别？
+    -   `attr()` 函数只能获取属性值，而 `ident()` 函数可以将多个字符串片段连接在一起，生成新的标识符。
+-   如何创建虚线标识符？
+    -   在 `ident()` 函数的开头添加 `--`，例如 `ident("--item-tl-" attr(data-itemnum))`。
+
+#### 浏览器支持
+
+目前，`ident()` 函数还处于提案阶段，尚未在任何浏览器中实现。
+
+#### 行动与改变
+
+实践建议：
+
+-   关注 CSS 新特性，了解 `ident()` 函数的最新进展。
+-   在未来的项目中尝试使用 `ident()` 函数，简化 CSS 代码。
+-   结合其他 CSS 函数，发挥 `ident()` 函数的强大功能。
+
+认知提升：
+
+-   理解 CSS 标识符的概念。
+-   掌握 `ident()` 函数的语法和用法。
+-   了解 CSS 的发展趋势。
+
+#### 思维导图
+
+```
+CSS ident() 函数
+├── 核心概念
+│   └── 动态生成标识符
+├── 解决问题
+│   └── 手动创建标识符繁琐
+├── 函数语法
+│   └── ident(<ident-args>#)
+├── 应用场景
+│   ├── 视图过渡
+│   └── 滚动驱动动画
+└── 浏览器支持
+    └── 尚未实现
+```
+
+#### 扩展资源
+
+-   [原文链接](https://www.bram.us/2024/12/18/the-future-of-css-construct-custom-idents-and-dashed-idents-with-ident/)
+
+这篇内容详细介绍了 CSS `ident()` 函数的用途、语法和应用场景，可以帮助读者了解 CSS 的最新发展趋势，并为未来的项目做好准备。
