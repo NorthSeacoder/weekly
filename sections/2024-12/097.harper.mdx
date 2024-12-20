@@ -1,0 +1,67 @@
+---
+tags: [语法检查, 开发工具, Rust, WebAssembly, 开源项目]
+category: 开源
+source: GitHub
+date: 2024-12-20
+title: Harper - 为开发者打造的英语语法检查工具
+---
+
+### [Harper - 为开发者打造的英语语法检查工具](https://github.com/Automattic/harper)
+
+![img](https://img.mengpeng.tech/i/2024/12/20/67650bad00064.webp)
+
+Harper 是一个专为开发者设计的英语语法检查工具，由 Automattic 开源。它在保持高性能的同时提供了准确的语法检查功能，并且完全保护用户隐私。该项目在 GitHub 上获得了 2.5k 颗星。
+
+#### 核心特性
+
+- **高性能:** 相比其他工具占用更少内存，检查速度更快
+- **隐私保护:** 完全本地运行，无需将内容发送到服务器
+- **多平台支持:** 提供编辑器插件、CLI 工具和 WebAssembly 版本
+- **精准建议:** 上下文感知的语法建议，减少误报
+
+#### 技术实现
+
+- **主要技术栈:** Rust (75.5%)、TypeScript (10.3%)、Svelte (9.1%)
+- **编辑器集成:** 支持 Obsidian、Zed 等多个编辑器
+- **WebAssembly:** 支持在浏览器中运行，体积小巧
+
+#### 应用场景
+
+- **代码注释:** 检查代码文档和注释中的语法
+- **技术文档:** 编写技术文档时的语法辅助
+- **Markdown:** 支持 Markdown 文件的语法检查
+
+#### 核心问题问答
+
+Q: 与 Grammarly 和 LanguageTool 相比有什么优势？
+A: Harper 比 Grammarly 更注重隐私，完全本地运行；比 LanguageTool 更轻量，内存占用仅为其 1/50，且速度更快。
+
+Q: 支持哪些语言？
+A: 目前仅支持美式英语，但核心架构支持扩展其他语言，欢迎社区贡献。
+
+#### 思维导图
+Harper功能
+├── 核心功能
+│   ├── 语法检查
+│   ├── 性能优化
+│   └── 隐私保护
+└── 使用方式
+    ├── 编辑器插件
+    ├── CLI工具
+    └── WebAssembly
+
+#### 关键术语解释
+
+- **Language Server:** 提供语言服务的后端程序
+- **WebAssembly:** 允许在浏览器中运行高性能代码的技术
+- **Tree-sitter:** 用于解析和分析代码的工具
+
+#### 扩展资源
+
+- [官方网站](https://writewithharper.com)
+- [项目文档](https://github.com/Automattic/harper#readme)
+- [贡献指南](https://github.com/Automattic/harper/blob/master/CONTRIBUTING.md)
+
+#### 总结语
+
+Harper 为开发者提供了一个高性能、注重隐私的语法检查工具。通过 Rust 的高性能实现和 WebAssembly 的跨���台支持，它成为了开发者编写文档和注释时的理想助手。 

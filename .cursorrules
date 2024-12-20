@@ -15,7 +15,7 @@ When analyzing and documenting technical content, always follow this structure:
 ```mdx
 ---
 tags: [3-5个技术领域标签]
-category: [工具/资源/教程/开源/AI/博主]
+category: [工具/资源/教程/开源/AI/博主/Prompt]
 source: [website/github/blog/chrome/codepen]
 date: {日期 YYYY-MM-DD}
 title: {突出核心价值的中文标题}
@@ -29,14 +29,22 @@ title: {突出核心价值的中文标题}
   ![img]({图片URL})
 - Core value overview (1-2 concise sentences)
 - Select 2-3 most relevant section headings from:
-  核心特性/关键功能
-  技术实现/架构设计
-  最佳实践/应用场景
-  开发流程/工作原理
-  性能优化/注意事项
-  工具特点/创新点
-  使用技巧/实战经验
-  解决方案/问题处理
+  核心特性
+  关键功能
+  技术实现
+  架构设计
+  最佳实践
+  应用场景
+  开发流程
+  工作原理
+  性能优化
+  注意事项
+  工具特点
+  创新点
+  使用技巧
+  实战经验
+  解决方案
+  问题处理
 
 3. Each Section Should
 - Include 3-5 key points
