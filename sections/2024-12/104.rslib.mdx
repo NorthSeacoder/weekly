@@ -1,0 +1,71 @@
+---
+tags: [JavaScript, 构建工具, Rust, 前端工具链, 开源项目]
+category: 工具
+source: 科技爱好者周刊
+date: 2024-12-22
+title: Rslib：简单直观的JavaScript库开发工具
+---
+
+### [Rslib：简单直观的JavaScript库开发工具](https://github.com/web-infra-dev/rslib)
+
+![rslib.webp](https://img.mengpeng.tech/i/2024/12/22/6767c1859acc0.webp)
+
+Rslib是一个基于Rsbuild的库开发工具，它利用webpack和Rspack的强大生态系统，为库开发者提供完整的开发解决方案。该工具继承了Rsbuild的优秀配置和插件体系，使开发者能够充分利用webpack和Rspack的丰富功能。
+
+#### 核心特性
+
+- **多语言支持:** 支持TypeScript、JSX、Sass、Less、CSS Modules和WebAssembly等
+- **灵活构建:** 提供Bundle和Bundleless两种构建模式
+- **多格式输出:** 支持ESM、CJS和UMD等多种输出格式
+- **类型生成:** 自动生成独立的声明文件
+- **高级特性:** 支持模块联邦、资源压缩、PostCSS和Lightning CSS等
+
+#### 技术实现
+
+- **Rust基础:** 基于Rust开发的高性能构建工具
+- **生态集成:** 深度整合webpack和Rspack生态
+- **优化输出:** 改进ESM输出质量，减少运行时代码
+- **插件系统:** 继承Rsbuild的插件体系
+
+#### 应用场景
+
+- **库开发:** 开发JavaScript/TypeScript库
+- **组件开发:** 构建可复用的UI组件
+- **工具开发:** 开发前端工具和插件
+- **模块打包:** 处理复杂的模块依赖关系
+
+#### 核心问题问答
+
+Q: Rslib相比传统构建工具有什么优势？
+A: Rslib结合了Rspack的高性能和webpack生态的丰富功能，同时优化了ESM输出质量，提供了更好的开发体验和更多的构建特性。
+
+Q: 如何选择构建模式？
+A: 可以根据项目需求选择Bundle或Bundleless模式，Bundle模式适合需要完整打包的场景，Bundleless模式适合需要保持源码结构的场景。
+
+#### 思维导图
+Rslib功能
+├── 构建能力
+│   ├── 多语言支持
+│   ├── 多格式输出
+│   └── 类型生成
+└── 工具特性
+    ├── 生态集成
+    ├── 性能优化
+    └── 插件扩展
+
+#### 关键术语解释
+
+- **Rspack:** 基于Rust的高性能Web打包工具
+- **Rsbuild:** 基于Rspack的构建工具
+- **模块联邦:** 实现跨应用共享模块的技术
+- **Bundleless:** 不打包的构建模式，保持源码结构
+
+#### 扩展资源
+
+- [Rslib官网](https://lib.rsbuild.dev/)
+- [Rspack文档](https://www.rspack.dev/)
+- [Rsbuild文档](https://rsbuild.dev/)
+
+#### 总结语
+
+Rslib作为新一代JavaScript库开发工具，通过结合Rust的性能优势和webpack生态的丰富功能，为开发者提供了一个强大而直观的库开发解决方案。它不仅简化了开发流程，还提供了丰富的功能特性，是现代JavaScript库开发的理想选择。 
