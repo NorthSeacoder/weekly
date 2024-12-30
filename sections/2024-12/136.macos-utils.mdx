@@ -1,0 +1,91 @@
+---
+tags: [macOS, 命令行工具, 终端, 效率工具]
+category: 教程
+source: 科技爱好者周刊
+date: 2024-12-27
+title: macOS内置命令行工具的高效使用指南
+---
+
+### [Useful built-in macOS command-line utilities](https://weiyen.net/articles/useful-macos-cmd-line-utilities/)
+
+![macos-utils.webp](https://img.mengpeng.tech/i/2024/12/27/676e3a06444d8.webp)
+
+一篇详细介绍macOS内置命令行工具的文章，作者Wei Yen整理了一系列实用但鲜为人知的命令行工具，帮助开发者提升工作效率。
+
+## 核心工具
+
+- security: 访问Keychain的命令行工具
+- open: 从终端打开文件和应用
+- pbcopy/pbpaste: 命令行剪贴板操作
+- networkQuality: 网络速度测试
+- caffeinate: 防止Mac休眠
+- uuidgen: 生成UUID标识符
+- date: UTC时间查看工具
+
+## 使用示例
+
+```bash
+# 访问Keychain中的密码
+security find-internet-password -s "https://example.com"
+
+# 复制文本到剪贴板
+echo "Hello, world!" | pbcopy
+
+# 生成小写UUID并复制
+uuidgen | tr '[:upper:]' '[:lower:]' | pbcopy
+
+# 查看UTC时间
+date -u
+```
+
+## 进阶工具
+
+- sips: 图像处理系统
+- afinfo: 音频文件元数据查看
+- mdls: 文件元数据查看
+- afconvert: 音频格式转换
+- diskutil: 磁盘管理工具
+- powermetrics: 系统功耗监控
+- pmset: 电源管理配置
+- dot_clean: 清理.DS_Store文件
+
+## 思维导图
+macOS命令行工具
+├── 系统工具
+│   ├── 安全管理
+│   ├── 文件操作
+│   └── 时间工具
+├── 媒体工具
+│   ├── 图像处理
+│   ├── 音频处理
+│   └── 元数据查看
+└── 系统管理
+    ├── 磁盘工具
+    ├── 电源管理
+    └── 网络工具
+
+## 关键术语解释
+
+- Keychain: macOS的密码管理系统
+- Pasteboard: macOS的剪贴板系统
+- UUID: 通用唯一标识符
+- Metadata: 文件的元数据信息
+- CLI: 命令行界面
+
+## 核心问题问答
+
+Q: 如何在脚本中使用存储的密码?
+A: 可以使用security命令访问Keychain中存储的密码，例如`security find-internet-password -s "网站域名"`。
+
+Q: 如何防止执行长时间任务时Mac休眠?
+A: 使用caffeinate命令可以防止Mac休眠，直到按Ctrl+C终止命令。
+
+## 扩展资源
+
+- [ss64 macOS命令参考](https://ss64.com/mac/) - 详细的命令说明
+- [高级macOS命令](https://saurabhs.org/advanced-macos-commands) - 更多命令介绍
+- [Mac命令行程序](https://notes.billmill.org/computer_usage/mac_os/mac_os_command_line_programs.html) - 补充资源
+
+## 总结语
+
+这些内置的命令行工具展示了macOS强大的命令行能力，掌握这些工具可以显著提升开发效率。特别是在自动化脚本和日常开发中，这些工具的组合使用可以解决很多实际问题。 
