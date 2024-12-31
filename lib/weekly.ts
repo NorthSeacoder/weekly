@@ -1,9 +1,10 @@
 import {getCachedData} from '@/lib/cache';
 import {handleDir} from '@/lib/file';
-import {PostsByMonth, WeeklyPost} from '@/types/weekly';
-import dayjs, {Dayjs} from 'dayjs';
+import type {PostsByMonth, WeeklyPost} from '@/types/weekly';
+import dayjs from 'dayjs';
 import path from 'path';
 
+type Dayjs = dayjs.Dayjs
 interface Metadata {
     tags: string[];
     source: string;

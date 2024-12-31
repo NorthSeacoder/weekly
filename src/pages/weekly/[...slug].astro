@@ -1,0 +1,23 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import SinglePost from '~/components/pages/SinglePost.astro';
+
+import type { InferGetStaticPropsType, GetStaticPaths } from 'astro';
+import { getStaticPathsWeeklyPost } from '~/utils/contents/weekly';
+
+export const getStaticPaths = (async () => {
+  const paths = await getStaticPathsWeeklyPost();
+  return paths;
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { post } = Astro.props as Props;
+console.log('post', post.content);
+---
+
+<Layout>
+  <SinglePost post={post} >
+    <Fragment set:html={post.content || ''} />
+  </SinglePost>
+</Layout>

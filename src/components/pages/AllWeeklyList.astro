@@ -1,0 +1,21 @@
+---
+import { getWeeklyPosts } from '@/src/utils/contents/weekly'
+
+const weeklyList = await getWeeklyPosts()
+
+---
+
+<section class="py-12  dark:bg-dark">
+    <div class="container mx-auto px-4">
+        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {weeklyList.map((weekly) => (
+                <li class="bg-white dark:bg-dark-lighter rounded-lg shadow-md overflow-hidden cursor-pointer">
+                    <a href={weekly.permalink} class="block p-6 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">{weekly.title}</h3>
+                        <p class="text-gray-600 dark:text-gray-400">{weekly.date}</p>
+                    </a>
+                </li>
+            ))}
+        </ul>
+    </div>
+</section> 

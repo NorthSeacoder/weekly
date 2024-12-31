@@ -7,7 +7,7 @@ const cache = new NodeCache({
     useClones: false // 禁用克隆以提高性能
 });
 
-export function getCachedData<T>(key: string, fetchData: () => T, options: {debug?: boolean} = {}): T {
+export async function getCachedData<T>(key: string, fetchData: () => Promise<T>, options: {debug?: boolean} = {}): Promise<T> {
     // 尝试从缓存获取数据
     const cachedData = cache.get<T>(key);
 
@@ -23,7 +23,7 @@ export function getCachedData<T>(key: string, fetchData: () => T, options: {debu
         console.log(`Cache miss for key: ${key}, fetching data...`);
     }
 
-    const freshData = fetchData();
+    const freshData = await fetchData();
     cache.set(key, freshData);
     return freshData;
 }

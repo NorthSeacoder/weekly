@@ -23,3 +23,7 @@ declare namespace NodeJS {
         QUAIL_API_KEY: string;
     }
 }
+declare module "*.mdx" {
+    const content: string; // Markdown 文件的默认导出是字符串内容
+    export default content;
+  }

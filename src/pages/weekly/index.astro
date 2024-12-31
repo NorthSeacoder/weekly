@@ -1,0 +1,16 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import AllWeeklyList from '~/components/pages/AllWeeklyList.astro';
+
+const metadata = {
+    title: '周刊列表',
+    description: '周刊列表',
+    openGraph: {
+        type: 'article'
+    }
+};
+---
+
+<Layout>
+    <AllWeeklyList />
+</Layout>

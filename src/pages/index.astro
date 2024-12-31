@@ -1,0 +1,31 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import LatestWeeklyList from '~/components/pages/LatestWeeklyList.astro';
+
+const metadata = {
+    title: '我不知道的周刊',
+    ignoreTitleTemplate: true
+};
+---
+
+<Layout metadata={metadata}>
+    <!-- Site Card ******************* -->
+    <Hero
+        actions={[
+            {text: '往期内容', href: '/weekly'}
+        ]}
+        image={{src: '~/assets/images/hero-image.png', alt: 'AstroWind Hero Image'}}>
+        <Fragment slot='title'>
+            我不知道的周刊<br />
+            <span class='hidden xl:inline'>created with</span>
+            <span class='text-accent dark:text-white highlight'> Astro 5.0</span> + Tailwind CSS
+        </Fragment>
+
+        <Fragment slot='subtitle'>
+            AI驱动的前端技术周刊，精选并深度解读 Web 前端及周边生态的优质内容，涵盖实用工具、开源项目、前沿资讯与最佳实践。依托 AI 技术智能分析与筛选，本周刊致力于为开发者提供高质量、可落地的前沿技术参考与实战指南，助力提升技术深度与广度
+        </Fragment>
+    </Hero>
+    <!-- 最新内容 -->
+    <LatestWeeklyList />
+</Layout>

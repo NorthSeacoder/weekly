@@ -1,28 +1,14 @@
 {
+    "extends": "astro/tsconfigs/base",
     "compilerOptions": {
-        "lib": ["dom", "dom.iterable", "esnext"],
-        "target": "ESNext",
+        "strictNullChecks": true,
         "allowJs": true,
-        "skipLibCheck": true,
-        "strict": true,
-        "noEmit": true,
-        "esModuleInterop": true,
-        "module": "ESNext",
-        "moduleResolution": "node",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "jsx": "preserve",
-        "incremental": true,
-        "plugins": [
-            {
-                "name": "next"
-            }
-        ],
+        "baseUrl": ".",
         "paths": {
-            "@/*": ["./*"]
+            "@/*": ["*"],
+            "~/*": ["src/*"] 
         },
-        "types": ["@types/react", "next"]
     },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-    "exclude": ["node_modules", "extension/**/*", "scripts/**/*"]
+    "include": [".astro/types.d.ts", "**/*","./types/**/*"],
+    "exclude": ["node_modules", "extension/**/*", "scripts/**/*","dist/"]
 }
