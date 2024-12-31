@@ -1,0 +1,80 @@
+---
+tags: [AI工具, PDF处理, 知识提取, Python]
+category: 开源
+source: twitter
+date: 2024-12-31
+title: AI-reads-books - AI驱动的PDF智能阅读与知识提取工具
+---
+
+### [AI-reads-books-page-by-page](https://github.com/echohive42/AI-reads-books-page-by-page)
+
+![ai-reads-books.webp](https://img.mengpeng.tech/i/2024/12/31/67737c54196ec.webp)
+
+一个基于AI的PDF智能阅读工具，可以逐页分析PDF书籍内容，提取知识点并生成阶段性总结。该项目已获得247 stars，是一个活跃的开源项目。
+
+## 核心特性
+
+- 自动化PDF书籍分析
+- AI驱动的内容理解
+- 定期生成阶段性总结
+- 持久化知识库存储
+- Markdown格式输出
+- 彩色终端显示
+- 支持断点续读
+- 智能内容过滤
+- 可配置分析间隔
+
+
+## 项目结构
+```
+AI-reads-books/
+├── read_books.py      # 主程序
+├── requirements.txt   # 依赖管理
+└── book_analysis/    # 输出目录
+    ├── knowledge_bases/  # 知识库存储
+    ├── summaries/       # 总结文件
+    └── pdfs/           # PDF文件
+```
+
+## 思维导图
+```
+AI-reads-books
+├── 核心功能
+│   ├── PDF解析
+│   ├── 知识提取
+│   └── 总结生成
+├── 技术架构
+│   ├── OpenAI API
+│   ├── Pydantic
+│   └── PDF处理
+└── 输出管理
+    ├── 知识库
+    ├── 阶段总结
+    └── 最终报告
+```
+
+## 关键术语解释
+
+- Knowledge Base: 知识库，存储提取的知识点
+- Analysis Interval: 分析间隔，定期总结的页数
+- Page Content: 页面内容模型
+- OpenAI API: AI模型接口
+- Markdown: 文档格式化语言
+
+## 核心问题问答
+
+Q: 如何开始使用这个工具?
+A: 克隆仓库后安装依赖，将PDF文件放入项目根目录，配置PDF_NAME常量后运行read_books.py即可。
+
+Q: 支持哪些配置选项?
+A: 支持配置分析间隔(ANALYSIS_INTERVAL)、测试页数(TEST_PAGES)、AI模型选择(MODEL)等参数。
+
+## 扩展资源
+
+- [项目主页](https://github.com/echohive42/AI-reads-books-page-by-page) - 源码仓库
+- [作者主页](https://www.echohive.live/) - 更多AI项目
+- [Patreon](https://www.patreon.com/echohive42) - 获取400+AI项目
+
+## 总结语
+
+AI-reads-books通过AI技术实现了PDF书籍的智能阅读和知识提取，为学习和研究提供了强大的自动化工具。其模块化设计和灵活的配置选项，使其成为处理大量PDF文档的理想选择。 
