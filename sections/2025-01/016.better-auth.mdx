@@ -1,0 +1,68 @@
+---
+tags: [认证框架, TypeScript, 开源项目, 全栈开发]
+category: [开源]
+source: website
+date: 2025-01-17
+title: Better Auth - 全能型TypeScript认证框架
+---
+
+### [Better Auth](https://better-auth.vercel.app/)
+
+![better-auth.webp](https://img.mengpeng.tech/i/2025/01/17/6789e3b99b4d0.webp)
+
+一个为TypeScript打造的全能型认证框架，提供完整的身份验证和授权解决方案。通过简单的API和丰富的插件生态，让开发者能够快速实现安全可靠的认证系统。
+
+## 核心特性
+
+### 框架支持
+- React/Vue/Svelte
+- Next.js/Nuxt
+- Astro/Solid
+- TanStack/Hono
+- 更多主流框架
+
+### 认证功能
+- 邮箱密码认证
+- 社交账号登录
+- 双因素认证(2FA)
+- 会话管理
+- 账户恢复
+
+### 多租户支持
+- 组织成员管理
+- 团队协作
+- 邀请系统
+- 访问控制
+- 权限管理
+
+## 核心问题问答
+
+Q: 如何快速开始使用？
+A: 通过npm安装并配置数据库连接，几行代码即可启用基础认证功能：
+```typescript
+export const auth = betterAuth({
+  database: new Pool({
+    connectionString: DATABASE_URL,
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+  plugins: [
+    organization(),
+    twoFactor(),
+  ]
+})
+```
+
+Q: 数据安全性如何保证？
+A: 框架内置了多重安全机制，包括密码加密、会话保护、CSRF防御等，并支持自定义安全策略。
+
+## 扩展资源
+
+- [官方文档](https://better-auth.vercel.app/docs) - 详细使用说明
+- [插件市场](https://better-auth.vercel.app/plugins) - 扩展功能
+- [在线演示](https://better-auth.vercel.app/demo) - 功能体验
+
+## 总结语
+
+Better Auth通过优秀的开发体验和完善的功能特性，为开发者提供了一站式的认证解决方案。正如Nuxt创始人Sébastien Chopin所说："When @better_auth meets @nuxt_hub to build full-stack Nuxt apps on Cloudflare (using D1 & KV).."，Better Auth正在成为现代Web应用开发中不可或缺的工具。 

@@ -1,0 +1,54 @@
+---
+tags: [Git, macOS, 开发技巧, 文件系统]
+category: [教程]
+source: twitter
+date: 2025-01-17
+title: macOS下Git文件大小写敏感性问题及解决方案
+---
+
+### [macOS Git大小写问题](https://twitter-thread.com/t/1879787475163619481)
+
+![macos-git-case.webp](https://img.mengpeng.tech/i/2025/01/17/6789e491585e5.webp)
+
+在macOS系统上使用Git时，由于APFS文件系统默认不区分大小写，而Linux等系统区分大小写，容易导致本地仓库和远程仓库的文件名大小写不一致问题。
+
+## 核心特性
+
+### 问题表现
+- 本地修改文件大小写不生效
+- 远程仓库显示不同大小写的重复文件
+- push后文件状态异常
+- 跨平台协作困难
+
+### 解决方案
+- 配置Git区分大小写
+```bash
+git config core.ignorecase false
+```
+- 使用大小写敏感的APFS卷
+- 规范化命名约定
+- 团队统一配置
+
+### 注意事项
+- 修改配置后可能出现文件副本
+- 需要重新提交变更
+- 可能影响现有项目
+- 建议项目初始配置
+
+## 核心问题问答
+
+Q: 为什么会出现这个问题？
+A: macOS的APFS文件系统默认采用大小写不敏感模式，而Git默认遵循操作系统的大小写规则，导致与其他平台的行为不一致。
+
+Q: 如何避免这类问题？
+A: 建议在项目初始阶段就设置`git config core.ignorecase false`，并在团队中统一命名规范，避免使用仅大小写不同的文件名。
+
+## 扩展资源
+
+- [Git配置文档](https://git-scm.com/docs/git-config) - 官方配置说明
+- [APFS文档](https://support.apple.com/guide/disk-utility/file-system-formats-dsku19ed921c/mac) - 文件系统说明
+- [Git最佳实践](https://github.com/git-tips/tips) - Git使用技巧
+
+## 总结语
+
+在macOS系统上进行Git开发时，了解并正确处理文件系统的大小写敏感性问题非常重要。通过合适的Git配置和开发规范，可以避免因大小写导致的各种问题，确保跨平台协作的顺畅进行。 

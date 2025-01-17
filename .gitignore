@@ -133,3 +133,5 @@ public/json
 index.json
 # Sentry Config File
 .env.sentry-build-plugin
+
+www.igloo.inc/**
