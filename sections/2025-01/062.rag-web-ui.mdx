@@ -1,0 +1,75 @@
+---
+tags: [RAG, 知识库, AI助手, 开源项目]
+category: [开源]
+source: github
+date: 2025-01-31
+title: RAG Web UI - 基于RAG技术的智能对话系统
+---
+
+### [RAG Web UI](https://github.com/rag-web-ui/rag-web-ui)
+
+![rag-web-ui.webp](https://img.mengpeng.tech/i/2025/02/07/67a5e953730eb.webp)
+
+一个基于RAG（检索增强生成）技术的开源智能对话系统，帮助企业和个人基于自有知识库构建智能问答系统，实现准确可靠的知识问答服务。
+
+## 核心特性
+
+- 文档管理
+  - 支持多种格式（PDF/DOCX/MD/TXT）
+  - 自动文档分块和向量化
+  - 异步处理和增量更新
+- 对话引擎
+  - 基于RAG的精准检索和生成
+  - 支持多轮上下文对话
+  - 对话引用溯源
+- 系统架构
+  - 前后端分离设计
+  - 分布式文件存储
+  - 高性能向量数据库
+
+## 技术栈
+
+### 后端技术
+- Python FastAPI
+- MySQL + ChromaDB
+- MinIO对象存储
+- Langchain框架
+- JWT + OAuth2认证
+
+### 前端技术
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Shadcn/UI组件
+- Vercel AI SDK
+
+## 部署方式
+
+1. 克隆仓库：
+```bash
+git clone https://github.com/rag-web-ui/rag-web-ui.git
+cd rag-web-ui
+```
+
+2. 配置环境：
+```bash
+# 配置必要的环境变量
+SECRET_KEY=your-secret-key
+OPENAI_API_KEY=your-api-key
+OPENAI_MODEL=gpt-4
+```
+
+3. 启动服务：
+```bash
+docker compose up -d --build
+```
+
+## 扩展资源
+
+- [GitHub仓库](https://github.com/rag-web-ui/rag-web-ui) - 907+ stars
+- [在线文档](https://github.com/rag-web-ui/rag-web-ui#readme) - 详细说明
+- [技术支持](https://github.com/rag-web-ui/rag-web-ui/issues) - 问题反馈
+
+## 总结语
+
+RAG Web UI通过开源的方式，为企业和开发者提供了一个功能完整的知识库问答系统框架。其模块化的设计和完善的文档支持，使得构建专属的智能问答系统变得更加简单高效。 

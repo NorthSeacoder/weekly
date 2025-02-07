@@ -1,0 +1,55 @@
+---
+tags: [图片工具, Cloudflare, R2存储, Next.js]
+category: [开源]
+source: github
+date: 2025-01-31
+title: Image URL Converter - 基于Cloudflare R2的图片永久链接转换工具
+---
+
+### [image-url-converter](https://github.com/weijunext/image-url-converter)
+
+![image-url-converter.webp](https://img.mengpeng.tech/i/2025/02/07/67a5e0c2e08e8.webp)
+
+一个简单而实用的工具，可以将任意图片URL转换为基于Cloudflare R2存储的永久链接，特别适合个人或小型项目使用的图床服务。
+
+## 核心特性
+
+- 简单易用：输入原始图片URL即可获得永久链接
+- 全球加速：通过Cloudflare CDN实现快速访问
+- 免费使用：利用Cloudflare R2免费额度
+  - 每月10GB存储空间
+  - 每月10GB出站流量
+- 支持自定义域名
+- 免费部署方案
+
+## 技术架构
+
+项目采用双仓库结构：
+- image-converter-next：基于Next.js的前端项目
+- image-converter-worker：Cloudflare Worker服务
+
+## 部署流程
+
+1. 配置Cloudflare R2：
+   - 创建存储桶
+   - 开启公共访问
+   - 配置API密钥
+
+2. 配置环境变量：
+```bash
+R2_ACCOUNT_ID=你的Cloudflare账户ID
+R2_ACCESS_KEY_ID=你的R2访问密钥ID
+R2_SECRET_ACCESS_KEY=你的R2访问密钥
+R2_BUCKET_NAME=存储桶名称
+R2_PUBLIC_URL=公共访问URL
+```
+
+## 扩展资源
+
+- [项目仓库](https://github.com/weijunext/image-url-converter) - 源码
+- [在线演示](https://github.com/weijunext/image-url-converter#readme) - 使用说明
+- [问题反馈](https://github.com/weijunext/image-url-converter/issues) - 提交建议
+
+## 总结语
+
+Image URL Converter通过结合Cloudflare R2和Next.js，为开发者提供了一个免费且可靠的图片托管解决方案。其开源特性和完善的文档支持，使其成为构建个人图床服务的理想选择。 
