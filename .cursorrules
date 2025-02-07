@@ -55,22 +55,9 @@ title: {突出核心价值的中文标题}
 
 4. Additional Required Sections
 - 核心问题问答 (Q&A with direct quotes)
-- 行动与改变 (Practice suggestions and cognitive improvements)
-- 思维导图 (Mind map in text format)
 - 关键术语解释 (Key terms definitions)
 - 扩展资源 (Related resources)
 - 总结语 (Value proposition)
-
-# Mind Map Format Example
-思维导图
-Awesome Cloudflare
-├── 核心内容
-│   ├── 图床
-│   ├── 邮箱
-│   └── 博客
-└── 价值
-    ├── 提升效率
-    └── 降低成本
 
 # Quality Standards
 1. Accuracy
