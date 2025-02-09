@@ -10,7 +10,6 @@ const cache = new NodeCache({
 export async function getCachedData<T>(key: string, fetchData: () => Promise<T>, options: {debug?: boolean} = {}): Promise<T> {
     // 尝试从缓存获取数据
     const cachedData = cache.get<T>(key);
-
     if (cachedData !== undefined) {
         if (options.debug && process.env.NODE_ENV !== 'development') {
             console.log(`Cache hit for key: ${key}`);

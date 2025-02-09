@@ -1,5 +1,5 @@
 import {getCachedData} from '@/lib/cache';
-import type {PostsByMonth, WeeklyPost} from '@/types/weekly';
+import type {PostsByMonth, WeeklyPost,Section} from '@/types/weekly';
 import dayjs from 'dayjs';
 import { getEnhancedCollection } from './content-utils'
 import type { EnhancedEntry } from './content-utils'
@@ -71,26 +71,49 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
     const postsByMonth: string[] = [];
     const baseDate = dayjs('2024-06-24');
     Object.keys(weeklyData)
-        .sort()
-        .forEach((week) => {
+            .sort()
+            .forEach((week) => {
             const items = weeklyData[week];
             const contentParts: string[] = [];
             const tags: Set<string> = new Set();
             const source: Set<string> = new Set();
             const categories: Record<string, string[]> = {};
+            const sections: Section[] = [];
+            let totalWordCount: number = 0;
+            let lastUpdated: Date | undefined = undefined;
+
+            // 首先处理每个 item 并创建对应的 section
             items.forEach((item) => {
                 const category = item.data.category;
                 if (!categories[category]) {
                     categories[category] = [];
                 }
                 const contentWithoutFrontmatter = removeFrontmatter(item.body);
-                categories[category].push('\n',contentWithoutFrontmatter);
+                categories[category].push('\n', contentWithoutFrontmatter);
+
+                // 为每个 item 创建一个 section
+                sections.push({
+                    content: contentWithoutFrontmatter,
+                    tags: item.data.tags,
+                    category: item.data.category,
+                    source: item.data.source
+                });
 
                 item.data.tags.forEach((tag) => tags.add(tag));
                 source.add(item.data.source);
+                
+                if (item.data.lastUpdated) {
+                    if (!lastUpdated || item.data.lastUpdated > lastUpdated) {
+                        lastUpdated = item.data.lastUpdated;
+                    }
+                }
+                
+                if (item.data.wordCount) {
+                    totalWordCount += item.data.wordCount;
+                }
             });
             
-            // 按照固定的 category 顺序拼接内容
+            // 按照固定的 category 顺序处理内容
             categoryOrder.forEach((category) => {
                 if (categories[category]) {
                     contentParts.push(`\n## ${category} \n`);
@@ -117,6 +140,12 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
                     slug: `${weekNumber}`,
                     category: undefined,
                 }),
+                lastUpdated,
+                wordCount: totalWordCount || undefined,
+                sections: sections.sort((a, b) => {
+                    // 按照 categoryOrder 的顺序排序 sections
+                    return categoryOrder.indexOf(a.category || '') - categoryOrder.indexOf(b.category || '')
+                })
             });
         });
     return {posts, postsByMonth};

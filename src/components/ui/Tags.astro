@@ -1,5 +1,6 @@
 ---
 import Tooltip from './Tooltip.astro'; // 引入 Tooltip 组件
+import { cn } from '@/lib/utils';
 
 interface TooltipProps {
     maxWidth?: string;
@@ -121,14 +122,27 @@ const tagThemes = visibleTags.map(() => {
     usedThemes.push(theme);
     return theme;
 });
+
+const baseTagClasses = cn(
+    'text-xs px-2 py-0.5 rounded border',
+    'backdrop-blur-sm transition-all duration-300',
+    'hover:border-white/20 hover:scale-105'
+);
+
+const remainingTagClasses = cn(
+    'text-xs px-2 py-0.5 rounded',
+    'bg-gradient-to-br from-gray-500/10 to-gray-500/5',
+    'text-gray-400 border border-gray-500/20',
+    'backdrop-blur-sm',
+    'hover:from-gray-500/20 hover:to-gray-500/10',
+    'transition-all duration-300'
+);
 ---
 
 <div class="flex flex-wrap gap-2 items-center" data-name="tags-container">
     {visibleTags.map((tag, index) => (
         <span
-            class={`text-xs px-2 py-0.5 rounded border ${themes[tagThemes[index]]}
-                   backdrop-blur-sm transition-all duration-300
-                   hover:border-white/20 hover:scale-105`}
+            class={cn(baseTagClasses, themes[tagThemes[index]])}
             data-name={`tag-${index}`}
             data-theme={tagThemes[index]}
         >
@@ -137,18 +151,8 @@ const tagThemes = visibleTags.map(() => {
     ))}
 
     {remainingTags.length > 0 && (
-        // <Tooltip content={remainingTags.join(', ')} {...tooltipProps}>
-            <span
-                class="text-xs px-2 py-0.5 rounded
-                       bg-gradient-to-br from-gray-500/10 to-gray-500/5
-                       text-gray-400 border border-gray-500/20
-                        backdrop-blur-sm
-                       hover:from-gray-500/20 hover:to-gray-500/10
-                       transition-all duration-300"
-                data-name="remaining-tags-count"
-            >
-                +{remainingTags.length}
-            </span>
-        // </Tooltip>
+        <span class={remainingTagClasses} data-name="remaining-tags-count">
+            +{remainingTags.length}
+        </span>
     )}
 </div> 

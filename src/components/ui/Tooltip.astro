@@ -1,4 +1,6 @@
 ---
+import { cn } from '@/lib/utils';
+
 interface TooltipProps {
     content: string;
     position?: 'top' | 'bottom' | 'left' | 'right';
@@ -25,60 +27,61 @@ const arrowStyles = {
     left: '-right-[6px] rotate-45 border-t border-r',
     right: '-left-[6px] rotate-45 border-b border-l'
 } as const;
+
+const tooltipContentClasses = cn(
+    'absolute hidden group-hover/tooltip:block z-[9999]',
+    'p-3 min-w-[680px]',
+    'bg-gray-900/95 dark:bg-gray-800/95',
+    'border border-white/10 dark:border-gray-700/50 rounded-lg',
+    'backdrop-blur-md backdrop-saturate-150',
+    'shadow-xl shadow-black/20',
+    'transform transition-all duration-200 ease-out',
+    'scale-95 group-hover:scale-100',
+    'opacity-0 group-hover:opacity-100'
+);
+
+const tagClasses = cn(
+    'px-2 py-0.5 text-sm rounded-md',
+    'bg-white/10 dark:bg-gray-700/50',
+    'text-gray-100 dark:text-gray-200',
+    'border border-white/5 dark:border-gray-600/30',
+    'whitespace-nowrap overflow-hidden text-ellipsis'
+);
 ---
 
 <div class='group/tooltip relative inline-block' data-name='tooltip-container'>
     <slot />
 
-    <div
-        class={`absolute ${positions[position]} hidden group-hover/tooltip:block z-[9999]
-               p-3 
-                min-w-[680px]
-               bg-gray-900/95 dark:bg-gray-800/95
-               border border-white/10 dark:border-gray-700/50 rounded-lg
-               backdrop-blur-md backdrop-saturate-150
-               shadow-xl shadow-black/20
-               transform transition-all duration-200 ease-out
-               scale-95 group-hover:scale-100
-               opacity-0 group-hover:opacity-100`}
-        style={`--columns: ${columns}`}
-        data-name='tooltip-content'
-    >
-        {/* Content Container */}
+    <div class={cn(tooltipContentClasses, positions[position])} style={`--columns: ${columns}`} data-name='tooltip-content'>
         <div class='relative z-[9999]'>
             <div 
-                class='grid gap-2 auto-rows-auto' 
+                class='grid gap-2 auto-rows-auto'
                 style={`grid-template-columns: repeat(var(--columns), minmax(0, 1fr))`}
                 data-name='tooltip-tags'
             >
                 {content.split(', ').map((tag) => (
-                    <span 
-                        class="px-2 py-0.5 text-sm rounded-md
-                               bg-white/10 dark:bg-gray-700/50
-                               text-gray-100 dark:text-gray-200
-                               border border-white/5 dark:border-gray-600/30
-                               whitespace-nowrap overflow-hidden text-ellipsis"
-                    >
-                        {tag}
-                    </span>
+                    <span class={tagClasses}>{tag}</span>
                 ))}
             </div>
         </div>
 
-        {/* Arrow */}
         <div
-            class={`absolute left-1/2 -translate-x-1/2 ${arrowStyles[position]}
-                   w-2.5 h-2.5
-                   bg-gray-900/95 dark:bg-gray-800/95
-                   border-white/10 dark:border-gray-700/50`}
+            class={cn(
+                'absolute left-1/2 -translate-x-1/2',
+                'w-2.5 h-2.5',
+                'bg-gray-900/95 dark:bg-gray-800/95',
+                'border-white/10 dark:border-gray-700/50',
+                arrowStyles[position]
+            )}
             data-name='tooltip-arrow'
         />
 
-        {/* Glass Effect */}
         <div
-            class='absolute inset-0 rounded-lg
-                   bg-gradient-to-t from-transparent via-white/[0.02] to-transparent
-                   pointer-events-none'
+            class={cn(
+                'absolute inset-0 rounded-lg',
+                'bg-gradient-to-t from-transparent via-white/[0.02] to-transparent',
+                'pointer-events-none'
+            )}
             data-name='tooltip-glass-effect'
         />
     </div>

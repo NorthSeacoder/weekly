@@ -9,6 +9,15 @@ export type WeeklyPost = {
     slug?: string;
     permalink: string;
     readingTime?: number;
+    wordCount?: number;
+    lastUpdated?: string;
+    sections: Section[];
+};
+export type Section = {
+    content: string;
+    tags: string[];
+    category?: string;
+    source?: string;
 };
 
 export type PostsByMonth = string[];
