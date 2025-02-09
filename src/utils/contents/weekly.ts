@@ -1,4 +1,5 @@
 import {getCachedData} from '@/lib/cache';
+import getReadingTime from 'reading-time';
 import type {PostsByMonth, WeeklyPost,Section} from '@/types/weekly';
 import dayjs from 'dayjs';
 import { getEnhancedCollection } from './content-utils'
@@ -129,6 +130,7 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
             postsByMonth.unshift(month);
             posts.unshift({
                 content: contentParts.join(''),
+                readingTime: getReadingTime(contentParts.join('')).text,
                 tags: Array.from(tags),
                 source: Array.from(source),
                 id: month,
@@ -140,7 +142,7 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
                     slug: `${weekNumber}`,
                     category: undefined,
                 }),
-                lastUpdated,
+                lastUpdated:dayjs(lastUpdated).format('YYYY-MM-DD HH:mm:ss'),
                 wordCount: totalWordCount || undefined,
                 sections: sections.sort((a, b) => {
                     // 按照 categoryOrder 的顺序排序 sections

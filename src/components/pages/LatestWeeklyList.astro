@@ -2,6 +2,7 @@
 import { getWeeklyPosts } from '@/src/utils/contents/weekly'
 import StatCard from '~/components/ui/StatCard.astro'
 import Button from '~/components/ui/Button.astro'
+import StarBorder from '~/components/ui/StarBorder.astro'
 
 const weekly = await getWeeklyPosts()
 const latestWeeklyList = weekly.slice(0, 12);
@@ -24,9 +25,9 @@ const latestWeeklyList = weekly.slice(0, 12);
             ))}
         </ul>
         <div class="mt-8 text-center">
-            <Button href="/weekly">
+            <StarBorder href="/weekly">
                 更多内容
-            </Button>
+            </StarBorder>
         </div>
     </div>
 </section> 

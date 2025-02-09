@@ -8,7 +8,7 @@ export type WeeklyPost = {
     id?: string;
     slug?: string;
     permalink: string;
-    readingTime?: number;
+    readingTime?: string;
     wordCount?: number;
     lastUpdated?: string;
     sections: Section[];

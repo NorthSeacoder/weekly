@@ -1,72 +1,100 @@
 ---
-import { Icon } from 'astro-icon/components';
-
+import {Icon} from 'astro-icon/components';
+import {cn} from '@/lib/utils';
 import Tags from '~/components/ui/Tags.astro';
 
-import { getPermalink } from '~/utils/permalinks';
+import {getPermalink} from '~/utils/permalinks';
 
 import type {WeeklyPost} from '@/types/weekly';
-import { remark } from 'remark';
+import {remark} from 'remark';
 import html from 'remark-html';
 
 export interface Props {
-  post: WeeklyPost;
+    post: WeeklyPost;
 }
 async function processMarkdown(markdownString) {
-  const result = await remark()
-    .use(html)
-    .process(markdownString);
-  return result.toString();
+    const result = await remark().use(html).process(markdownString);
+    return result.toString();
 }
 
-const { post } = Astro.props;
-const {content,...rest} = post
-const contentHtml = await processMarkdown(content);
-console.log('rest',rest)
+const {post} = Astro.props;
+const sections = await Promise.all(
+    post.sections.map(async (section) => ({
+        content: await processMarkdown(section.content),
+        tags: section.tags,
+        category: section.category,
+        source: section.source
+    }))
+);
 ---
 
-<section class="py-8 sm:py-16 lg:py-20 mx-auto">
-  <article>
-    <header
-      class='intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'
-    >
-      <div class="flex justify-between flex-col sm:flex-row max-w-3xl mx-auto mt-0 mb-2 px-4 sm:px-6 sm:items-center">
-        <p>
-          <Icon name="tabler:clock" class="w-4 h-4 inline-block -mt-0.5 dark:text-gray-400" />
-          <time datetime={String(post.date)} class="inline-block">{post.date}</time>
-          {
-            post.category && (
-              <>
-                <a class="hover:underline inline-block" href={getPermalink(post.category, 'category')}>
-                  {post.category}
-                </a>
-              </>
-            )
-          }
-          {
-            post.readingTime && (
-              <>
-                &nbsp;· <span>{post.readingTime}</span> min read
-              </>
-            )
-          }
-        </p>
-      </div>
-
-      <h1
-        class="px-4 sm:px-6 max-w-3xl mx-auto text-4xl md:text-5xl font-bold leading-tighter tracking-tighter font-heading"
-      >
-        {post.title}
-      </h1>
-
-    </header>
-    <div
-      class="mx-auto px-6 sm:px-6 max-w-3xl prose prose-md lg:prose-xl dark:prose-invert dark:prose-headings:text-slate-300 prose-headings:font-heading prose-headings:leading-tighter prose-headings:tracking-tighter prose-headings:font-bold prose-a:text-primary dark:prose-a:text-blue-400 prose-img:rounded-md prose-img:shadow-lg mt-8 prose-headings:scroll-mt-[80px] prose-li:my-0"
-    >
-    <Fragment set:html={contentHtml} />
-    </div>
-    <div class="mx-auto px-6 sm:px-6 max-w-3xl mt-8 flex justify-between flex-col sm:flex-row">
-      <Tags tags={post.tags} maxVisible={200} />
-    </div>
-  </article>
+<section class='py-8 sm:py-16 lg:py-20 mx-auto'>
+    <article>
+        <header class='space-y-4 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
+            <h1
+                class='px-4 sm:px-6 max-w-3xl mx-auto text-4xl md:text-5xl font-bold leading-tighter tracking-tighter font-heading'>
+                {post.title}
+            </h1>
+            <div
+                class='flex justify-between flex-col sm:flex-row max-w-3xl mx-auto mt-0 mb-2 px-4 sm:px-6 sm:items-center'>
+                <span class='flex items-center'>
+                    <Icon name='tabler:calendar' class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400' />
+                    <time datetime={String(post.date)} class='inline-block'>{post.date}</time>
+                </span>
+                {
+                    post.wordCount && (
+                        <span class='flex items-center'>
+                            <Icon
+                                name='tabler:file-word'
+                                class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400'
+                            />
+                            {post.wordCount.toLocaleString()} words
+                        </span>
+                    )
+                }
+                {
+                    post.readingTime && (
+                        <span class='flex items-center'>
+                            <Icon name='tabler:clock' class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400' />
+                            {post.readingTime}
+                        </span>
+                    )
+                }
+                {
+                    post.lastUpdated && (
+                        <span class='flex items-center'>
+                            <Icon name='tabler:history' class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400' />
+                            <time datetime={String(post.lastUpdated)} class='inline-block'>
+                                Updated {post.lastUpdated}
+                            </time>
+                        </span>
+                    )
+                }
+            </div>
+        </header>
+        <div
+            class='mx-auto px-6 sm:px-6 max-w-3xl prose prose-md lg:prose-xl dark:prose-invert dark:prose-headings:text-slate-300 prose-headings:font-heading prose-headings:leading-tighter prose-headings:tracking-tighter prose-headings:font-bold prose-a:text-primary dark:prose-a:text-blue-400 prose-img:rounded-md prose-img:shadow-lg mt-8 prose-headings:scroll-mt-[80px] prose-li:my-0'>
+            {
+                sections.map((section, index) => (
+                    <section
+                        class={cn(
+                            'mb-4 p-6 rounded-lg',
+                            'border border-slate-400 dark:border-dark-lighter',
+                            'hover:scale-101 backdrop-blur-sm transition-colors duration-300',
+                            'bg-white dark:bg-dark',
+                            'text-gray-900/90 dark:text-gray-300',
+                            'hover:border-purple-300 dark:hover:border-purple-500/30'
+                        )}>
+                        <div class='mb-4'>
+                            <Tags tags={section.tags} maxVisible={8} />
+                        </div>
+                        <Fragment class='break-all' set:html={section.content} />
+                    </section>
+                ))
+            }
+        </div>
+        <div class='mx-auto px-6 sm:px-6 max-w-3xl mt-8 flex justify-between flex-col sm:flex-row'>
+            <Tags tags={post.tags} maxVisible={200} />
+        </div>
+    </article>
 </section>
