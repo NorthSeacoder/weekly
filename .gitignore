@@ -135,3 +135,5 @@ index.json
 .env.sentry-build-plugin
 
 www.igloo.inc/**
+
+.astro

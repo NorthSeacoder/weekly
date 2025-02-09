@@ -1,0 +1,154 @@
+---
+import Tooltip from './Tooltip.astro'; // 引入 Tooltip 组件
+
+interface TooltipProps {
+    maxWidth?: string;
+    columns?: number;
+    position?: 'top' | 'bottom' | 'left' | 'right';
+}
+
+interface TagProps {
+    tags?: string[];
+    maxVisible?: number;
+    tooltipProps?: TooltipProps;
+}
+
+const { 
+    tags = [], 
+    maxVisible = 2,
+    tooltipProps = {} 
+} = Astro.props as TagProps;
+
+// 首先计算可见和剩余标签
+const visibleTags = tags.slice(0, maxVisible);
+const remainingTags = tags.slice(maxVisible);
+
+const themes = {
+    // Status Themes
+    'new': 'bg-green-500 bg-opacity-20 text-green-400 border-green-500',
+    'alert': 'bg-red-500 bg-opacity-20 text-red-400 border-red-500',
+    'update': 'bg-blue-500 bg-opacity-20 text-blue-400 border-blue-500',
+    'warning': 'bg-yellow-500 bg-opacity-20 text-yellow-400 border-yellow-500',
+    'critical': 'bg-orange-500 bg-opacity-20 text-orange-400 border-orange-500',
+    'stable': 'bg-teal-500 bg-opacity-20 text-teal-400 border-teal-500',
+    'beta': 'bg-pink-500 bg-opacity-20 text-pink-400 border-pink-500',
+    'deprecated': 'bg-gray-500 bg-opacity-20 text-gray-400 border-gray-500',
+
+    // Color Themes
+    'violet': 'bg-violet-500 bg-opacity-20 text-violet-400 border-violet-500',
+    'indigo': 'bg-indigo-500 bg-opacity-20 text-indigo-400 border-indigo-500',
+    'purple': 'bg-purple-500 bg-opacity-20 text-purple-400 border-purple-500',
+    'fuchsia': 'bg-fuchsia-500 bg-opacity-20 text-fuchsia-400 border-fuchsia-500',
+    'rose': 'bg-rose-500 bg-opacity-20 text-rose-400 border-rose-500',
+    'cyan': 'bg-cyan-500 bg-opacity-20 text-cyan-400 border-cyan-500',
+    'emerald': 'bg-emerald-500 bg-opacity-20 text-emerald-400 border-emerald-500',
+    'amber': 'bg-amber-500 bg-opacity-20 text-amber-400 border-amber-500',
+    'lime': 'bg-lime-500 bg-opacity-20 text-lime-400 border-lime-500',
+    'sky': 'bg-sky-500 bg-opacity-20 text-sky-400 border-sky-500',
+
+    // Priority Themes
+    'p0': 'bg-red-600 bg-opacity-20 text-red-500 border-red-600',
+    'p1': 'bg-orange-600 bg-opacity-20 text-orange-500 border-orange-600',
+    'p2': 'bg-yellow-600 bg-opacity-20 text-yellow-500 border-yellow-600',
+    'p3': 'bg-green-600 bg-opacity-20 text-green-500 border-green-600',
+    'p4': 'bg-blue-600 bg-opacity-20 text-blue-500 border-blue-600',
+
+    // Environment Themes
+    'dev': 'bg-purple-600 bg-opacity-20 text-purple-500 border-purple-600',
+    'staging': 'bg-amber-600 bg-opacity-20 text-amber-500 border-amber-600',
+    'prod': 'bg-emerald-600 bg-opacity-20 text-emerald-500 border-emerald-600',
+    'test': 'bg-sky-600 bg-opacity-20 text-sky-600 border-sky-600',
+
+    // Status Extended
+    'pending': 'bg-yellow-400 bg-opacity-20 text-yellow-300 border-yellow-400',
+    'active': 'bg-green-400 bg-opacity-20 text-green-300 border-green-400',
+    'inactive': 'bg-gray-400 bg-opacity-20 text-gray-300 border-gray-400',
+    'archived': 'bg-stone-400 bg-opacity-20 text-stone-300 border-stone-400',
+    'draft': 'bg-slate-400 bg-opacity-20 text-slate-300 border-slate-400',
+
+    // Feature States
+    'experimental': 'bg-violet-400 bg-opacity-20 text-violet-300 border-violet-400',
+    'alpha': 'bg-rose-400 bg-opacity-20 text-rose-300 border-rose-400',
+    'rc': 'bg-amber-400 bg-opacity-20 text-amber-300 border-amber-400',
+    'ga': 'bg-emerald-400 bg-opacity-20 text-emerald-400 border-emerald-400',
+
+    // Technical Categories
+    'bug': 'bg-red-300 bg-opacity-20 text-red-200 border-red-300',
+    'feature': 'bg-blue-300 bg-opacity-20 text-blue-200 border-blue-300',
+    'enhancement': 'bg-green-300 bg-opacity-20 text-green-200 border-green-300',
+    'security': 'bg-orange-300 bg-opacity-20 text-orange-200 border-orange-300',
+    'performance': 'bg-indigo-300 bg-opacity-20 text-indigo-200 border-indigo-300',
+
+    // Data Categories
+    'sensitive': 'bg-red-700 bg-opacity-20 text-red-600 border-red-700',
+    'confidential': 'bg-purple-700 bg-opacity-20 text-purple-600 border-purple-700',
+    'internal': 'bg-blue-700 bg-opacity-20 text-blue-600 border-blue-700',
+    'public': 'bg-green-700 bg-opacity-20 text-green-600 border-green-700',
+
+    // Lifecycle States
+    'planning': 'bg-slate-500 bg-opacity-20 text-slate-400 border-slate-500',
+    'in-progress': 'bg-blue-500 bg-opacity-20 text-blue-400 border-blue-500',
+    'reviewing': 'bg-amber-500 bg-opacity-20 text-amber-400 border-amber-500',
+    'completed': 'bg-emerald-500 bg-opacity-20 text-emerald-400 border-emerald-500',
+    'cancelled': 'bg-red-500 bg-opacity-20 text-red-400 border-red-500',
+
+    // Custom Categories
+    'frontend': 'bg-cyan-600 bg-opacity-20 text-cyan-500 border-cyan-600',
+    'backend': 'bg-indigo-600 bg-opacity-20 text-indigo-500 border-indigo-600',
+    'database': 'bg-amber-600 bg-opacity-20 text-amber-500 border-amber-600',
+    'api': 'bg-green-600 bg-opacity-20 text-green-500 border-green-600',
+    'ui': 'bg-fuchsia-600 bg-opacity-20 text-fuchsia-500 border-fuchsia-600',
+    'ux': 'bg-rose-600 bg-opacity-20 text-rose-500 border-rose-600',
+};
+
+const getRandomTheme = (excludeThemes: string[] = []) => {
+    const availableThemes = Object.keys(themes).filter(t => !excludeThemes.includes(t));
+    if (availableThemes.length === 0) {
+        return Object.keys(themes)[0];
+    }
+    return availableThemes[Math.floor(Math.random() * availableThemes.length)];
+};
+
+// 用于存储已使用的主题
+const usedThemes: string[] = [];
+
+// 为每个可见标签生成唯一的主题
+const tagThemes = visibleTags.map(() => {
+    let theme;
+    do {
+        theme = getRandomTheme(usedThemes);
+    } while (usedThemes.includes(theme));
+    usedThemes.push(theme);
+    return theme;
+});
+---
+
+<div class="flex flex-wrap gap-2 items-center" data-name="tags-container">
+    {visibleTags.map((tag, index) => (
+        <span
+            class={`text-xs px-2 py-0.5 rounded border ${themes[tagThemes[index]]}
+                   backdrop-blur-sm transition-all duration-300
+                   hover:border-white/20 hover:scale-105`}
+            data-name={`tag-${index}`}
+            data-theme={tagThemes[index]}
+        >
+            {tag}
+        </span>
+    ))}
+
+    {remainingTags.length > 0 && (
+        // <Tooltip content={remainingTags.join(', ')} {...tooltipProps}>
+            <span
+                class="text-xs px-2 py-0.5 rounded
+                       bg-gradient-to-br from-gray-500/10 to-gray-500/5
+                       text-gray-400 border border-gray-500/20
+                        backdrop-blur-sm
+                       hover:from-gray-500/20 hover:to-gray-500/10
+                       transition-all duration-300"
+                data-name="remaining-tags-count"
+            >
+                +{remainingTags.length}
+            </span>
+        // </Tooltip>
+    )}
+</div> 

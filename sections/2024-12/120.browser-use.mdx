@@ -12,7 +12,7 @@ title: Browser Use - 让AI代理轻松操控浏览器的自动化工具
 
 一个强大的浏览器自动化工具，让AI代理能够轻松地与浏览器进行交互。基于Python开发，支持多种LLM模型，可实现复杂的网页操作任务。
 
-## 核心特性
+#### 核心特性
 - 支持视觉识别和HTML提取
 - 自动管理多标签页
 - 记录点击元素的XPath路径
@@ -21,7 +21,7 @@ title: Browser Use - 让AI代理轻松操控浏览器的自动化工具
 - 兼容多种LLM模型
 - 支持并行化处理
 
-## 技术实现
+#### 技术实现
 - 基于Playwright实现浏览器控制
 - 集成LangChain框架
 - 支持异步并发操作
@@ -29,7 +29,7 @@ title: Browser Use - 让AI代理轻松操控浏览器的自动化工具
 - 实现自定义动作注册
 - 内置遥测数据收集
 
-## 应用场景
+#### 应用场景
 ```python
 # 示例：自动化搜索航班
 from langchain_openai import ChatOpenAI
@@ -47,7 +47,7 @@ async def main():
 asyncio.run(main())
 ```
 
-## 思维导图
+#### 思维导图
 ```
 Browser Use功能
 ├── 核心能力
@@ -64,24 +64,24 @@ Browser Use功能
     └── 性能优化
 ```
 
-## 关键术语解释
+#### 关键术语解释
 - Playwright: 现代化的浏览器自动化框架
 - LangChain: LLM应用开发框架
 - XPath: XML路径语言，用于定位网页元素
 - Browser Context: 浏览器上下文，用于隔离会话
 - Custom Actions: 用户自定义的浏览器操作
 
-## 核心问题问答
+#### 核心问题问答
 Q: 如何添加自定义操作?
 A: 可以使用`@controller.action`装饰器注册自定义函数，支持同步和异步函数，还可以使用Pydantic定义参数模型。
 
 Q: 如何实现并行处理?
 A: 可以创建多个Browser Context并行处理任务，每个Context都是独立的会话环境。
 
-## 扩展资源
+#### 扩展资源
 - [官方文档](https://browser-use.com/) - 详细使用指南
 - [示例代码](https://github.com/browser-use/browser-use/tree/main/examples) - ���用示例
 - [Discord社区](https://discord.gg/browser-use) - 技术交流
 
-## 总结语
+#### 总结语
 Browser Use为AI代理提供了一个强大而灵活的浏览器控制接口，通过简单的API让AI能够执行复杂的网页操作任务，大大降低了AI自动化的开发门槛。 

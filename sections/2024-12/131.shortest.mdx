@@ -12,7 +12,7 @@ title: Shortest - AI驱动的自然语言端到端测试框架
 
 一个创新的端到端测试框架，通过自然语言描述和AI能力实现测试用例的编写和执行。基于Playwright构建，支持GitHub 2FA认证，已获得1.3k stars。
 
-## 核心特性
+#### 核心特性
 
 - 自然语言测试描述
 - 基于Anthropic Claude的AI执行
@@ -23,7 +23,7 @@ title: Shortest - AI驱动的自然语言端到端测试框架
 - 完整的CI/CD集成
 - 自动化截图存储
 
-## 使用示例
+#### 使用示例
 
 ```typescript
 // 基础测试示例
@@ -53,7 +53,7 @@ shortest('Login to the app using username and password', {
 });
 ```
 
-## 技术优势
+#### 技术优势
 
 - 简化测试用例编写
 - 降低测试维护成本
@@ -64,7 +64,7 @@ shortest('Login to the app using username and password', {
 - 优秀的开发体验
 - 丰富的集成选项
 
-## 思维导图
+#### 思维导图
 Shortest框架
 ├── 测试编写
 │   ├── 自然语言
@@ -79,7 +79,7 @@ Shortest框架
     ├── 2FA认证
     └── 截图管理
 
-## 关键术语解释
+#### 关键术语解释
 
 - E2E Testing: 端到端测试，模拟用户行为的自动化测试
 - Playwright: 微软开发的浏览器自动化框架
@@ -87,7 +87,7 @@ Shortest框架
 - 2FA: 双因素认证
 - CI/CD: 持续集成/持续部署
 
-## 核心问题问答
+#### 核心问题问答
 
 Q: 如何处理GitHub 2FA认证?
 A: 框架提供了完整的2FA支持，用户只需配置OTP密钥，系统会自动处理认证流程。可以通过CLI工具`shortest --github-code --secret=<OTP_SECRET>`来设置。
@@ -95,12 +95,12 @@ A: 框架提供了完整的2FA支持，用户只需配置OTP密钥，系统会�
 Q: 测试失败时如何调试?
 A: 框架会自动保存测试执行过程的截图，存储在`.shortest/`目录下，同时提供详细的错误日志和调试信息。
 
-## 扩展资源
+#### 扩展资源
 
 - [快速开始](https://github.com/anti-work/shortest#quick-start) - 入门指南
 - [本地开发](https://github.com/anti-work/shortest#local-development-setup-guide) - 开发环境搭建
 - [CI配置](https://github.com/anti-work/shortest#ci-setup) - CI环境配置说明
 
-## 总结语
+#### 总结语
 
 Shortest通过将AI能力引入端到端测试领域，创新性地解决了测试用例编写和维护的难题。它不仅简化了测试流程，还提供了强大的扩展性和完善的工具链支持，是现代Web应用测试的理想选择。 

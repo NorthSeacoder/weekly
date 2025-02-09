@@ -12,28 +12,28 @@ title: City Roads - 优雅的城市道路可视化工具
 
 一款基于OpenStreetMap数据的城市道路可视化工具，可以一次性渲染城市中的所有道路，生成独特的艺术效果。
 
-## 核心特性
+#### 核心特性
 - 支持全球任意城市的道路可视化
 - 基于OpenStreetMap数据源
 - 提供简洁的用户界面
 - 支持自定义样式调整
 - 可导出高清图像
 
-## 技术实现
+#### 技术实现
 - 使用Vue.js构建前端界面
 - 通过Overpass API获取数据
 - 采用Protobuf格式缓存数据
 - 支持WebGL渲染加速
 - 实现增量式数据加载
 
-## 应用场景
+#### 应用场景
 - 城市规划可视化
 - 艺术创作素材
 - 地理数据分析
 - 城市发展研究
 - 装饰画制作
 
-## 思维导图
+#### 思维导图
 城市道路可视化
 ├── 数据获取
 │   ├── OpenStreetMap
@@ -48,24 +48,24 @@ title: City Roads - 优雅的城市道路可视化工具
     ├── 视图控制
     └── 图像导出
 
-## 关键术语解释
+#### 关键术语解释
 - OpenStreetMap: 开源地图数据项目
 - Overpass API: OSM数据查询接口
 - Protobuf: 高效的数据序列化格式
 - WebGL: Web图形库
 - Vector Graphics: 矢量图形
 
-## 核心问题问答
+#### 核心问题问答
 Q: 如何处理大规模城市数据?
 A: 项目使用Protobuf格式预缓存了3000多个大城市数据，同时支持增量式加载和WebGL加速渲染。
 
 Q: 对设备配置有什么要求?
 A: 一般城市在普通设备上都能流畅运行，但对于东京这样有140万道路段的超大城市，可能需要较好的硬件配置。
 
-## 扩展资源
+#### 扩展资源
 - [在线演示](https://anvaka.github.io/city-roads/) - 官方演示网站
 - [API文档](https://github.com/anvaka/city-roads/blob/main/API.md) - 开发接口文档
 - [OSM Wiki](https://wiki.openstreetmap.org/) - OpenStreetMap文档
 
-## 总结语
+#### 总结语
 City Roads项目通过优雅的可视化方式展现了城市道路网络的美感，既可用于实用的数据分析，也能创作出独特的艺术作品。 

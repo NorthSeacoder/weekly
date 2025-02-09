@@ -12,7 +12,7 @@ title: CSS Grid 布局技巧：实现按钮加载动画不跳动
 
 在前端开发中，按钮加载动画是一个常见的交互效果。然而，当加载动画出现时，按钮的宽度可能会发生变化，导致页面元素跳动，影响用户体验。 Wes Bos 在 Twitter 上分享了一个使用 CSS Grid 巧妙解决这一问题的方案。
 
-## 核心特性
+#### 核心特性
 
 - **CSS Grid 布局**
   - 利用 CSS Grid 强大的布局能力，将按钮文本和加载动画元素堆叠在同一位置。
@@ -24,7 +24,7 @@ title: CSS Grid 布局技巧：实现按钮加载动画不跳动
   - 方案确保按钮文本在加载状态下仍然可访问，符合 Web 可访问性原则。
   - 有利于屏幕阅读器等辅助技术解析页面内容。
 
-## 技术实现
+#### 技术实现
 
 该方案的核心 CSS 代码片段如下：
 
@@ -61,19 +61,19 @@ title: CSS Grid 布局技巧：实现按钮加载动画不跳动
 3. **隐藏加载动画:**  默认情况下，使用 `visibility: hidden` 隐藏 `.spinner` 元素。
 4. **加载状态显示:**  当按钮处于加载状态（例如添加 `loading` class）时，通过 CSS 规则 `.button.loading .spinner { visibility: visible; }` 显示加载动画。
 
-## 最佳实践
+#### 最佳实践
 
 - **SVG 动画:**  推荐使用 SVG 制作加载动画，具有体积小、可缩放、性能高等优点。
 - **语义化 HTML:**  使用具有语义的 HTML 标签，例如 `<button>` 元素，并合理使用 ARIA 属性增强可访问性。
 - **性能优化:**  避免使用复杂的 CSS 动画或 JavaScript 动画，保持加载动画的简洁高效。
 
-## 使用技巧
+#### 使用技巧
 
 - **Tailwind CSS:**  该方案可以集成到 Tailwind CSS 等 CSS 框架中，通过 Tailwind 的 utility classes 快速实现样式。
 - **React 组件:**  在 React 等组件化框架中，可以将该方案封装成可复用的 Button 组件，方便在项目中统一使用。
 - **状态管理:**  使用 JavaScript 或框架的状态管理机制（例如 React 的 `useState`）来控制按钮的 `loading` class，从而切换加载状态。
 
-## 核心问题问答
+#### 核心问题问答
 
 **Q: 为什么使用 `visibility: hidden` 而不是 `display: none`?**
 > A:  `visibility: hidden` 隐藏元素，但元素仍然占据文档流中的空间，而 `display: none` 会完全移除元素，导致布局重新计算。使用 `visibility: hidden` 可以保持按钮尺寸稳定，避免跳动。
@@ -84,12 +84,12 @@ title: CSS Grid 布局技巧：实现按钮加载动画不跳动
 **Q:  该方案是否适用于所有类型的按钮?**
 > A:  该方案适用于大多数按钮，包括文本按钮、图标按钮等。只需根据实际 HTML 结构和样式进行适当调整即可。
 
-## 扩展资源
+#### 扩展资源
 
 - [Wes Bos Twitter 链接](https://twitter-thread.com/t/1866895899554926912)
 - [CSS Grid 布局教程 - MDN Web Docs](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Grid_Layout)
 - [visibility - CSS - MDN Web Docs](https://developer.mozilla.org/zh-CN/docs/Web/CSS/visibility)
 
-## 总结语
+#### 总结语
 
 Wes Bos 分享的 CSS Grid 按钮加载动画方案，巧妙地利用了 CSS Grid 布局和 `visibility: hidden` 属性，实现了按钮加载动画的平滑过渡，避免了页面跳动问题，提升了用户体验。该方案简洁实用，易于理解和应用，值得前端开发者学习和借鉴。 

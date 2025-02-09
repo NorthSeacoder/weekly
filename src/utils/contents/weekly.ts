@@ -70,7 +70,6 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
     const posts: WeeklyPost[] = [];
     const postsByMonth: string[] = [];
     const baseDate = dayjs('2024-06-24');
-
     Object.keys(weeklyData)
         .sort()
         .forEach((week) => {
@@ -79,17 +78,18 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
             const tags: Set<string> = new Set();
             const source: Set<string> = new Set();
             const categories: Record<string, string[]> = {};
-
             items.forEach((item) => {
                 const category = item.data.category;
                 if (!categories[category]) {
                     categories[category] = [];
                 }
                 const contentWithoutFrontmatter = removeFrontmatter(item.body);
-                categories[category].push(contentWithoutFrontmatter);
+                categories[category].push('\n',contentWithoutFrontmatter);
+
                 item.data.tags.forEach((tag) => tags.add(tag));
                 source.add(item.data.source);
             });
+            
             // 按照固定的 category 顺序拼接内容
             categoryOrder.forEach((category) => {
                 if (categories[category]) {

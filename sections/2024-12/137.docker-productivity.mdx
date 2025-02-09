@@ -12,7 +12,7 @@ title: 提升生产力的必备Docker容器服务清单
 
 XDA整理的一份提升生产力的Docker容器服务清单，包含了从项目管理到知识管理的多个领域的优质工具，适合个人或小团队自托管使用。
 
-## 核心服务
+#### 核心服务
 
 - Nextcloud: 私有云存储与协作
 - Gitea: 轻量级代码托管平台
@@ -23,7 +23,7 @@ XDA整理的一份提升生产力的Docker容器服务清单，包含了从项�
 - Bitwarden: 密码管理器
 - Uptime Kuma: 服务监控工具
 
-## 部署示例
+#### 部署示例
 
 ```yaml
 # docker-compose.yml
@@ -52,7 +52,7 @@ services:
       - USER_GID=1000
 ```
 
-## 应用场景
+#### 应用场景
 
 - 个人知识管理
 - 团队协作开发
@@ -63,7 +63,7 @@ services:
 - 文档电子化
 - 代码版本控制
 
-## 思维导图
+#### 思维导图
 Docker生产力工具
 ├── 存储协作
 │   ├── Nextcloud
@@ -78,7 +78,7 @@ Docker生产力工具
     ├── Jellyfin
     └── Uptime Kuma
 
-## 关键术语解释
+#### 关键术语解释
 
 - Docker Compose: 多容器应用编排工具
 - Volume: Docker数据持久化存储
@@ -86,7 +86,7 @@ Docker生产力工具
 - Container: 容器化应用单元
 - Reverse Proxy: 反向代理服务
 
-## 核心问题问答
+#### 核心问题问答
 
 Q: 如何确保数据安全?
 A: 建议使用Docker卷进行数据持久化，定期备份重要数据，并使用反向代理和SSL证书保护服务访问。
@@ -94,12 +94,12 @@ A: 建议使用Docker卷进行数据持久化，定期备份重要数据，并�
 Q: 服务器配置要求如何?
 A: 基础服务运行需要2核CPU和4GB内存，存储空间根据使用需求决定，建议使用SSD提升性能。
 
-## 扩展资源
+#### 扩展资源
 
 - [Awesome-Selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted) - 自托管服务列表
 - [Docker Hub](https://hub.docker.com/) - 容器镜像仓库
 - [Traefik文档](https://doc.traefik.io/traefik/) - 反向代理配置
 
-## 总结语
+#### 总结语
 
 通过Docker容器化技术，我们可以轻松部署和管理各种提升生产力的工具服务。这些服务不仅可以提供完整的数据掌控权，还能根据个人或团队需求进行定制化配置，是打造个人生产力系统的理想选择。 

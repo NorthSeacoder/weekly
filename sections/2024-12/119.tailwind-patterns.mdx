@@ -12,21 +12,21 @@ title: TailwindCSS样式组合模式的最佳实践指南
 
 深入探讨TailwindCSS v4中样式组合的最佳实践模式，通过实际案例展示如何构建可维护和可复用的样式系统。
 
-## 核心特性
+#### 核心特性
 - 基于Props的变体样式管理
 - 内联CSS变量的灵活应用
 - 自定义数据属性状态控制
 - 组件插槽样式继承机制
 - 设计系统样式约束
 
-## 技术实现
+#### 技术实现
 - 使用class-variance-authority管理变体
 - 通过CSS变量实现动态样式
 - 利用data-属性控制状态样式
 - 实现组件间样式继承
 - 自定义主题变量定义
 
-## 最佳实践
+#### 最佳实践
 ```jsx
 // 使用class-variance-authority管理变体
 const chip = cva("rounded-full", {
@@ -59,7 +59,7 @@ const chip = cva("rounded-full", {
 />
 ```
 
-## 思维导图
+#### 思维导图
 ```
 TailwindCSS样式模式
 ├── 变体管理
@@ -75,24 +75,24 @@ TailwindCSS样式模式
     ├── 插槽机制
     └── 约束系统
 ```
-## 关键术语解释
+#### 关键术语解释
 - class-variance-authority: 类型安全的样式变体管理工具
 - CSS Variables: CSS自定义属性
 - Data Attributes: HTML5数据属性
 - Slot Pattern: 组件插槽模式
 - Design Constraints: 设计系统约束
 
-## 核心问题问答
+#### 核心问题问答
 Q: 如何管理组件的多个样式变体?
 A: 推荐使用class-variance-authority库，它提供了类型安全和统一的变体管理方案，避免手动处理样式组合的复杂性。
 
 Q: 如何实现动态样式变化?
 A: 可以通过CSS变量结合TailwindCSS的动态值语法，实现样式的动态调整，同时保持样式的可维护性。
 
-## 扩展资源
+#### 扩展资源
 - [TailwindCSS文档](https://tailwindcss.com/docs) - 官方文档
 - [class-variance-authority](https://cva.style/docs) - CVA文档
 - [Designing with TailwindCSS](https://tailwindui.com/course) - 设计课程
 
-## 总结语
+#### 总结语
 通过采用这些组合模式，开发者可以构建出更加可维护、可扩展的TailwindCSS样式系统，同时保持代码的简洁性和类型安全性。 
