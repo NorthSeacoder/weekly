@@ -27,37 +27,8 @@ title: {突出核心价值的中文标题}
   ### [{标题}]({原始URL})
 - Image (if available)
   ![img]({图片URL})
-- Core value overview (1-2 concise sentences)
-- Select 2-3 most relevant section headings from:
-  核心特性
-  关键功能
-  技术实现
-  架构设计
-  最佳实践
-  应用场景
-  开发流程
-  工作原理
-  性能优化
-  注意事项
-  工具特点
-  创新点
-  使用技巧
-  实战经验
-  解决方案
-  问题处理
+- Core value overview (5-9 concise sentences)
 
-3. Each Section Should
-- Include 3-5 key points
-- Provide detailed explanations
-- Focus on practical value
-- Use complete sentences
-- Avoid vague descriptions
-
-4. Additional Required Sections
-- 核心问题问答 (Q&A with direct quotes)
-- 关键术语解释 (Key terms definitions)
-- 扩展资源 (Related resources)
-- 总结语 (Value proposition)
 
 # Quality Standards
 1. Accuracy

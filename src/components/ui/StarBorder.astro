@@ -36,9 +36,9 @@ const starEffectClasses = {
 
 const contentClasses = cn(
     'relative z-1',
-    'bg-gradient-to-b from-black to-gray-900',
-    'border border-gray-800',
-    'text-white text-center text-[16px]',
+    'bg-white dark:bg-dark',
+    'border border-dark',
+    'text-muted dark:text-slate-300 text-center text-[16px]',
     'py-[16px] px-[26px] rounded-[20px]'
 );
 ---
@@ -66,31 +66,3 @@ const contentClasses = cn(
         <slot />
     </div>
 </Component>
-
-<style>
-    @keyframes star-movement-bottom {
-        from {
-            transform: translateX(-100%) rotate(0deg);
-        }
-        to {
-            transform: translateX(0) rotate(360deg);
-        }
-    }
-
-    @keyframes star-movement-top {
-        from {
-            transform: translateX(0) rotate(0deg);
-        }
-        to {
-            transform: translateX(100%) rotate(-360deg);
-        }
-    }
-
-    .animate-star-movement-bottom {
-        animation: star-movement-bottom linear infinite;
-    }
-
-    .animate-star-movement-top {
-        animation: star-movement-top linear infinite;
-    }
-</style> 
