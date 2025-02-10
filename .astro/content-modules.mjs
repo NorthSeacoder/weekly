@@ -499,5 +499,15 @@ export default new Map([
 ["sections/2024-12/145.readwise-leaderboard.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2024-12%2F145.readwise-leaderboard.mdx&astroContentModuleFlag=true")],
 ["sections/2024-12/148.roadmap-ui.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2024-12%2F148.roadmap-ui.mdx&astroContentModuleFlag=true")],
 ["sections/2024-12/146.deepseek-cline.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2024-12%2F146.deepseek-cline.mdx&astroContentModuleFlag=true")],
-["sections/2024-12/147.yzycolour-ai.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2024-12%2F147.yzycolour-ai.mdx&astroContentModuleFlag=true")]]);
+["sections/2024-12/147.yzycolour-ai.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2024-12%2F147.yzycolour-ai.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/008.flexbox-labs.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F008.flexbox-labs.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/009.websitevice.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F009.websitevice.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/010.toolhub.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F010.toolhub.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/012.ai-prompt-collection.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F012.ai-prompt-collection.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/013.golden-decade-career.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F013.golden-decade-career.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/014.xiaohongshu-tips.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F014.xiaohongshu-tips.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/015.awesome-deepseek-integration.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F015.awesome-deepseek-integration.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/016.feishu-deepseek-templates.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F016.feishu-deepseek-templates.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/017.flatlogic-templates.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F017.flatlogic-templates.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/018.ezbookkeeping.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F018.ezbookkeeping.mdx&astroContentModuleFlag=true")]]);
 		

@@ -14,7 +14,7 @@ When analyzing and documenting technical content, always follow this structure:
 1. Frontmatter (Required)
 ```mdx
 ---
-tags: [3-5个技术领域标签]
+tags: [3-5个技术领域标签, 例如: 编程语言, 云计算, 人工智能]
 category: [工具/资源/教程/开源/AI/博主/Prompt]
 source: [website/github/blog/chrome/codepen]
 date: {日期 YYYY-MM-DD}
@@ -27,7 +27,7 @@ title: {突出核心价值的中文标题}
   ### [{标题}]({原始URL})
 - Image (if available)
   ![img]({图片URL})
-- Core value overview (5-9 concise sentences)
+- Core value overview (5-9句简洁概括文章核心价值和读者收益)
 
 
 # Quality Standards
@@ -47,7 +47,7 @@ title: {突出核心价值的中文标题}
 - Focus on real-world applications
 
 4. Completeness
-- Cover 90%+ of key information
+- Cover 90%以上的关键信息, 确保主题覆盖全面
 - Address core concepts thoroughly
 - Include all required sections
 
@@ -59,18 +59,21 @@ title: {突出核心价值的中文标题}
 # Writing Style
 - Use professional technical tone
 - Write concise and clear sentences
-- Prioritize practical code examples
-- Ensure content is actionable
 
 # Response Format
-Always structure responses in proper markdown format with appropriate headings, lists, and code blocks.
+Always structure responses in proper markdown format
 
-# Code Examples
-When including code:
-- Add relevant comments
-- Focus on practical implementations
-- Provide context for usage
-- Use proper syntax highlighting
+# Filename Generation
+- 生成的周刊内容 **必须** 是一个完整的 MDX 文件内容。
+- 文件名格式: `[序号].[根据内容生成的文件名].mdx`
+    - `[序号]`:  由用户提供，例如 `008`。
+    - `[根据内容生成的文件名]`:  **根据文章标题** 生成文件名，步骤如下：
+        1.  提取文章标题中的关键词。
+        2.  将关键词转换为小写。
+        3.  将空格替换为连字符 `-`。
+        4.  移除任何特殊字符或标点符号。
+        5.  文件名长度尽量控制在 10-20 个字符以内，保证简洁性。
+        6.  **示例:**  如果标题是 "Flexbox-Labs：可视化 CSS Flexbox 布局生成器，实时预览，高效学习"，则生成的文件名可以是 `flexbox-labs.mdx`。
 
 # Error Handling
 If source material is unclear or incomplete:
