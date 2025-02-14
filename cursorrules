@@ -15,8 +15,8 @@ When analyzing and documenting technical content, always follow this structure:
 ```mdx
 ---
 tags: [3-5个技术领域标签, 例如: 编程语言, 云计算, 人工智能]
-category: [工具/资源/教程/开源/AI/博主/Prompt]
-source: [website/github/blog/chrome/codepen]
+category: {工具/资源/教程/开源/AI/博主/Prompt 多选一}
+source: {website/github/blog/chrome/codepen 多选一}
 date: {日期 YYYY-MM-DD}
 title: {突出核心价值的中文标题}
 ---

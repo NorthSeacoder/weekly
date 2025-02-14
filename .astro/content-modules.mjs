@@ -509,5 +509,9 @@ export default new Map([
 ["sections/2025-02/015.awesome-deepseek-integration.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F015.awesome-deepseek-integration.mdx&astroContentModuleFlag=true")],
 ["sections/2025-02/016.feishu-deepseek-templates.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F016.feishu-deepseek-templates.mdx&astroContentModuleFlag=true")],
 ["sections/2025-02/017.flatlogic-templates.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F017.flatlogic-templates.mdx&astroContentModuleFlag=true")],
-["sections/2025-02/018.ezbookkeeping.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F018.ezbookkeeping.mdx&astroContentModuleFlag=true")]]);
+["sections/2025-02/018.ezbookkeeping.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F018.ezbookkeeping.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/020.trending-react-resources.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F020.trending-react-resources.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/021.thinkinai-tools.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F021.thinkinai-tools.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/022.cherry-studio-multi-llm-client.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F022.cherry-studio-multi-llm-client.mdx&astroContentModuleFlag=true")],
+["sections/2025-02/023.cherry-studio-knowledge-base.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=sections%2F2025-02%2F023.cherry-studio-knowledge-base.mdx&astroContentModuleFlag=true")]]);
 		
