@@ -1,0 +1,13 @@
+---
+tags: [Python库, 文本提取, PDF, OCR, 文档处理]
+category: 开源
+source: github
+date: 2025-02-17
+title: Kreuzberg：Python 文本提取库，支持 PDF/图片/Office 文档等多种格式
+---
+
+### [Kreuzberg - 统一的文本提取 Python 库](https://github.com/Goldziher/kreuzberg)
+
+![img](https://img.mengpeng.tech/i/2025/02/18/67b410e814c40.webp)
+
+Kreuzberg 是一个 Python 库，专注于从各种文档中提取文本。它提供了一个统一的异步接口，支持 PDF、图片、Office 文档等多种格式。  Kreuzberg 的主要特点包括：API 简洁易用、本地处理无需外部 API 或云服务、资源高效轻量、支持多种文档和文本格式、采用现代 Python 特性（async/await, type hints）以及宽松的开源许可。  该库专为 RAG (Retrieval Augmented Generation) 应用构建，侧重于本地处理和最小化依赖。  Kreuzberg 集成了 `pdfium2` (PDF 处理), Tesseract OCR (图片 OCR), Pandoc (文档格式转换) 等工具，支持 PDF, DOCX, PPTX, 图片, HTML, Markdown 等多种格式。  用户可以通过简单的 API 调用，实现从文件或字节内容中提取文本，并支持批量处理和配置 OCR 参数。  Kreuzberg 提供了完善的错误处理机制，并通过 `ExtractionResult` 对象返回提取的文本内容、MIME 类型和元数据。 
