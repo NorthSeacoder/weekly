@@ -1,0 +1,259 @@
+---
+tags: [前端开发, VSCode, 扩展开发, API, 编辑器API, 窗口API, 任务API, 调试API]
+category: 教程
+date: 2024-01-31
+title: 我不知道的 VSCode 扩展：API 的无限可能
+desc: 系统梳理 VSCode 扩展提供的各种 API，揭示 VSCode 扩展的无限潜能。
+---
+
+## 我不知道的 VSCode 扩展：API 的无限可能
+
+### 引言
+
+🌟 经过前面几篇文章的学习，相信你已经对 VSCode 扩展开发有了一定的了解，并掌握了一些常用的用户界面元素和交互方式。现在，让我们一起深入 VSCode 扩展的核心，探索 **API (应用程序编程接口)** 的无限可能！VSCode 提供了丰富的 API，允许扩展与 VSCode 的各个方面进行交互，从而实现高度定制化的功能。掌握这些 API，你将能够真正释放 VSCode 扩展的潜能，打造出强大的开发工具，彻底改变你的开发工作流程。今天，就让我们一起踏上 VSCode 扩展 API 的探索之旅！
+
+### VSCode 扩展 API 概览
+
+📚 VSCode 扩展 API 是一系列接口和方法，由 VSCode 官方提供，用于扩展与 VSCode 核心功能进行交互。通过这些 API，扩展可以访问和操作 VSCode 的编辑器、窗口、工作区、任务、调试等各个方面。VSCode 扩展 API 主要分为以下几个大类：
+
+-   **[vscode.window](https://code.visualstudio.com/api/references/vscode-api#window)**: 窗口 API，用于管理 VSCode 的窗口和用户界面元素，例如显示消息框、选择文件、创建 Webview、管理状态栏等。
+-   **[vscode.workspace](https://code.visualstudio.com/api/references/vscode-api#workspace)**: 工作区 API，用于管理 VSCode 的工作区和文件系统，例如访问工作区文件夹、监听文件变化、读写文件、管理配置等。
+-   **[vscode.editor](https://code.visualstudio.com/api/references/vscode-api#TextEditor)** (属于 `vscode.window`): 编辑器 API，用于操作 VSCode 的编辑器，例如获取/设置编辑器内容、选择文本、插入/删除文本、格式化代码、管理编辑器光标和视图状态等。
+-   **[vscode.languages](https://code.visualstudio.com/api/references/vscode-api#languages)**: 语言特性 API，用于扩展 VSCode 的语言支持，例如注册语言、提供代码补全、代码高亮、代码格式化、代码诊断、重构、跳转到定义等语言特性。
+-   **[vscode.debug](https://code.visualstudio.com/api/references/vscode-api#debug)**: 调试 API，用于扩展 VSCode 的调试功能，例如注册调试适配器、启动/停止调试会话、控制调试执行、访问调试状态等。
+-   **[vscode.tasks](https://code.visualstudio.com/api/references/vscode-api#tasks)**: 任务 API，用于集成外部工具和构建系统，例如定义和运行任务、监听任务执行状态、自定义任务输出等。
+-   **[vscode.scm](https://code.visualstudio.com/api/references/vscode-api#scm)**: 源代码管理 API，用于扩展 VSCode 的源代码管理功能，例如集成自定义 SCM 提供程序、访问 SCM 状态、执行 SCM 操作等。
+-   **[vscode.extensions](https://code.visualstudio.com/api/references/vscode-api#extensions)**: 扩展管理 API，用于管理 VSCode 的扩展，例如激活/禁用扩展、获取扩展信息、监听扩展状态变化等。
+-   **[vscode.authentication](https://code.visualstudio.com/api/references/vscode-api#authentication)**: 身份验证 API，用于实现扩展的身份验证功能，例如获取用户身份凭据、管理身份验证会话等。
+-   **[vscode.test](https://code.visualstudio.com/api/references/vscode-api#test)**: 测试 API，用于扩展 VSCode 的测试功能，例如注册测试提供程序、运行测试、查看测试结果等 (VSCode 1.65+)。
+-   **[vscode.chat](https://code.visualstudio.com/api/references/vscode-api#chat)**: 聊天 API，用于与聊天提供程序集成，例如实现聊天命令、处理聊天请求等 (VSCode 1.78+)。
+-   **[vscode.notebooks](https://code.visualstudio.com/api/references/vscode-api#notebooks)**: Notebook API，用于扩展 VSCode 的 Notebook 功能，例如创建自定义 Notebook 类型、操作 Notebook 文档、执行 Notebook Cell 等 (VSCode 1.55+)。
+-   **[vscode.interactive](https://code.visualstudio.com/api/references/vscode-api#interactive)**: 交互式会话 API，用于创建交互式会话，例如 REPL、交互式 Notebook 等 (VSCode 1.74+)。
+-   **[vscode.comments](https://code.visualstudio.com/api/references/vscode-api#comments)**: 评论 API，用于扩展 VSCode 的评论功能，例如添加自定义评论类型、管理评论线程、处理评论操作等 (VSCode 1.44+)。
+-   **[vscode.terminal](https://code.visualstudio.com/api/references/vscode-api#Terminal)** (属于 `vscode.window`): 终端 API，用于操作 VSCode 的集成终端，例如创建/销毁终端、发送命令到终端、接收终端输出等。
+
+以上只是 VSCode 扩展 API 的主要类别，每个类别下又包含大量的接口、方法、事件和数据类型。详细的 API 文档请参考 [VSCode Extension API Reference](https://code.visualstudio.com/api/references/vscode-api)。
+
+### 常用 API 示例
+
+🚀 接下来，我们将通过一些实际的例子，演示如何使用常用的 VSCode 扩展 API 来扩展 VSCode 的功能。
+
+#### 1. `vscode.window` API：与用户交互
+
+`vscode.window` API 提供了与用户交互的各种方法，例如显示消息框、选择文件、显示输入框等。
+
+##### 示例：显示信息提示框
+
+```typescript:src/extension.ts
+import * as vscode from 'vscode';
+
+export function activate(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('extension.showMessageBox', () => {
+        // 显示信息提示框
+        vscode.window.showInformationMessage('Hello VSCode API!');
+    });
+
+    context.subscriptions.push(disposable);
+}
+```
+
+这段代码注册了一个命令 `extension.showMessageBox`，当执行该命令时，会调用 `vscode.window.showInformationMessage()` 方法，显示一个信息提示框，内容为 "Hello VSCode API!"。
+
+##### 示例：选择文件
+
+```typescript:src/extension.ts
+import * as vscode from 'vscode';
+
+export function activate(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('extension.selectFile', async () => {
+        // 打开文件选择对话框
+        const fileUri = await vscode.window.showOpenDialog({
+            canSelectFiles: true,
+            canSelectFolders: false,
+            canSelectMany: false,
+            openLabel: '选择文件'
+        });
+
+        if (fileUri && fileUri[0]) {
+            vscode.window.showInformationMessage(`你选择了文件: ${fileUri[0].fsPath}`);
+        } else {
+            vscode.window.showInformationMessage('你取消了文件选择。');
+        }
+    });
+
+    context.subscriptions.push(disposable);
+}
+```
+
+这段代码注册了一个命令 `extension.selectFile`，当执行该命令时，会调用 `vscode.window.showOpenDialog()` 方法，打开文件选择对话框。用户选择文件后，会显示一个信息提示框，显示选择的文件路径。
+
+#### 2. `vscode.workspace` API：操作工作区
+
+`vscode.workspace` API 提供了访问和操作 VSCode 工作区的方法，例如获取工作区文件夹、监听文件变化、读写文件等。
+
+##### 示例：获取当前工作区文件夹路径
+
+```typescript:src/extension.ts
+import * as vscode from 'vscode';
+
+export function activate(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('extension.getWorkspaceFolder', () => {
+        // 获取当前工作区文件夹
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+
+        if (workspaceFolder) {
+            vscode.window.showInformationMessage(`当前工作区文件夹路径: ${workspaceFolder.uri.fsPath}`);
+        } else {
+            vscode.window.showInformationMessage('当前没有打开工作区文件夹。');
+        }
+    });
+
+    context.subscriptions.push(disposable);
+}
+```
+
+这段代码注册了一个命令 `extension.getWorkspaceFolder`，当执行该命令时，会获取当前工作区的第一个文件夹路径，并显示在信息提示框中。
+
+##### 示例：监听文件保存事件
+
+```typescript:src/extension.ts
+import * as vscode from 'vscode';
+
+export function activate(context: vscode.ExtensionContext) {
+    // 监听文件保存事件
+    vscode.workspace.onDidSaveTextDocument(document => {
+        vscode.window.showInformationMessage(`文件已保存: ${document.fileName}`);
+    });
+}
+```
+
+这段代码使用 `vscode.workspace.onDidSaveTextDocument()` 方法，监听文件保存事件。当有文件被保存时，会显示一个信息提示框，显示保存的文件名。
+
+#### 3. `vscode.editor` API (属于 `vscode.window`)：编辑文档内容
+
+`vscode.editor` API 提供了操作 VSCode 编辑器的方法，例如获取/设置编辑器内容、选择文本、插入/删除文本、格式化代码等。
+
+##### 示例：获取当前编辑器选中文本
+
+```typescript:src/extension.ts
+import * as vscode from 'vscode';
+
+export function activate(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('extension.getSelectedText', () => {
+        // 获取当前编辑器
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            // 获取选中文本
+            const selection = editor.selection;
+            const selectedText = editor.document.getText(selection);
+            vscode.window.showInformationMessage(`你选中的文本是: ${selectedText}`);
+        } else {
+            vscode.window.showInformationMessage('请先打开一个编辑器。');
+        }
+    });
+
+    context.subscriptions.push(disposable);
+}
+```
+
+这段代码注册了一个命令 `extension.getSelectedText`，当执行该命令时，会获取当前激活的编辑器，然后获取编辑器中选中的文本，并显示在信息提示框中。
+
+##### 示例：在编辑器中插入文本
+
+```typescript:src/extension.ts
+import * as vscode from 'vscode';
+
+export function activate(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('extension.insertText', () => {
+        // 获取当前编辑器
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            // 获取当前光标位置
+            const position = editor.selection.active;
+            // 插入文本
+            editor.edit(editBuilder => {
+                editBuilder.insert(position, 'Hello, VSCode API!');
+            });
+        } else {
+            vscode.window.showInformationMessage('请先打开一个编辑器。');
+        }
+    });
+
+    context.subscriptions.push(disposable);
+}
+```
+
+这段代码注册了一个命令 `extension.insertText`，当执行该命令时，会获取当前激活的编辑器，然后在当前光标位置插入文本 "Hello, VSCode API!"。
+
+#### 4. `vscode.languages` API：扩展语言特性
+
+`vscode.languages` API 允许你扩展 VSCode 的语言支持，例如提供代码补全、代码高亮、代码格式化、代码诊断等语言特性。
+
+##### 示例：注册代码补全
+
+```typescript:src/extension.ts
+import * as vscode from 'vscode';
+
+export function activate(context: vscode.ExtensionContext) {
+    // 注册代码补全
+    let disposable = vscode.languages.registerCompletionItemProvider(
+        'plaintext', // 针对 plaintext 语言
+        {
+            provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
+                // 创建补全项
+                const completionItem1 = new vscode.CompletionItem('Hello');
+                completionItem1.kind = vscode.CompletionItemKind.Text;
+                completionItem1.detail = 'Text Completion';
+                completionItem1.documentation = 'This is a text completion item.';
+
+                const completionItem2 = new vscode.CompletionItem('World');
+                completionItem2.kind = vscode.CompletionItemKind.Keyword;
+                completionItem2.detail = 'Keyword Completion';
+                completionItem2.documentation = 'This is a keyword completion item.';
+
+                return [completionItem1, completionItem2];
+            }
+        },
+        '.' // 触发补全的字符
+    );
+
+    context.subscriptions.push(disposable);
+}
+```
+
+这段代码使用 `vscode.languages.registerCompletionItemProvider()` 方法，为 `plaintext` 语言注册代码补全提供器。当在 `plaintext` 文件中输入 "." 字符时，会触发代码补全，显示 "Hello" 和 "World" 两个补全项。
+
+#### 5. `vscode.tasks` API：集成外部工具
+
+`vscode.tasks` API 允许你集成外部工具和构建系统到 VSCode 中，例如定义和运行任务、监听任务执行状态、自定义任务输出等。
+
+##### 示例：定义和运行简单的任务
+
+```typescript:src/extension.ts
+import * as vscode from 'vscode';
+
+export function activate(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('extension.runTask', async () => {
+        // 定义任务
+        const taskDefinition: vscode.TaskDefinition = { type: 'myTask' };
+        const task = new vscode.Task(
+            taskDefinition,
+            vscode.TaskScope.Workspace,
+            'My Task', // 任务名称
+            'myExtension', // 任务来源
+            new vscode.ShellExecution('echo Hello from VSCode Task!') // 任务执行命令
+        );
+
+        // 运行任务
+        await vscode.tasks.executeTask(task);
+    });
+
+    context.subscriptions.push(disposable);
+}
+```
+
+这段代码注册了一个命令 `extension.runTask`，当执行该命令时，会创建一个简单的任务，任务类型为 `myTask`，任务名称为 "My Task"，任务执行命令为 `echo Hello from VSCode Task!`。然后使用 `vscode.tasks.executeTask()` 方法运行该任务。任务执行结果将显示在 VSCode 的 "终端" 面板中。
+
+### 总结
+
+🎉 恭喜你，完成了 VSCode 扩展 API 的初步探索！本文只是冰山一角，VSCode 提供了极其丰富和强大的 API，等待你去挖掘和利用。通过学习和实践这些 API，你可以将 VSCode 打造成真正属于你自己的、高度定制化的开发利器。在接下来的学习中，建议你深入阅读 [VSCode Extension API Reference](https://code.visualstudio.com/api/references/vscode-api) 文档，并结合实际需求，尝试使用不同的 API 来扩展 VSCode 的功能。相信你一定能够创造出令人惊艳的 VSCode 扩展！
