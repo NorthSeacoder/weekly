@@ -13,13 +13,12 @@ tags:
         自动化,
         vscode-webview-ui-toolkit
     ]
-category: 教程
-date: 2024-02-06
+category: VSCode
+date: 2024-06-12
 title: 我不知道的 VSCode 扩展：效率利器：模板与工具
 desc: 介绍 VSCode 扩展开发中常用的模板和工具，例如 reactive-vscode, starter-vscode, vscode-webview-ui-toolkit 等等，帮助开发者提升开发效率和代码质量。
+slug: vscode-extension-10
 ---
-
-## 我不知道的 VSCode 扩展：效率利器：模板与工具
 
 ### 引言
 
@@ -95,20 +94,20 @@ npm install -g yo generator-code
 
 **示例 (使用 reactive-vscode 创建状态栏):**
 
-```typescript:extension.ts:blogs/vscode/10.我不知道的 VSCode 扩展：效率利器：模板与工具.mdx
-import { defineExtension, ref, useStatusBarItem } from 'reactive-vscode';
-import { StatusBarAlignment } from 'vscode';
+```typescript
+import {defineExtension, ref, useStatusBarItem} from 'reactive-vscode';
+import {StatusBarAlignment} from 'vscode';
 
 export = defineExtension(() => {
-  const counter = ref(0);
+    const counter = ref(0);
 
-  useStatusBarItem({
-    alignment: StatusBarAlignment.Right,
-    priority: 100,
-    text: () => `$(megaphone) Hello*${counter.value}`,
-  });
+    useStatusBarItem({
+        alignment: StatusBarAlignment.Right,
+        priority: 100,
+        text: () => `$(megaphone) Hello*${counter.value}`
+    });
 
-  // ... 其他扩展代码 ...
+    // ... 其他扩展代码 ...
 });
 ```
 
@@ -132,19 +131,22 @@ export = defineExtension(() => {
 
 **示例 (在 Webview 中使用 vscode-button):**
 
-```html:webview/index.html:blogs/vscode/10.我不知道的 VSCode 扩展：效率利器：模板与工具.mdx
+```html
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Webview</title>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@vscode/webview-ui-toolkit@1.4.0/dist/toolkit.min.js"></script>
-</head>
-<body>
-    <h1>Hello from Webview!</h1>
-    <vscode-button appearance="primary">Click Me</vscode-button>  <!-- 使用 vscode-button 组件 -->
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My Webview</title>
+        <script
+            type="module"
+            src="https://cdn.jsdelivr.net/npm/@vscode/webview-ui-toolkit@1.4.0/dist/toolkit.min.js"></script>
+    </head>
+    <body>
+        <h1>Hello from Webview!</h1>
+        <vscode-button appearance="primary">Click Me</vscode-button>
+        <!-- 使用 vscode-button 组件 -->
+    </body>
 </html>
 ```
 

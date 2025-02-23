@@ -1,12 +1,11 @@
 ---
 tags: [前端开发, VSCode, 扩展开发, API, 编辑器API, 窗口API, 任务API, 调试API]
-category: 教程
-date: 2024-01-31
+category: VSCode
+date: 2024-03-22
 title: 我不知道的 VSCode 扩展：API 的无限可能
 desc: 系统梳理 VSCode 扩展提供的各种 API，揭示 VSCode 扩展的无限潜能。
+slug: vscode-extension-04
 ---
-
-## 我不知道的 VSCode 扩展：API 的无限可能
 
 ### 引言
 
@@ -44,7 +43,7 @@ desc: 系统梳理 VSCode 扩展提供的各种 API，揭示 VSCode 扩展的无
 
 ##### 示例：显示信息提示框
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -61,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 ##### 示例：选择文件
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -93,7 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 ##### 示例：获取当前工作区文件夹路径
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -116,7 +115,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 ##### 示例：监听文件保存事件
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -135,7 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 ##### 示例：获取当前编辑器选中文本
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -160,7 +159,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 ##### 示例：在编辑器中插入文本
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -191,7 +190,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 ##### 示例：注册代码补全
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -229,7 +228,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 ##### 示例：定义和运行简单的任务
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {

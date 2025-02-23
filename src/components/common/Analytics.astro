@@ -1,9 +1,17 @@
 ---
-import { ANALYTICS } from 'weekly:config';
+import {ANALYTICS} from 'weekly:config';
+
+const isProduction = import.meta.env.MODE === 'production';
 ---
 
 {
-  ANALYTICS?.umami?.id ? (
-      <script is:inline async defer data-website-id={ANALYTICS.umami.id} src="https://umami.mengpeng.tech/script.js"></script>
+    isProduction && ANALYTICS?.umami?.id ? (
+        <script
+            is:inline
+            async
+            defer
+            data-website-id={ANALYTICS.umami.id}
+            src='https://umami.mengpeng.tech/script.js'
+        />
     ) : null
 }

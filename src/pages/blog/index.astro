@@ -1,0 +1,37 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import StatCard from '~/components/ui/StatCard.astro';
+import {getBlogPosts} from '@/src/utils/contents/blog';
+
+const blogList = await getBlogPosts();
+const metadata = {
+    title: '博客列表',
+    description: '博客列表',
+    openGraph: {
+        type: 'article'
+    }
+};
+---
+
+<Layout metadata={metadata}>
+    <section class='py-12 dark:bg-dark'>
+        <div class='container mx-auto px-4'>
+            {
+                Object.entries(blogList).map(([category, blogs]) => (
+                    <div class='mb-12'>
+                        <h2 class='text-2xl font-bold mb-4'>{category}</h2>
+                        <ul class='grid grid-cols-1 gap-6'>
+                            {blogs.sort((a, b) => Number(a.id) - Number(b.id)).map((blog) => (
+                                <li>
+                                <a href={blog.permalink} class='block'>
+                                    <StatCard title={blog.title} desc={blog.desc} date={blog.date} tags={blog.tags} />
+                                </a>
+                            </li>
+                        ))}
+                        </ul>
+                    </div>
+                ))
+            }
+        </div>
+    </section>
+</Layout>

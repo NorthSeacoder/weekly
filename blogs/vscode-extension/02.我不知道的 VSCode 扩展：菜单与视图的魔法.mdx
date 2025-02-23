@@ -1,12 +1,11 @@
 ---
 tags: [前端开发, VSCode, 扩展开发, 菜单, 视图, 状态栏]
-category: 教程
-date: 2024-01-29
+category: VSCode
+date: 2024-03-10
 title: 我不知道的 VSCode 扩展：菜单与视图的魔法
 desc: 探索 VSCode 扩展中菜单、树视图和状态栏的奥秘，让你的扩展更易用、更强大。
+slug: vscode-extension-02
 ---
-
-## 我不知道的 VSCode 扩展：菜单与视图的魔法
 
 ### 引言
 
@@ -20,7 +19,7 @@ desc: 探索 VSCode 扩展中菜单、树视图和状态栏的奥秘，让你的
 
 🧩 要为 VSCode 扩展添加右键菜单,我们需要在 package.json 文件中配置 menus contributes
 
-```json:package.json
+```json
 {
   "contributes": {
     "menus": {
@@ -55,7 +54,7 @@ desc: 探索 VSCode 扩展中菜单、树视图和状态栏的奥秘，让你的
 
 1. **修改 `package.json`**: 在 `contributes.menus.editor/context` 中添加配置：
 
-    ```json:package.json
+    ```json
     {
       "contributes": {
         "menus": {
@@ -83,7 +82,7 @@ desc: 探索 VSCode 扩展中菜单、树视图和状态栏的奥秘，让你的
 
 🏗️ 要为 VSCode 扩展添加树视图，我们需要使用 **`viewsContainers`** 和 **`views`** 两个 contributes，在 `package.json` 文件中进行配置。
 
-```json:package.json
+```json
 {
   "contributes": {
     "viewsContainers": { // 视图容器
@@ -125,7 +124,7 @@ desc: 探索 VSCode 扩展中菜单、树视图和状态栏的奥秘，让你的
 
 👨‍💻 仅在 package.json 中配置树视图是不够的,我们还需要提供树视图的数据。为此,我们需要实现 TreeDataProvider 接口,并将其注册到 VSCode。。
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 // 定义树视图的数据项类型
@@ -191,7 +190,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 🛠️ 要创建和管理状态栏，我们需要使用 `vscode.window.createStatusBarItem()` 方法。
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {

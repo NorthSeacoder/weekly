@@ -1,12 +1,11 @@
 ---
 tags: [前端开发, VSCode, 扩展开发, Webview, OutputChannel, 交互面板]
-category: 教程
-date: 2024-01-30
+category: VSCode
+date: 2024-03-15
 title: 我不知道的 VSCode 扩展：交互面板的无限可能
 desc: 探索 VSCode 扩展中 Webview 和 Output Channel 的强大功能，打造更丰富的用户交互体验。
+slug: vscode-extension-03
 ---
-
-## 我不知道的 VSCode 扩展：交互面板的无限可能
 
 ### 引言
 
@@ -20,7 +19,7 @@ desc: 探索 VSCode 扩展中 Webview 和 Output Channel 的强大功能，打�
 
 🛠️ 要创建和显示 Webview，我们需要使用 `vscode.window.createWebviewPanel()` 方法。
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -78,7 +77,7 @@ function getWebviewContent() {
 
 1. **扩展发送消息到 Webview**: 使用 `panel.webview.postMessage(message)` 方法，将消息发送到 Webview。`message` 可以是任意 JavaScript 对象。
 
-    ```typescript:src/extension.ts
+    ```typescript
     // ...
     panel.webview.html = getWebviewContent();
 
@@ -117,7 +116,7 @@ function getWebviewContent() {
 
 3. **Webview 发送消息到扩展**: 在 Webview 的 JavaScript 代码中，使用 `vscode.postMessage(message)` 方法，将消息发送回扩展。**注意：这里的 `vscode` 对象是由 VSCode 注入到 Webview 中的全局对象，需要确保 `enableScripts: true` 选项已启用**。
 
-    ```html:webview.html
+    ```html
     <!DOCTYPE html>
     <html>
     <head>
@@ -139,7 +138,7 @@ function getWebviewContent() {
 
 4. **扩展接收消息**: 在扩展代码中，监听 `panel.webview.onDidReceiveMessage` 事件，接收来自 Webview 的消息。
 
-    ```typescript:src/extension.ts
+    ```typescript
     // ...
     panel.webview.onDidReceiveMessage(
         message => {
@@ -186,7 +185,7 @@ function getWebviewContent() {
 
 🛠️ 要创建和显示输出通道，我们需要使用 `vscode.window.createOutputChannel()` 方法。
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {

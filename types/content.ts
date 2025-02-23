@@ -5,7 +5,7 @@ export interface Metadata {
     date: string;
     title: string;
     contentId: string;
-    lastUpdated: string;
+    lastUpdated?: string;
 }
 export interface CardInfo {
     metadata: Metadata;

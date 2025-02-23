@@ -9,6 +9,7 @@ const load = async function () {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     // continue regardless of error
+    console.error('Error loading images:', error);
   }
   return images;
 };

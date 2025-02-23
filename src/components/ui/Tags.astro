@@ -105,7 +105,7 @@ const themes = {
 const getRandomTheme = (excludeThemes: string[] = []) => {
     const availableThemes = Object.keys(themes).filter(t => !excludeThemes.includes(t));
     if (availableThemes.length === 0) {
-        return Object.keys(themes)[0];
+        return Object.keys(themes)[Math.floor(Math.random() * Object.keys(themes).length)];
     }
     return availableThemes[Math.floor(Math.random() * availableThemes.length)];
 };
@@ -113,12 +113,12 @@ const getRandomTheme = (excludeThemes: string[] = []) => {
 // 用于存储已使用的主题
 const usedThemes: string[] = [];
 
-// 为每个可见标签生成唯一的主题
+// 为每个可见标签生成主题，如果所有主题都被使用过，则重新开始
 const tagThemes = visibleTags.map(() => {
-    let theme;
-    do {
-        theme = getRandomTheme(usedThemes);
-    } while (usedThemes.includes(theme));
+    if (usedThemes.length === Object.keys(themes).length) {
+        usedThemes.length = 0; // 重置已使用的主题
+    }
+    let theme = getRandomTheme(usedThemes);
     usedThemes.push(theme);
     return theme;
 });

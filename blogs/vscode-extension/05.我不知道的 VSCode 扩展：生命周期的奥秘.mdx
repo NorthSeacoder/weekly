@@ -1,12 +1,11 @@
 ---
 tags: [前端开发, VSCode, 扩展开发, 生命周期, 激活, 加载, 运行, 卸载, Activation Events]
-category: 教程
-date: 2024-02-01
+category: VSCode
+date: 2024-04-01
 title: 我不知道的 VSCode 扩展：生命周期的奥秘
 desc: 深入剖析 VSCode 扩展的生命周期，掌握扩展运行的奥秘。
+slug: vscode-extension-05
 ---
-
-## 我不知道的 VSCode 扩展：生命周期的奥秘
 
 ### 引言
 
@@ -34,7 +33,7 @@ desc: 深入剖析 VSCode 扩展的生命周期，掌握扩展运行的奥秘。
 
 你可以在 `package.json` 中配置多个激活事件，当任何一个事件被触发时，扩展都会被激活。
 
-```json:package.json:blogs/vscode/05.我不知道的 VSCode 扩展：生命周期的奥秘.mdx
+```json
 {
   "name": "my-extension",
   "version": "0.0.1",
@@ -54,7 +53,7 @@ desc: 深入剖析 VSCode 扩展的生命周期，掌握扩展运行的奥秘。
 
 ⚙️ `activate()` 函数是扩展激活时执行的函数，它在 `extension.ts` 文件中定义 (通常是 `src/extension.ts`)。`activate()` 函数接收一个 `vscode.ExtensionContext` 类型的参数 `context`，通过 `context` 对象，你可以访问 VSCode 提供的各种 API，注册命令、视图、事件监听器等，并管理扩展的资源。
 
-```typescript:src/extension.ts:blogs/vscode/05.我不知道的 VSCode 扩展：生命周期的奥秘.mdx
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -106,7 +105,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 🚪 `deactivate()` 函数是扩展卸载时执行的函数，它是可选的。如果你需要在扩展卸载时执行一些清理工作，例如释放资源、保存状态、清理临时文件等，你可以在 `extension.ts` 文件中定义 `deactivate()` 函数。
 
-```typescript:src/extension.ts
+```typescript
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {

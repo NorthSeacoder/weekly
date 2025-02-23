@@ -3,29 +3,14 @@ import {Icon} from 'astro-icon/components';
 import {cn} from '@/lib/utils';
 import Tags from '~/components/ui/Tags.astro';
 
-import {getPermalink} from '~/utils/permalinks';
 
-import type {WeeklyPost} from '@/types/weekly';
-import {remark} from 'remark';
-import html from 'remark-html';
+import type {BlogPost} from '@/types/blog';
 
 export interface Props {
-    post: WeeklyPost;
-}
-async function processMarkdown(markdownString) {
-    const result = await remark().use(html).process(markdownString);
-    return result.value;
+    post: BlogPost;
 }
 
 const {post} = Astro.props;
-const sections = await Promise.all(
-    post.sections.map(async (section) => ({
-        content: await processMarkdown(section.content),
-        tags: section.tags,
-        category: section.category,
-        source: section.source
-    }))
-);
 ---
 
 <section class='py-8 sm:py-16 lg:py-20 mx-auto'>
@@ -73,29 +58,22 @@ const sections = await Promise.all(
                 } -->
             </div>
         </header>
+        <div class='mx-auto px-6 sm:px-6 max-w-3xl my-4  flex justify-between flex-col sm:flex-row'>
+            <Tags tags={post.tags} maxVisible={200} />
+        </div>
         <div
             class='mx-auto px-6 sm:px-6 max-w-3xl prose prose-md lg:prose-xl dark:prose-invert dark:prose-headings:text-slate-300 prose-headings:font-heading prose-headings:leading-tighter prose-headings:tracking-tighter prose-headings:font-bold prose-a:text-primary dark:prose-a:text-blue-400 prose-img:rounded-md prose-img:shadow-lg mt-8 prose-headings:scroll-mt-[80px] prose-li:my-0'>
-            {
-                sections?.map((section, index) => (
-                    <section
-                        class={cn(
-                            'mb-4 p-6 rounded-lg',
-                            'border border-slate-400 dark:border-dark-lighter',
-                            'hover:scale-101 backdrop-blur-sm transition-colors duration-300',
-                            'bg-white dark:bg-dark',
-                            'text-gray-900/90 dark:text-gray-300',
-                            'hover:border-purple-300 dark:hover:border-purple-500/30'
-                        )}>
-                        <div class='mb-4'>
-                            <Tags tags={section.tags} maxVisible={8} />
-                        </div>
-                        <Fragment class='break-all' set:html={section.content} />
-                    </section>
-                ))
-            }
-        </div>
-        <div class='mx-auto px-6 sm:px-6 max-w-3xl mt-8 flex justify-between flex-col sm:flex-row'>
-            <Tags tags={post.tags} maxVisible={200} />
+            <section
+                class={cn(
+                    'p-6 pt-0 rounded-lg ',
+                    'border border-slate-400 dark:border-dark-lighter',
+                    'hover:scale-101 backdrop-blur-sm transition-colors duration-300',
+                    'bg-white dark:bg-dark',
+                    'text-gray-900/90 dark:text-gray-300',
+                    'hover:border-purple-300 dark:hover:border-purple-500/30'
+                )}>
+                <Fragment class='break-all' set:html={post.content} />
+            </section>
         </div>
     </article>
 </section>

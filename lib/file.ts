@@ -8,6 +8,7 @@ export function getLastUpdatedTime(filePath: string) {
         const stats = fs.statSync(filePath);
         return stats.mtime.toISOString();
     } catch (error) {
+        console.error('Error getting last updated time:', error);
         return new Date().toISOString();
     }
 }
@@ -21,7 +22,7 @@ export function handleFile(filePath: string) {
                 ...data,
                 tags: data?.tags?.sort() ?? [],
                 contentId: path.basename(filePath, '.mdx').replace('.', '-'),
-                lastUpdated: getLastUpdatedTime(filePath)
+                // lastUpdated: getLastUpdatedTime(filePath)
             },
             content: fileContent
         };

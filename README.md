@@ -1,68 +1,62 @@
 # Weekly
 
-一个基于 Next.js 的个人周刊系统,用于分享和记录每周发现的有趣内容。支持 MDX 内容编写、标签分类、评论系统等功能。
+一个基于 **Astro** 的个人周刊系统，用于分享和记录每周发现的有趣内容。支持 MDX 内容编写、标签分类等功能。
 
 ## 核心功能
 
 ### 内容管理
 
--   MDX 内容编写与渲染
--   自动生成目录和导航
--   支持标签分类和筛选
--   支持按月份组织内容
--   支持博客和周刊两种内容类型
+-   **博客和周刊两种内容类型**: 支持发布博客文章和周刊内容，满足不同的内容发布需求。
+-   **Astro Content Collections**: 使用 Astro Content Collections 管理周刊和博客内容，提供类型安全和结构化的内容管理 (`src/content/config.ts`).
 
 ### 用户交互
 
--   集成 Giscus 评论系统
--   RSS 订阅支持
--   响应式设计
--   支持深色/浅色主题切换
+-   **RSS 订阅支持**: 提供 RSS 订阅功能，方便用户订阅最新的周刊内容。
+-   **响应式设计**: 支持响应式设计，在不同设备上提供良好的浏览体验。
+-   **深色/浅色主题切换**: 支持深色和浅色主题切换，满足不同用户的偏好。
 
 ### 数据分析
 
--   百度统计集成
--   Google Analytics 支持
--   Umami 分析集成
--   Sentry 错误追踪
+-   **Umami 分析集成**: 集成 Umami 分析 (`src/components/common/Analytics.astro`)，提供轻量级的网站分析方案。
+-   **Sentry 错误追踪**: 集成 Sentry 错误追踪 (根据之前的对话和代码推断).
 
 ### 自动化工具
 
--   AI 辅助内容生成
--   自动化部署流程
--   图片优化处理
--   内容同步工具
+-   **AI 辅助内容生成**: 提供 AI 辅助内容生成工具，提高内容创作效率 (例如 `scripts/generateDraft.ts`)。
+-   **自动化部署流程**: 使用 GitHub Actions 实现自动化部署，简化部署流程。
+-   **图片优化处理**: 提供图片优化处理工具 (例如 `scripts/convertImages.ts`)，减小图片体积，提升网站性能。
+-   **周刊/博客快速创建工具**: 提供命令行工具 (`create-weekly.mjs`, `create-blog.mjs`) 快速创建内容模板 (如果存在于仓库中，根据之前的 `README-next.md` 推断).
 
 ## 快速开始
 
-1. 安装依赖:
+1.  **安装依赖:**
 
-```bash
-pnpm install
-```
+    ```bash
+    pnpm install
+    ```
 
-2. 复制环境变量配置:
+2.  **复制环境变量配置:**
 
-```bash
-cp .env.example .env
-```
+    ```bash
+    cp .env.example .env
+    ```
 
-3. 配置环境变量:
+3.  **配置环境变量:**
 
--   设置站点基本信息
--   配置统计分析服务
--   设置 Giscus 评论系统
--   配置 AI 服务密钥
+    -   设置站点基本信息
+    -   配置 Umami 统计分析 (如果使用)
+    -   配置 Sentry DSN (如果使用)
+    -   配置 AI 服务密钥 (OpenAI API Key, 如果使用 AI 工具)
 
-4. 启动开发服务器:
+4.  **启动开发服务器:**
 
-```bash
-pnpm dev
-```
+    ```bash
+    pnpm dev
+    ```
 
 ## 内容分类
 
-周刊内容支持多种专题分类:
+周刊内容支持多种专题分类，通过 `category` 字段进行设置 (示例，根据之前的 `README-next.md` 推断，可能需要根据实际情况调整):
 
 -   `blogs`: 博客文章和技术教程
 -   `web`: Web 开发相关内容和最新技术
@@ -70,37 +64,16 @@ pnpm dev
 -   `interview`: 面试题解析和经验分享
 -   `prompt`: AI 提示词工程和优化
 -   `git`: Git 使用技巧和工作流程
+-   `开源`: 开源项目推荐
 
-## 工具集成
+## 工具集成 (部分工具，根据代码库和之前的 `README-next.md` 推断)
 
 ### 1. 周刊创建工具 (create-weekly)
 
-快速创建结构化的周刊内容:
-
-# 基本用法
+快速创建结构化的周刊内容 (如果存在):
 
 ```bash
 pnpm create-weekly <标题>
-```
-
-# 高级用法
-
-```bash
-pnpm create-weekly <YYYY-MM> <标题> <模板名>
-```
-
-参数说明:
-
--   YYYY-MM: 发布月份(可选)
--   标题: 周刊标题(必填)
--   模板名: 可选(common|interview|web|ui|prompt|blogs)
-
-示例:
-
-```bash
-pnpm create-weekly "第 1 期 - 前端周刊"
-pnpm create-weekly 2024-03 "第 2 期 - 面试专题" interview
-pnpm create-weekly "第 3 期 - Web 开发" web
 ```
 
 ### 2. 博客创建工具 (create-blog)
@@ -111,13 +84,6 @@ pnpm create-weekly "第 3 期 - Web 开发" web
 pnpm create-blog "文章标题"
 ```
 
-功能特点:
-
--   自动生成合适的文件名
--   添加必要的 frontmatter
--   设置默认模板
--   自动分类存储
-
 ### 3. 图片处理工具 (convertImages)
 
 批量处理和优化图片资源:
@@ -126,84 +92,70 @@ pnpm create-blog "文章标题"
 ts-node scripts/convertImages.ts <目录路径>
 ```
 
-功能特性:
+### 4. AI 草稿生成工具 (generateDraft)
 
--   支持多种图片格式转换
--   智能压缩算法
--   保持图片质量
--   自动重命名规范化
--   支持批量处理
-
-### 4. 内容部署工具 (upload)
-
-自动化内容部署流程:
+使用 AI 辅助生成周刊内容草稿:
 
 ```bash
-ts-node scripts/upload.ts
+ts-node scripts/generateDraft.ts < URL 列表文件路径 > <月份>
 ```
-
-功能特性:
-
--   增量内容更新
--   自动备份
--   部署状态检查
--   错误重试机制
 
 ## 项目结构
 
+```
+
 weekly/
-├── app/ # Next.js 应用目录
-│ ├── api/ # API 路由
-│ ├── blogs/ # 博客页面
-│ ├── tag/ # 标签页面
-│ └── weekly/ # 周刊页面
-├── sections/ # 周刊内容目录
-│ ├── 2024-08/ # 按月份组织
-│ └── 2024-07/ # 历史内容
-├── scripts/ # 工具脚本
-│ ├── convertImages.ts
-│ └── upload.ts
-├── bin/ # 命令行工具
-│ ├── create-weekly.mjs
-│ └── create-blog.mjs
-└── components/ # React 组件
+├── public/           # 静态资源
+├── sections/         #  周刊 mdx 内容
+├── blogs/            # 博客 mdx 内容
+├── integration/    # Astro 集成
+├── src/              # 源代码
+│   ├── content/        # 内容集成
+│   ├── layouts/        # 布局组件
+│   ├── pages/          # 页面文件
+│   ├── components/     # React 组件
+│   ├── styles/         # 全局样式
+│   ├── utils/          # 工具函数
+│   └── env.d.ts        # TypeScript 环境变量声明
+├── scripts/          # 工具脚本 (convertImages.ts, generateDraft.ts)
+├── bin/              # 命令行工具 (create-weekly.mjs, create-blog.mjs)
+├── .env.example      # 环境变量示例
+├── astro.config.ts  # Astro 配置文件
+├── package.json
+├── pnpm-lock.yaml
+├── tsconfig.json
+└── README.md
+```
+
+## 技术栈
+
+-   **框架**: [Astro](https://astro.build/)
+-   **样式**: [Tailwind CSS](https://tailwindcss.com/)
+-   **内容**: [MDX](https://mdxjs.com/)
+-   **图标**: [astro-icon](https://github.com/egoist/astro-icon)
+-   **统计分析**: [Umami](https://umami.is/) (可选)
+-   **错误追踪**: [Sentry](https://sentry.io/) (可选)
 
 ## 自动化部署
 
-项目采用 GitHub Actions 实现 CI/CD:
-
-1. 代码提交触发构建
-2. 自动运行测试
-3. 构建生产版本
-4. 部署到服务器
-5. 部署状态通知
+项目采用 GitHub Actions 实现 CI/CD .
 
 ## 开发计划
 
-### 已完成
-
--   [x] Sentry 错误追踪
--   [x] 标签系统
--   [x] 统计分析集成
--   [x] 周刊导航改进
--   [x] 增加 blog/tag 页面
--   [x] CSS Demo 支持
--   [x] RSS 订阅功能
--   [x] 邮件订阅功能
--   [x] AI 内容生成
--   [x] 样式优化(https://github.com/CaliCastle/cali.so)
-
 ### 进行中
 
--   [ ] code demo 优化,推送时使用截图([codepen 文档](https://blog.codepen.io/documentation/url-extensions/)),似乎可以直接使用远程的 html/js/css
--   [ ] 首页样式优化(月份放在背景,参考https://antfu.me/posts)
--   [ ] 公众号/x 推送
+-   [ ] 邮件订阅
+-   [ ] 配置 cursorrules
+-   [ ] 逻辑统一,去除旧配置及冗余代码
+-   [ ] 整体样式优化(配色/tailwindcss 配置)
+-   [ ] 公众号/x 推送 (待调研)
 -   [ ] 404 页面优化
+- [ ] 标签分类和筛选
+- [ ] 按月份组织内容
+
+
+-   [ ] 自动化部署流程完善 (GitHub Actions 配置)
 
 ## 许可证
 
 MIT License
-
-## 注意
-
--   每个 section 的文件名最终会成为 tag 的 contentId

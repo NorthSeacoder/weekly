@@ -3,7 +3,7 @@ import type {CollectionEntry,RenderResult} from 'astro:content';
 import {collections} from '@/src/content/config';
 
 export type EnhancedEntry<T extends keyof typeof collections> = CollectionEntry<T> & {
-    lastUpdated: Date;
+    lastUpdated?: Date;
     wordCount: number;
 };
 
@@ -11,17 +11,17 @@ export async function getEnhancedCollection<T extends keyof typeof collections>(
     collection: T
 ): Promise<EnhancedEntry<T>[]> {
     const rawEntries = await getCollection(collection);
-
     return Promise.all(
         rawEntries.map(async (entry) => {
-            const fileUrl = new URL(entry.id, import.meta.url);
-            const lastUpdated = await getLastUpdatedTime(fileUrl.href);
+            // const fileUrl = new URL(entry.id, import.meta.url);
+            // const lastUpdated = await getLastUpdatedTime(fileUrl.href);
+            // console.log('lastUpdated', lastUpdated) 
             const wordCount = countWords(entry.body ?? '');
             return {
                 ...entry,
                 data: {
                     ...entry.data,
-                    lastUpdated,
+                    // lastUpdated,
                     wordCount
                 },
             } as EnhancedEntry<T>;
@@ -37,7 +37,8 @@ async function getLastUpdatedTime(fileUrl: string): Promise<Date> {
             const res = await fetch(fileUrl, {method: 'HEAD'});
             const lastModified = res.headers.get('last-modified');
             return lastModified ? new Date(lastModified) : new Date();
-        } catch {
+        } catch (error) {
+            console.error('Error getting last updated time:', error);
             return new Date();
         }
     }

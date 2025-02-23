@@ -1,5 +1,5 @@
 ---
-import { cn } from '@/lib/utils';
+import {cn} from '@/lib/utils';
 import Tags from './Tags.astro';
 import dayjs from 'dayjs';
 
@@ -7,9 +7,10 @@ interface StatCardProps {
     title: string;
     date: string | Date;
     tags?: string[];
+    desc?: string;
 }
 
-const {title, date, tags = []} = Astro.props as StatCardProps;
+const {title, date, desc, tags = []} = Astro.props as StatCardProps;
 
 // 格式化日期
 const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
@@ -34,21 +35,25 @@ const cardClasses = cn(
 );
 
 const newIndicatorClasses = {
-    core: cn('absolute inset-0 rounded-full',
-            'bg-green-500/90 dark:bg-green-600/90',
-            'shadow-lg shadow-green-500/30 dark:shadow-green-600/30'),
-    pulse: cn('absolute inset-0 rounded-full',
-             'bg-green-400/40 dark:bg-green-500/40',
-             'animate-ping duration-1000'),
-    glow: cn('absolute -inset-1 rounded-full',
-            'bg-green-400/20 dark:bg-green-500/20',
-            'animate-pulse duration-2000',
-            'filter blur-sm'),
-    base: cn('w-3 h-3 rounded-full',
-            'bg-gradient-to-r from-green-400 to-green-500',
-            'dark:from-green-500 dark:to-green-600',
-            'border border-green-400/50 dark:border-green-500/50',
-            'shadow-lg shadow-green-500/30 dark:shadow-green-600/30')
+    core: cn(
+        'absolute inset-0 rounded-full',
+        'bg-green-500/90 dark:bg-green-600/90',
+        'shadow-lg shadow-green-500/30 dark:shadow-green-600/30'
+    ),
+    pulse: cn('absolute inset-0 rounded-full', 'bg-green-400/40 dark:bg-green-500/40', 'animate-ping duration-1000'),
+    glow: cn(
+        'absolute -inset-1 rounded-full',
+        'bg-green-400/20 dark:bg-green-500/20',
+        'animate-pulse duration-2000',
+        'filter blur-sm'
+    ),
+    base: cn(
+        'w-3 h-3 rounded-full',
+        'bg-gradient-to-r from-green-400 to-green-500',
+        'dark:from-green-500 dark:to-green-600',
+        'border border-green-400/50 dark:border-green-500/50',
+        'shadow-lg shadow-green-500/30 dark:shadow-green-600/30'
+    )
 };
 const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
 ---
@@ -68,22 +73,40 @@ const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
 
     {/* Title and Date */}
     <div class='flex justify-between items-start mb-4'>
-        <h3 class={cn(
-            'text-lg font-medium text-gray-900/90 dark:text-white/90',
-            'group-hover:text-gray-900 dark:group-hover:text-white',
-            'transition-colors'
-        )} data-name='stat-title'>
-            {title}
-        </h3>
-        <span class={cn(
-            'text-sm text-gray-500 dark:text-gray-400',
-            'group-hover:text-gray-700 dark:group-hover:text-gray-300',
-            'transition-colors'
-        )} data-name='stat-date'>
+        <div>
+            <h3
+                class={cn(
+                    'text-lg font-medium text-gray-900/90 dark:text-white/90',
+                    'group-hover:text-gray-900 dark:group-hover:text-white',
+                    'transition-colors'
+                )}
+                data-name='stat-title'>
+                {title}
+            </h3>
+            {
+                desc && (
+                    <p
+                        class='mt-1 text-sm text-gray-400 
+                          group-hover:text-gray-300 
+                          transition-colors line-clamp-2'
+                        data-name='stat-description'>
+                        {desc}
+                    </p>
+                )
+            }
+        </div>
+
+        <span
+            class={cn(
+                'text-sm text-gray-500 dark:text-gray-400',
+                'group-hover:text-gray-700 dark:group-hover:text-gray-300',
+                'transition-colors'
+            )}
+            data-name='stat-date'>
             {formattedDate}
         </span>
     </div>
 
     {/* Tags */}
-    <Tags tags={tags} maxVisible={2} />
+    <Tags tags={tags} maxVisible={desc ? 20 : 2} />
 </div>

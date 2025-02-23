@@ -7,9 +7,14 @@ const cache = new NodeCache({
     useClones: false // 禁用克隆以提高性能
 });
 
-export async function getCachedData<T>(key: string, fetchData: () => Promise<T>, options: {debug?: boolean} = {}): Promise<T> {
+export async function getCachedData<T>(
+    key: string,
+    fetchData: () => Promise<T>,
+    options: {debug?: boolean} = {}
+): Promise<T> {
     // 尝试从缓存获取数据
     const cachedData = cache.get<T>(key);
+    console.log('getCachedData', process.env.NODE_ENV);
     if (cachedData !== undefined) {
         if (options.debug && process.env.NODE_ENV !== 'development') {
             console.log(`Cache hit for key: ${key}`);

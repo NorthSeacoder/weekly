@@ -40,18 +40,16 @@ apps:
       robots:
         index: true
 
-    list:
-      isEnabled: true
-      pathname: 'blog' # Blog main path, you can change this to "articles" (/articles)
-      robots:
-        index: true
-
     weekly:
       isEnabled: true
       pathname: 'weekly' # Weekly main path, you can change this to "articles" (/articles)
       robots:
         index: true
-
+    blog:
+      isEnabled: true
+      pathname: 'blog' # Blog main path, you can change this to "articles" (/articles)
+      robots:
+        index: true
     category:
       isEnabled: true
       pathname: 'category' # Category main path /category/some-category, you can change this to "group" (/group/some-category)

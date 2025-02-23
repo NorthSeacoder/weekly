@@ -1,12 +1,11 @@
 ---
 tags: [前端开发, VSCode, 扩展开发, 发布, 扩展市场, Marketplace, 打包, Publish, vsce, Azure DevOps]
-category: 教程
-date: 2024-02-03
+category: VSCode
+date: 2024-04-22
+slug: vscode-extension-07
 title: 我不知道的 VSCode 扩展：发布到 VSCode 扩展市场
 desc: 将你的 VSCode 扩展发布到 VSCode 扩展市场，让全球开发者使用你的扩展。
 ---
-
-## 我不知道的 VSCode 扩展：发布到 VSCode 扩展市场
 
 ### 引言
 
@@ -36,94 +35,100 @@ desc: 将你的 VSCode 扩展发布到 VSCode 扩展市场，让全球开发者�
 
 一个完善的 `package.json` 文件示例如下：
 
-````json:package.json:blogs/vscode/07.我不知道的 VSCode 扩展：发布到 VSCode 扩展市场.mdx
+```json
 {
-  "name": "markdown-preview-enhanced", // 扩展名称 (publisher.extensionName)
-  "displayName": "Markdown Preview Enhanced", // 显示名称
-  "description": "Markdown Preview Enhanced ported to VSCode", // 描述信息
-  "version": "0.3.7", // 版本号
-  "publisher": "shd101dev", // 发布者名称
-  "icon": "icon.png", // 图标
-  "categories": [ // 分类
-    "Other"
-  ],
-  "keywords": [ // 关键词
-    "markdown",
-    "preview",
-    "editor"
-  ],
-  "repository": { // 仓库地址
-    "type": "git",
-    "url": "https://github.com/shd101/vscode-markdown-preview-enhanced"
-  },
-  "bugs": { // Bug 提交地址
-    "url": "https://github.com/shd101/vscode-markdown-preview-enhanced/issues"
-  },
-  "engines": { // 兼容的 VSCode 最低版本
-    "vscode": "^1.60.0"
-  },
-  "activationEvents": [ // 激活事件
-    "onStartupFinished",
-    "onLanguage:markdown"
-  ],
-  "contributes": { // 贡献点
-    "commands": [
-      {
-        "command": "markdown-preview-enhanced.openPreview",
-        "title": "Markdown Preview Enhanced: Open Preview"
-      }
+    "name": "markdown-preview-enhanced", // 扩展名称 (publisher.extensionName)
+    "displayName": "Markdown Preview Enhanced", // 显示名称
+    "description": "Markdown Preview Enhanced ported to VSCode", // 描述信息
+    "version": "0.3.7", // 版本号
+    "publisher": "shd101dev", // 发布者名称
+    "icon": "icon.png", // 图标
+    "categories": [
+        // 分类
+        "Other"
     ],
-    "menus": {
-      "editor/context": [
-        {
-          "command": "markdown-preview-enhanced.openPreview",
-          "group": "navigation"
+    "keywords": [
+        // 关键词
+        "markdown",
+        "preview",
+        "editor"
+    ],
+    "repository": {
+        // 仓库地址
+        "type": "git",
+        "url": "https://github.com/shd101/vscode-markdown-preview-enhanced"
+    },
+    "bugs": {
+        // Bug 提交地址
+        "url": "https://github.com/shd101/vscode-markdown-preview-enhanced/issues"
+    },
+    "engines": {
+        // 兼容的 VSCode 最低版本
+        "vscode": "^1.60.0"
+    },
+    "activationEvents": [
+        // 激活事件
+        "onStartupFinished",
+        "onLanguage:markdown"
+    ],
+    "contributes": {
+        // 贡献点
+        "commands": [
+            {
+                "command": "markdown-preview-enhanced.openPreview",
+                "title": "Markdown Preview Enhanced: Open Preview"
+            }
+        ],
+        "menus": {
+            "editor/context": [
+                {
+                    "command": "markdown-preview-enhanced.openPreview",
+                    "group": "navigation"
+                }
+            ]
         }
-      ]
     }
-  }
 }
-```blogs/vscode/07.我不知道的 VSCode 扩展：发布到 VSCode 扩展市场.mdx
+```
 
 #### 添加 README 文件
 
-📄  **README 文件 (通常是 `README.md`) 是扩展的说明文档，非常重要！**  它会显示在 VSCode 扩展市场的扩展详情页中，用于向用户介绍扩展的功能、使用方法、配置选项、更新日志等。一个好的 README 文件可以帮助用户快速了解你的扩展，并决定是否安装使用。
+📄 **README 文件 (通常是 `README.md`) 是扩展的说明文档，非常重要！** 它会显示在 VSCode 扩展市场的扩展详情页中，用于向用户介绍扩展的功能、使用方法、配置选项、更新日志等。一个好的 README 文件可以帮助用户快速了解你的扩展，并决定是否安装使用。
 
 **README 文件应该包含以下内容 (但不限于)：**
 
-- **扩展名称和简短描述**:  与 `package.json` 中的 `displayName` 和 `description` 保持一致。
-- **扩展功能和特点**:  详细介绍扩展的主要功能和特点，突出扩展的优势和亮点。
-- **使用方法**:  清晰地说明如何安装、配置和使用扩展，提供详细的步骤和示例。
-- **配置选项**:  如果扩展有配置选项，需要详细说明每个配置选项的作用和取值范围。
-- **更新日志 (Changelog)**:  记录扩展的版本更新历史，包括每个版本的新增功能、Bug 修复、改进等。
-- **贡献指南 (Contributing)**:  如果你希望接受社区贡献，可以添加贡献指南，说明如何参与扩展的开发。
-- **许可证 (License)**:  声明扩展的开源许可证，例如 MIT License, Apache License 2.0 等。
-- **作者信息**:  你的姓名、邮箱、GitHub 链接等。
+-   **扩展名称和简短描述**: 与 `package.json` 中的 `displayName` 和 `description` 保持一致。
+-   **扩展功能和特点**: 详细介绍扩展的主要功能和特点，突出扩展的优势和亮点。
+-   **使用方法**: 清晰地说明如何安装、配置和使用扩展，提供详细的步骤和示例。
+-   **配置选项**: 如果扩展有配置选项，需要详细说明每个配置选项的作用和取值范围。
+-   **更新日志 (Changelog)**: 记录扩展的版本更新历史，包括每个版本的新增功能、Bug 修复、改进等。
+-   **贡献指南 (Contributing)**: 如果你希望接受社区贡献，可以添加贡献指南，说明如何参与扩展的开发。
+-   **许可证 (License)**: 声明扩展的开源许可证，例如 MIT License, Apache License 2.0 等。
+-   **作者信息**: 你的姓名、邮箱、GitHub 链接等。
 
 **README 文件可以使用 Markdown 格式编写**，并使用清晰的标题、列表、代码块、图片、链接等元素，使文档结构清晰、易读性强。
 
 #### 选择开源许可证
 
-⚖️  **开源许可证** 决定了用户如何使用、修改和分发你的扩展。**强烈建议为你的扩展选择一个合适的开源许可证**，例如 MIT License, Apache License 2.0, GPLv3 等。
+⚖️ **开源许可证** 决定了用户如何使用、修改和分发你的扩展。**强烈建议为你的扩展选择一个合适的开源许可证**，例如 MIT License, Apache License 2.0, GPLv3 等。
 
-- **MIT License**:  非常宽松的许可证，允许用户自由使用、修改、分发和商业使用，只需保留原始版权声明。
-- **Apache License 2.0**:  相对宽松的许可证，类似于 MIT License，但对专利权有更明确的规定。
-- **GPLv3**:  相对严格的许可证，具有 "传染性"，要求基于 GPLv3 许可证的代码衍生的作品也必须使用 GPLv3 许可证。
+-   **MIT License**: 非常宽松的许可证，允许用户自由使用、修改、分发和商业使用，只需保留原始版权声明。
+-   **Apache License 2.0**: 相对宽松的许可证，类似于 MIT License，但对专利权有更明确的规定。
+-   **GPLv3**: 相对严格的许可证，具有 "传染性"，要求基于 GPLv3 许可证的代码衍生的作品也必须使用 GPLv3 许可证。
 
-你可以根据你的需求和偏好选择合适的开源许可证。**如果不知道如何选择，推荐使用 MIT License 或 Apache License 2.0。**  在项目根目录下创建一个 `LICENSE` 文件，并将许可证文本复制到文件中。
+你可以根据你的需求和偏好选择合适的开源许可证。**如果不知道如何选择，推荐使用 MIT License 或 Apache License 2.0。** 在项目根目录下创建一个 `LICENSE` 文件，并将许可证文本复制到文件中。
 
 ### 发布扩展
 
-🚀  完成准备工作后，就可以开始发布你的 VSCode 扩展了。发布扩展主要分为以下几个步骤：
+🚀 完成准备工作后，就可以开始发布你的 VSCode 扩展了。发布扩展主要分为以下几个步骤：
 
-1. **注册 Azure DevOps 组织**:  VSCode 扩展市场使用 Azure DevOps (原 Visual Studio Team Services) 来管理扩展发布。你需要注册一个 Azure DevOps 组织 (Organization)，如果已经有 Azure DevOps 组织，可以直接使用。
-2. **创建发布者 (Publisher)**:  在 Azure DevOps 组织中创建一个发布者 (Publisher)。**发布者名称需要全局唯一，一旦创建后无法修改。**  **推荐使用你的用户名或组织名称作为发布者名称。**  如果你已经创建过发布者，可以直接使用已有的发布者。
-3. **安装 `vsce` 工具**:  `vsce` (Visual Studio Code Extensions) 是 VSCode 官方提供的命令行工具，用于打包、发布和管理 VSCode 扩展。你需要全局安装 `vsce` 工具：
+1. **注册 Azure DevOps 组织**: VSCode 扩展市场使用 Azure DevOps (原 Visual Studio Team Services) 来管理扩展发布。你需要注册一个 Azure DevOps 组织 (Organization)，如果已经有 Azure DevOps 组织，可以直接使用。
+2. **创建发布者 (Publisher)**: 在 Azure DevOps 组织中创建一个发布者 (Publisher)。**发布者名称需要全局唯一，一旦创建后无法修改。** **推荐使用你的用户名或组织名称作为发布者名称。** 如果你已经创建过发布者，可以直接使用已有的发布者。
+3. **安装 `vsce` 工具**: `vsce` (Visual Studio Code Extensions) 是 VSCode 官方提供的命令行工具，用于打包、发布和管理 VSCode 扩展。你需要全局安装 `vsce` 工具：
 
-   ```bash
-   npm install -g vsce
-````
-
+    ```bash
+    npm install -g vsce
+    ```
 4. **登录发布者**: 使用 `vsce login publisherName` 命令登录你的发布者。你需要创建一个 [Personal Access Token (PAT)](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page) 并复制到命令行中。PAT 需要具有 "Marketplace (Publish)" 权限。
 
     ```bash

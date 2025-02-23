@@ -6,7 +6,6 @@ export const readingTimeRemarkPlugin: RemarkPlugin = () => {
   return function (tree, file) {
     const textOnPage = toString(tree);
     const readingTime = Math.ceil(getReadingTime(textOnPage).minutes);
-    console.log('readingTime', readingTime);
     if (typeof file?.data?.astro?.frontmatter !== 'undefined') {
       file.data.astro.frontmatter.readingTime = readingTime;
     }
