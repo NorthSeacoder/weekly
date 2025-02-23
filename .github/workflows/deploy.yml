@@ -136,7 +136,7 @@ jobs:
               with:
                   SSH_PRIVATE_KEY: ${{ secrets.ALIYUN_SERVER_ACCESS_TOKEN }}
                   ARGS: '-rlgoDzvc -i --delete'
-                  SOURCE: 'out/'
+                  SOURCE: 'dist/'
                   SCRIPT_BEFORE: |
                       whoami
                       ls -al
@@ -144,4 +144,4 @@ jobs:
                   REMOTE_HOST: ${{ secrets.ALIYUN_SERVER_HOST }}
                   REMOTE_USER: 'root'
                   TARGET: '/opt/1panel/apps/openresty/openresty/www/sites/weekly.mengpeng.tech/index/'
-                  EXCLUDE: '/dist/, /node_modules/'
+                  EXCLUDE: '/node_modules/'
