@@ -34,12 +34,6 @@ apps:
     isEnabled: true
     postsPerPage: 6
 
-    weeklyPost:
-      isEnabled: true
-      permalink: 'weekly/%slug%' # Variables: %slug%, %year%, %month%, %day%, %hour%, %minute%, %second%, %category%
-      robots:
-        index: true
-
     weekly:
       isEnabled: true
       pathname: 'weekly' # Weekly main path, you can change this to "articles" (/articles)

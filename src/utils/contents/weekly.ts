@@ -4,8 +4,8 @@ import type {PostsByMonth, WeeklyPost, Section} from '@/types/weekly';
 import dayjs from 'dayjs';
 import {getEnhancedCollection} from './content-utils';
 import type {EnhancedEntry} from './content-utils';
+import {getPermalink} from '../permalinks';
 
-import {WEEKLY_PERMALINK_PATTERN, trimSlash} from '../permalinks';
 type Dayjs = dayjs.Dayjs;
 
 interface Metadata {
@@ -16,18 +16,6 @@ interface Metadata {
 }
 
 export type DataItem = EnhancedEntry<'weekly'>;
-
-const generatePermalink = ({id, slug, category}: {id: string; slug: string; category: string | undefined}) => {
-    const permalink = WEEKLY_PERMALINK_PATTERN.replace('%slug%', slug)
-        .replace('%id%', id)
-        .replace('%category%', category || '');
-
-    return permalink
-        .split('/')
-        .map((el) => trimSlash(el))
-        .filter((el) => !!el)
-        .join('/');
-};
 
 // 固定的 category 顺序
 const categoryOrder = ['工具', '文章', '教程', '言论', 'bug', '面试题', 'repos', 'bigones', '网站', 'demo'];
@@ -127,11 +115,7 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
                 slug: `${weekNumber}`,
                 date: endOfWeek,
                 title: `我不知道的周刊第 ${weekNumber} 期`,
-                permalink: generatePermalink({
-                    id: month,
-                    slug: `${weekNumber}`,
-                    category: undefined
-                }),
+                permalink: getPermalink(String(weekNumber), 'weekly'),
                 lastUpdated: lastUpdated ?? dayjs(lastUpdated).format('YYYY-MM-DD HH:mm:ss'),
                 wordCount: totalWordCount || undefined,
                 sections: sections.sort((a, b) => {
