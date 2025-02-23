@@ -25,6 +25,8 @@
         "@astrojs/sitemap": "^3.2.1",
         "@astrolib/seo": "1.0.0-beta.8",
         "@fontsource-variable/inter": "^5.1.1",
+        "@sentry/astro": "^9.1.0",
+        "@sentry/replay": "^7.116.0",
         "astro": "^5.1.8",
         "astro-icon": "^1.1.5",
         "class-variance-authority": "^0.7.0",
