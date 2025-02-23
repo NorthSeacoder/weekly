@@ -71,7 +71,7 @@ jobs:
                 # 列出所有环境变量（注意不要打印敏感信息）
                 env | grep -v -i "secret" | grep -v -i "token"
               
-            - name: Cache Next.js build
+            - name: Cache Astro build
               uses: actions/cache@v4
               with:
                   path: |
@@ -80,10 +80,10 @@ jobs:
                       # 添加 node_modules 缓存
                       **/node_modules
                   # 优化缓存 key
-                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.{js,jsx,ts,tsx,mdx}') }}
+                  key: ${{ runner.os }}-astro-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.{js,jsx,ts,tsx,mdx}') }}
                   restore-keys: |
-                      ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
-                      ${{ runner.os }}-nextjs-
+                      ${{ runner.os }}-astro-${{ hashFiles('**/pnpm-lock.yaml') }}-
+                      ${{ runner.os }}-astro
             
             - name: Install Node.js
               uses: actions/setup-node@v3
