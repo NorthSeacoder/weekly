@@ -3,7 +3,7 @@ import {Icon} from 'astro-icon/components';
 import {cn} from '@/lib/utils';
 import Tags from '~/components/ui/Tags.astro';
 
-import {getPermalink} from '~/utils/permalinks';
+// import {getPermalink} from '~/utils/permalinks';
 
 import type {WeeklyPost} from '@/types/weekly';
 import {remark} from 'remark';
@@ -94,8 +94,8 @@ const sections = await Promise.all(
                 ))
             }
         </div>
-        <div class='mx-auto px-6 sm:px-6 max-w-3xl mt-8 flex justify-between flex-col sm:flex-row'>
+        <!-- <div class='mx-auto px-6 sm:px-6 max-w-3xl mt-8 flex justify-between flex-col sm:flex-row'>
             <Tags tags={post.tags} maxVisible={200} />
-        </div>
+        </div> -->
     </article>
 </section>

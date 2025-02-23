@@ -1,6 +1,6 @@
 ---
 import '@fontsource-variable/inter';
-
+import 'highlight.js/styles/nnfx-dark.min.css';
 // 'DM Sans'
 // Nunito
 // Dosis
@@ -61,4 +61,9 @@ import '@fontsource-variable/inter';
       color: snow;
     }
   }
+  /* 去掉 code 中多余的` */
+.prose :where(code)::before,
+.prose :where(code)::after {
+  content: none !important; /* 使用 !important 提升优先级 */
+}
 </style>

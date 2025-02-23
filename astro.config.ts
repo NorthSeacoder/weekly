@@ -23,7 +23,7 @@ export default defineConfig({
         weekly()
     ],
     markdown: {
-        remarkPlugins: [readingTimeRemarkPlugin],
+        // remarkPlugins: [readingTimeRemarkPlugin]
     },
     vite: {
         define: {

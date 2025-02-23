@@ -93,11 +93,11 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
                 item.data.tags.forEach((tag) => tags.add(tag));
                 source.add(item.data.source);
 
-                if (item.data.lastUpdated) {
-                    if (!lastUpdated || item.data.lastUpdated > lastUpdated) {
-                        lastUpdated = item.data.lastUpdated;
-                    }
-                }
+                // if (item.data.lastUpdated) {
+                //     if (!lastUpdated || item.data.lastUpdated > lastUpdated) {
+                //         lastUpdated = item.data.lastUpdated;
+                //     }
+                // }
 
                 if (item.data.wordCount) {
                     totalWordCount += item.data.wordCount;
