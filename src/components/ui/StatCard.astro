@@ -72,8 +72,8 @@ const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
     }
 
     {/* Title and Date */}
-    <div class='flex justify-between items-start mb-4'>
-        <div>
+    <div class='mb-4'>
+        <div class='flex flex-col sm:flex-row sm:items-center sm:justify-between'>
             <h3
                 class={cn(
                     'text-lg font-medium text-gray-900/90 dark:text-white/90',
@@ -83,28 +83,28 @@ const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
                 data-name='stat-title'>
                 {title}
             </h3>
-            {
-                desc && (
-                    <p
-                        class='mt-1 text-sm text-gray-400 
-                          group-hover:text-gray-300 
-                          transition-colors line-clamp-2'
-                        data-name='stat-description'>
-                        {desc}
-                    </p>
-                )
-            }
+            <span
+                class={cn(
+                    'text-sm text-gray-500 dark:text-gray-400',
+                    'group-hover:text-gray-700 dark:group-hover:text-gray-300',
+                    'transition-colors',
+                    'mt-1 sm:mt-0'
+                )}
+                data-name='stat-date'>
+                {formattedDate}
+            </span>
         </div>
-
-        <span
-            class={cn(
-                'text-sm text-gray-500 dark:text-gray-400',
-                'group-hover:text-gray-700 dark:group-hover:text-gray-300',
-                'transition-colors'
-            )}
-            data-name='stat-date'>
-            {formattedDate}
-        </span>
+        {
+            desc && (
+                <p
+                    class='mt-2 text-sm text-gray-400 
+                      group-hover:text-gray-300 
+                      transition-colors line-clamp-2'
+                    data-name='stat-description'>
+                    {desc}
+                </p>
+            )
+        }
     </div>
 
     {/* Tags */}
