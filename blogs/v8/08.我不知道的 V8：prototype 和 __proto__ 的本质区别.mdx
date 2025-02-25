@@ -59,6 +59,113 @@ V8 的处理过程:
 2. `new Animal()` 创建 `dog` 实例,并设置 `dog.__proto__ = Animal.prototype`。
 3. 访问 `dog.type` 时,V8 沿 `__proto__` 找到 `Animal.prototype.type`。
 
+### 实现一个 new 操作符
+
+理解 `prototype` 和 `__proto__` 的关系后，我们可以手动实现一个 `new` 操作符，这有助于深入理解 V8 在实例化对象时的内部机制：
+
+```javascript
+function myNew(Constructor, ...args) {
+  // 1. 创建一个新对象，并将其 __proto__ 指向构造函数的 prototype
+  const obj = Object.create(Constructor.prototype);
+  
+  // 2. 执行构造函数，并将 this 绑定到新创建的对象
+  const result = Constructor.apply(obj, args);
+  
+  // 3. 如果构造函数返回了一个对象，则返回该对象；否则返回新创建的对象
+  return (typeof result === 'object' && result !== null) ? result : obj;
+}
+
+// 使用示例
+function Person(name) {
+  this.name = name;
+}
+Person.prototype.sayHello = function() {
+  return `Hello, ${this.name}!`;
+};
+
+const p1 = new Person("V8");
+const p2 = myNew(Person, "V8");
+
+console.log(p1.sayHello()); // "Hello, V8!"
+console.log(p2.sayHello()); // "Hello, V8!"
+console.log(p1.__proto__ === Person.prototype); // true
+console.log(p2.__proto__ === Person.prototype); // true
+```
+
+这个实现揭示了 `new` 操作符的三个关键步骤：
+1. 创建一个新对象，并建立原型链接（`__proto__` 指向构造函数的 `prototype`）
+2. 执行构造函数，将 `this` 绑定到新对象
+3. 返回新对象（除非构造函数显式返回了另一个对象）
+
+通过这个实现，我们可以清晰地看到 `prototype` 和 `__proto__` 在对象创建过程中的作用：`prototype` 提供了构造模板，而 `__proto__` 则建立了实例与原型之间的链接。
+
+### 构造函数返回值的特殊处理
+
+在上面的 `myNew` 实现中，有一个特别的逻辑：检查构造函数的返回值类型。这反映了 JavaScript 中一个重要的行为规则：
+
+- 如果构造函数返回一个**非原始类型值**（对象、数组、函数等），则该返回值会替代通常创建的实例
+- 如果构造函数返回**原始类型值**（数字、字符串、布尔值等）或不返回值，则忽略返回值，使用新创建的实例
+
+这种行为在实际开发中有几个有用的应用场景：
+
+```javascript
+// 示例：构造函数返回自定义对象
+function SpecialPerson(name) {
+  this.name = name;
+  
+  // 返回一个完全不同的对象
+  return {
+    specialName: name.toUpperCase(),
+    type: 'special',
+    greet() {
+      return `我是特殊对象 ${this.specialName}`;
+    }
+  };
+}
+
+const p1 = new SpecialPerson('张三');
+console.log(p1.name);        // undefined，因为返回了另一个对象
+console.log(p1.specialName); // "张三"
+console.log(p1.greet());     // "我是特殊对象 张三"
+console.log(p1 instanceof SpecialPerson); // false，原型链被覆盖
+```
+
+这种特性常用于实现以下设计模式：
+
+1. **单例模式**：确保只创建一个实例
+   ```javascript
+   let instance;
+   function Singleton() {
+     if (instance) return instance;
+     instance = this;
+     this.data = '单例数据';
+   }
+   ```
+
+2. **工厂模式**：根据条件返回不同类型的对象
+   ```javascript
+   function UserFactory(type, data) {
+     if (type === 'admin') {
+       return new AdminUser(data);
+     } else {
+       return new RegularUser(data);
+     }
+   }
+   ```
+
+3. **对象池模式**：重用对象以提高性能
+   ```javascript
+   const objectPool = [];
+   function PooledObject() {
+     if (objectPool.length) {
+       return objectPool.pop();
+     }
+     this.inUse = true;
+   }
+   ```
+
+理解构造函数返回值的这种特殊处理，有助于我们更全面地掌握 JavaScript 中对象创建的机制，以及 `new` 操作符与原型系统的交互方式。
+
 ## 3. 原型链结构图解
 
 V8 中的原型链结构可以简化表示为:

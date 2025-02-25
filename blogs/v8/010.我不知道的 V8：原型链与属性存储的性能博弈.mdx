@@ -76,6 +76,17 @@ p (JSObject)
 
 当访问 `p.sayHello` 时,V8 首先检查 `p` 对象,未找到后沿 `__proto__` (即 `Person.prototype`)查找到方法。
 
+### 3.1 快属性的具体示例
+
+在上面的示例中，`console.log(p.sayHello());` 中的快属性 `name` 是指 `p` 对象的实例属性。由于 `p` 是通过 `new Person("V8")` 创建的，`name` 属性被直接赋值为 `"V8"`。在 V8 中，`name` 被存储在 `p` 对象的内部线性数组中，因此访问速度非常快。
+
+```javascript
+const p = new Person("V8");
+console.log(p.name); // "V8" - 直接访问快属性
+```
+
+在这个例子中，`name` 是快属性，因为它是 `p` 对象的直接属性，且没有经过任何动态操作（如 `delete` 或添加新属性）。因此，V8 可以高效地通过偏移量直接访问这个属性。
+
 ## 4. 性能博弈：快慢属性与原型链的交互
 
 ### 快属性 + 原型链
