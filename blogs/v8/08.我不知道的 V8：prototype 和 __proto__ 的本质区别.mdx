@@ -1,0 +1,154 @@
+---
+tags: [前端开发, V8, JavaScript, 原型链, 对象属性]
+category: V8
+date: 2024-03-02
+title: 我不知道的 V8：prototype 和 __proto__ 的本质区别
+desc: 深入解析 V8 引擎中 prototype 与 __proto__ 的角色,揭示原型链的内部机制。
+slug: v8-js-engine-08
+---
+
+在 JavaScript 中,`prototype` 和 `__proto__` 是构建原型链的核心概念,但它们的区别常常让开发者感到困惑。`prototype` 是函数对象的属性,而 `__proto__` 是所有对象的内部属性。本文将深入探讨这两个概念在 V8 引擎中的角色、实现机制及其本质区别。
+
+
+## 1. 基本定义
+
+- **`prototype`**  
+  函数对象的一个属性,指向一个对象,用于定义实例的原型。例如:
+
+  ```javascript
+  function Person(name) {
+    this.name = name;
+  }
+  Person.prototype.sayHello = function() {
+    return `Hello, ${this.name}!`;
+  };
+  ```
+
+- **`__proto__`**  
+  每个对象的内部属性(也称为隐式原型),指向该对象的原型。例如:
+
+  ```javascript
+  const p = new Person("V8");
+  console.log(p.__proto__ === Person.prototype); // true
+  ```
+
+虽然这两个属性都与原型有关,但它们的用途和实现机制有本质区别。
+
+## 2. V8 中的角色：构造与继承
+
+在 V8 引擎中,`prototype` 和 `__proto__` 的作用可以概括为:
+
+- **`prototype`: 构造原型**  
+  作为函数的模板,用于创建实例时建立继承关系。V8 在执行 `new` 操作时,会将实例的 `__proto__` 指向构造函数的 `prototype`。
+
+- **`__proto__`: 继承链接**  
+  作为对象的指针,连接到原型链的上一层,决定属性查找的路径。
+
+示例:
+
+```javascript
+function Animal() {}
+Animal.prototype.type = "animal";
+
+const dog = new Animal();
+console.log(dog.type); // "animal"
+```
+
+V8 的处理过程:
+1. `Animal.prototype` 定义原型对象 `{ type: "animal" }`。
+2. `new Animal()` 创建 `dog` 实例,并设置 `dog.__proto__ = Animal.prototype`。
+3. 访问 `dog.type` 时,V8 沿 `__proto__` 找到 `Animal.prototype.type`。
+
+## 3. 原型链结构图解
+
+V8 中的原型链结构可以简化表示为:
+
+```
+Animal (Function)
+  - prototype -> { type: "animal" }
+                - __proto__ -> Object.prototype
+
+dog (Object)
+  - __proto__ -> Animal.prototype
+```
+
+- `prototype` 是函数的属性,指向原型对象。
+- `__proto__` 是实例的属性,指向构造它的原型。
+
+当访问 `dog.type` 时,V8 的查找路径:
+1. 检查 `dog` 自身,未找到 `type`。
+2. 沿 `dog.__proto__` 到 `Animal.prototype`,找到 `type`。
+
+## 4. 本质区别：功能与归属
+
+| 属性       | 归属     | 功能                     | V8 中的实现              |
+|------------|----------|--------------------------|--------------------------|
+| `prototype`| 函数     | 定义实例的共享属性和方法 | 静态对象,存储构造函数模板|
+| `__proto__`| 所有对象 | 指向原型,构建继承链      | 内部槽,连接原型链        |
+
+- **功能**: `prototype` 是构造模板,`__proto__` 是继承链接。
+- **归属**: `prototype` 专属于函数,`__proto__` 存在于所有对象(包括函数,因为函数也是对象)。
+
+## 5. 代码实验：澄清常见误区
+
+### 误区 1: __proto__ 是 prototype 的别名？
+
+这是一个常见的误解。实际上,它们是不同的概念:
+
+```javascript
+function Foo() {}
+const f = new Foo();
+Foo.prototype = { x: 1 }; // 修改 prototype
+console.log(f.x);         // undefined
+console.log(f.__proto__); // 旧的 prototype 对象
+```
+
+修改 `Foo.prototype` 不会影响已有实例的 `__proto__`,因为 `__proto__` 在实例化时已经确定。
+
+### 误区 2: 普通对象有 prototype 属性？
+
+这也是一个常见错误。事实上,普通对象没有 `prototype` 属性:
+
+```javascript
+const obj = {};
+console.log(obj.prototype); // undefined
+console.log(obj.__proto__); // Object.prototype
+```
+
+只有函数对象才有 `prototype` 属性,普通对象的 `__proto__` 默认指向 `Object.prototype`。
+
+## 6. V8 的实现细节
+
+在 V8 引擎中:
+- **`prototype`**  
+  作为属性存储在函数对象中,是静态的,修改它只影响后续创建的实例。
+- **`__proto__`**  
+  作为对象的内部槽([[Prototype]]),由 C++ 层管理,JavaScript 层通过 getter/setter 访问。
+
+推荐使用 `Object.getPrototypeOf` 替代 `__proto__` (更符合标准):
+
+```javascript
+const p = new Person("V8");
+console.log(Object.getPrototypeOf(p) === Person.prototype); // true
+```
+
+## 7. 深入理解：设计原理
+
+- **Q: 为什么需要分开设计 prototype 和 __proto__?**  
+  A: 这种设计使构造函数(`prototype`)和实例(`__proto__`)的职责更加清晰,提高了语言的灵活性和性能。
+
+- **Q: 修改 __proto__ 有什么影响?**  
+  A: 虽然可以修改,但不建议这样做。频繁修改 `__proto__` 会影响 V8 的优化机制,降低性能。
+
+## 8. 总结: prototype 和 __proto__ 的核心概念
+
+在 V8 中:
+- **`prototype`** 是函数的蓝图,定义实例的共享属性。
+- **`__proto__`** 是对象的指针,构建原型链。
+
+深入理解这两个概念的区别,有助于:
+- 更准确地使用 JavaScript 的原型继承机制。
+- 避免常见的原型相关编程错误。
+- 编写更高效、更优雅的 JavaScript 代码。
+
+通过深入了解 V8 引擎的这些内部机制,我们不仅能够提升代码质量,还能增强解决复杂 JavaScript 问题的能力。这种底层洞察力对于前端开发者的技术进阶至关重要。
