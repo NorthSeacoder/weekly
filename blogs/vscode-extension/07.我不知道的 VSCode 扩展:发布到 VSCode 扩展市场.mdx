@@ -1,0 +1,184 @@
+---
+tags: [前端开发, VSCode, 扩展开发, 发布, 扩展市场, Marketplace, 打包, Publish, vsce, Azure DevOps]
+category: VSCode
+date: 2024-04-22
+slug: vscode-extension-07
+title: 我不知道的 VSCode 扩展:发布到 VSCode 扩展市场
+desc: 将你的 VSCode 扩展发布到 VSCode 扩展市场，让全球开发者使用你的扩展。
+---
+
+### 引言
+
+🚀 经过前面一系列的学习，你已经掌握了 VSCode 扩展开发的各种技能，从基础知识到高级调试技巧。现在，是时候将你的成果分享给全世界了！**发布你的 VSCode 扩展到 VSCode 扩展市场 (Marketplace)**，让全球数百万开发者都能发现、安装和使用你的扩展，这将是对你努力的最好肯定，也是对 VSCode 社区的巨大贡献。本文将详细介绍如何将你的 VSCode 扩展打包并发布到 VSCode 扩展市场，让你的扩展走向世界！现在，就让我们开始激动人心的扩展发布之旅吧！
+
+### 准备发布
+
+📦 在发布你的 VSCode 扩展之前，需要做一些准备工作，确保你的扩展能够顺利发布并获得用户的青睐。
+
+#### 完善 `package.json` 文件
+
+📝 `package.json` 文件是 VSCode 扩展的核心配置文件，包含了扩展的各种元数据信息。在发布前，务必仔细检查并完善 `package.json` 文件，确保信息的准确性和完整性。
+
+-   **`name`**: 扩展的名称，**必须是唯一的**，在 VSCode 扩展市场中作为扩展的唯一标识符。**推荐使用 `publisher.extensionName` 的格式**，例如 `my-publisher.my-extension`。名称只能包含小写字母、数字、连字符和点号。
+-   **`displayName`**: 扩展的显示名称，会显示在 VSCode 扩展市场和 VSCode 扩展面板中，**可以使用中文、空格等字符**，更易读和友好。
+-   **`description`**: 扩展的描述信息，用于在 VSCode 扩展市场中介绍扩展的功能和特点，**需要清晰、简洁、吸引人**。
+-   **`version`**: 扩展的版本号，遵循 [语义化版本控制 (SemVer)](https://semver.org/) 规范，例如 `1.0.0`。每次发布更新时，都需要更新版本号。
+-   **`publisher`**: **发布者名称，也需要是唯一的**，用于区分不同的扩展发布者。
+-   **`icon`**: 扩展的图标，显示在 VSCode 扩展市场和 VSCode 扩展面板中，**推荐使用 128x128 像素的 PNG 或 SVG 图片**。在 `package.json` 中使用相对路径或绝对路径指定图标文件路径，例如 `"icon": "images/icon.png"`。
+-   **`categories`**: 扩展的分类，用于在 VSCode 扩展市场中对扩展进行分类，方便用户查找。**至少选择一个分类**，例如 `"categories": ["Other"]`。常用的分类包括 `[ "Programming Languages", "Snippets", "Linters", "Formatters", "Debuggers", "Themes", "Keymaps", "Other", "Extension Packs", "Language Packs", "Data Science", "Machine Learning", "Notebooks", "Visualization", "Education" ]`。
+-   **`keywords`**: 扩展的关键词，用于在 VSCode 扩展市场中进行搜索，**添加相关的关键词可以提高扩展的曝光率**。例如 `"keywords": ["markdown", "preview", "editor"]`。
+-   **`repository`**: 扩展的仓库地址，指向扩展的源代码仓库 (例如 GitHub 仓库)，方便用户查看源代码和提交 Issue。
+-   **`bugs`**: 扩展的 Bug 提交地址，指向扩展的 Issue 跟踪系统 (例如 GitHub Issues)。
+-   **`engines.vscode`**: **指定扩展兼容的 VSCode 最低版本**，例如 `"engines": { "vscode": "^1.60.0" }` 表示扩展兼容 VSCode 1.60.0 及以上版本。
+-   **`activationEvents`**: 激活事件，定义扩展的激活条件，参考之前的文章 [我不知道的 VSCode 扩展:生命周期的奥秘](link to lifecycle article)。
+-   **`contributes`**: 贡献点，定义扩展向 VSCode 贡献的功能，例如命令、菜单、视图、配置、语言等，参考之前的文章 [我不知道的 VSCode 扩展:用户交互的无限可能](link to interaction article)。
+
+一个完善的 `package.json` 文件示例如下:
+
+```json
+{
+    "name": "markdown-preview-enhanced", // 扩展名称 (publisher.extensionName)
+    "displayName": "Markdown Preview Enhanced", // 显示名称
+    "description": "Markdown Preview Enhanced ported to VSCode", // 描述信息
+    "version": "0.3.7", // 版本号
+    "publisher": "shd101dev", // 发布者名称
+    "icon": "icon.png", // 图标
+    "categories": [
+        // 分类
+        "Other"
+    ],
+    "keywords": [
+        // 关键词
+        "markdown",
+        "preview",
+        "editor"
+    ],
+    "repository": {
+        // 仓库地址
+        "type": "git",
+        "url": "https://github.com/shd101/vscode-markdown-preview-enhanced"
+    },
+    "bugs": {
+        // Bug 提交地址
+        "url": "https://github.com/shd101/vscode-markdown-preview-enhanced/issues"
+    },
+    "engines": {
+        // 兼容的 VSCode 最低版本
+        "vscode": "^1.60.0"
+    },
+    "activationEvents": [
+        // 激活事件
+        "onStartupFinished",
+        "onLanguage:markdown"
+    ],
+    "contributes": {
+        // 贡献点
+        "commands": [
+            {
+                "command": "markdown-preview-enhanced.openPreview",
+                "title": "Markdown Preview Enhanced: Open Preview"
+            }
+        ],
+        "menus": {
+            "editor/context": [
+                {
+                    "command": "markdown-preview-enhanced.openPreview",
+                    "group": "navigation"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### 添加 README 文件
+
+📄 **README 文件 (通常是 `README.md`) 是扩展的说明文档，非常重要！** 它会显示在 VSCode 扩展市场的扩展详情页中，用于向用户介绍扩展的功能、使用方法、配置选项、更新日志等。一个好的 README 文件可以帮助用户快速了解你的扩展，并决定是否安装使用。
+
+**README 文件应该包含以下内容 (但不限于):**
+
+-   **扩展名称和简短描述**: 与 `package.json` 中的 `displayName` 和 `description` 保持一致。
+-   **扩展功能和特点**: 详细介绍扩展的主要功能和特点，突出扩展的优势和亮点。
+-   **使用方法**: 清晰地说明如何安装、配置和使用扩展，提供详细的步骤和示例。
+-   **配置选项**: 如果扩展有配置选项，需要详细说明每个配置选项的作用和取值范围。
+-   **更新日志 (Changelog)**: 记录扩展的版本更新历史，包括每个版本的新增功能、Bug 修复、改进等。
+-   **贡献指南 (Contributing)**: 如果你希望接受社区贡献，可以添加贡献指南，说明如何参与扩展的开发。
+-   **许可证 (License)**: 声明扩展的开源许可证，例如 MIT License, Apache License 2.0 等。
+-   **作者信息**: 你的姓名、邮箱、GitHub 链接等。
+
+**README 文件可以使用 Markdown 格式编写**，并使用清晰的标题、列表、代码块、图片、链接等元素，使文档结构清晰、易读性强。
+
+#### 选择开源许可证
+
+⚖️ **开源许可证** 决定了用户如何使用、修改和分发你的扩展。**强烈建议为你的扩展选择一个合适的开源许可证**，例如 MIT License, Apache License 2.0, GPLv3 等。
+
+-   **MIT License**: 非常宽松的许可证，允许用户自由使用、修改、分发和商业使用，只需保留原始版权声明。
+-   **Apache License 2.0**: 相对宽松的许可证，类似于 MIT License，但对专利权有更明确的规定。
+-   **GPLv3**: 相对严格的许可证，具有 "传染性"，要求基于 GPLv3 许可证的代码衍生的作品也必须使用 GPLv3 许可证。
+
+你可以根据你的需求和偏好选择合适的开源许可证。**如果不知道如何选择，推荐使用 MIT License 或 Apache License 2.0。** 在项目根目录下创建一个 `LICENSE` 文件，并将许可证文本复制到文件中。
+
+### 发布扩展
+
+🚀 完成准备工作后，就可以开始发布你的 VSCode 扩展了。发布扩展主要分为以下几个步骤:
+
+1. **注册 Azure DevOps 组织**: VSCode 扩展市场使用 Azure DevOps (原 Visual Studio Team Services) 来管理扩展发布。你需要注册一个 Azure DevOps 组织 (Organization)，如果已经有 Azure DevOps 组织，可以直接使用。
+2. **创建发布者 (Publisher)**: 在 Azure DevOps 组织中创建一个发布者 (Publisher)。**发布者名称需要全局唯一，一旦创建后无法修改。** **推荐使用你的用户名或组织名称作为发布者名称。** 如果你已经创建过发布者，可以直接使用已有的发布者。
+3. **安装 `vsce` 工具**: `vsce` (Visual Studio Code Extensions) 是 VSCode 官方提供的命令行工具，用于打包、发布和管理 VSCode 扩展。你需要全局安装 `vsce` 工具:
+
+    ```bash
+    npm install -g vsce
+    ```
+4. **登录发布者**: 使用 `vsce login publisherName` 命令登录你的发布者。你需要创建一个 [Personal Access Token (PAT)](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page) 并复制到命令行中。PAT 需要具有 "Marketplace (Publish)" 权限。
+
+    ```bash
+    vsce login your-publisher-name
+    ```
+
+5. **打包扩展**: 在你的扩展项目根目录下，使用 `vsce package` 命令打包扩展。`vsce` 会读取 `package.json` 文件，并将扩展打包成一个 `.vsix` 文件 (Visual Studio Extension Package)。
+
+    ```bash
+    vsce package
+    ```
+
+    你可以通过 `.vscodeignore` 文件 (类似于 `.gitignore`) 排除不需要打包的文件和目录，例如 `node_modules`, `test` 等。
+
+6. **发布扩展**: 使用 `vsce publish` 命令发布扩展。`vsce` 会将打包好的 `.vsix` 文件上传到 VSCode 扩展市场。
+
+    ```bash
+    vsce publish
+    ```
+
+    **发布新版本时，只需要更新 `package.json` 中的 `version` 版本号，然后重新执行 `vsce package` 和 `vsce publish` 命令即可。**
+
+    你也可以使用 `vsce publish <version>` 命令发布指定版本，例如 `vsce publish 1.0.1`。
+
+7. **验证发布**: 发布成功后，稍等片刻 (通常几分钟到几十分钟)，你的扩展就会出现在 VSCode 扩展市场中。你可以通过 VSCode 扩展面板或 VSCode 扩展市场网站搜索你的扩展名称，验证是否发布成功。
+
+### 更新扩展
+
+🔄 发布扩展后，你可能需要不断更新扩展，修复 Bug、添加新功能、改进性能等。更新扩展的流程非常简单:
+
+1. **修改代码**: 修改你的扩展代码，修复 Bug 或添加新功能。
+2. **更新版本号**: **修改 `package.json` 文件中的 `version` 版本号，确保版本号递增**，例如从 `1.0.0` 更新到 `1.0.1` 或 `1.1.0`。
+3. **重新打包和发布**: 重新执行 `vsce package` 和 `vsce publish` 命令，打包并发布新版本的扩展。
+
+VSCode 客户端会自动检测到扩展更新，并提示用户更新。用户也可以在 VSCode 扩展面板中手动更新扩展。
+
+### 撤回扩展
+
+⚠️ 在某些特殊情况下，你可能需要 **撤回 (Unpublish)** 你的扩展，例如扩展存在严重 Bug 或安全漏洞，或者你不再维护该扩展。
+
+**撤回扩展是一个慎重操作，一旦撤回，用户将无法在 VSCode 扩展市场中找到和安装你的扩展。** 已经安装了你的扩展的用户仍然可以使用，但不会收到更新提示。
+
+要撤回扩展，可以使用 `vsce unpublish publisherName.extensionName` 命令:
+
+```bash
+vsce unpublish your-publisher-name.your-extension-name
+```
+
+**撤回扩展后，你可以选择重新发布修复后的版本，或者彻底删除该扩展。**
+
+### 总结
+
+🎉 恭喜你，完成了 VSCode 扩展发布到 VSCode 扩展市场的学习！本文详细介绍了发布 VSCode 扩展的准备工作、发布步骤、更新流程和撤回操作。掌握扩展发布流程，你就可以将你的优秀扩展分享给全球开发者，让更多人受益。记住，发布只是一个开始，持续维护和更新你的扩展，积极听取用户反馈，不断改进和完善你的扩展，才能让你的扩展在 VSCode 扩展市场中获得成功！祝你的扩展发布顺利，获得用户的喜爱！

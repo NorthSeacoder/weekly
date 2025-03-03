@@ -3,10 +3,10 @@ tags: [CSS, 新特性, 样式, 前端开发, 编程技巧]
 category: 技术
 source: twitter
 date: 2024-12-19
-title: CSS 的未来：使用 ident() 函数动态生成标识符
+title: CSS 的未来:使用 ident() 函数动态生成标识符
 ---
 
-### [CSS 的未来：使用 ident() 函数动态生成标识符](https://www.bram.us/2024/12/18/the-future-of-css-construct-custom-idents-and-dashed-idents-with-ident/)
+### [CSS 的未来:使用 ident() 函数动态生成标识符](https://www.bram.us/2024/12/18/the-future-of-css-construct-custom-idents-and-dashed-idents-with-ident/)
 
 ![img](https://img.mengpeng.tech/i/2024/12/19/6763a50b8c85e.webp)
 
@@ -16,8 +16,8 @@ CSS 中，我们经常需要为元素指定唯一的标识符（ident），例�
 
 #### 核心概念
 
--   标识符 (Ident)：CSS 中用于命名元素的字符串，例如 `view-transition-name` 的值。
--   `ident()` 函数：一个 CSS 函数，用于动态构建标识符，可以是自定义标识符（`<custom-ident>`) 或虚线标识符（`<dashed-ident>`）。
+-   标识符 (Ident):CSS 中用于命名元素的字符串，例如 `view-transition-name` 的值。
+-   `ident()` 函数:一个 CSS 函数，用于动态构建标识符，可以是自定义标识符（`<custom-ident>`) 或虚线标识符（`<dashed-ident>`）。
 
 #### `ident()` 函数的意义
 
@@ -25,10 +25,10 @@ CSS 中，我们经常需要为元素指定唯一的标识符（ident），例�
 
 #### 解决的问题
 
-在 CSS 中，很多功能需要我们为元素指定一个名称，以便后续引用。例如：
+在 CSS 中，很多功能需要我们为元素指定一个名称，以便后续引用。例如:
 
--   视图过渡 (View Transitions)：需要为每个过渡元素设置唯一的 `view-transition-name`。
--   滚动驱动动画 (Scroll-driven Animations)：需要为每个动画元素设置唯一的 `view-timeline-name`。
+-   视图过渡 (View Transitions):需要为每个过渡元素设置唯一的 `view-transition-name`。
+-   滚动驱动动画 (Scroll-driven Animations):需要为每个动画元素设置唯一的 `view-timeline-name`。
 
 手动为大量元素设置这些名称非常繁琐，而且容易出错。`ident()` 函数通过动态生成标识符，大大简化了这一过程。
 
@@ -43,7 +43,7 @@ CSS 中，我们经常需要为元素指定唯一的标识符（ident），例�
 
 #### 示例
 
-假设我们需要为多个列表项设置 `view-timeline-name`，传统方式需要这样写：
+假设我们需要为多个列表项设置 `view-timeline-name`，传统方式需要这样写:
 
 ```css
 main {
@@ -53,7 +53,7 @@ main {
 }
 ```
 
-使用 `ident()` 函数，可以简化为：
+使用 `ident()` 函数，可以简化为:
 
 ```css
 main li {
@@ -65,7 +65,7 @@ main li {
 
 #### 更多应用场景
 
-`ident()` 函数可以与其他 CSS 函数结合使用，例如 `attr()`：
+`ident()` 函数可以与其他 CSS 函数结合使用，例如 `attr()`:
 
 ```css
 .item {
@@ -90,13 +90,13 @@ main li {
 
 #### 行动与改变
 
-实践建议：
+实践建议:
 
 -   关注 CSS 新特性，了解 `ident()` 函数的最新进展。
 -   在未来的项目中尝试使用 `ident()` 函数，简化 CSS 代码。
 -   结合其他 CSS 函数，发挥 `ident()` 函数的强大功能。
 
-认知提升：
+认知提升:
 
 -   理解 CSS 标识符的概念。
 -   掌握 `ident()` 函数的语法和用法。

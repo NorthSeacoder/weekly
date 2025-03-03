@@ -1,0 +1,53 @@
+---
+tags: [前端开发, V8, JavaScript 执行过程]
+category: V8
+date: 2024-02-21
+title: 我不知道的 V8:从源码到执行的奇妙旅程
+desc: 系统梳理 V8 引擎执行 JavaScript 代码全过程，揭秘高效运行机制。
+slug: v8-js-engine-03
+---
+
+### 引言
+
+✨ 在前两篇文章中，我们分别探讨了 V8 引擎的基本概念以及编译执行与解释执行的原理。今天，我们将把目光聚焦于 V8 引擎执行 JavaScript 代码的完整旅程，从我们编写的源码开始，一步步追踪代码在 V8 内部的"奇妙之旅"，了解 V8 如何将看似简单的 JavaScript 代码高效地执行起来。
+
+### 从源码到 AST:代码的解析之旅
+
+🗺️ 我们编写的 JavaScript 代码，对于 V8 引擎来说，最初只是一段文本字符串。要让 V8 "理解"代码的含义，首先需要进行**解析（Parsing）**。
+
+1. **词法分析（Lexical Analysis）**:V8 的**扫描器（Scanner）**首先会对 JavaScript 源码进行词法分析，将代码分解成一个个**词法单元（Token）**。例如，将 `const a = 10;` 分解成 `const`、`a`、`=`、`10`、`;` 等 Token。
+
+2. **语法分析（Syntactic Analysis）**:**解析器（Parser）**接收 Token 流，根据 JavaScript 语法规则，构建出**抽象语法树（Abstract Syntax Tree, AST）**。AST 以树状结构表示代码的语法结构，例如，变量声明、函数定义、表达式等。
+
+**AST 的作用**:AST 是代码的结构化表示，方便 V8 后续进行代码优化、编译和执行。
+
+### 从 AST 到字节码:Ignition 的解释执行
+
+🔥 有了 AST 之后，V8 并没有立即将其编译成机器码，而是先通过 **Ignition** 解释器将其转换成**字节码（Bytecode）**。
+
+1. **字节码生成（Bytecode Generation）**:**Ignition** 遍历 AST，为每个节点生成对应的字节码指令。字节码是一种介于源码和机器码之间的中间代码，相对于机器码更抽象，但比 JavaScript 源码更接近机器码。
+
+2. **字节码解释执行（Bytecode Interpretation）**:**Ignition** 解释器逐行解释执行字节码。
+
+**Ignition 的优势**:快速启动，节省内存。由于字节码相对简洁，解释执行的启动速度很快，且占用的内存较小。
+
+### TurboFan:热点代码的编译优化
+
+🚀 虽然 Ignition 解释执行字节码已经能够运行 JavaScript 代码，但为了追求更高的性能，V8 引入了 **TurboFan** 优化编译器。
+
+1. **Profiling（性能分析）**:在 Ignition 解释执行字节码的过程中，V8 会对代码的执行情况进行 **Profiling（性能分析）**，监控哪些代码片段执行频率高，即**热点代码（HotSpot）**。
+
+2. **JIT 编译（Just-In-Time Compilation）**:**TurboFan** 优化编译器会将这些热点代码编译成**优化的机器码（Optimized Machine Code）**。**JIT（即时编译）**的含义是在程序运行时进行编译，只编译热点代码，而不是全部代码。
+
+3. **代码替换（Code Replacement）**:V8 会将热点代码的字节码替换成 TurboFan 生成的优化机器码。下次执行到这些热点代码时，V8 将直接执行机器码，从而大幅提升性能。
+
+**TurboFan 的优势**:性能优化。通过 JIT 编译热点代码，生成高度优化的机器码，充分发挥硬件性能。
+
+### 执行机器码:代码的最终运行
+
+🏁 经过 **Ignition** 的解释执行和 **TurboFan** 的编译优化，JavaScript 代码最终被转换成高效的机器码。V8 引擎最终会执行这些机器码，完成 JavaScript 程序的运行。
+
+### 总结
+
+🎉 V8 引擎执行 JavaScript 代码的旅程，就像一场精密的接力赛，各个环节紧密配合，共同保障了 JavaScript 代码的高效运行。从源码解析到 AST，再到 Ignition 解释执行字节码，最后通过 TurboFan 编译优化热点代码，生成机器码并执行。这一系列步骤环环相扣，充分体现了 V8 引擎的强大和复杂性。理解 V8 的执行过程，不仅可以帮助我们更好地理解 JavaScript 的运行原理，也能指导我们编写出更高性能的 JavaScript 代码。
+

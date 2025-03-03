@@ -32,7 +32,7 @@ export async function getEnhancedCollection<T extends keyof typeof collections>(
 // 实现平台无关的最后更新时间获取
 async function getLastUpdatedTime(fileUrl: string): Promise<Date> {
     if (import.meta.env.DEV) {
-        // 开发环境：使用浏览器 Fetch API 获取文件元信息
+        // 开发环境:使用浏览器 Fetch API 获取文件元信息
         try {
             const res = await fetch(fileUrl, {method: 'HEAD'});
             const lastModified = res.headers.get('last-modified');
@@ -43,7 +43,7 @@ async function getLastUpdatedTime(fileUrl: string): Promise<Date> {
         }
     }
 
-    // 生产环境：使用构建时注入的时间
+    // 生产环境:使用构建时注入的时间
     return new Date(import.meta.env.BUILD_TIME || Date.now());
 }
 

@@ -15,24 +15,24 @@ title: 2024年如何开发全面兼容的 NPM 库
 一篇深入探讨如何在 2024 年开发全面兼容的 NPM 库的技术文章。文章详细介绍了如何处理 CJS/ESM 兼容性、Node.js 版本差异、TypeScript 类型定义等关键问题，提供了完整的工程化解决方案。
 
 #### 核心挑战
-- 模块规范：同时支持 CommonJS 和 ES Modules 两种模块系统
-- Node.js 兼容：处理新旧版本 Node.js 的 package.json exports 字段差异
-- TypeScript 支持：解决不同 moduleResolution 配置下的类型推导问题
-- 指令保留：确保打包后保留源码中的 "use client" 等关键指令
-- 产物优化：生成体积最优、兼容性最好的打包产物
+- 模块规范:同时支持 CommonJS 和 ES Modules 两种模块系统
+- Node.js 兼容:处理新旧版本 Node.js 的 package.json exports 字段差异
+- TypeScript 支持:解决不同 moduleResolution 配置下的类型推导问题
+- 指令保留:确保打包后保留源码中的 "use client" 等关键指令
+- 产物优化:生成体积最优、兼容性最好的打包产物
 
 #### 技术方案
-- 打包工具：使用 Vite 和 Rollup 进行库的构建打包
-- 类型生成：通过 vite-plugin-dts 生成 .d.ts 和 .d.cts 文件
-- 指令处理：使用 rollup-plugin-preserve-directives 保留关键指令
-- 导出配置：合理配置 package.json 的 exports 字段
-- 兼容处理：使用 typesVersions 解决旧版本 Node.js 的类型推导
+- 打包工具:使用 Vite 和 Rollup 进行库的构建打包
+- 类型生成:通过 vite-plugin-dts 生成 .d.ts 和 .d.cts 文件
+- 指令处理:使用 rollup-plugin-preserve-directives 保留关键指令
+- 导出配置:合理配置 package.json 的 exports 字段
+- 兼容处理:使用 typesVersions 解决旧版本 Node.js 的类型推导
 
 #### 最佳实践
-- 产物分离：分别生成 ESM 和 CJS 格式的产物
-- 类型定义：为不同模块系统提供对应的类型文件
-- 导出配置：使用条件导出确保正确的模块解析
-- 版本兼容：通过 typesVersions 提供全面的类型支持
-- 质量验证：使用 arethetypeswrong 等工具验证兼容性
+- 产物分离:分别生成 ESM 和 CJS 格式的产物
+- 类型定义:为不同模块系统提供对应的类型文件
+- 导出配置:使用条件导出确保正确的模块解析
+- 版本兼容:通过 typesVersions 提供全面的类型支持
+- 质量验证:使用 arethetypeswrong 等工具验证兼容性
 
 这篇文章为开发者提供了一个现代 NPM 库开发的完整指南，帮助开发者构建出高质量、全面兼容的 JavaScript 库。通过遵循这些最佳实践，可以确保库在各种环境下都能正常工作。

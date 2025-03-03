@@ -3,7 +3,7 @@ tags: [Node.js, JavaScript, 模块系统, 打包工具, 前端工程化]
 category: 教程
 source: website
 date: 2024-12-15
-title: Node.js 模块系统演进史：从 CJS 到 ESM
+title: Node.js 模块系统演进史:从 CJS 到 ESM
 ---
 
 ### [Node.js: A brief history of cjs, bundlers, and esm](https://dev.to/marcogrcr/nodejs-a-brief-history-of-cjs-bundlers-and-esm-2nlb)
@@ -15,13 +15,13 @@ title: Node.js 模块系统演进史：从 CJS 到 ESM
 一篇深入探讨 Node.js 模块系统发展历程的技术文章。从最初的全局作用域，到 CommonJS 的引入，再到 ES Modules 的标准化，详细介绍了 JavaScript 模块化开发的演进过程。
 
 #### 核心概念
-- 全局作用域：早期 JavaScript 只有全局作用域，容易造成命名冲突
-- CommonJS：Node.js 引入的模块系统，使用 require 和 module.exports
-- ES Modules：JavaScript 官方模块规范，使用 import 和 export
-- 打包工具：解决浏览器兼容性问题的工具链，如 webpack、rollup 等
+- 全局作用域:早期 JavaScript 只有全局作用域，容易造成命名冲突
+- CommonJS:Node.js 引入的模块系统，使用 require 和 module.exports
+- ES Modules:JavaScript 官方模块规范，使用 import 和 export
+- 打包工具:解决浏览器兼容性问题的工具链，如 webpack、rollup 等
 
 #### 技术演进
-- CommonJS 特性：
+- CommonJS 特性:
   ```js
   // 导出模块
   const GREETING_PREFIX = "Hello";
@@ -34,7 +34,7 @@ title: Node.js 模块系统演进史：从 CJS 到 ESM
   const { greet } = require("./greet");
   ```
 
-- ES Modules 特性：
+- ES Modules 特性:
   ```js
   // 导出模块
   export function greet(name) {
@@ -53,12 +53,12 @@ Q2: Node.js 如何处理两种模块系统的兼容性？
 A2: Node.js 通过文件扩展名(.cjs/.mjs)和 package.json 的 type 字段来区分模块类型。ES Modules 可以导入 CommonJS 模块，但反向兼容有一些限制。
 
 #### 行动与改变
-实践建议：
+实践建议:
 - 新项目优先选择 ES Modules
 - 了解两种模块系统的差异和兼容性
 - 合理使用打包工具处理兼容性问题
 
-认知提升：
+认知提升:
 - 理解模块化开发的演进历程
 - 掌握不同模块系统的使用场景
 - 建立工程化思维和最佳实践
@@ -81,14 +81,14 @@ Node.js模块系统
 ```
 
 #### 关键术语解释
-- CommonJS (CJS)：Node.js 原生模块系统，使用 require/exports
-- ES Modules (ESM)：ECMAScript 官方模块规范，使用 import/export
-- Bundler：将模块代码转换为浏览器可用格式的工具
-- Package.json：npm 包的配置文件，定义包的属性和入口点
+- CommonJS (CJS):Node.js 原生模块系统，使用 require/exports
+- ES Modules (ESM):ECMAScript 官方模块规范，使用 import/export
+- Bundler:将模块代码转换为浏览器可用格式的工具
+- Package.json:npm 包的配置文件，定义包的属性和入口点
 
 #### 扩展资源
-- Node.js 官方文档：模块系统详细说明
-- ES Modules 规范：官方模块标准文档
-- 打包工具对比：不同工具的特点和使用场景
+- Node.js 官方文档:模块系统详细说明
+- ES Modules 规范:官方模块标准文档
+- 打包工具对比:不同工具的特点和使用场景
 
 这篇文章全面介绍了 Node.js 模块系统的发展历程，帮助开发者理解不同模块规范的来源和使用场景。通过了解这些历史和原理，我们可以在项目中做出更好的技术选择。 

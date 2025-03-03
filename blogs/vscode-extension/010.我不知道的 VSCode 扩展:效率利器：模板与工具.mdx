@@ -1,0 +1,155 @@
+---
+tags:
+    [
+        前端开发,
+        VSCode,
+        扩展开发,
+        效率工具,
+        模板,
+        脚手架,
+        reactive-vscode,
+        starter-vscode,
+        代码生成,
+        自动化,
+        vscode-webview-ui-toolkit
+    ]
+category: VSCode
+date: 2024-06-12
+title: 我不知道的 VSCode 扩展:效率利器:模板与工具
+desc: 介绍 VSCode 扩展开发中常用的模板和工具，例如 reactive-vscode, starter-vscode, vscode-webview-ui-toolkit 等等，帮助开发者提升开发效率和代码质量。
+slug: vscode-extension-10
+---
+
+### 引言
+
+🚀 在前面的系列文章中，我们已经学习了 VSCode 扩展开发的方方面面。为了进一步提升开发效率和代码质量，本篇文章将聚焦于 **VSCode 扩展开发中的效率利器:模板与工具**。工欲善其事，必先利其器。选择合适的模板和工具，可以帮助我们快速搭建开发环境、简化开发流程、提高代码质量，从而更专注于扩展的核心功能和创新。本文将介绍一些常用的 VSCode 扩展开发模板和**第三方工具**，助你打造高效的开发工作流，让你的扩展开发事半功倍！现在，就让我们一起探索 VSCode 扩展开发的效率提升之道！
+
+### 模板:快速启动你的扩展项目
+
+🏗️ **模板 (Templates)** 是预先配置好的项目结构和基础代码，可以帮助开发者快速启动一个新的项目，避免从零开始搭建环境和编写样板代码。在 VSCode 扩展开发中，使用合适的模板可以节省大量时间，让你更快地进入实际的扩展功能开发。
+
+#### 1. Yeoman VSCode Extension Generator
+
+[Yeoman](https://yeoman.io/) 是一个通用的脚手架工具，可以生成各种类型的项目，包括 VSCode 扩展。[generator-code](https://marketplace.visualstudio.com/items?itemName=vscode.vscode-generator-code) 是 VSCode 官方提供的 Yeoman 扩展生成器，可以帮助你快速创建一个基础的 VSCode 扩展项目。
+
+**安装 Yeoman 和 generator-code:**
+
+```bash
+npm install -g yo generator-code
+```
+
+**使用 generator-code 生成扩展:**
+
+在终端中运行 `yo code` 命令，根据提示选择扩展类型 (例如 "New Extension (TypeScript)")、扩展名称、发布者 ID 等信息，generator-code 会自动生成一个包含基本结构和配置的 VSCode 扩展项目。
+
+**generator-code 提供的模板类型:**
+
+-   **New Extension (TypeScript)**: 创建一个使用 TypeScript 的基础扩展项目。
+-   **New Extension (JavaScript)**: 创建一个使用 JavaScript 的基础扩展项目。
+-   **New Color Theme**: 创建一个新的颜色主题扩展项目。
+-   **New Language Support**: 创建一个新的语言支持扩展项目。
+-   **New Webview Extension**: 创建一个包含 Webview 的扩展项目。
+-   **New Extension Pack**: 创建一个扩展包项目，用于打包多个扩展。
+
+#### 2. starter-vscode (antfu/starter-vscode)
+
+[starter-vscode](https://github.com/antfu/starter-vscode) 是 [antfu](https://github.com/antfu) 创建的一个高质量 VSCode 扩展启动模板。它基于 TypeScript, [esbuild](https://esbuild.github.io/), [pnpm](https://pnpm.io/) 等现代工具链，预配置了开发、构建、测试、发布等环节，并提供了丰富的示例代码和最佳实践。
+
+**starter-vscode 的特点:**
+
+-   **现代工具链**: 使用 esbuild 进行快速构建，pnpm 进行高效包管理。
+-   **TypeScript 支持**: 默认使用 TypeScript 开发，提供类型检查和代码提示。
+-   **测试框架**: 集成 [Vitest](https://vitest.dev/) 测试框架，方便编写和运行单元测试和集成测试。
+-   **自动发布**: 配置 GitHub Actions 自动发布扩展到 VSCode 扩展市场。
+-   **示例代码**: 包含丰富的示例代码，例如命令、配置、状态栏、Webview 等。
+-   **开发体验优化**: 预配置了 ESLint, Prettier, [VSCode 调试配置](https://code.visualstudio.com/docs/editor/debugging) 等，提供良好的开发体验。
+
+**使用 starter-vscode:**
+
+1.  **使用 GitHub 模板**: 点击 [starter-vscode](https://github.com/antfu/starter-vscode) 仓库的 "Use this template" 按钮，创建一个新的仓库。
+2.  **Clone 到本地**: 将新创建的仓库 clone 到本地。
+3.  **安装依赖**: 在项目根目录下运行 `pnpm install` 安装依赖。
+4.  **开始开发**: 运行 `pnpm dev` 启动开发模式，开始编写你的扩展代码。
+
+### 工具:提升开发效率和代码质量的第三方库
+
+🛠️ 除了模板之外，还有许多**第三方工具库**可以帮助我们提升 VSCode 扩展开发的效率和代码质量。 这些工具库通常专注于解决特定领域的问题，例如 UI 开发、状态管理、API 封装等，可以帮助我们更高效地构建高质量的 VSCode 扩展。
+
+#### 1. reactive-vscode (KermanX/reactive-vscode)
+
+[reactive-vscode](https://github.com/KermanX/reactive-vscode) 是由 [KermanX](https://github.com/KermanX) 创建的一个库，旨在 **使用 Vue Reactivity API 开发 VSCode 扩展**。它提供了一系列 `useXXX` 函数，将 VSCode API 转换为响应式数据，让你像写 Vue 组件一样开发 VSCode 扩展，极大地简化了状态管理和 UI 更新。
+
+**reactive-vscode 的特点:**
+
+-   **Vue Reactivity API**: 使用 Vue 3 的 [Reactivity API](https://vuejs.org/guide/reactivity/reactivity-fundamentals.html) 进行状态管理，例如 `ref`, `reactive`, `computed` 等。
+-   **Composable Functions**: 提供了一系列 `useXXX` composable 函数，例如 `useCommands`, `useConfiguration`, `useStatusBarItem`, `useWebview` 等，封装了 VSCode API 的复杂性。
+-   **类型安全**: 基于 TypeScript 开发，提供完善的类型定义和代码提示。
+-   **易于测试**: 响应式数据和 composable 函数更易于测试。
+-   **与 Vue 生态集成**: 可以方便地与 Vue 生态系统中的其他库和工具集成。
+
+**使用 reactive-vscode:**
+
+1.  **安装 reactive-vscode**: 在你的 VSCode 扩展项目中运行 `npm install reactive-vscode` 或 `pnpm add reactive-vscode` 安装。
+2.  **使用 `defineExtension` 定义扩展**: 在你的扩展主文件中，使用 `defineExtension` 函数定义扩展，并在其中使用 `useXXX` 函数来操作 VSCode API。
+
+**示例 (使用 reactive-vscode 创建状态栏):**
+
+```typescript
+import {defineExtension, ref, useStatusBarItem} from 'reactive-vscode';
+import {StatusBarAlignment} from 'vscode';
+
+export = defineExtension(() => {
+    const counter = ref(0);
+
+    useStatusBarItem({
+        alignment: StatusBarAlignment.Right,
+        priority: 100,
+        text: () => `$(megaphone) Hello*${counter.value}`
+    });
+
+    // ... 其他扩展代码 ...
+});
+```
+
+#### 2. vscode-webview-ui-toolkit
+
+[vscode-webview-ui-toolkit](https://github.com/microsoft/vscode-webview-ui-toolkit) 是 **微软官方提供的 Webview UI 工具包**，旨在帮助开发者构建符合 VSCode 风格和体验的 Webview 界面。它基于 [Web Components](https://developer.mozilla.org/en-US/docs/Web/Web_Components) 技术，提供了一系列开箱即用的 UI 组件，例如按钮、输入框、下拉菜单、表格、树形视图等。
+
+**vscode-webview-ui-toolkit 的特点:**
+
+-   **官方维护**: 由 Microsoft 官方维护，与 VSCode 风格保持一致。
+-   **Web Components**: 基于 Web Components 技术，具有良好的跨框架兼容性和可复用性。
+-   **丰富的 UI 组件**: 提供丰富的 UI 组件，涵盖 Webview 开发的常用场景。
+-   **易于使用**: 提供详细的文档和示例，易于上手和使用。
+-   **性能优化**: 针对 Webview 环境进行了性能优化。
+
+**使用 vscode-webview-ui-toolkit:**
+
+1.  **安装 vscode-webview-ui-toolkit**: 在你的 VSCode 扩展项目中运行 `npm install @vscode/webview-ui-toolkit` 或 `pnpm add @vscode/webview-ui-toolkit` 安装。
+2.  **在 Webview HTML 中引入**: 在你的 Webview HTML 文件中，通过 `<script>` 标签引入 `vscode-webview-ui-toolkit` 的 JavaScript 文件。
+3.  **使用 UI 组件**: 在 Webview HTML 中直接使用 `vscode-webview-ui-toolkit` 提供的 UI 组件，例如 `<vscode-button>`, `<vscode-text-field>` 等。
+
+**示例 (在 Webview 中使用 vscode-button):**
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My Webview</title>
+        <script
+            type="module"
+            src="https://cdn.jsdelivr.net/npm/@vscode/webview-ui-toolkit@1.4.0/dist/toolkit.min.js"></script>
+    </head>
+    <body>
+        <h1>Hello from Webview!</h1>
+        <vscode-button appearance="primary">Click Me</vscode-button>
+        <!-- 使用 vscode-button 组件 -->
+    </body>
+</html>
+```
+
+### 总结
+
+🎉 恭喜你，完成了 VSCode 扩展开发效率工具的学习！本文介绍了 VSCode 扩展开发中常用的模板和**第三方工具**，包括 Yeoman VSCode Extension Generator, starter-vscode 等模板，以及 reactive-vscode, vscode-webview-ui-toolkit 等**第三方工具库**。合理利用这些模板和工具库，可以极大地提高你的扩展开发效率和代码质量，让你更专注于扩展的功能创新和用户体验优化。在实际开发中，根据你的项目需求和团队习惯，选择合适的模板和工具，并不断学习和探索新的效率提升方法，让你的 VSCode 扩展开发更上一层楼！

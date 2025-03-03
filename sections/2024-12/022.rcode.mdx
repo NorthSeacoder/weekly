@@ -15,24 +15,24 @@ title: rcode - 远程文件快速打开工具
 一个便捷的命令行工具，让你能够从任意终端连接中在本地 VSCode 或 Cursor 中打开远程文件。这个工具极大地简化了远程开发流程，支持快速访问和编辑远程服务器上的文件。
 
 #### 核心功能
-- 远程打开：直接在本地 VSCode 中打开远程文件
-- Cursor 支持：同时支持在 Cursor 编辑器中打开文件
-- SSH 集成：完美配合 SSH 配置文件使用
-- 快捷方式：支持为常用目录设置快捷名称
-- 历史记录：支持快速打开最近访问的远程目录
+- 远程打开:直接在本地 VSCode 中打开远程文件
+- Cursor 支持:同时支持在 Cursor 编辑器中打开文件
+- SSH 集成:完美配合 SSH 配置文件使用
+- 快捷方式:支持为常用目录设置快捷名称
+- 历史记录:支持快速打开最近访问的远程目录
 
 #### 使用方法
-- 基础命令：`rcode file` 类似 VSCode 的 `code .`
-- 远程访问：`rcode remote_ssh ~/test` 打开远程目录
-- 快捷方式：`rcode -os shortcut_name` 快速打开已保存目录
-- Cursor 支持：`rcursor remote_ssh ~/test` 用 Cursor 打开
-- 最近记录：`rcode -l` 或 `rcode --latest` 打开最近目录
+- 基础命令:`rcode file` 类似 VSCode 的 `code .`
+- 远程访问:`rcode remote_ssh ~/test` 打开远程目录
+- 快捷方式:`rcode -os shortcut_name` 快速打开已保存目录
+- Cursor 支持:`rcursor remote_ssh ~/test` 用 Cursor 打开
+- 最近记录:`rcode -l` 或 `rcode --latest` 打开最近目录
 
 #### 安装配置
-- 包管理：通过 pip3 安装 `pip3 install rcode`
-- 依赖安装：需要安装 socat（如 `sudo yum install socat`）
-- 环境配置：确保 `~/.local/bin` 在系统 PATH 中
-- SSH 配置：需要提前配置好 SSH 连接
-- 权限设置：确保有相应的文件访问权限
+- 包管理:通过 pip3 安装 `pip3 install rcode`
+- 依赖安装:需要安装 socat（如 `sudo yum install socat`）
+- 环境配置:确保 `~/.local/bin` 在系统 PATH 中
+- SSH 配置:需要提前配置好 SSH 连接
+- 权限设置:确保有相应的文件访问权限
 
 这是一个提升远程开发效率的实用工具，通过简单的命令行操作，让远程文件的访问和编辑变得像本地文件一样便捷。它的设计简洁而强大，是远程开发者的得力助手。 

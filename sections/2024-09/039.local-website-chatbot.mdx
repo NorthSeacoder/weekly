@@ -15,11 +15,11 @@ title: Local Website Chatbot - 本地网站 AI 对话工具
 Local Website Chatbot 是一个基于浏览器的本地化网站内容对话工具，通过 WebAssembly 和本地 LLM 模型实现完全本地化的智能对话。项目使用 TypeScript（89.5%）开发，提供了完整的本地化解决方案。
 
 #### 技术架构
-- 向量存储：使用 Voy 实现基于 WASM 的浏览器端向量数据库
-- 模型调用：通过 LangChain.js 实现 AI 模型调用和检索编排
-- 嵌入计算：使用 Transformers.js 在浏览器端进行文本嵌入
-- 内容抓取：集成 Firecrawl 进行网页内容抓取和 Markdown 转换
-- 前端框架：基于 Next.js 构建现代化的用户界面
+- 向量存储:使用 Voy 实现基于 WASM 的浏览器端向量数据库
+- 模型调用:通过 LangChain.js 实现 AI 模型调用和检索编排
+- 嵌入计算:使用 Transformers.js 在浏览器端进行文本嵌入
+- 内容抓取:集成 Firecrawl 进行网页内容抓取和 Markdown 转换
+- 前端框架:基于 Next.js 构建现代化的用户界面
 
 #### 部署配置
 - Ollama 配置
@@ -32,14 +32,14 @@ Local Website Chatbot 是一个基于浏览器的本地化网站内容对话工�
   set OLLAMA_HOST=127.0.0.1:11435
   ollama serve
   ```
-- 模型支持：默认使用 Gemma 2，可扩展支持其他 Ollama 模型
-- 开发调试：支持可选的 LangSmith 追踪功能
-- 环境要求：需要 Firecrawl API 密钥（提供免费额度）
+- 模型支持:默认使用 Gemma 2，可扩展支持其他 Ollama 模型
+- 开发调试:支持可选的 LangSmith 追踪功能
+- 环境要求:需要 Firecrawl API 密钥（提供免费额度）
 
 #### 核心优势
-- 完全本地化：无需云服务器，保护数据隐私
-- 高性能：基于 WebAssembly 实现的向量检索
-- 易于部署：提供详细的部署文档和配置说明
-- 开源免费：采用 MIT 许可证，支持商业使用
+- 完全本地化:无需云服务器，保护数据隐私
+- 高性能:基于 WebAssembly 实现的向量检索
+- 易于部署:提供详细的部署文档和配置说明
+- 开源免费:采用 MIT 许可证，支持商业使用
 
 这是一个架构优雅的本地化 AI 对话工具，通过现代 Web 技术实现了高性能的本地智能对话。项目代码组织规范，技术选型合理，是学习 AI 应用开发和 WebAssembly 技术的优质范例。 
