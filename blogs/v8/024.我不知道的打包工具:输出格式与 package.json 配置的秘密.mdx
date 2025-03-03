@@ -1,0 +1,195 @@
+---
+tags: [前端开发, 打包工具, CJS, ESM, UMD, package.json]
+category: 教程
+date: 2025-03-03
+title: 我不知道的打包工具：输出格式与 package.json 配置的秘密
+desc: 深入对比 CJS、ESM、UMD、IIFE 等输出格式，解析 package.json 配置的作用。
+---
+
+打包工具如 Rollup、Webpack 和 Vite 将模块化代码输出为不同格式（如 CJS、ESM、UMD、IIFE），而 `package.json` 中的 `main`、`module`、`exports` 配置决定了加载逻辑。这些格式和配置如何影响打包与执行？今天，我们将从输出格式的多样性入手，深入揭开 CJS 到 IIFE 的实现原理，解析 `package.json` 配置的加载时序，探索它们如何协同优化模块加载。这是一场从格式差异到配置实践的完整旅程，带你理解打包工具的幕后逻辑。🚀
+
+---
+
+## 1. 开端：输出格式与 package.json 配置的重要性
+
+打包工具的核心是将模块化代码整合为可执行文件，支持 Node.js、浏览器等多种环境。输出格式（如 CJS、ESM、UMD、IIFE）定义了模块加载方式，而 `package.json` 的 `main`、`module`、`exports` 等字段指定了入口与条件。
+
+**为何重要**：格式决定了代码的兼容性与性能，配置则协调工具与运行时的解析逻辑。理解这些机制，能让你更精准地选择格式、优化构建与分发流程。
+
+---
+
+## 2. CJS 与 ESM：传统与现代模块化的碰撞
+
+**CommonJS (CJS)** 是 Node.js 的传统模块系统：
+
+-   **实现原理**：使用 `require()` 同步加载模块，`module.exports` 导出对象。V8 通过 `Module._load` 动态解析路径，读取文件并执行，返回导出内容。
+-   **底层细节**：`Module._resolveFilename` 处理路径解析，优先检查 `.js`、`.json` 或 `package.json` 的 `main`。`Module._compile` 执行代码，缓存至 `Module._cache`。
+-   **特点**：动态、同步，适合服务器端。
+
+**ES Modules (ESM)** 是 ECMAScript 标准模块：
+
+-   **实现原理**：使用 `import` 和 `export` 静态声明依赖，V8 在解析阶段构建模块图，异步加载模块。
+-   **底层细节**：`import` 调用 `HostResolveImportedModule`，支持 `.mjs` 或 `type: "module"`。`HostImportModuleDynamically` 实现动态导入。
+-   **特点**：静态、异步，支持 Tree Shaking。
+
+**对比**：CJS 动态加载适合服务器，ESM 静态解析优化浏览器性能。
+
+---
+
+## 3. UMD、IIFE 与其他格式：兼容性与多样化的选择
+
+**UMD (Universal Module Definition)** 是跨环境兼容格式：
+
+-   **实现原理**：通过 IIFE 检测运行时环境，适配 CJS、AMD 或全局变量：
+    ```javascript
+    (function (root, factory) {
+        if (typeof define === 'function' && define.amd) {
+            define(['exports'], factory); // AMD
+        } else if (typeof exports === 'object') {
+            module.exports = factory(); // CJS
+        } else {
+            root.MyModule = factory(); // Global
+        }
+    })(this, function () {
+        return {name: 'MyModule'};
+    });
+    ```
+-   **底层细节**：检测 `define`（AMD）、`module.exports`（CJS）或 `window`，V8 直接执行。
+-   **特点**：兼容性强，适合库分发。
+
+**IIFE (Immediately Invoked Function Expression)** 是浏览器原生格式：
+
+-   **实现原理**：封装为立即执行函数，避免全局污染：
+    ```javascript
+    (function () {
+        var privateVar = 'hidden';
+        window.MyModule = {public: 'exposed'};
+    })();
+    ```
+-   **底层细节**：V8 的 `FastFunction` 优化单次执行。
+-   **特点**：轻量、无模块化。
+
+**其他格式**：
+
+-   **AMD**：异步模块定义，动态加载。
+-   **SystemJS**：支持动态注册模块。
+
+**对比**：UMD 全面兼容，IIFE 轻量简洁。
+
+---
+
+## 4. package.json 配置：main、module、exports 的解析逻辑
+
+`package.json` 的 `main`、`module`、`exports` 定义模块入口与加载条件：
+
+-   **`main`**：
+
+    -   **作用**：默认入口，通常为 CJS 文件，Node.js 和传统工具优先读取。
+    -   **时序**：`Module._resolveFilename` 首查 `main`，若无则尝试 `index.js`。
+    -   **示例**：
+        ```json
+        {"main": "dist/index.cjs"}
+        ```
+
+-   **`module`**：
+
+    -   **作用**：指定 ESM 入口，支持 Tree Shaking 的工具（如 Rollup）优先使用。
+    -   **时 Seq**：Webpack 等检查 `module`，若支持 ESM，则覆盖 `main`。
+    -   **示例**：
+        ```json
+        {"module": "dist/index.mjs"}
+        ```
+
+-   **`exports`**：
+    -   **作用**：条件化指定入口，支持环境分支与子路径映射，优先级高于 `main` 和 `module`。
+    -   **扁平结构**：仅定义默认入口：
+        ```json
+        {
+            "exports": {
+                "import": "./dist/index.mjs",
+                "require": "./dist/index.cjs"
+            }
+        }
+        ```
+    -   **嵌套结构**：通过路径键（如 `"."`）支持多入口：
+        ```json
+        {
+            "exports": {
+                ".": {
+                    "import": "./dist/index.js",
+                    "require": "./dist/index.cjs"
+                },
+                "./sub": {
+                    "import": "./dist/sub.js",
+                    "require": "./dist/sub.cjs"
+                }
+            }
+        }
+        ```
+    -   **时序与扩展**：
+        -   `exports` 在 Node.js 12+ 和现代工具中优先解析，覆盖 `main` 和 `module`。
+        -   `"."` 表示根路径，支持子路径扩展（如 `./sub`），无需 `main` 或 `module`。
+        -   若无 `"exports"`，回退至 `main`。
+
+**底层逻辑**：
+
+-   V8 的 `Module._resolveFilename` 通过 `ResolveExport` 解析 `exports` 的条件字段（如 `"import"`），嵌套结构支持多路径映射。
+-   工具（如 Vite）通过 `resolvePackageEntry` 优先读取 `exports`，确保一致性。
+
+---
+
+## 5. 协作闭环：输出格式与配置的协同机制
+
+输出格式与 `package.json` 配置在 V8 和工具中协同：
+
+-   **CJS & main**：Node.js 默认加载 `main`，同步执行。
+-   **ESM & module/exports**：Vite 优先 `exports.import`，支持异步加载。
+-   **UMD & main**：Webpack 通过 `main` 分发。
+-   **IIFE & no config**：嵌入 `<script>`，V8 执行。
+
+**闭环逻辑**：工具生成格式，`exports` 指定路径，V8 优化解析与执行，形成高效闭环。
+
+---
+
+## 6. 启示与总结：格式与配置的选择
+
+-   **Node.js 项目**：CJS 简单：
+
+    ```json
+    {"main": "dist/index.cjs"}
+    ```
+
+    **建议**：保持同步加载稳定性。
+
+-   **现代库开发**：ESM 优化 Tree Shaking：
+
+    ```json
+    {
+        "exports": {
+            ".": {
+                "import": "dist/index.mjs",
+                "require": "dist/index.cjs"
+            }
+        }
+    }
+    ```
+
+    **建议**：仅用 `exports`，无需 `main`/`module`，支持多格式。
+
+-   **动态导入**：子路径扩展：
+    ```json
+    {
+        "exports": {
+            "./feature": "./dist/feature.js"
+        }
+    }
+    ```
+    **建议**：用 `import('pkg/feature')` 加载子模块，简化配置。
+
+**总结启发**：CJS 稳重，ESM 现代，UMD 兼容。`exports` 的优先级与扩展性取代传统字段，理解其原理能优化模块分发。
+
+---
+
+## 总结：从格式到加载的旅程
+
+打包工具的输出格式与 `package.json` 配置协同演绎模块加载。CJS 与 ESM 定义模块化，UMD 与 IIFE 适配环境，`exports` 优化路径，最终形成闭环。这是一场从差异到实践的完整链条，每一步都不可或缺。理解这一过程，你会更从容地优化打包流程。下次配置 package.json 时，想想这背后的幕后逻辑吧！💡

@@ -25,6 +25,7 @@ export default defineConfig({
         sentry({
             dsn: process.env.SENTRY_DSN, //
             tracesSampleRate: 1.0, // 跟踪采样率，1.0 表示捕获所有请求
+            
             // 可选:添加浏览器跟踪集成
             sourceMapsUploadOptions: {
                 project: 'weekly', // 在 Sentry 中设置的项目名称
