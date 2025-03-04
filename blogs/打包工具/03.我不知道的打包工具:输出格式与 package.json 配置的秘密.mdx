@@ -1,9 +1,10 @@
 ---
 tags: [前端开发, 打包工具, CJS, ESM, UMD, package.json]
-category: 教程
-date: 2025-03-03
+category: 打包工具
+date: 2025-02-25
 title: 我不知道的打包工具：输出格式与 package.json 配置的秘密
 desc: 深入对比 CJS、ESM、UMD、IIFE 等输出格式，解析 package.json 配置的作用。
+slug: build-tools-03
 ---
 
 打包工具如 Rollup、Webpack 和 Vite 将模块化代码输出为不同格式（如 CJS、ESM、UMD、IIFE），而 `package.json` 中的 `main`、`module`、`exports` 配置决定了加载逻辑。这些格式和配置如何影响打包与执行？今天，我们将从输出格式的多样性入手，深入揭开 CJS 到 IIFE 的实现原理，解析 `package.json` 配置的加载时序，探索它们如何协同优化模块加载。这是一场从格式差异到配置实践的完整旅程，带你理解打包工具的幕后逻辑。🚀
