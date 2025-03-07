@@ -1,0 +1,172 @@
+---
+tags: [前端开发, dumi, Umi, 静态站点, 文档工具]
+category: 前端架构
+date: 2025-01-06
+title: 我不知道的 dumi：静态站点生成的工程奥秘
+desc: 剖析 dumi 基于 Umi 的静态站点生成原理，揭秘其技术内核与创新实践。
+slug: dumi-02
+---
+
+dumi 是 Umi 生态中的组件文档工具，以高效的静态站点生成（SSG）能力著称。从 Markdown 到交互式组件页面，它如何实现这一工程过程？今天，我们将从 dumi 与 Umi 的深度整合入手，深入揭开静态生成的核心流程，分析构建流水线与插件协作，对比 Docz 和 Storybook 的技术路线，探索其创新与未来方向。这是一场从原理到实践的完整旅程，带你理解 dumi 的生成奥秘。🚀
+
+---
+
+## 1. dumi 如何继承 Umi 的静态生成能力
+
+dumi 的设计理念是“以 Markdown 为中心的组件化文档体系”，通过继承 Umi 的 SSG 能力，专注于组件文档场景。
+
+-   **Umi 的 SSG 基础**：
+    -   Umi 通过 `@umijs/core` 提供路由生成、构建与部署能力。
+    -   依赖 `father` 处理组件编译，`esbuild` 加速构建。
+-   **dumi 的继承**：
+    -   **实现**：通过 `@umijs/preset-dumi` 插件扩展 Umi，复用 `Service` 类，注入 Markdown 解析与组件预览逻辑。
+    -   **细节**：配置 `resolve.includes` 指定文档目录，路由基于 Umi 的约定式路由，添加 Markdown 文件处理。
+    -   **示例**：
+        ```javascript
+        // .umirc.ts
+        import {defineConfig} from 'dumi';
+        export default defineConfig({
+            presets: ['@umijs/preset-dumi'],
+            resolve: {includes: ['docs']}
+        });
+        ```
+-   **轻量化设计**：dumi 选择性继承 Umi 的 SSG 核心，保持灵活性。
+
+**继承逻辑**：dumi 在 Umi 的 SSG 框架上优化文档生成，形成高效基座。
+
+---
+
+## 2. 静态站点生成的核心流程与实现机制
+
+dumi 将 Markdown 文件转为交互式 React 页面的流程精密且高效。
+
+-   **核心流程**：
+    1. **扫描**：扫描 `docs/` 目录，解析 Markdown 文件的 frontmatter（如标题、路由）。
+    2. **解析**：通过 `unified` 处理 Markdown，生成 AST（抽象语法树）。
+    3. **转换**：`@umijs/preset-dumi` 识别 JSX 代码块，注入动态渲染逻辑。
+    4. **路由**：基于目录结构生成路由表。
+    5. **输出**：将 AST 转为 React 组件，生成静态 HTML。
+-   **实现机制**：
+    -   **解析**：`remark` 和 `rehype` 将 Markdown 转为 HTML，`rehype-react` 注入 React 元素。
+    -   **组件预览**：使用 `sucrase` 实时编译 JSX，生成可交互实例。
+    -   **伪代码**：
+        ```javascript
+        function transformCodeBlock(content, meta) {
+            const {type} = parseMeta(meta);
+            if (type === 'preview') {
+                const compiled = sucrase.transform(content, {transforms: ['jsx']});
+                return createLiveComponent(compiled.code);
+            }
+            return renderStaticCode(content);
+        }
+        ```
+-   **构建**：`esbuild` 编译 JSX/TSX，输出静态文件。
+
+**核心点**：AST 转换与 `sucrase` 编译实现静态生成与动态预览的融合。
+
+---
+
+## 3. 构建流水线与插件系统的协同工作
+
+dumi 的构建流水线与插件系统协同，确保生成过程高效可控。
+
+-   **构建流水线**：
+    -   **初始化**：`Umi Service` 加载配置与插件。
+    -   **解析**：`@umijs/preset-dumi` 调用 `unified` 处理 Markdown。
+    -   **编译**：`esbuild` 编译 JSX/TSX。
+    -   **输出**：生成 HTML、CSS 和 JS 文件。
+-   **插件系统**：
+    -   **内置支持**：`@umijs/preset-dumi` 集成 MDX 解析与组件预览功能。
+    -   **自定义插件**：通过 Umi 的 `api.onGenerateFiles` 钩子扩展。
+    -   **示例**：
+        ```ts
+        // 自定义插件：修改 tsconfig
+        export default (api: IApi) => {
+            api.modifyTsConfig((tsconfig) => {
+                tsconfig.compilerOptions = {
+                    ...tsconfig.compilerOptions,
+                    jsxImportSource: 'react',
+                };
+                return tsconfig;
+            });
+        };
+        ```
+-   **细节**：插件通过临时文件与配置修改扩展功能。
+
+**协同逻辑**：流水线模块化与插件系统协作，提供高度定制性。
+
+---
+
+## 4. dumi、Docz 与 Storybook 的技术路线对比
+
+dumi、Docz 和 Storybook 在技术路线与应用场景上各有侧重：
+
+-   **dumi**：
+    -   **原理**：Umi 的 SSG，Markdown 驱动，esbuild 加速。
+    -   **特点**：零配置，组件预览集成。
+-   **Docz**：
+    -   **原理**：Gatsby 的 SSG，MDX 驱动，GraphQL 查询。
+    -   **特点**：生态丰富，构建较慢。
+-   **Storybook**：
+    -   **原理**：动态运行时，`.stories.js` 驱动。
+    -   **特点**：交互性强，文档自动化弱。
+-   **对比表**：
+    | 特性 | dumi | Docz | Storybook |
+    |----------------|------------|------------|------------|
+    | 底层框架 | Umi | Gatsby | 独立 |
+    | 配置复杂度 | 低 | 低 | 中至高 |
+    | 启动速度 | 快 | 中等 | 慢 |
+    | 大型项目性能 | 良好 | 一般 | 良好 |
+    | 集成度 | 紧密 | 中等 | 松散 |
+
+**差异点**：dumi 的 Markdown 驱动与 esbuild 优化，使其在文档生成中更高效。
+
+---
+
+## 5. 静态站点与动态交互的无缝融合
+
+dumi 将静态生成与动态交互结合，提升文档体验。
+
+-   **静态生成**：
+    -   Markdown 预渲染为 HTML，确保快速加载。
+-   **动态交互**：
+    -   **原理**：`@umijs/preset-dumi` 使用 `sucrase` 编译 JSX，提供实时预览。
+    -   **实现**：
+        ```javascript
+        function Preview({code}) {
+            const compiled = sucrase.transform(code, {transforms: ['jsx']});
+            const LiveComponent = useMemo(() => eval(compiled.code), [code]);
+            return <div>{LiveComponent()}</div>;
+        }
+        ```
+-   **细节**：客户端动态执行 JSX，支持编辑与交互。
+
+**融合逻辑**：静态 HTML 提供基础，动态编译增强体验。
+
+---
+
+## 6. dumi 在静态生成中的创新与未来方向
+
+dumi 在静态生成中引入创新，并展望未来。
+
+-   **创新点**：
+    -   **智能元数据**：从 TypeScript 类型和 JSDoc 提取 API，减轻维护负担。
+    -   **按需编译**：仅构建当前路由内容，加速开发。
+    -   **跨框架支持**：适配多框架组件。
+-   **优化实践**：
+    -   **速度**：启用 `esbuild` 和缓存：
+        ```javascript
+        export default {esbuild: true, cache: 'filesystem'};
+        ```
+    -   **体积**：`treeshake: true` 剔除未使用代码。
+-   **未来方向**：
+    -   **AI 辅助**：自动生成文档内容。
+    -   **多平台支持**：导出 PDF 或 IDE 集成。
+
+**未来展望**：dumi 通过智能解析与高效构建，引领文档生成新方向。
+
+---
+
+## 总结：从工程到创新的旅程
+
+dumi 基于 Umi 的静态生成，将 Markdown 转为高效组件文档。Umi 奠基，流程优化，插件协同，对比突出差异，创新驱动未来。这是一场从技术内核到实践优化的完整链条，每一步都不可或缺。理解这一过程，你会更从容地构建静态文档。下次生成文档时，想想这背后的幕后逻辑吧！💡

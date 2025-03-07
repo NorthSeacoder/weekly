@@ -1,0 +1,150 @@
+---
+tags: [前端开发, dumi, React, Vue, 跨框架, 组件渲染]
+category: 前端架构
+date: 2025-01-05
+title: 我不知道的 dumi：跨框架组件渲染的内核探秘
+desc: 深入 dumi 的跨框架组件渲染，揭秘 Vue 文档中 React 组件的实现与实践。
+slug: dumi-01
+---
+
+dumi 作为组件文档工具，其跨框架渲染能力令人惊叹——在 Vue 文档中无缝运行 React 组件，这一“技术魔法”背后藏着怎样的秘密？今天，我们将从 dumi 的架构与设计理念出发，深入揭开其跨框架渲染的内核机制，分析适配器流程、隔离技术与通信方案，探索复杂项目中的实践经验。这是一场从原理剖析到调试优化的完整旅程，带你理解 dumi 的跨框架奥秘。🚀
+
+---
+
+## 1. dumi 的架构基础与设计理念
+
+dumi 是基于 Umi 的静态站点生成工具，专为组件库文档设计。其设计理念可概括为：**以 Markdown 为中心的组件化文档体系**，旨在将文档与组件深度融合，简化开发流程。
+
+-   **架构核心**：
+    -   **核心引擎**：基于 Umi，负责 Markdown 解析、路由生成与构建。
+    -   **渲染适配层**：处理跨框架组件的识别与渲染。
+    -   **主题系统**：提供统一 UI 与交互体验。
+    -   **插件系统**：支持功能扩展与定制。
+-   **架构图**：
+    ![dumi架构图](https://gw.alipayobjects.com/zos/bmw-prod/a9cf36f7-0600-41b8-b5e6-5a9d368066cf.svg)
+-   **抽象示例**：
+    ```javascript
+    const Dumi = {
+        core: {markdown: 'unified', route: 'RouteGenerator', build: 'esbuild'},
+        renderer: {react: 'ReactRenderer', vue: 'VueRenderer', custom: 'CustomRenderer'}
+    };
+    ```
+
+**跨框架基础**：dumi 2.0 的模块化设计与框架无关性，通过渲染适配层解耦内容与渲染，为跨框架能力奠基。
+
+---
+
+## 2. 跨框架渲染的实现原理与隔离机制
+
+dumi 如何在 Vue 文档中渲染 React 组件？其核心在于适配器模式与运行时隔离。
+
+-   **实现原理**：
+    -   dumi 使用 `@umijs/preset-dumi` 解析 Markdown 中的 JSX/TSX 代码块，通过 `babel-plugin-import` 或 `esbuild` 的 `alias` 映射组件路径。
+    -   运行时通过适配器（如 Web Components 或 iframe）加载跨框架组件。
+-   **隔离机制**：
+    -   **CSS 隔离**：通过 Shadow DOM 或 CSS Modules 避免样式冲突。
+    -   **状态隔离**：借助 `react-live` 的 `LiveScope`，为每个组件创建独立作用域。
+    -   **事件隔离**：使用独立的执行上下文（如 `eval`），防止事件系统干扰。
+
+**关键逻辑**：适配器与隔离机制协同，确保 React 与 Vue 组件在同一文档中独立运行。
+
+---
+
+## 3. 渲染适配器的工作流程与 Web Components 实现
+
+渲染适配器是 dumi 跨框架渲染的“翻译官”，以下是其工作流程与实现细节。
+
+-   **生命周期**：
+    1. **初始化**：加载 React 或 Vue 运行时（如 `react-dom`、`vue`）。
+    2. **解析**：通过 `remark-dumi` 识别 JSX 代码块，提取组件结构。
+    3. **转换**：使用 `babel` 编译，注入 `scope`（如 `React`）。
+    4. **封装**：将组件转为 Web Components，注册自定义元素。
+    5. **渲染**：在目标 DOM 中插入并执行。
+-   **Web Components 示例**：
+    ```javascript
+    class ReactAdapter extends HTMLElement {
+        connectedCallback() {
+            const root = createRoot(this);
+            root.render(<ReactComponent {...this.props} />);
+        }
+    }
+    customElements.define('react-component', ReactAdapter);
+    ```
+-   **底层细节**：Shadow DOM 提供隔离，`dumi/assets` 注入运行时支持，Vue 文档通过 `<react-component>` 标签渲染 React 组件。
+
+**核心点**：适配器通过 Web Components 桥接框架，确保渲染无缝衔接。
+
+---
+
+## 4. 组件隔离与沙箱机制实现
+
+跨框架渲染需严格隔离，避免冲突。
+
+-   **组件隔离**：
+    -   **原理**：`react-live` 的 `LiveProvider` 创建独立作用域，注入特定框架的 `scope`。
+    -   **细节**：通过 `new Function` 执行组件代码，隔离全局变量。
+-   **沙箱机制**：
+    -   **iframe 沙箱**：复杂组件使用 iframe 加载，确保 DOM 与 JS 完全隔离。
+    -   **示例**：
+        ````markdown
+        ```jsx iframe
+        import React from 'react';
+        export default () => <button>Isolated</button>;
+        ```
+        ````
+    -   **细节**：`remark-dumi-iframe` 插件生成 iframe，注入运行时与组件代码。
+
+**隔离逻辑**：沙箱与作用域隔离保证框架间独立性。
+
+---
+
+## 5. 跨框架通信的桥接机制与事件处理
+
+跨框架组件需通信以实现交互。
+
+-   **桥接机制**：
+    -   **原理**：通过 `window.postMessage` 或自定义事件桥接 React 与 Vue。
+    -   **细节**：`dumi/assets` 提供 `Bridge` 类，封装通信 API。
+-   **事件处理**：
+    -   **示例**：
+        ```javascript
+        // React 组件
+        const ReactButton = () => <button onClick={() => window.parent.postMessage('clicked', '*')}>React</button>;
+        // Vue 文档
+        <script>window.addEventListener('message', (e) => console.log('Vue:', e.data));</script>;
+        ```
+    -   **细节**：`LiveProvider` 注入桥接支持，事件通过 `postMessage` 分发。
+
+**通信核心**：桥接机制实现跨框架事件与状态同步。
+
+---
+
+## 6. 在复杂项目中调试跨框架组件的实践技巧
+
+跨框架渲染在大型项目中需高效调试。
+
+-   **调试技巧**：
+    -   **日志追踪**：添加 `console.log` 查看组件加载：
+        ```javascript
+        export default () => {
+            console.log('React Component Mounted');
+            return <button>Debug</button>;
+        };
+        ```
+    -   **沙箱检查**：使用 DevTools 的 iframe 面板，验证隔离效果。
+    -   **通信测试**：通过 `postMessage` 日志确认消息传递：
+        ```javascript
+        window.addEventListener('message', (e) => console.log('Received:', e.data));
+        ```
+-   **复杂场景**：
+    -   **多组件联动**：在 Vue 文档中渲染多个 React 组件，使用 Context 或 `Bridge` 共享状态。
+    -   **大型项目**：通过 `--verbose` 查看构建日志，定位依赖冲突。
+-   **细节**：结合 `dumi dev` 的实时预览，逐步排查跨框架问题。
+
+**实践经验**：日志与工具结合，确保复杂项目中的渲染稳定性。
+
+---
+
+## 总结：从内核到实践的旅程
+
+dumi 的跨框架组件渲染通过模块化架构、适配器与沙箱机制，将 React 与 Vue 无缝融合。架构奠基，适配桥接，隔离保障，通信协作，最终形成调试闭环。这是一场从技术内核到复杂实践的完整链条，每一步都不可或缺。理解这一过程，你会更从容地应对跨框架文档挑战。下次渲染组件时，想想这背后的幕后逻辑吧！💡
