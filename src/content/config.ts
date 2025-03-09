@@ -31,7 +31,8 @@ const blogCollection = defineCollection({
       slug: z.string(),
       // 自动注入字段（不需要在 frontmatter 中手动填写）
       // lastUpdated: z.date().optional(),
-      wordCount: z.number().optional()
+      wordCount: z.number().optional(),
+      hidden: z.boolean().default(false).optional()
     })
 })
 

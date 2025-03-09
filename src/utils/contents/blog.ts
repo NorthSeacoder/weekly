@@ -29,7 +29,7 @@ export async function getBlogPosts(): Promise<Record<string, BlogPost[]>> {
                         };
                     })
                 );
-                return blogList.reduce((acc, item) => {
+                return blogList.filter((item) => !item.hidden).reduce((acc, item) => {
                     acc[item.category] = acc[item.category] || [];
                     acc[item.category].push(item);
                     return acc;

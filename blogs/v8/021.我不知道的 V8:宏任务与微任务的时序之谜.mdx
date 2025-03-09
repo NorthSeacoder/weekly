@@ -11,7 +11,7 @@ V8 引擎的事件循环决定了 JavaScript 异步任务的执行顺序，宏�
 
 ---
 
-## 1. 开端:宏任务与微任务的时序意义
+## 1. 宏任务与微任务的时序意义
 
 在 V8 中，宏任务（Macrotasks，如 setTimeout、I/O）和微任务（Microtasks，如 Promise、MutationObserver）共同驱动异步执行。宏任务负责延迟操作，微任务处理即时回调，它们的时序决定了代码的运行节奏。
 
