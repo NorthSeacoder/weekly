@@ -1,0 +1,17 @@
+---
+tags: [Vue.js, 虚拟DOM, 性能优化, 前端开发]
+category: 教程
+source: Twitter
+date: 2025-03-10
+title: 深入理解 Vue 的虚拟 DOM 机制
+---
+
+### [理解 Vue 的虚拟 DOM 工作原理](https://dev.to/jacobandrewsky/understanding-vues-virtual-dom-108p)
+
+![img](https://img.mengpeng.tech/i/2025/03/14/67d3c2a4627de.webp)
+
+Vue 的虚拟 DOM（VDOM）是其高性能的关键组件之一，通过在内存中维护 UI 的轻量级副本来优化更新过程：
+
+- 采用三步渲染管线：首先创建虚拟 DOM 树，然后通过 diff 算法比较新旧树的差异，最后只对真实 DOM 进行必要的更新
+- 提供多种性能优化方案，包括使用 key 属性优化列表渲染、懒加载和代码分割、避免不必要的组件重渲染等
+- 支持跨平台兼容，使 Vue 能够在不同环境下无缝运行，包括移动端框架如 Weex 和 NativeScript 
