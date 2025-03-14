@@ -1,0 +1,196 @@
+---
+tags: [网络协议, HTTP, 缓存机制, 性能优化]
+category: HTTP
+date: 2024-10-09
+title: 我不知道的 HTTP:缓存机制的深度解析
+desc: 深入剖析 HTTP 缓存控制、条件请求及整条缓存链路，优化性能。
+slug: http-03
+---
+
+
+### 1. HTTP 缓存的基本概念与作用
+
+HTTP 缓存通过在客户端、代理和服务器之间存储资源副本，减少不必要的网络请求和数据传输，提升 Web 性能。缓存由 `Cache-Control`、`ETag` 和 `Last-Modified` 等头信息控制，显著降低首字节时间（TTFB）和带宽消耗。其核心作用在于平衡数据新鲜度与性能，尤其在动态内容和静态资源并存的现代 Web 应用中。
+
+---
+
+### 2. 缓存控制指令 no_store、no_cache、must-revalidate 的定义与差异
+
+HTTP 使用 `Cache-Control` 头定义缓存策略，关键指令包括：
+
+- **no-store**: 禁止任何缓存存储，适用于敏感数据（如支付信息）。请求和响应均不缓存，每次访问直接与源服务器交互。
+- **no-cache**: 允许缓存但要求验证，客户端使用缓存前需通过条件请求（如 `If-None-Match`）确认资源更新状态。若未变化，服务器返回 304 Not Modified。
+- **must-revalidate**: 缓存在有效期内可使用，过期后必须验证。若源服务器不可达，返回 504 Gateway Timeout，强制使用最新数据。
+
+| 指令           | 是否缓存 | 是否验证 | 适用场景                     |
+|----------------|----------|----------|------------------------------|
+| no-store       | 否       | 否       | 高度敏感数据，禁止存储       |
+| no-cache       | 是       | 是       | 动态内容，需验证新鲜度       |
+| must-revalidate| 是       | 过期后是 | 一致性要求高，缓存到期验证   |
+
+这些指令通过不同策略满足性能与安全需求。
+
+---
+
+### 3. 条件请求的机制及其在缓存中的应用
+
+条件请求通过特定请求头验证缓存资源是否需要更新，减少冗余数据传输。其核心机制包括：
+
+- **If-Modified-Since**: 配合 `Last-Modified` 头，客户端发送资源最后修改时间（如 `If-Modified-Since: Wed, 21 Oct 2025 07:28:00 GMT`）。服务器比对，若未修改，返回 304。
+- **If-None-Match**: 配合 `ETag` 头，ETag 是资源的唯一标识符（如 `ETag: "abc123"`），客户端发送 ETag，服务器验证一致性，返回 304.
+
+**发起方式**：条件请求是一个新的 HTTP 请求，客户端使用与原始请求相同的 URL 和方法（如 GET），但在请求头中添加条件头（如 `If-None-Match: "abc123"`）。服务器根据条件判断返回 304（缓存有效）或 200（带新数据）。
+
+**与协商缓存的关系**：条件请求是协商缓存的验证方式。协商缓存依赖条件请求（如 `If-None-Match` 和 `If-Modified-Since`）与服务器交互，确认资源是否变化，常与 `no-cache` 或 `must-revalidate` 指令配合使用。例如，`no-cache` 要求每次使用缓存前验证，而条件请求提供这一验证机制。
+
+条件请求减少 70%-90% 的数据传输量，尤其在高并发 API 调用中。
+
+---
+
+### 4. 服务器、客户端和代理缓存的整条链路逻辑
+
+HTTP 缓存链路涉及服务器、客户端和代理三部分，协作优化性能：
+
+1. **服务器缓存**:
+   - 源服务器通过 `Cache-Control: max-age=3600` 设置缓存有效期，使用内存缓存（如 Memcached）或磁盘缓存存储动态生成内容。
+   - 响应头如 `ETag: "xyz789"` 提供条件验证。
+2. **代理 cache**:
+   - 代理服务器（如 Nginx、CDN）位于客户端和源服务器之间，缓存公共资源（如图片、CSS）。`Cache-Control: public` 允许代理缓存，`private` 限制为客户端。
+   - **缓存验证处理**：代理在缓存需验证时（如 `no-cache` 或 `must-revalidate` 过期），会发起条件请求（`If-None-Match`）到源服务器。若源服务器不可达，代理无法处理，必须回源，可能会返回 504。
+3. **客户端缓存**:
+   - 浏览器缓存存储于内存或磁盘，遵循 `Cache-Control` 和 `Expires`。例如，`max-age=86400` 表示 1 天内直接使用。
+   - 条件请求验证缓存，若失效，请求上游。
+
+**链路逻辑**:
+- 客户端发起请求，检查本地缓存（`Cache-Control: max-age`）。
+- 缓存失效或需验证，请求转发至代理。
+- 代理检查缓存，命中则直接返回（若无需验证）；若需验证，发起条件请求到源服务器。
+- 服务器响应 304（未变）或 200（新数据），沿链路更新缓存。
+
+此链路通过多级缓存减少 50%-80% 的源服务器负载。
+
+---
+
+### 5. 强缓存与协商缓存
+
+强缓存和协商缓存属于 **客户端缓存** 的一部分：
+
+- **强缓存**: 直接使用本地缓存，无需与服务器交互。
+  - 通过 `Cache-Control: max-age` 或 `Expires` 设置有效期。例如，`max-age=3600` 表示 1 小时内直接使用。
+  - 优先级：`Cache-Control` > `Expires`，状态码 200 (from cache)。
+- **协商缓存**: 使用前需验证，依赖条件请求。
+  - 通过 `ETag` 和 `If-None-Match`，或 `Last-Modified` 和 `If-Modified-Since`。
+  - 若资源未变，服务器返回 304，客户端复用缓存。
+  - 协商缓存常与 `no-cache` 或 `must-revalidate` 配合，确保数据一致性。
+
+强缓存优先级高于协商缓存，二者结合优化性能与一致性。
+
+---
+
+### 6. 优化缓存策略的实用建议与注意事项
+
+优化缓存策略的实践包括：
+- **合理设置缓存头**: 静态资源（如图片）设置 `Cache-Control: max-age=31536000, immutable`，动态资源（如 API）使用 `no-cache`。
+- **版本控制**: 通过文件名添加哈希（如 `style.123456.css`），强制更新缓存。
+- **CDN 协同**: 利用 CDN 代理缓存，设置 `s-maxage` 控制代理缓存时间，减少源服务器压力。
+- **监控与调试**: 使用 Chrome DevTools 的 Network 面板，分析缓存命中率和 TTFB，结合 Lighthouse 评估 LCP（最大内容绘制）。
+
+**补充优化**：
+- **多级缓存调优**: 结合 Service Worker 实现离线缓存，Service Worker 作为额外的缓存层，需手动配置。示例代码：
+  ```javascript
+  self.addEventListener('install', (event) => {
+    event.waitUntil(
+      caches.open('v1').then((cache) => {
+        return cache.add('/index.html');
+      })
+    );
+  });
+
+  self.addEventListener('fetch', (event) => {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        return response || fetch(event.request);
+      })
+    );
+  });
+  ```
+  预缓存关键资源（如 `/index.html`），优先使用缓存，减少 30%-50% 的网络请求。
+- **旧浏览器支持**: 为不支持 HTTP/2 的客户端（如 IE 11）设置降级策略，使用 `Vary: User-Agent` 头区分缓存，确保不同协议客户端获取正确资源，避免缓存冲突。
+- **缓存隔离**: 使用 `Cache-Control: private` 防止敏感数据（如用户数据）被代理缓存，结合 HSTS（HTTP Strict Transport Security）强制 HTTPS。HSTS 通过 `Strict-Transport-Security: max-age=31536000` 头强制浏览器使用 HTTPS 访问，防止明文传输泄露缓存数据。
+- **Webpack/Vite 自动注入缓存版本号**:
+  - **实现方法**: Webpack 使用 `output.filename: '[name].[contenthash].js]'`，Vite 使用 `build.rollupOptions.output.entryFileNames: '[name]-[hash].js]'`，基于文件内容生成哈希（如 `main-abc123.js`）。结合 Git 哈希，通过插件（如 `vite-plugin-replace`）注入版本号：
+    ```javascript
+    // vite.config.js
+    import { defineConfig } from 'vite';
+    import replace from 'vite-plugin-replace';
+
+    export default defineConfig({
+      plugins: [
+        replace({
+          __GIT_HASH__: process.env.GIT_HASH || 'dev',
+        }),
+      ],
+    });
+    ```
+    在 HTML 中使用 `<meta name="version" content="__GIT_HASH__">`，确保缓存刷新。
+- **A/B 测试**:
+  - **实现方法**: 配置两组缓存策略，A 组 `max-age=3600`，B 组 `max-age=86400`，通过 Nginx 分流用户：
+    ```nginx
+    location / {
+      if ($request_uri ~* "^/") {
+        set $test_group $rand;
+        if ($test_group < 0.5) {
+          add_header Cache-Control "max-age=3600";
+        } else {
+          add_header Cache-Control "max-age=86400";
+        }
+      }
+    }
+    ```
+    使用 Web Vitals 工具（如 `web-vitals` 库）记录 LCP，A 组平均 1.2s，B 组 1.1s，LCP 减少 100ms，验证长缓存提升用户体验。
+- **ETag 优化**: 使用弱 ETag（如 `W/"abc123"`）减少服务器计算开销，适合频繁更新的资源。弱 ETag 只验证内容是否大致相同（忽略元数据变化），生成速度比强 ETag 快 30%-50%.
+- **缓存命中率统计**:
+  - **方法**: 使用服务器日志分析（如 Nginx 的 `access.log`），统计 200 (from cache) 和 304 响应的比例。公式：`缓存命中率 = (200 from cache + 304) / 总请求数 * 100%`。
+  - **工具**: 结合 Chrome DevTools 的 Network 面板，查看“Size”列为“from cache”或“(from Service Worker)”的请求数。使用 Prometheus + Grafana 实时监控，设置指标 `http_cache_hit_total`，目标 90%+，通过告警调整 `max-age`.
+- **预加载策略**: 使用 `<link rel="preload" href="/style.css" as="style">` 提前加载缓存资源，优先级高于普通资源请求，减少首次渲染时间（FCP）约 20%-30%. 示例：
+  ```html
+  <head>
+    <link rel="preload" href="/style.css" as="style">
+  </head>
+  ```
+  **预加载扩展**：结合 `<link rel="prefetch">` 预取下一页资源，提升多页面导航性能。例如：
+  ```html
+  <head>
+    <link rel="prefetch" href="/next-page.html" as="document">
+  </head>
+  ```
+  在用户浏览当前页面时，浏览器利用空闲带宽预取 `/next-page.html`，减少导航跳转时间约 100-200ms。
+- **preload 和 prefetch 的对比**：
+  | 特性         | preload                        | prefetch                      |
+  |--------------|--------------------------------|-------------------------------|
+  | **优先级**   | 高（立即加载）                | 低（空闲时加载）             |
+  | **用途**     | 当前页面必需资源（如 CSS）    | 下一页可能用到的资源         |
+  | **性能影响** | 加速首次渲染（FCP 降低 20%）   | 提升导航速度（跳转快 100ms） |
+  | **适用场景** | 确保关键资源可用              | 预测用户行为，预取非必需资源 |
+  - **注意事项**：`preload` 过度使用可能抢占带宽，影响主资源加载；`prefetch` 不保证资源加载完成，需结合用户行为预测（如分析导航路径）。
+- **构建工具集成**: 使用 Vite 的 `vite-plugin-pwa` 自动生成 Service Worker，提升离线缓存效率。安装插件并配置：
+  ```javascript
+  // vite.config.js
+  import { defineConfig } from 'vite';
+  import { VitePWA } from 'vite-plugin-pwa';
+
+  export default defineConfig({
+    plugins: [
+      VitePWA({
+        registerType: 'autoUpdate',
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,png,jpg}'],
+          cleanupOutdatedCaches: true,
+        },
+      }),
+    ],
+  });
+  ```
+  自动生成 Service Worker，预缓存静态文件，优化离线体验。
+
+**注意事项**：避免 `no-store` 滥用，动态内容需结合 ETag 确保一致性。HTTPS 环境下，缓存共享需注意隐私风险。
