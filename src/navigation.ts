@@ -15,6 +15,12 @@ export const footerData = {
         { text: 'Franky', href: 'https://marketplace.visualstudio.com/items?itemName=NorthSeacoder.franky' },
         { text: 'xmind 筛选器', href: 'https://www.npmjs.com/package/@nsea/xmind-handler' },
       ],
+    },
+    {
+      title: 'Links',
+      links: [
+        { text: 'Cloud;Blog', href: 'https://www.cloudofficial.top' },
+      ],
     }
   ],
   secondaryLinks: [],
