@@ -1,0 +1,226 @@
+---
+tags: [前端开发, React, React DOM, Fiber, 性能优化]
+category: React
+date: 2022-05-20
+title: 我不知道的 React:React 与 React DOM 的协作之道
+desc: 深入剖析 React 与 React DOM 的分工与协作，解锁 Fiber 驱动的渲染机制。
+slug: react-02
+---
+
+## React 与 React DOM 的本质  
+React 作为一个前端框架，其核心由两个模块驱动：React 和 React DOM。这两者分工明确，共同构建了高效的渲染体系。  
+
+- **React**: 核心逻辑库，负责组件定义、状态管理和虚拟 DOM 的构建。  
+- **React DOM**: 浏览器适配层，将虚拟 DOM 映射到真实 DOM，并管理事件系统。  
+- **分离意义**: React 的平台无关性支持跨端扩展，而 React DOM 专注于 Web 环境的优化。  
+- **跨平台对比**:  
+  - **React DOM**: 通过 DOM 操作（如 `createElement`、`appendChild`）将虚拟 DOM 渲染为浏览器元素，依赖浏览器的事件循环和 DOM API。  
+  - **React Native**: 调用原生组件（如 iOS 的 `UIView` 或 Android 的 `View`），通过桥接层与原生平台通信，避免 DOM 操作，直接生成设备端 UI。  
+
+这种模块化设计让 React 既能服务 Web，也能适配移动端，展现了其生态的广度。  
+
+## React 的核心逻辑深度剖析  
+React 不仅仅是一个 UI 库，其核心职责涵盖了组件生命周期和状态更新的完整流程。  
+
+- **组件抽象**:  
+  - 函数组件通过 Hooks（如 `useState`、`useReducer`）管理状态和副作用。  
+  - 类组件依赖生命周期方法（如 `componentDidMount`），虽逐渐被 Hooks 取代，但仍是底层基础。  
+- **虚拟 DOM 的构建**:  
+  - React 将 JSX 转化为对象树（如 `{ type: 'div', props: { ... } }`），避免直接操作 DOM。  
+  - 每次状态变更，React 重新生成虚拟 DOM，准备后续 diff 计算。  
+- **更新调度**:  
+  - 通过调度器（Scheduler）管理更新任务，确保高优先级任务（如用户交互）优先执行。  
+
+例如，一个复杂的组件可能涉及异步数据加载：  
+```jsx
+import React, { useState, useEffect } from 'react';
+
+const DataFetcher = () => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch('/api/data').then(res => res.json()).then(setData);
+  }, []);
+  return <div>{data ? data.value : '加载中...'}</div>;
+};
+```
+
+React 负责状态逻辑和虚拟 DOM 的生成，但不直接触及浏览器。  
+
+## React DOM 的渲染与事件内核  
+React DOM 是 React 的执行者，负责将逻辑转化为可见界面，并管理用户交互。  
+
+- **渲染流程**:  
+  - **初始化**: 将首次虚拟 DOM 转化为真实 DOM，挂载到容器（如 `#root`）。  
+  - **更新**: 根据 diff 结果执行最小化 DOM 操作（如 `appendChild`、`removeChild`）。  
+  - **批量处理**: 多个状态变更合并为单次 DOM 更新，减少重排重绘。  
+- **事件系统**:  
+  - **合成事件**: 封装原生事件，提供一致性接口（如 `e.preventDefault()`）。  
+  - **代理机制**: 在根节点集中监听，通过事件对象分发至组件（如 `onClick`）。  
+  - **事件池**: 复用 SyntheticEvent 对象，降低内存开销，需 `e.persist()` 保留。  
+
+React DOM 的高效性依赖于其与 React 的紧密协作。  
+
+## 协作中的调和过程  
+React 与 React DOM 的协作核心在于调和（Reconciliation），这是虚拟 DOM 转化为真实 DOM 的关键步骤。  
+
+- **调和原理**:  
+  - React 比较新旧虚拟 DOM，生成差异（diff），如节点增删或属性变化。  
+  - 使用键（`key`）优化列表对比，减少不必要的重渲染。  
+- **React DOM 的执行**:  
+  - 将 diff 结果应用到 DOM，执行精确的操作（如 `setAttribute`）。  
+  - 维护 DOM 与虚拟 DOM 的一致性，确保界面反映最新状态。  
+- **性能瓶颈**: 若组件树过深或更新频繁，调和成本可能上升，需优化组件设计。  
+
+例如，一个动态列表的调和：  
+```jsx
+const List = ({ items }) => (
+  <ul>
+    {items.map(item => <li key={item.id}>{item.name}</li>)}
+  </ul>
+);
+```
+
+React 计算差异，React DOM 更新 DOM，协作完成渲染。  
+
+## Fiber 架构的融入  
+React 16 引入的 Fiber 架构显著优化了 React 与 React DOM 的协作。  
+
+- **Fiber 是什么**: Fiber 是 React 的新型调和引擎，将渲染任务拆分为可中断的单元。  
+- **作用**:  
+  1. **时间分片**: 将大任务拆分为小块，避免阻塞主线程。  
+  2. **优先级调度**: 高优先级更新（如用户输入）先于低优先级任务执行。  
+- **协作细节**:  
+  - **React 的角色**: 构建 Fiber 树（虚拟 DOM 的增强版），标记更新优先级。每个 Fiber 节点包含组件状态、props 和工作单元信息。  
+  - **React DOM 的角色**: 将 Fiber 树的变更提交到 DOM，分为 render 阶段（计算差异）和 commit 阶段（应用变更）。  
+  - **工作流**: React 在内存中构造 Fiber 树，React DOM 在 commit 阶段一次性更新 DOM，避免中间状态暴露。  
+- **为 Concurrent Mode 铺路**:  
+  Fiber 的可中断性和优先级调度为 Concurrent Mode 提供了基础。Concurrent Mode 利用 Fiber 支持异步渲染（如 Suspense 暂停渲染数据未就绪的组件）和时间分片，确保高交互性场景下的流畅体验。  
+
+Fiber 的引入让 React 的更新更高效，尤其在复杂应用中。例如，一个高频更新的组件：  
+```jsx
+const Ticker = () => {
+  const [time, setTime] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTime(t => t + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return <div>时间: {time}</div>;
+};
+```
+
+Fiber 确保频繁更新不会卡顿主线程。  
+
+## 事件系统与渲染的耦合  
+React DOM 的事件系统不仅是用户交互的桥梁，还与渲染流程深度耦合。  
+
+- **事件触发更新**:  
+  - 点击触发 `onClick`，React 更新状态，生成新虚拟 DOM。  
+  - React DOM 接收变更，同步至真实 DOM。  
+- **执行顺序**:  
+  - 原生事件（如 `addEventListener`）先于合成事件执行。  
+  - 合成事件沿组件树冒泡，而非 DOM 树。  
+- **复杂场景**:  
+  在 Portals 中，事件沿 React 树传播，而非目标 DOM 容器，需注意路径差异。  
+
+```jsx
+const Button = () => {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+};
+```
+
+React DOM 捕获点击，通知 React 更新，再渲染新状态。  
+
+## 实践中的优化策略  
+如何利用 React 与 React DOM 的协作提升应用表现？  
+
+- **渲染优化**:  
+  - **减少调和**: 使用 `React.memo` 或 `useMemo` 避免不必要渲染。  
+  - **批量更新**: 利用 React 的自动批处理，或手动控制（如 `unstable_batchedUpdates`）。  
+- **事件优化**:  
+  - **防抖/节流**: 在高频事件（如 `onScroll`）中减少触发频率。  
+  - **原生混用**: 通过 `e.nativeEvent` 处理特殊需求，避免冲突。  
+- **性能分析工具**:  
+  React Profiler 和浏览器 Performance 面板是分析 React DOM 渲染性能的利器。  
+  - **React Profiler**: 通过 `<Profiler>` 组件测量组件渲染耗时。例如：  
+    ```jsx
+    import { Profiler } from 'react';
+
+    const onRender = (id, phase, actualDuration) => {
+      console.log(`${id} ${phase} phase: ${actualDuration}ms`);
+    };
+
+    const App = () => (
+      <Profiler id="App" onRender={onRender}>
+        <Form />
+      </Profiler>
+    );
+    ```
+    输出示例：`App render phase: 12.5ms` 或 `App commit phase: 3.2ms`，分别对应 render 阶段（计算差异）和 commit 阶段（DOM 更新）。  
+  - **Performance 面板**: 在 Chrome 中记录时间线，搜索 "React" 相关标记，查看 Fiber 任务的执行时间（如 `react-dom` 的 `commitWork`）。  
+  - **日志获取**: 若需在代码中精确区分 render 和 commit 阶段，可借助自定义 Hooks 或 Profiler 回调：  
+    ```jsx
+    import React, { useState, useEffect } from 'react';
+
+    const logPhase = (id, phase, duration) => {
+      console.log(`[${id}] ${phase} phase completed in ${duration}ms`);
+    };
+
+    const Input = () => {
+      console.log('[Input] Render phase started');
+      return <input />;
+    };
+
+    const App = () => {
+      const [count, setCount] = useState(0);
+      useEffect(() => {
+        console.log('[App] Commit phase completed');
+      });
+      return (
+        <Profiler id="Input" onRender={logPhase}>
+          <Input />
+          <button onClick={() => setCount(count + 1)}>点击</button>
+        </Profiler>
+      );
+    };
+    ```
+    输出示例：  
+    ```
+    [Input] Render phase started
+    [Input] render phase completed in 2.1ms
+    [App] Commit phase completed
+    ```
+    Render 阶段在组件函数执行时记录，commit 阶段则通过 `useEffect` 或 Profiler 回调捕获。  
+- **复杂案例**: 一个动态表单结合 Fiber 的优化：  
+  ```jsx
+  import React, { useState, memo } from 'react';
+
+  const Input = memo(({ value, onChange }) => {
+    console.log('Input 渲染');
+    return <input value={value} onChange={onChange} />;
+  });
+
+  const Form = () => {
+    const [form, setForm] = useState({ name: '', email: '' });
+    const handleChange = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+    return (
+      <div>
+        <Input value={form.name} onChange={handleChange('name')} />
+        <Input value={form.email} onChange={handleChange('email')} />
+      </div>
+    );
+  };
+  ```
+  Fiber 的时间分片确保高频输入不阻塞 UI，`memo` 减少子组件重渲染。  
+
+## 总结与展望  
+React 与 React DOM 的协作是 React 高效运行的基石，Fiber 的融入进一步提升了其能力。  
+
+- **关键要点**:  
+  1. React 专注逻辑与虚拟 DOM，React DOM 执行渲染与事件。  
+  2. Fiber 通过时间分片和优先级调度优化协作。  
+  3. 事件与渲染的耦合驱动更新循环。  
+- **实用建议**:  
+  1. 掌握调和与事件流，优化组件设计。  
+  2. 利用 Fiber 的异步能力，提升复杂 UI 体验。  
+  3. 关注 React 生态演进，如 Concurrent Mode 的潜力。  

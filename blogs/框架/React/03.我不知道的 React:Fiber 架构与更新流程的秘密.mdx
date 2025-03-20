@@ -1,0 +1,157 @@
+---
+tags: [前端开发, React, Fiber, 性能优化, Vue]
+category: React
+date: 2022-05-20
+title: 我不知道的 React:Fiber 架构与更新流程的秘密
+desc: 探索 Fiber 架构如何优化 React 更新流程，对比 Vue 的实现逻辑，解锁异步渲染潜力。
+slug: react-03
+---
+
+# 我不知道的 React: Fiber 架构与更新流程的秘密
+
+## Fiber 架构的诞生背景
+
+React 的发展离不开对性能的极致追求，而 Fiber 架构的诞生正是为了解决传统栈调和（Stack Reconciliation）的局限性。  
+
+### 问题：传统栈调和的局限  
+在 React 15 及更早版本中，更新流程依赖同步的栈调和。每次状态变更时，React 从根组件开始递归遍历整个组件树，生成虚拟 DOM 并直接更新真实 DOM。这种方式存在显著缺陷：  
+- **不可中断**: 大型组件树可能导致长时间的主线程阻塞，用户感知卡顿。  
+- **无优先级**: 所有更新任务同等对待，无法区分用户交互与后台数据同步的优先级。  
+- **性能瓶颈**: 随着应用复杂度增加，递归遍历的成本呈指数级上升。  
+
+例如，一个包含数千节点的列表更新可能耗时数十毫秒，直接影响交互体验。  
+
+### Fiber：可中断、可优先级的任务调度模型  
+React 16 引入 Fiber，重构了调和引擎。Fiber 将渲染任务拆分为可中断的单元，通过调度器（Scheduler）管理执行：  
+- **Fiber 节点**: 每个组件对应一个 Fiber 对象，记录状态、props 和待处理的工作。  
+- **任务分片**: 将递归改为链表遍历，允许任务暂停并恢复。时间分片即将渲染任务拆分为小块，利用浏览器空闲时间执行。  
+- **优先级调度**: 高优先级任务（如动画）优先执行，低优先级任务（如数据预加载）延后。  
+
+### 与 Vue 的对比：Fiber 对应 Vue 的什么概念？  
+React 的 Fiber 并不直接对应 Vue 的 diff 算法，而是更接近 Vue 的整体“渲染与更新流程”。以下是详细对比：  
+- **Vue 的编译时优化 vs. React 的运行时优化**:  
+  - **Vue**: 在构建阶段，模板被编译为高效的渲染函数。例如，`<div>{{ text }}</div>` 转化为 `h('div', {}, this.text)`，通过响应式系统追踪变更，仅更新受影响节点。  
+    - **为何渲染函数高效**: 渲染函数是预编译的 JavaScript，直接生成虚拟 DOM，跳过了运行时解析模板的开销。响应式系统进一步限制更新范围，避免全树 diff。  
+    ```vue
+    <template>
+      <div>{{ text }}</div>
+    </template>
+    <script>
+    export default {
+      data: () => ({ text: 'Hello' }),
+      mounted() {
+        setTimeout(() => (this.text = 'World'), 1000);
+      }
+    };
+    </script>
+    ```
+    优势：编译时确定更新逻辑，运行时开销小，适合静态内容较多场景。  
+  - **React**: Fiber 在运行时调度任务，动态构建 Fiber 树并计算差异。  
+    - **虚拟 DOM 的运行时特性**: React 同样使用虚拟 DOM，但 JSX 编译为 `React.createElement`，每次更新都需重新执行组件函数生成新树，再通过 Fiber diff 计算变更。相比 Vue，运行时负担更重，但支持动态优先级和异步渲染。  
+    优势：灵活性高，适合交互复杂应用。  
+- **Vue 的运行时 vs. React 的编译时**:  
+  - **Vue**: 运行时依赖 diff 算法优化虚拟 DOM 更新，效率依赖编译时预处理，缺乏动态调度。  
+  - **React**: JSX 编译仅生成基础调用，优化集中在运行时 Fiber 调度，编译时负担轻。  
+- **双方优势**:  
+  - **Vue**: 编译时优化减少运行时计算，启动快，适合中小型项目。  
+  - **React**: 运行时调度增强灵活性，支持大规模、动态应用，生态更广。  
+
+Vue 靠静态分析提升效率，React 靠动态调度应对复杂性，二者各有侧重。  
+
+## React 更新流程的两个阶段
+
+Fiber 将更新分为 render 和 commit 两阶段，分工明确。概览如下：  
+| 阶段         | 任务                  | 可中断性    |  
+|--------------|-----------------------|-------------|  
+| Render Phase | 构建 Fiber 树，计算变更 | 是          |  
+| Commit Phase | 更新 DOM，执行副作用   | 否          |  
+
+### Render 阶段：构建 Fiber 树，计算变更  
+Render 阶段是 React 的核心计算阶段：  
+- **Fiber 树构建**: 从根节点遍历组件树，生成或更新 Fiber 节点。  
+- **变更计算**: 比较新旧 Fiber 树，标记需要更新的节点（如 `effectTag`）。  
+- **可中断性**: 若时间片耗尽，任务暂停，等待下次调度。  
+
+例如，一个状态变更触发 render：  
+```jsx
+const Counter = () => {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+};
+```
+React 在此阶段生成新 Fiber 树，但尚未触及 DOM。  
+
+### Commit 阶段：将变更应用到 DOM，完成渲染  
+Commit 阶段由 React DOM 执行：  
+- **DOM 更新**: 根据标记执行操作（如 `appendChild`、`setAttribute`）。  
+- **不可中断**: 需一次性完成，确保 DOM 一致性。  
+- **副作用执行**: 调用 `useEffect` 或生命周期方法。  
+
+例如，`count` 更新后，React DOM 修改 `<button>` 的文本。  
+
+### 细节：时间分片与 Fiber 实现原理  
+- **时间分片的具体实现**: Fiber 利用浏览器主线程的空闲时间执行任务。具体步骤如下：  
+  1. **任务拆分**: 将组件树分解为 Fiber 节点，每个节点作为一个工作单元。  
+  2. **调度循环**:  
+     - 在 React 17 及更早版本，Scheduler 使用 `requestIdleCallback` 检查每帧剩余时间，但其精度低（延迟可能达 50ms）。  
+     - React 18+ 使用自定义高精度实现：Scheduler 通过 `MessageChannel` 创建微任务循环，结合 `performance.now()` 精确测量时间。每次循环检查剩余帧时间（目标 < 16ms），若足够则处理 Fiber 节点，若不足则推迟到下一帧。  
+  3. **执行与暂停**: 处理一个或多个 Fiber 节点后，记录进度（通过 `alternate` 或 `next` 指针），确保可恢复。  
+  4. **优先级判断**: 根据任务类型（如 `ImmediatePriority`），调整执行顺序。  
+  示例：渲染 1000 个节点，Scheduler 每帧处理 50 个，剩余推迟，确保帧率稳定。  
+- **双缓冲技术详解**:  
+  - **原理**: Fiber 维护两棵树：当前树（已渲染到 DOM 的状态）和工作树（render 阶段构建的新状态）。  
+  - **交换指针的过程**: Render 阶段在内存中完成所有计算（如 diff 和标记），不影响 DOM。Commit 阶段将工作树设为当前树（指针交换），然后一次性应用变更到 DOM。  
+  - **原当前树之后**: 交换后，原当前树成为新的工作树，用于下一次更新。它会被重置并复用，存储新的 Fiber 节点数据，避免重复分配内存。  
+  - **为何一次性提交**: 双缓冲确保 DOM 只反映完整状态，防止中间状态暴露，类似游戏中的帧缓冲切换。  
+
+## Fiber 的实际收益与应用
+
+Fiber 不仅优化性能，还开启了新功能。  
+
+### 优势：流畅性提升与异步渲染的支持  
+- **流畅性**: 时间分片避免阻塞，尤其在大数据渲染中显著。  
+- **异步渲染**: Fiber 支持延后低优先级任务，为 Concurrent Mode 提供基础。  
+
+### 实践：Suspense 和 Concurrent Mode  
+- **Suspense 组件作用**: Suspense 暂停渲染未就绪的组件，常用于动态加载或数据获取：  
+  ```jsx
+  const LazyComponent = React.lazy(() => import('./HeavyComponent'));
+  const App = () => (
+    <Suspense fallback={<div>加载中...</div>}>
+      <LazyComponent />
+    </Suspense>
+  );
+  ```
+  还可与 `react-query` 等库配合，例如：`<Suspense fallback={<Spinner />}><UserData /></Suspense>`，暂停渲染直到数据就绪。  
+- **启用 Concurrent Mode**:  
+  - **ReactDOM.render vs. createRoot**:  
+    - `ReactDOM.render`: 传统同步渲染，适用于 React 17 及以下，无 Concurrent 特性。  
+      ```jsx
+      import ReactDOM from 'react-dom';
+      ReactDOM.render(<App />, document.getElementById('root'));
+      ```
+    - `createRoot`: React 18 引入，支持 Concurrent Mode，提供异步渲染和优先级调度。  
+      ```jsx
+      import { createRoot } from 'react-dom/client';
+      const root = createRoot(document.getElementById('root'));
+      root.render(<App />);
+      ```
+  - **启用步骤**: 使用 `createRoot`，结合 `Suspense` 和 `useTransition`，无需额外配置即可体验异步特性。  
+
+### 建议：调试 Fiber 更新的工具与方法  
+- **React Profiler**: 测量渲染耗时：  
+  ```jsx
+  <Profiler id="App" onRender={(id, phase, duration) => console.log(`${id} ${phase}: ${duration}ms`)}>
+    <Counter />
+  </Profiler>
+  ```
+- **Chrome Performance 面板**: 分析 Fiber 任务时间轴（如 `commitWork`）。  
+- **实战场景**: 调试慢速列表：  
+  ```jsx
+  const SlowList = () => (
+    <Profiler id="List" onRender={(id, phase, duration) => console.log(`${id} ${phase}: ${duration}ms`)}>
+      {Array(1000).fill(0).map((_, i) => <div key={i}>{i}</div>)}
+    </Profiler>
+  );
+  ```
+  若耗时超 10ms，可用 `React.memo` 优化子组件渲染（在文本中说明）。  

@@ -1,0 +1,242 @@
+---
+tags: [前端开发, React, Vue, 组件通信, 自定义 Hook]
+category: React
+date: 2022-05-22
+title: 我不知道的 React:组件通信与实用自定义 Hook
+desc: 深入探讨 React 中父子组件通信方法，实现健壮的 useUpdate、useTimeout 等自定义 Hook，并从资深视角对比 React 与 Vue 的技术差异。
+slug: react-012
+---
+
+
+## 父子组件交互
+
+### 通过 ref 调用子组件方法  
+在 React 中，父组件可以通过 `ref` 结合 `useImperativeHandle` 调用子组件方法，实现双向通信。  
+- **实现机制**:  
+  - 子组件使用 `forwardRef` 暴露方法，父组件通过 `useRef` 获取实例并调用。  
+- **健壮示例**:  
+  ```jsx
+  import { useRef, useImperativeHandle, forwardRef } from 'react';
+
+  const Child = forwardRef((props, ref) => {
+    const focusInput = () => console.log('子组件方法被调用');
+    useImperativeHandle(ref, () => ({
+      focus: focusInput,
+      reset: () => console.log('重置子组件')
+    }), []);
+    return <div>子组件</div>;
+  });
+
+  function Parent() {
+    const childRef = useRef(null);
+    const handleClick = () => childRef.current?.focus();
+    return (
+      <div>
+        <button onClick={handleClick}>调用子组件方法</button>
+        <Child ref={childRef} />
+      </div>
+    );
+  }
+  ```
+- **特点**: `useImperativeHandle` 控制暴露接口，健壮且安全。  
+- **注意事项**:  
+  - 避免过度使用 ref，优先用 props。  
+  - **Context 替代**: 大规模通信可使用 Context，提供全局状态管理。  
+    ```jsx
+    const MyContext = createContext();
+    function Parent() {
+      return (
+        <MyContext.Provider value={{ focus: () => console.log('聚焦') }}>
+          <Child />
+        </MyContext.Provider>
+      );
+    }
+    ```
+
+## 自定义 Hook 实现
+
+### useUpdate：强制重渲染  
+`useUpdate` 强制组件重渲染。  
+- **实现**:  
+  ```jsx
+  import { useReducer } from 'react';
+
+  function useUpdate() {
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
+    return forceUpdate;
+  }
+  ```
+
+### useUpdate 的 useReducer 与 useState 实现对比  
+- **useReducer**:  
+  - 简洁，轻量，无需显式状态。  
+- **useState**:  
+  - 灵活，可访问状态值，适合调试。  
+  ```jsx
+  import { useState } from 'react';
+
+  function useUpdate() {
+    const [flag, setFlag] = useState(false);
+    return () => setFlag(prev => !prev);
+  }
+  ```
+- **对比**: `useReducer` 性能略优，`useState` 更灵活。  
+
+### useTimeout：带清理的定时器  
+`useTimeout` 封装定时器逻辑。  
+- **代码**:  
+  ```jsx
+  import { useEffect, useRef } from 'react';
+
+  function useTimeout(callback, delay) {
+    const savedCallback = useRef(callback);
+    useEffect(() => { savedCallback.current = callback; }, [callback]);
+    useEffect(() => {
+      if (delay === null || delay < 0) return;
+      const timer = setTimeout(() => savedCallback.current(), delay);
+      return () => clearTimeout(timer);
+    }, [delay]);
+  }
+  ```
+
+### useDebounce：防抖 Hook  
+`useDebounce` 延迟执行回调。  
+- **代码**:  
+  ```jsx
+  import { useEffect, useRef } from 'react';
+
+  function useDebounce(callback, delay) {
+    const savedCallback = useRef(callback);
+    const timeoutRef = useRef(null);
+    useEffect(() => { savedCallback.current = callback; }, [callback]);
+    useEffect(() => {
+      if (delay === null || delay < 0) return;
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => savedCallback.current(), delay);
+      return () => clearTimeout(timeoutRef.current);
+    }, [delay]);
+    return () => clearTimeout(timeoutRef.current);
+  }
+  ```
+
+### useFetch：数据获取 Hook  
+`useFetch` 封装数据请求。  
+- **代码**:  
+  ```jsx
+  import { useState, useEffect } from 'react';
+
+  function useFetch(url) {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    useEffect(() => {
+      setLoading(true);
+      fetch(url)
+        .then(response => response.json())
+        .then(setData)
+        .catch(setError)
+        .finally(() => setLoading(false));
+    }, [url]);
+    return { data, loading, error };
+  }
+  ```
+
+## React 与 Vue 的技术差异
+
+React 和 Vue 的差异不仅体现在语法糖或开发体验，更深层次地涉及架构设计、响应式机制、渲染策略、状态管理和生态整合。以下是对两者的深入分析：
+
+### 架构设计  
+- **React**:  
+  - **核心理念**: 函数式编程与虚拟 DOM，强调“一切皆 JavaScript”。  
+  - **技术栈**: JSX 作为核心，组件逻辑与视图高度耦合，Fiber 架构支持可中断渲染。  
+  - **优势**: 灵活性极高，开发者可完全控制渲染流程，适合复杂动态 UI。  
+  - **劣势**: 缺乏内置约束，需手动管理性能（如 `useMemo`、`React.memo`）。  
+- **Vue**:  
+  - **核心理念**: 声明式编程与响应式，注重模板与逻辑分离。  
+  - **技术栈**: 单文件组件（SFC）结合编译时优化，Vue 3 引入 Composition API 增强灵活性。  
+  - **优势**: 结构化开发体验，默认性能优化（如精确更新），降低学习曲线。  
+  - **劣势**: 灵活性受限，复杂场景下需绕过默认机制（如 `reactive` 的局限）。  
+- **资深视角**: React 的架构赋予开发者更大控制权，适合需要深度定制的大型项目；Vue 的封装性更适合快速开发和中小型应用，但资深开发者可能觉得约束过多。  
+
+### 响应式机制  
+- **React**:  
+  - **实现**: 通过 `setState` 或 Hook（如 `useState`）显式触发更新，依赖虚拟 DOM Diff 计算变化。  
+  - **细节**: Fiber 的 `updateQueue` 收集状态变更，调度器（Scheduler）基于优先级（如 `lane` 模型）决定渲染时机。  
+    ```jsx
+    function updateState(fiber, newState) {
+      fiber.updateQueue.push({ payload: newState });
+      scheduleUpdate(fiber, DiscreteEventPriority);
+    }
+    ```
+  - **特点**: 显式、无魔法，更新可预测但需手动优化（如避免重复渲染）。  
+- **Vue**:  
+  - **实现**: 基于 Proxy（Vue 3）或 Object.defineProperty（Vue 2）的响应式系统，自动追踪数据依赖。  
+  - **细节**: 编译器生成依赖收集代码，运行时精确更新 DOM，无需全量 Diff。  
+    ```javascript
+    const data = reactive({ count: 0 });
+    effect(() => document.getElementById('count').innerText = data.count);
+    ```
+  - **特点**: 隐式、自动更新，减少开发负担，但可能因“魔法”导致调试困难。  
+- **资深视角**: React 的显式更新便于调试和性能调优，尤其在并发模式下（React 18）；Vue 的响应式更高效但隐藏细节，复杂场景下可能出现意外副作用（如 Proxy 边界问题）。  
+
+### 渲染策略  
+- **React**:  
+  - **机制**: 虚拟 DOM + Fiber，分片渲染支持中断和优先级调度。  
+  - **细节**:  
+    - 每次状态变更触发全组件树协调（reconciliation），通过 Diff 算法优化更新。  
+    - Fiber 的 `lane` 模型（如 `0b0001` 表示高优先级）决定任务顺序。  
+  - **优势**: 可中断渲染提升响应性，适合高交互应用。  
+  - **劣势**: Diff 开销在大数据场景下显著，需虚拟化（如 `react-window`）。  
+- **Vue**:  
+  - **机制**: 静态模板编译 + 双端 Diff，运行时精确更新。  
+  - **细节**:  
+    - 编译时生成高效更新代码，运行时仅更新受影响节点。  
+    - Vue 3 的 `patch` 算法优化静态标记和动态节点处理。  
+  - **优势**: 默认性能优异，适合静态内容或中小型应用。  
+  - **劣势**: 动态性强时（如频繁 DOM 操作），性能可能不如手动优化的 React。  
+- **资深视角**: React 的 Fiber 赋予动态性和并发能力，但需手动优化（如 `useMemo`）；Vue 的编译时优化减轻开发者负担，但在极端动态场景下可能不如 React 灵活。  
+
+### 状态管理  
+- **React**:  
+  - **方式**: 内置 Hook（如 `useState`、`useReducer`），结合 Context 或外部库（如 Redux、Zustand）。  
+  - **细节**:  
+    - 单向数据流，状态提升或 Context 解决跨层通信。  
+    - Redux 使用纯函数和中间件（如 thunk）管理复杂状态。  
+  - **优势**: 生态丰富，状态管理方案多样，适合大型应用。  
+  - **劣势**: 需额外配置，学习曲线陡峭。  
+- **Vue**:  
+  - **方式**: 内置响应式（`ref`、`reactive`），官方推荐 Pinia（Vuex 替代品）。  
+  - **细节**:  
+    - `reactive` 自动追踪依赖，Pinia 提供简洁 API 和 DevTools 支持。  
+    - 双向绑定（`v-model`）简化表单处理。  
+  - **优势**: 开箱即用，集成度高，开发效率优异。  
+  - **劣势**: 复杂状态下，响应式对象可能导致性能瓶颈（如深层嵌套）。  
+- **资深视角**: React 的状态管理更模块化和可控，适合需要精细管理的大型团队项目；Vue 的内置方案更简便，但在超大规模应用中可能需额外抽象（如手动拆分状态）。  
+
+### 生态与工具链  
+- **React**:  
+  - **生态**: 社区驱动，工具丰富（如 Next.js、React Query）。  
+  - **细节**:  
+    - Next.js 提供 SSR/SSG，React Query 优化数据获取。  
+    - Webpack/Babel 配置灵活但复杂。  
+  - **优势**: 高度可定制，适配多种场景。  
+  - **劣势**: 配置成本高，依赖社区维护。  
+- **Vue**:  
+  - **生态**: 官方支持，工具集成度高（如 Vite、Nuxt）。  
+  - **细节**:  
+    - Vite 基于 ES Modules，提供极快构建。  
+    - Nuxt 内置路由和 SSR，开发体验流畅。  
+  - **优势**: 开箱即用，官方维护降低风险。  
+  - **劣势**: 社区规模小于 React，第三方库选项较少。  
+- **资深视角**: React 的生态适合需要深度定制的创新项目，Vue 的工具链更高效，适合快速交付和标准化开发。  
+
+### 实际影响与选择建议  
+- **React**:  
+  - **适用场景**: 高交互性、大规模前端（如社交平台、编辑器），需要并发渲染或深度优化时。  
+  - **挑战**: 性能优化需经验（如避免过度 Diff）。  
+- **Vue**:  
+  - **适用场景**: 中小型项目、快速原型（如企业 dashboard），需要高效开发和默认性能时。  
+  - **挑战**: 动态性不足，复杂逻辑需绕过响应式限制。  
+- **资深建议**:  
+  - 若团队擅长 JavaScript 并追求控制力，选 React；若优先开发效率和一致性，选 Vue。  
+  - 大型项目中，React 的 Fiber 和 Hook 生态更具优势；Vue 则在中小型项目中凭借 Vite 和 Pinia 占据效率制高点。  
