@@ -1,0 +1,251 @@
+---
+tags: [前端开发, React, React-Router, Vue-Router, SPA]
+category: React
+date: 2022-05-25
+title: 我不知道的 React-Router:核心概念、路由模式与 Vue-Router 对比
+desc: 全面解析 React-Router 的核心组件、路由模式及实现原理，并从技术角度对比 Vue-Router 的路由逻辑与集成方式。
+slug: react-14
+---
+
+## React-Router 核心概念
+
+### React-Router 的用途与组件  
+React-Router 是 React 生态中用于构建单页应用（SPA）的路由管理工具，其核心功能是通过客户端导航实现页面切换，避免传统多页应用的整页刷新。以下是其常用组件及其作用：  
+- **`Route`**:  
+  - **作用**: 根据 URL 路径渲染对应的组件。  
+  - **示例**:  
+    ```jsx
+    import { Route, Routes } from 'react-router-dom';
+
+    function App() {
+      return (
+        <Routes>
+          <Route path="/home" element={<Home />} />
+        </Routes>
+      );
+    }
+    ```
+  - **特点**: 支持精确匹配和动态参数（如 `/user/:id`）。  
+- **`Switch`（React-Router v5）**:  
+  - **作用**: 在 v5 中用于匹配首个符合条件的 `Route`，现由 v6 的 `Routes` 替代。  
+  - **示例（v5）**:  
+    ```jsx
+    import { Switch, Route } from 'react-router-dom';
+
+    function App() {
+      return (
+        <Switch>
+          <Route path="/home" component={Home} />
+          <Route path="/" component={Default} />
+        </Switch>
+      );
+    }
+    ```
+- **`Redirect`（v5） / `Navigate`（v6）**:  
+  - **作用**: 重定向到指定路径。  
+  - **示例（v6）**:  
+    ```jsx
+    import { Navigate } from 'react-router-dom';
+
+    function RedirectExample() {
+      return <Navigate to="/home" replace />;
+    }
+    ```
+  - **特点**: `replace` 选项替换历史记录，避免回退到原路径。  
+- **`useNavigate`**:  
+  - **作用**: v6 中提供的 Hook，用于编程式导航。  
+  - **示例**:  
+    ```jsx
+    import { useNavigate } from 'react-router-dom';
+
+    function Button() {
+      const navigate = useNavigate();
+      return <button onClick={() => navigate('/home')}>跳转</button>;
+    }
+    ```
+  - **用途**: 动态控制导航，如表单提交后跳转。  
+
+### 在 SPA 中的角色  
+React-Router 通过管理 URL 和组件映射，确保 SPA 在客户端完成页面切换，同时保持浏览器历史记录的自然行为。其核心依赖 React 的组件化和上下文机制，结合 History API 实现高效导航。
+
+## 路由模式与实现机制
+
+### Hash 模式  
+- **定义**: 使用 URL 的 hash 部分（如 `#/home`）模拟路由。  
+- **实现**:  
+  - 基于 `window.location.hash` 和 `hashchange` 事件。  
+  - `HashRouter` 监听 hash 变化，更新组件。  
+  - **伪代码**:  
+    ```javascript
+    function HashRouter() {
+      const [path, setPath] = useState(window.location.hash.slice(1));
+      useEffect(() => {
+        window.addEventListener('hashchange', () => setPath(window.location.hash.slice(1)));
+      }, []);
+      return renderRoute(path);
+    }
+    ```
+- **优点**: 无需服务器配置，适合简单部署。  
+- **缺点**: URL 不美观，SEO 不友好。  
+
+### Browser History 模式  
+- **定义**: 使用完整路径（如 `/home`），依赖 History API。  
+- **实现**:  
+  - 使用 `history.pushState` 和 `popstate` 事件。  
+  - `BrowserRouter` 封装 History API，更新 UI。  
+  - **伪代码**:  
+    ```javascript
+    function BrowserRouter() {
+      const history = createBrowserHistory();
+      const [path, setPath] = useState(window.location.pathname);
+      useEffect(() => {
+        window.addEventListener('popstate', () => setPath(window.location.pathname));
+      }, []);
+      return renderRoute(path);
+    }
+    ```
+- **优点**: URL 直观，SEO 友好。  
+- **缺点**: 需服务器支持，重定向所有路径到入口 HTML。  
+
+### Memory 模式  
+- **定义**: 不依赖浏览器 URL，在内存中管理路由状态。  
+- **实现**:  
+  - 使用自定义 `history` 对象，记录导航历史，无 URL 变化。  
+  - `MemoryRouter` 适用于测试或非浏览器环境（如 React Native）。  
+  - **伪代码**:  
+    ```javascript
+    function MemoryRouter() {
+      const history = createMemoryHistory();
+      const [path, setPath] = useState(history.location.pathname);
+      history.listen(({ location }) => setPath(location.pathname));
+      return renderRoute(path);
+    }
+    ```
+- **优点**: 独立于浏览器，适合隔离测试或特殊场景。  
+- **缺点**: 无 URL 同步，用户无法通过浏览器导航。  
+
+### History API 与 React 集成  
+- **机制**:  
+  - `pushState` 更新 URL，React-Router 通过 Context 通知 `Route`，Fiber 调度渲染。  
+  - **点击触发**: `Link` 组件监听 `click` 事件，调用 `history.push`。  
+    ```jsx
+    function Link({ to, children }) {
+      const history = useHistory();
+      const handleClick = (e) => {
+        e.preventDefault();
+        history.push(to);
+      };
+      return <a href={to} onClick={handleClick}>{children}</a>;
+    }
+    ```
+  - **非点击触发**: 通过 `useNavigate` 等编程式导航直接操作 `history`，无需依赖点击事件。  
+    ```jsx
+    import { useNavigate } from 'react-router-dom';
+
+    function AutoRedirect() {
+      const navigate = useNavigate();
+      useEffect(() => {
+        const timer = setTimeout(() => navigate('/home'), 2000);
+        return () => clearTimeout(timer);
+      }, [navigate]);
+      return <div>即将跳转...</div>;
+    }
+    ```
+- **技术细节**:  
+  - Fiber 使用 `lane` 模型（如 `ContinuousEventPriority`）调度导航任务。  
+  - 非点击导航（如定时器或条件跳转）通过 `history` API 直接触发，确保灵活性。  
+
+## React-Router 与 Vue-Router 对比
+
+以下从路由逻辑、组件集成和生命周期处理三个维度对比 React-Router 和 Vue-Router，提供深入的技术分析：  
+
+### 路由逻辑  
+- **React-Router**:  
+  - **逻辑**: 基于 JSX 的声明式路由表，`Routes` 和 `Route` 定义映射。  
+  - **特点**: 路由逻辑与组件渲染分离，开发者手动匹配路径和组件。  
+  - **示例**:  
+    ```jsx
+    <Routes>
+      <Route path="/home" element={<Home />} />
+    </Routes>
+    ```
+- **Vue-Router**:  
+  - **逻辑**: 集中式路由配置，`routes` 数组定义映射。  
+  - **特点**: 路由表与 Vue 实例绑定，支持导航守卫。  
+  - **示例**:  
+    ```javascript
+    const routes = [{ path: '/home', component: Home }];
+    const router = createRouter({ history: createWebHistory(), routes });
+    ```
+- **差异**: React-Router 更灵活但配置分散，Vue-Router 集中规范但动态性稍弱。  
+
+### 组件集成  
+- **React-Router**:  
+  - **方式**: 通过 JSX 嵌套 `Route`，使用 `Outlet` 渲染子路由。  
+  - **示例**:  
+    ```jsx
+    function Parent() {
+      return (
+        <div>
+          <h1>父组件</h1>
+          <Outlet />
+        </div>
+      );
+    }
+    ```
+  - **特点**: 路由即组件，集成自然但需手动优化。  
+- **Vue-Router**:  
+  - **方式**: 使用 `<router-view>` 作为占位符，支持具名视图。  
+  - **细节**: 可定义多个 `<router-view>`，分别渲染不同组件。  
+    ```vue
+    <template>
+      <div>
+        <router-view name="main" />
+        <router-view name="sidebar" />
+      </div>
+    </template>
+    <script>
+    export default {
+      router: {
+        routes: [
+          {
+            path: '/home',
+            components: { main: MainView, sidebar: Sidebar }
+          }
+        ]
+      }
+    };
+    </script>
+    ```
+  - **特点**: Vue-Router 的 `<router-view>` 支持具名视图，React-Router 无直接等效功能，需通过多 `Outlet` 或自定义逻辑实现类似效果。  
+- **差异**: React-Router 集成更原生，Vue-Router 提供高级封装。  
+
+### 生命周期处理  
+- **React-Router**:  
+  - **方式**: 依赖 `useEffect` 管理导航副作用。  
+  - **示例**:  
+    ```jsx
+    import { useLocation } from 'react-router-dom';
+
+    function Page() {
+      const location = useLocation();
+      useEffect(() => {
+        console.log('路径变化:', location.pathname);
+      }, [location]);
+      return <div>页面</div>;
+    }
+    ```
+- **Vue-Router**:  
+  - **方式**: 提供路由生命周期钩子（如 `beforeRouteEnter`）。  
+  - **示例**:  
+    ```vue
+    <script>
+    export default {
+      beforeRouteEnter(to, from, next) {
+        console.log('进入路由');
+        next();
+      }
+    };
+    </script>
+    ```
+- **差异**: React-Router 通用但手动，Vue-Router 专精且内置。  

@@ -1,0 +1,304 @@
+---
+tags: [前端开发, React, React-Router, Link, History API]
+category: React
+date: 2022-05-25
+title: 我不知道的 React-Router:Link 组件的奥秘与实现原理
+desc: 深入探讨 React-Router 中 Link 组件的实现原理，清晰对比 Vue Router 的导航机制，分析嵌套路由的意义及 History API 的应用。
+slug: react-13
+---
+
+## Link 与 `<a>` 标签的对比
+
+### Link 如何防止整页刷新
+
+在 React-Router 中，`Link` 组件通过客户端导航避免整页刷新，与 `<a>` 标签的服务器端行为形成对比。
+
+-   **Link 的行为**:
+
+    -   使用事件委托拦截点击，调用 History API 更新 URL 并渲染新组件。
+    -   **示例**:
+
+        ```jsx
+        import {Link} from 'react-router-dom';
+
+        function Nav() {
+            return <Link to='/about'>关于</Link>;
+        }
+        ```
+
+-   **`<a>` 的行为**:
+    -   触发 HTTP 请求，整页刷新。
+    -   **示例**:
+        ```html
+        <a href="/about">关于</a>
+        ```
+-   **区别**: `Link` 保持 SPA 体验，`<a>` 重载页面。
+
+### 与 Vue Router 的导航机制对比
+
+以下从实现方式和功能特性详细对比 React-Router 和 Vue Router，确保清晰理解两者的导航机制：
+
+-   **React-Router 的实现方式**:
+    -   **核心机制**: 使用 History API（如 `history.pushState`），通过 React 的 Context 和 Fiber 渲染系统更新 UI。
+    -   **导航组件**: `Link` 通过 `onClick` 调用 `history.push`，阻止默认跳转。
+        ```jsx
+        function Link({to, children}) {
+            const history = useHistory();
+            const handleClick = (e) => {
+                e.preventDefault();
+                history.push(to);
+            };
+            return (
+                <a href={to} onClick={handleClick}>
+                    {children}
+                </a>
+            );
+        }
+        ```
+    -   **路由更新**: `BrowserRouter` 监听 `popstate`，通过 Context 触发渲染。
+-   **Vue Router 的实现方式**:
+    -   **核心机制**: 支持 History API（history 模式）或 hash 模式，集成 Vue 的响应式系统。
+    -   **导航组件**: `<router-link>` 调用 `router.push`，更新 URL 和响应式路由状态。
+        ```javascript
+        function push(location) {
+            window.history.pushState({}, '', location);
+            router.currentRoute.value = location; // 更新响应式对象
+        }
+        ```
+    -   **路由更新**: 通过 `reactive` 或 `ref` 追踪 `currentRoute`，自动渲染新组件。
+-   **技术差异**:
+    -   **事件处理**: React-Router 显式拦截，Vue Router 通过指令封装。
+    -   **状态管理**: React-Router 无响应式，Vue Router 深度绑定 Vue 响应式。
+-   **导航守卫对比**:
+
+    -   **Vue Router**: 提供 `beforeEach` 等全局守卫，用于导航前拦截或验证。
+        ```javascript
+        router.beforeEach((to, from, next) => {
+            if (!isAuthenticated()) next('/login'); // 重定向
+            else next();
+        });
+        ```
+    -   **React-Router**: 无内置守卫，但可通过自定义组件或 Hook 实现类似功能。
+
+        -   **实现方案**:
+
+            ```jsx
+            import {useNavigate, useLocation} from 'react-router-dom';
+            import {useEffect} from 'react';
+
+            function ProtectedRoute({children}) {
+                const navigate = useNavigate();
+                const location = useLocation();
+                const isAuthenticated = checkAuth(); // 自定义认证逻辑
+
+                useEffect(() => {
+                    if (!isAuthenticated) {
+                        navigate('/login', {state: {from: location}});
+                    }
+                }, [isAuthenticated, navigate, location]);
+
+                return isAuthenticated ? children : null;
+            }
+
+            // 使用
+            function App() {
+                return (
+                    <Routes>
+                        <Route
+                            path='/dashboard'
+                            element={
+                                <ProtectedRoute>
+                                    <Dashboard />
+                                </ProtectedRoute>
+                            }
+                        />
+                    </Routes>
+                );
+            }
+            ```
+
+        -   **替代方案**: 使用第三方库（如 `react-router-guards`）或 Context 封装全局逻辑。
+
+-   **资深视角**: Vue Router 的守卫和响应式集成提升开发效率，但 React-Router 的显式性和灵活性更适合复杂自定义需求。
+
+## 实现原理剖析
+
+### History API 的运用
+
+`Link` 组件依赖 `history.pushState` 实现导航。
+
+-   **核心方法**:
+    -   **`pushState(state, title, url)`**: 更新 URL。
+-   **与 Fiber 的交互**:
+    -   `pushState` 触发 Fiber 调度，优先级由 `lane`（如 `0b0100`）决定。
+    -   **伪代码**:
+        ```jsx
+        function pushState(fiber, url) {
+            window.history.pushState({}, '', url);
+            scheduleUpdate(fiber, ContinuousEventPriority);
+        }
+        ```
+
+### 事件监听与委托
+
+-   **机制**: `BrowserRouter` 监听 `popstate`，通过事件委托处理。
+-   **代码**:
+    ```javascript
+    class BrowserRouter {
+        constructor() {
+            this.history = createBrowserHistory();
+            window.addEventListener('popstate', () => this.updateRoute());
+        }
+    }
+    ```
+
+### History API 异常处理
+
+-   **异常**: `pushState` 可能因安全限制失败。
+-   **应对**:
+    ```jsx
+    function safePush(history, url) {
+        try {
+            history.pushState({}, '', url);
+        } catch (e) {
+            history.replace(url);
+            console.warn('导航异常:', e);
+        }
+    }
+    ```
+
+### React 渲染集成
+
+-   **流程**: `pushState` 更新 URL，`history` 通知 `Router`，Fiber 渲染新组件。
+
+## 实用见解
+
+### 性能优势
+
+-   **减少延迟**: `Link` 导航降低至 20-50ms。
+
+### NavLink 与 useNavigate
+
+-   **NavLink**:
+
+    -   提供激活样式。
+    -   **示例**:
+
+        ```jsx
+        import {NavLink} from 'react-router-dom';
+
+        function Nav() {
+            return (
+                <NavLink to='/about' activeClassName='active'>
+                    关于
+                </NavLink>
+            );
+        }
+        ```
+
+-   **useNavigate**:
+
+    -   编程式导航。
+    -   **示例**:
+
+        ```jsx
+        import {useNavigate} from 'react-router-dom';
+
+        function Button() {
+            const navigate = useNavigate();
+            return <button onClick={() => navigate('/about')}>跳转</button>;
+        }
+        ```
+
+### 嵌套路由与代码分割
+
+-   **嵌套路由的意义**:
+
+    -   **目的**: 模块化管理路由，复用布局，隔离子模块逻辑。
+    -   **实际价值**: 在仪表盘等场景中，父路由提供共享布局（如导航栏），子路由切换内容（如资料、设置），减少重复代码。
+    -   **Outlet 的作用**:
+        -   `Outlet` 简化子路由渲染，作为子组件的占位符，自动显示匹配的子路由内容。
+    -   **示例（仪表盘场景）**:
+
+        ```jsx
+        import {Routes, Route, Link, Outlet} from 'react-router-dom';
+
+        function Dashboard() {
+            return (
+                <div>
+                    <nav>
+                        <Link to='/dashboard/profile'>个人资料</Link>
+                        <Link to='/dashboard/settings'>设置</Link>
+                    </nav>
+                    <Outlet /> {/* 子路由渲染位置 */}
+                </div>
+            );
+        }
+
+        function Profile() {
+            return <h2>个人资料</h2>;
+        }
+
+        function Settings() {
+            return <h2>设置</h2>;
+        }
+
+        function App() {
+            return (
+                <Routes>
+                    <Route path='/dashboard' element={<Dashboard />}>
+                        <Route path='profile' element={<Profile />} />
+                        <Route path='settings' element={<Settings />} />
+                    </Route>
+                </Routes>
+            );
+        }
+        ```
+
+    -   **解释**:
+        -   `Dashboard` 定义共享布局，`Outlet` 动态渲染 `Profile` 或 `Settings`。
+        -   **意义**: 避免为每个子页面重复编写导航，提升代码复用性和维护性。
+
+-   **代码分割**:
+
+    -   **实现**:
+
+        ```jsx
+        import {lazy, Suspense} from 'react';
+        const About = lazy(() => import('./About'));
+
+        function App() {
+            return (
+                <Suspense fallback={<div>加载中...</div>}>
+                    <Link to='/about'>关于</Link>
+                    <Routes>
+                        <Route path='/about' element={<About />} />
+                    </Routes>
+                </Suspense>
+            );
+        }
+        ```
+
+### 边缘情况处理
+
+-   **外部链接**: 使用 `<a>` 或自定义组件。
+
+### 简单导航示例
+
+```jsx
+import {BrowserRouter, Routes, Route, Link} from 'react-router-dom';
+
+function App() {
+    return (
+        <BrowserRouter>
+            <nav>
+                <Link to='/'>首页</Link> | <Link to='/about'>关于</Link>
+            </nav>
+            <Routes>
+                <Route path='/' element={<h1>首页</h1>} />
+                <Route path='/about' element={<h1>关于</h1>} />
+            </Routes>
+        </BrowserRouter>
+    );
+}
+```
