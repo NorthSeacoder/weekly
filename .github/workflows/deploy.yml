@@ -131,6 +131,8 @@ jobs:
                 NEXT_PUBLIC_AUTHOR_NAME: ${{ vars.NEXT_PUBLIC_AUTHOR_NAME }}
                 NEXT_PUBLIC_SITE_NAME: ${{ vars.NEXT_PUBLIC_SITE_NAME }}
                 NEXT_PUBLIC_SITE_DESCRIPTION: ${{ vars.NEXT_PUBLIC_SITE_DESCRIPTION }}
+                PUBLIC_UMAMI_ID: ${{ vars.PUBLIC_UMAMI_ID }}
+                PUBLIC_CLARITY_ID: ${{ vars.PUBLIC_CLARITY_ID }}
             - name: Deploy to Server
               uses: easingthemes/ssh-deploy@main
               with:
