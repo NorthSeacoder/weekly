@@ -59,9 +59,5 @@ apps:
     isRelatedPostsEnabled: true
     relatedPostsCount: 4
 
-analytics:
-    umami:
-      id: d7b2ae52-dff6-4ca8-95fb-70dca593291e
-
 ui:
   theme: 'system' # Values: "system" | "light" | "dark" | "light:only" | "dark:only"

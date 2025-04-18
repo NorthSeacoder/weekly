@@ -181,6 +181,9 @@ const getAnalytics = (config: Config) => {
     const _default = {
         umami: {
             id: undefined
+        },
+        clarity: {
+            id: undefined
         }
     };
 
