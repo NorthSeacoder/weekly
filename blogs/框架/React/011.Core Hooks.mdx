@@ -1,0 +1,299 @@
+---
+tags: [React, Hook, useEffect, useContext, useReducer, useRef, useMemo, useCallback, 性能优化]
+category: React
+date: 2022-05-22
+title: 我不知道的 React:掌握 useEffect、useRef 等核心 Hooks
+desc: 深入理解 React 核心 Hooks（useEffect, useContext, useReducer, useRef, useMemo, useCallback）的用途、工作原理、常见陷阱和性能优化技巧。
+slug: react-11
+---
+
+## React 核心 Hooks 概览
+
+除了 `useState`，React 还提供了一系列核心 Hooks，让函数组件也能拥有类组件的各种能力，如处理副作用、访问上下文、优化性能等。掌握它们是高效使用 React 的关键。
+
+## `useEffect`: 处理副作用的瑞士军刀
+
+函数组件本身应该是纯粹的（给定相同 props 和 state，总是返回相同 JSX）。但实际应用中，我们需要与外部系统交互，执行一些“副作用”，比如：
+
+-   数据获取 (Fetching data)
+-   设置订阅 (Setting up subscriptions)
+-   手动修改 DOM (Manually changing the DOM)
+-   设置定时器 (Setting timers)
+
+`useEffect` 就是专门用来处理这些副作用的 Hook。
+
+-   **基本用法**:
+    ```jsx
+    import React, { useState, useEffect } from 'react';
+
+    function Timer() {
+      const [seconds, setSeconds] = useState(0);
+
+      useEffect(() => {
+        // 这个函数会在每次组件渲染完成后执行
+        console.log('Effect runs');
+        const intervalId = setInterval(() => {
+          setSeconds(s => s + 1);
+        }, 1000);
+
+        // 返回一个清理函数 (cleanup function)
+        // 它会在组件卸载前，或者下一次 effect 执行前运行
+        return () => {
+          console.log('Cleanup runs');
+          clearInterval(intervalId);
+        };
+      }, []); // 依赖项数组
+
+      return <div>Seconds: {seconds}</div>;
+    }
+    ```
+-   **依赖项数组 (Dependency Array)**: `useEffect` 的第二个参数至关重要，它告诉 React **何时**重新运行 effect 函数。
+    -   **`[]` (空数组)**: Effect 只在组件**首次挂载 (mount)** 时运行一次，清理函数只在组件**卸载 (unmount)** 时运行一次。非常适合设置全局监听器、只获取一次的数据等。
+    -   **`[dep1, dep2, ...]` (包含依赖项)**: Effect 在首次挂载时运行，并且在**任何一个依赖项的值发生变化**后的那次渲染完成后再次运行。清理函数会在组件卸载前，以及下一次 effect 因依赖变化而重新运行前执行。
+    -   **不传第二个参数 (省略)**: Effect 在**每次**组件渲染完成后都会运行。通常应该避免这种情况，因为它可能导致不必要的性能开销或逻辑错误（比如重复订阅）。
+-   **常见陷阱**:
+    -   **忘记依赖项**: 如果 effect 内部使用了组件作用域中的变量（props, state, 或其他函数内定义的变量），但没有将它们添加到依赖项数组中，可能会导致 effect 使用**过时 (stale)** 的值，产生 Bug（称为“陈旧闭包”）。ESLint 规则 (`react-hooks/exhaustive-deps`) 会对此进行警告。
+    -   **过度依赖**: 将非必要或变化频繁的对象/函数放入依赖数组，导致 effect 频繁执行。可以使用 `useCallback`, `useMemo` 或将函数移出组件来优化。
+-   **清理函数的重要性**: 确保在 effect 中创建的订阅、定时器、事件监听器等资源在不再需要时（组件卸载或 effect 重跑前）被正确清理，防止内存泄漏或 Bug。
+
+## `useContext`: 跨层级共享状态
+
+当多个层级嵌套的组件需要访问同一个状态或数据时，逐层传递 props 会变得非常繁琐（称为 "prop drilling")。`useContext` 提供了一种更优雅的方式。
+
+1.  **创建 Context**: 使用 `React.createContext` 创建一个 Context 对象。
+    ```javascript
+    // theme-context.js
+    import React from 'react';
+    // 创建 Context，可以提供一个默认值
+    export const ThemeContext = React.createContext('light');
+    ```
+2.  **提供 Context**: 在父组件中使用 `Context.Provider` 包裹子组件，并通过 `value` prop 提供要共享的值。
+    ```jsx
+    // App.js
+    import React, { useState } from 'react';
+    import { ThemeContext } from './theme-context';
+    import Toolbar from './Toolbar';
+
+    function App() {
+      const [theme, setTheme] = useState('dark');
+
+      return (
+        // 使用 Provider 提供当前 theme 值
+        <ThemeContext.Provider value={theme}>
+          <Toolbar />
+          <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+            Toggle Theme
+          </button>
+        </ThemeContext.Provider>
+      );
+    }
+    ```
+3.  **消费 Context**: 在需要访问该值的子组件（无论层级多深）中使用 `useContext` Hook。
+    ```jsx
+    // ThemedButton.js
+    import React, { useContext } from 'react';
+    import { ThemeContext } from './theme-context';
+
+    function ThemedButton() {
+      // 使用 useContext 读取 Context 的值
+      const theme = useContext(ThemeContext);
+      return <button style={{ background: theme === 'dark' ? '#333' : '#FFF', color: theme === 'dark' ? '#FFF' : '#333' }}>Themed Button</button>;
+    }
+
+    // Toolbar.js (仅仅是传递组件)
+    import React from 'react';
+    import ThemedButton from './ThemedButton';
+    function Toolbar() { return <div><ThemedButton /></div>; }
+    export default Toolbar;
+    ```
+-   **性能考量**: 当 `Provider` 的 `value` 发生变化时，所有消费该 Context 的组件**都会**重新渲染，即使它们实际使用的部分数据没有改变。对于传递复杂对象或频繁更新的值，需要考虑性能优化（如使用 `useMemo` 包装 `value`，或者将 Context 拆分成更小的部分）。
+
+## `useReducer`: 管理复杂状态逻辑
+
+当组件的状态逻辑变得复杂，包含多个子值，或者下一个状态依赖于前一个状态时，`useState` 可能变得难以管理。`useReducer` 是 `useState` 的一种替代方案，更适合处理这类情况。
+
+-   **工作方式**: 类似于 Redux 的模式。
+    1.  定义一个 `reducer` 函数 `(state, action) => newState`。它接收当前状态和描述操作的 `action` 对象，返回新的状态。
+    2.  在组件中调用 `useReducer(reducer, initialState)`，它返回当前状态和一个 `dispatch` 函数。
+    3.  通过调用 `dispatch(action)` 来触发状态更新。
+-   **示例：计数器**
+    ```jsx
+    import React, { useReducer } from 'react';
+
+    // Reducer 函数
+    function counterReducer(state, action) {
+      switch (action.type) {
+        case 'increment':
+          return { count: state.count + (action.payload || 1) };
+        case 'decrement':
+          return { count: state.count - 1 };
+        case 'reset':
+          return { count: 0 };
+        default:
+          throw new Error();
+      }
+    }
+
+    function Counter() {
+      // 初始化 useReducer
+      const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+
+      return (
+        <>
+          Count: {state.count}
+          {/* 调用 dispatch 来发送 action */}
+          <button onClick={() => dispatch({ type: 'increment', payload: 5 })}>+5</button>
+          <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+          <button onClick={() => dispatch({ type: 'reset' })}>Reset</button>
+        </>
+      );
+    }
+    ```
+-   **优势**:
+    -   **逻辑分离**: 将状态更新逻辑（reducer）与组件渲染分离，更清晰、可测试。
+    -   **易于管理复杂更新**: 对于涉及多个子值的状态或依赖先前状态的更新更方便。
+    -   **性能优化**: 在某些场景下，可以将 `dispatch` 函数向下传递，避免不必要的 props 变化导致子组件重渲染（因为 `dispatch` 函数的引用是稳定的）。
+
+## `useRef`: 访问 DOM 与存储可变值
+
+`useRef` 返回一个可变的 ref 对象，其 `.current` 属性被初始化为传入的参数（`initialValue`）。返回的 ref 对象在组件的整个生命周期内保持不变。
+
+它主要有两个用途：
+
+1.  **访问 DOM 节点或 React 组件实例**:
+    ```jsx
+    import React, { useRef, useEffect } from 'react';
+
+    function TextInputWithFocusButton() {
+      // 创建一个 ref
+      const inputEl = useRef(null);
+
+      const onButtonClick = () => {
+        // `current` 指向已挂载到 DOM 的 input 元素
+        inputEl.current.focus();
+      };
+
+      // 将 ref 关联到 input 元素
+      return (
+        <>
+          <input ref={inputEl} type="text" />
+          <button onClick={onButtonClick}>Focus the input</button>
+        </>
+      );
+    }
+    ```
+
+2.  **存储一个不希望触发重渲染的可变值**: 有时你需要存储一些信息，但这些信息的变化不应该引起组件重新渲染（比如存储上一次的 props/state 值，或者存储定时器 ID）。
+    ```jsx
+    import React, { useState, useEffect, useRef } from 'react';
+
+    function TimerWithRef() {
+      const [count, setCount] = useState(0);
+      // 使用 ref 存储 interval ID
+      const intervalRef = useRef(null);
+
+      useEffect(() => {
+        intervalRef.current = setInterval(() => {
+          setCount(c => c + 1);
+        }, 1000);
+
+        return () => {
+          // 在 cleanup 中使用 ref 清除 interval
+          clearInterval(intervalRef.current);
+        };
+      }, []); // 空依赖，只运行一次
+
+      const handleStop = () => {
+        clearInterval(intervalRef.current);
+      };
+
+      return (
+        <div>
+          Count: {count}
+          <button onClick={handleStop}>Stop Timer</button>
+        </div>
+      );
+    }
+    ```
+    **关键**: 修改 `.current` 属性**不会**导致组件重新渲染。
+
+## 性能优化 Hooks: `useMemo` 与 `useCallback`
+
+在某些情况下，组件内部的计算或函数创建可能开销较大，或者作为依赖项传递给子组件或 `useEffect` 等 Hook 时，会导致不必要的重渲染或 effect 重跑。`useMemo` 和 `useCallback` 用于优化这些场景。
+
+### `useMemo`: 缓存计算结果
+
+`useMemo` 用于缓存**计算结果**。它接收一个“创建”函数和一个依赖项数组。只有当依赖项发生变化时，它才会重新调用创建函数计算新值；否则，它会返回上一次缓存的值。
+
+```jsx
+import React, { useState, useMemo } from 'react';
+
+function ExpensiveCalculationComponent({ a, b }) {
+  // 假设这个计算非常耗时
+  const computeExpensiveValue = (num1, num2) => {
+    console.log('Calculating...');
+    // ... 模拟复杂计算 ...
+    return num1 + num2;
+  };
+
+  // 使用 useMemo 缓存计算结果
+  // 只有当 a 或 b 变化时，computeExpensiveValue 才会重新执行
+  const expensiveValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+
+  return <div>Result: {expensiveValue}</div>;
+}
+```
+
+-   **用途**: 优化昂贵的计算、缓存传递给子组件的对象/数组（避免因子引用变化导致子组件重渲染）。
+
+### `useCallback`: 缓存函数实例
+
+`useCallback` 用于缓存**函数实例**。它接收一个内联回调函数和一个依赖项数组。只有当依赖项发生变化时，它才会返回一个新的函数实例；否则，它会返回上一次缓存的函数实例。
+
+```jsx
+import React, { useState, useCallback } from 'react';
+
+// 一个接收回调函数的子组件
+const MyButton = React.memo(({ onClick, children }) => {
+  console.log('Rendering button', children);
+  return <button onClick={onClick}>{children}</button>;
+});
+
+function ParentComponent() {
+  const [count, setCount] = useState(0);
+  const [otherState, setOtherState] = useState(false);
+
+  // 如果不使用 useCallback，每次 ParentComponent 重渲染时
+  // 都会创建一个新的 handleClick 函数实例，导致 MyButton 即使 props 没变也重渲染
+  // const handleClick = () => {
+  //   setCount(count + 1);
+  // };
+
+  // 使用 useCallback 缓存函数实例
+  // 只有当 count 变化时，才会返回新的 handleClick 函数
+  const handleClick = useCallback(() => {
+    setCount(prevCount => prevCount + 1); // 使用函数式更新，可以不依赖 count
+  }, []); // 通常，如果函数不依赖外部变量，或只依赖 dispatch 等稳定引用，可以给空数组
+
+  // 这个函数依赖 otherState
+  const handleOtherClick = useCallback(() => {
+     console.log('Other state clicked', otherState);
+  }, [otherState]); // 依赖 otherState
+
+  return (
+    <div>
+      Count: {count}
+      <button onClick={() => setOtherState(!otherState)}>Toggle Other State</button>
+      {/* 传递缓存后的函数给子组件 */}
+      <MyButton onClick={handleClick}>Increment Count</MyButton>
+      <MyButton onClick={handleOtherClick}>Log Other State</MyButton>
+    </div>
+  );
+}
+```
+
+-   **用途**:
+    -   将回调函数传递给优化过的子组件（如使用 `React.memo` 包裹的组件）时，防止因子函数引用变化导致不必要的重渲染。
+    -   将函数作为依赖项传递给其他 Hook（如 `useEffect`）时，避免因函数实例变化导致 effect 不必要地重跑。
+
+**重要提醒**: 不要过度优化。`useMemo` 和 `useCallback` 本身也有开销（缓存、依赖比较）。只在确实存在性能问题，或者需要稳定引用传递给优化组件/Hook 时使用。过早或不必要的优化可能会让代码更复杂。

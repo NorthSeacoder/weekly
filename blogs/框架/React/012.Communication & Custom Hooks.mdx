@@ -1,0 +1,431 @@
+---
+tags: [React, 组件通信, 自定义 Hook, Hooks, 前端开发]
+category: React
+date: 2022-05-22
+title: 我不知道的 React:组件通信技巧与实用自定义 Hooks
+desc: 深入探讨 React 组件间通信的多种方式 (Props, Callbacks, Ref, Context)，详解 useUpdate, useTimeout, useDebounce, usePrevious 等实用自定义 Hooks 的实现与应用。
+slug: react-12
+---
+
+React 应用的核心就是组件的组合与交互。如何高效、清晰地在组件之间传递信息和调用方法，以及如何封装可复用的逻辑，是写出高质量 React 代码的关键。
+
+## React 组件通信的核心方式
+
+组件通信是构建复杂应用的基础。根据场景不同，React 提供了多种方式：
+
+### 1. Props：父到子的单向数据流
+
+最常见的方式，父组件通过 props 将数据或函数传递给子组件。这是 React 单向数据流的核心体现。
+
+```jsx
+function ChildComponent({ message, onAction }) {
+  return (
+    <div>
+      <p>{message}</p>
+      <button onClick={onAction}>触发父组件动作</button>
+    </div>
+  );
+}
+
+function ParentComponent() {
+  const handleAction = () => {
+    console.log('子组件的动作被触发了');
+  };
+
+  return (
+    <ChildComponent
+      message="来自父组件的消息"
+      onAction={handleAction}
+    />
+  );
+}
+```
+
+-   **优点**: 清晰、简单，符合 React 设计理念。
+-   **缺点**: 对于层级很深的组件，需要层层传递（Props Drilling），比较繁琐。
+
+### 2. Callback 函数：子到父的通信
+
+父组件可以将一个函数作为 prop 传递给子组件，子组件在特定时机调用该函数，从而将信息或事件传递回父组件。上面的 `onAction` 就是例子。
+
+### 3. Ref 与 forwardRef/useImperativeHandle：父调子方法
+
+有时，父组件需要直接调用子组件内部的方法或访问其 DOM 节点。这时可以使用 `ref`。
+
+-   **`forwardRef`**: 函数组件默认不能直接接收 `ref`。需要使用 `React.forwardRef` 包装子组件，将父组件创建的 `ref` 转发到子组件内部。
+-   **`useImperativeHandle`**: 在子组件中，配合 `forwardRef` 使用，可以**选择性地暴露**特定的方法或属性给父组件，而不是整个子组件实例。这增强了封装性。
+
+```jsx
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
+
+// 子组件：使用 forwardRef 接收 ref，并用 useImperativeHandle 暴露方法
+const FancyInput = forwardRef((props, ref) => {
+  const inputRef = useRef();
+
+  // 只暴露 focus 方法给父组件
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current.focus();
+      console.log('子组件的 focus 方法被调用');
+    },
+    // 可以暴露更多方法
+    // reset: () => { ... }
+  }));
+
+  return <input ref={inputRef} type="text" placeholder="输入框" />;
+});
+
+// 父组件
+function ParentUsingRef() {
+  const fancyInputRef = useRef(null);
+
+  const handleFocusClick = () => {
+    // 安全地调用子组件暴露的方法
+    fancyInputRef.current?.focus();
+  };
+
+  return (
+    <div>
+      <FancyInput ref={fancyInputRef} />
+      <button onClick={handleFocusClick}>聚焦子组件输入框</button>
+    </div>
+  );
+}
+```
+
+-   **优点**: 能够直接操作子组件，处理某些特定交互（如聚焦、动画控制）很方便。
+-   **缺点**:
+    *   **破坏封装**: 过度使用会破坏组件的封装性，使得父子组件耦合过紧。
+    *   **命令式**: 这是一种命令式的做法，与 React 声明式的理念有所背离。
+    *   **优先 Props**: 大部分场景应优先考虑通过 props 和 state 实现，只有在必要时（如管理焦点、触发动画、集成第三方 DOM 库）才使用 ref。
+
+### 4. Context API：跨层级通信
+
+当数据需要在多个层级之间共享时，Props Drilling 会变得非常麻烦。Context API 提供了一种全局共享数据的机制。
+
+```jsx
+// 1. 创建 Context
+const ThemeContext = React.createContext('light'); // 默认值
+
+// 2. 提供者 (Provider)
+function App() {
+  const [theme, setTheme] = useState('dark');
+  return (
+    <ThemeContext.Provider value={theme}>
+      <Toolbar />
+    </ThemeContext.Provider>
+  );
+}
+
+// 3. 消费者 (Consumer 或 useContext Hook)
+function ThemedButton() {
+  const theme = useContext(ThemeContext); // 使用 Hook 获取 Context 值
+  return <button className={theme}>我是一个按钮</button>;
+}
+```
+
+-   **优点**: 解决了 Props Drilling 问题，适合全局状态（如主题、用户认证）或需要在组件树深处共享的数据。
+-   **缺点**:
+    *   可能导致组件与特定 Context 耦合。
+    *   Context 的值变化时，所有消费该 Context 的组件都会重新渲染（即使它们使用的部分没有改变），需要配合 `React.memo` 或其他优化手段。
+    *   不适合所有场景，对于简单的父子通信，Props 更直接。
+
+**选择哪种方式？**
+
+-   **父子**: 优先 Props 和 Callback。
+-   **子父**: Callback。
+-   **兄弟**: 状态提升到共同父组件，通过 Props + Callback。
+-   **跨多层级**: Context API 或状态管理库 (Redux, Zustand)。
+-   **需要直接操作子组件实例/DOM**: Ref (谨慎使用)。
+
+## 实用自定义 Hooks
+
+自定义 Hook 是 React 16.8 引入的强大特性，允许我们将组件逻辑提取到可重用的函数中。一个自定义 Hook 是一个函数，其名称以 `use` 开头，内部可以调用其他 Hook。
+
+### 1. `useUpdate`: 强制组件重新渲染
+
+有时需要手动触发组件更新（虽然这通常是反模式，应尽量避免）。
+
+```jsx
+import { useReducer } from 'react';
+
+// useReducer 实现 (更推荐)
+function useUpdate() {
+  const [, forceUpdate] = useReducer(x => x + 1, 0);
+  return forceUpdate;
+}
+
+// useState 实现
+// import { useState } from 'react';
+// function useUpdate() {
+//   const [, setFlag] = useState(false);
+//   return () => setFlag(prev => !prev);
+// }
+
+// 使用
+function MyComponent() {
+  const update = useUpdate();
+  console.log('Component rendered');
+  return <button onClick={update}>强制更新</button>;
+}
+```
+**对比**: `useReducer` 版本更轻量，语义上更符合"触发一个动作"而非"改变一个状态"。
+
+### 2. `useTimeout`: 带自动清理的 `setTimeout`
+
+封装 `setTimeout` 逻辑，确保在组件卸载或 `delay` 变化时自动清除定时器。
+
+```jsx
+import { useEffect, useRef, useCallback } from 'react';
+
+function useTimeout(callback, delay) {
+  const callbackRef = useRef(callback);
+
+  // 保证 callback 是最新的
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
+  const timeoutIdRef = useRef(null);
+
+  // 清除定时器的函数
+  const clear = useCallback(() => {
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
+      timeoutIdRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof delay === 'number' && delay >= 0) {
+      // 设置新的定时器
+      timeoutIdRef.current = setTimeout(() => callbackRef.current(), delay);
+    }
+    // 清理函数：组件卸载或 delay 变化时清除旧的定时器
+    return clear;
+  }, [delay, clear]); // 依赖项包括 delay 和 clear 函数
+
+  // 返回清除函数，方便手动清除
+  return clear;
+}
+
+// 使用
+function TimerComponent() {
+  const [message, setMessage] = useState('Waiting...');
+
+  useTimeout(() => {
+    setMessage('Timeout finished!');
+  }, 2000); // 2秒后更新消息
+
+  return <div>{message}</div>;
+}
+```
+
+### 3. `useDebounce`: 防抖 Hook
+
+常用于输入框搜索建议、窗口 resize 等场景，延迟执行某个操作，直到事件停止触发一段时间。
+
+```jsx
+import { useState, useEffect } from 'react';
+
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    // 清理函数：在 value 或 delay 变化，或组件卸载时清除
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]); // 依赖 value 和 delay
+
+  return debouncedValue;
+}
+
+// 示例：搜索输入框
+function SearchInput() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms 防抖
+
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      console.log(`Searching for: ${debouncedSearchTerm}`);
+      // fetchSearchResults(debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm]);
+
+  return (
+    <input
+      type="text"
+      placeholder="Search..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+  );
+}
+```
+
+### 4. `usePrevious`: 获取上一次渲染的值
+
+有时需要在渲染中比较当前 props/state 与上一次的值。
+
+```jsx
+import { useEffect, useRef } from 'react';
+
+function usePrevious(value) {
+  const ref = useRef();
+  // 先执行 return，再执行 effect
+  useEffect(() => {
+    ref.current = value;
+  }); // 没有依赖项，每次渲染后都执行
+  return ref.current; // 返回的是上一次渲染时的值
+}
+
+// 使用
+function Counter() {
+  const [count, setCount] = useState(0);
+  const prevCount = usePrevious(count);
+
+  return (
+    <div>
+      <p>Current: {count}, Previous: {prevCount}</p>
+      <button onClick={() => setCount(count + 1)}>+</button>
+    </div>
+  );
+}
+```
+
+### 5. `useEventListener`: 声明式地添加事件监听
+
+简化添加和移除事件监听器的逻辑，尤其是在处理 `window` 或 `document` 事件时。
+
+```jsx
+import { useEffect, useRef } from 'react';
+
+function useEventListener(eventName, handler, element = window) {
+  const savedHandler = useRef();
+
+  useEffect(() => {
+    savedHandler.current = handler;
+  }, [handler]);
+
+  useEffect(() => {
+    const isSupported = element && element.addEventListener;
+    if (!isSupported) return;
+
+    const eventListener = (event) => savedHandler.current(event);
+
+    element.addEventListener(eventName, eventListener);
+
+    return () => {
+      element.removeEventListener(eventName, eventListener);
+    };
+  }, [eventName, element]); // Re-run if eventName or element changes
+}
+
+// 使用：监听窗口大小变化
+function WindowSizeReporter() {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  const handleResize = useCallback(() => {
+    setSize({ width: window.innerWidth, height: window.innerHeight });
+  }, []);
+
+  useEventListener('resize', handleResize);
+
+  return (
+    <div>
+      Window size: {size.width} x {size.height}
+    </div>
+  );
+}
+```
+
+### 6. `useFetch`: 简化数据获取
+
+一个基础的数据请求 Hook 示例。
+
+```jsx
+import { useState, useEffect } from 'react';
+
+function useFetch(url, options = {}) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // 防止在 unmounted 组件上更新 state
+    let isMounted = true;
+    setLoading(true);
+    setError(null);
+
+    fetch(url, options)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(fetchedData => {
+        if (isMounted) {
+          setData(fetchedData);
+        }
+      })
+      .catch(fetchError => {
+        if (isMounted) {
+          setError(fetchError);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    // 清理函数
+    return () => {
+      isMounted = false;
+    };
+  }, [url, JSON.stringify(options)]); // 依赖 url 和 options
+
+  return { data, loading, error };
+}
+
+// 使用
+function UserProfile({ userId }) {
+  const { data: user, loading, error } = useFetch(`/api/users/${userId}`);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  if (!user) return null;
+
+  return <div>Name: {user.name}</div>;
+}
+```
+**注意**: 真实的 `useFetch` 库（如 SWR, React Query）会提供更强大的功能，如缓存、自动重新验证、请求取消等。
+
+### 自定义 Hooks 的规则与测试
+
+-   **规则**:
+    1.  只能在 React 函数组件的顶层或其他的自定义 Hook 中调用 Hook。
+    2.  不能在循环、条件或嵌套函数中调用 Hook。
+-   **测试**: 可以使用 `@testing-library/react-hooks` (现在已合并到 `@testing-library/react`) 来独立测试自定义 Hook 的逻辑。
+
+## React 与 Vue 的核心机制差异 (简述)
+
+虽然两者都能构建现代 Web 应用，但在核心机制上有所不同：
+
+-   **状态更新与响应式**:
+    -   **React**: 依赖**显式**的状态更新（`setState` 或 Hooks 的 `set` 函数）来触发重新渲染。组件是否更新取决于其自身的 state/props 变化以及父组件的渲染。需要开发者手动进行性能优化（`memo`, `useCallback`, `useMemo`）。React 19 的 Compiler 旨在自动化部分优化。
+    -   **Vue**: 采用了**隐式**的响应式系统。通过 Proxy（Vue 3）或 `Object.defineProperty`（Vue 2）追踪数据依赖。当数据变化时，只有依赖该数据的组件会自动更新。这种自动化的响应式通常更省心，但有时其内部机制对新手来说不够透明。
+-   **模板 vs JSX**:
+    -   **React**: 主要使用 JSX，将 HTML 结构嵌入 JavaScript 代码中，提供了 JavaScript 的全部能力来构建视图。
+    -   **Vue**: 主要使用基于 HTML 的模板语法，通过指令（如 `v-if`, `v-for`）扩展 HTML。模板更接近传统 HTML，对设计师更友好，但也支持 JSX。
+
+这些核心差异影响了开发体验、性能优化策略和生态工具。没有绝对的好坏，选择哪个取决于项目需求和团队偏好。

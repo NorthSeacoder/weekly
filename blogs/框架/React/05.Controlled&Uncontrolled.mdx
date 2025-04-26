@@ -1,0 +1,177 @@
+---
+tags: [React, 表单, 受控组件, 非受控组件, state, ref, 性能优化]
+category: React
+date: 2022-05-20
+title: 我不知道的 React:驾驭表单：受控与非受控组件的选择之道
+desc: 深入理解 React 中受控组件与非受控组件的本质区别、适用场景、性能考量及最佳实践，助你做出明智的技术选型。
+slug: react-05
+---
+
+## 定义：谁掌控了表单数据？
+
+在 React 中处理表单元素（如 `<input>`, `<textarea>`, `<select>`）时，主要有两种管理其值的方式：受控组件和非受控组件。它们的核心区别在于**表单数据的"真理之源"(Source of Truth) 在哪里**。
+
+### 受控组件 (Controlled Components)
+
+**定义**: 表单元素的值**完全由 React 的 state 控制**。
+
+-   **工作方式**: 
+    1.  将表单元素的 `value` 属性绑定到 React 组件的 `state`。
+    2.  通过 `onChange` 事件处理器来监听用户的输入。
+    3.  在 `onChange` 处理器中，调用 `setState` (或 `useState` 的更新函数) 来更新 state，从而更新 input 的 `value`。
+-   **特点**: 组件的 state 是表单数据的唯一来源。React 完全接管了表单值的读取和更新，每次输入变化都会流经 React 的状态管理。
+-   **示例**:
+    ```jsx
+    import React, { useState } from 'react';
+
+    function ControlledInput() {
+      const [inputValue, setInputValue] = useState('');
+
+      const handleChange = (event) => {
+        setInputValue(event.target.value);
+      };
+
+      return (
+        <input 
+          type="text" 
+          value={inputValue} // 值由 state 控制
+          onChange={handleChange} // 状态随输入更新
+        />
+      );
+    }
+    ```
+-   **类比 Vue**: Vue 的 `v-model` 指令提供了类似的双向绑定效果，但 React 的受控组件需要开发者更显式地处理状态更新，提供了更大的灵活性。
+
+### 非受控组件 (Uncontrolled Components)
+
+**定义**: 表单数据**由 DOM 自身管理**，React 不直接控制其值。
+
+-   **工作方式**:
+    1.  React 通常只提供一个初始值，使用 `defaultValue` 属性 (对于 `<input>`, `<textarea>`, `<select>`) 或 `defaultChecked` (对于 checkbox/radio)。
+    2.  当需要获取表单值时（例如，在表单提交时），通过**ref**来直接访问 DOM 节点并读取其当前值。
+-   **特点**: 数据真理之源在 DOM 中。React 像一个"旁观者"，只在需要时才去 DOM "询问"当前的值。
+-   **示例**:
+    ```jsx
+    import React, { useRef } from 'react';
+
+    function UncontrolledInput() {
+      const inputRef = useRef(null);
+
+      const handleSubmit = (event) => {
+        event.preventDefault();
+        alert('Input value: ' + inputRef.current.value); // 通过 ref 读取值
+      };
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <input 
+            type="text" 
+            ref={inputRef} 
+            defaultValue="初始值" // React 提供初始值
+          />
+          <button type="submit">提交</button>
+        </form>
+      );
+    }
+    ```
+
+### 核心区别总结
+
+| 特性         | 受控组件                         | 非受控组件                       |
+| :----------- | :------------------------------- | :------------------------------- |
+| **数据源**   | React State                      | DOM                              |
+| **值获取**   | 直接从 state 读取                | 通过 ref 从 DOM 读取             |
+| **值更新**   | `onChange` + `setState`          | DOM 自动处理                     |
+| **控制粒度** | 精确，每次变化都经过 React     | 粗粒度，React 不追踪实时变化     |
+| **代码复杂度** | 稍高，需要管理 state 和事件处理 | 相对简单，尤其对简单表单       |
+
+## 如何选择：场景驱动决策
+
+选择哪种方式并非绝对好坏，而是取决于具体需求。
+
+### 何时使用受控组件？
+
+当需要对用户的输入进行**实时响应、验证或格式化**时，受控组件是首选：
+
+-   **实时验证**: 输入时即时给出错误提示（如密码强度、邮箱格式）。
+    ```jsx
+    // 实时验证输入是否为数字
+    function NumberInput() {
+      const [value, setValue] = useState('');
+      const handleChange = (e) => {
+        const inputVal = e.target.value;
+        if (/^\d*$/.test(inputVal)) { // 只允许数字
+          setValue(inputVal);
+        }
+      };
+      return <input value={value} onChange={handleChange} />;
+    }
+    ```
+-   **动态启用/禁用按钮**: 根据表单输入内容是否满足条件来控制提交按钮状态。
+-   **强制输入格式**: 例如，自动将输入转换为大写。
+-   **依赖输入的衍生 UI**: 如根据搜索框输入实时过滤下拉列表。
+
+**优势**: 数据流清晰可控，状态与 UI 保持同步，易于实现复杂交互和验证逻辑。
+
+### 何时使用非受控组件？
+
+当表单逻辑简单，或者希望**集成非 React 代码/库**时，非受控组件更便捷：
+
+-   **简单表单**: 只需要在提交时获取一次最终值，中间过程无需干预。
+-   **一次性提交**: 如简单的登录、注册表单。
+-   **文件上传 (`<input type="file">`)**: 文件输入框的值只能由用户设置，无法通过程序设置 `value`，因此它**总是非受控**的。
+    ```jsx
+    function FileUpload() {
+      const fileInputRef = useRef(null);
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (fileInputRef.current.files.length > 0) {
+          alert(`Selected file - ${fileInputRef.current.files[0].name}`);
+        }
+      };
+      return (
+        <form onSubmit={handleSubmit}>
+          <input type="file" ref={fileInputRef} />
+          <button type="submit">上传</button>
+        </form>
+      );
+    }
+    ```
+-   **集成第三方 UI 库**: 有些库可能直接操作 DOM，使用非受控组件更容易集成。
+
+**优势**: 代码量少，更接近传统 HTML 表单行为，性能开销相对较小（因为不涉及每次输入都触发 React 更新）。
+
+## 设计考量与性能优化
+
+选择模式时，还需要考虑性能和维护性。
+
+### 受控组件的性能考量
+
+-   **潜在问题**: 受控组件的每一次按键输入都会触发 `setState` (或 `useState` 更新)，导致组件及其子树的**重渲染 (Re-render)**。对于包含大量输入框或复杂计算的表单，这可能成为性能瓶颈。
+-   **优化手段**: 
+    -   **防抖/节流 (Debounce/Throttle)**: 对于不需要实时响应的受控输入（如搜索建议），可以使用防抖或节流来限制状态更新和重渲染的频率。
+    -   **组件拆分与 `React.memo`**: 将表单拆分成更小的组件，并使用 `React.memo` 避免因子组件 Props 未变而触发的不必要渲染。
+    -   **性能分析**: 使用 React DevTools Profiler 识别哪些输入或组件更新开销较大。
+
+### 混合策略：取长补短
+
+在复杂场景下，有时可以结合使用两种模式：
+
+-   **场景**: 一个表单可能大部分字段是非受控的（提交时获取），但某个字段需要实时验证（受控）。
+-   **实现**: 可以将需要受控的字段作为受控组件管理，其他字段使用 `ref` 在提交时读取。
+
+## 结论与建议
+
+受控组件和非受控组件是 React 提供的两种管理表单数据的有效方式。
+
+-   **受控组件**: 提供完全的数据控制能力和实时响应性，适用于需要精确控制、验证或动态交互的场景，但需注意潜在的性能开销。
+-   **非受控组件**: 更接近原生 HTML 表单，代码简洁，性能开销小，适用于简单表单、文件上传或集成第三方库的场景，但牺牲了实时控制能力。
+
+**选择建议**: 
+
+-   **优先考虑受控组件**: 在大多数需要与 React 状态交互的情况下，受控组件提供了更清晰、可预测的数据流，是 React 的推荐方式。
+-   **简单场景用非受控**: 对于非常简单的表单，如果不需要实时验证或交互，非受控组件可以减少样板代码。
+-   **性能敏感时评估**: 如果受控组件导致性能问题，考虑优化（防抖、`memo`）或在特定字段上切换到非受控方式（通过 `ref` 读取）。
+-   **保持一致性**: 在项目中尽量保持风格统一，有助于维护。如果团队决定主要使用受控组件，就在大部分场景下坚持使用。
+
+理解两者的核心差异和适用场景，是构建高效、可维护 React 表单的关键。

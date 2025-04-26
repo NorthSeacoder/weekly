@@ -1,0 +1,262 @@
+---
+tags: [React, ErrorBoundary, 错误处理, 生命周期, Sentry, 异常捕获]
+category: React
+date: 2022-05-22
+title: 我不知道的 React:ErrorBoundary 的工作原理与局限性
+desc: 深入理解 React ErrorBoundary 如何通过特定生命周期方法捕获子组件渲染错误，探讨其无法捕获的错误类型及其原因，并介绍与监控工具集成和错误恢复策略。
+slug: react-09
+---
+
+## ErrorBoundary：守护你的 UI
+
+在 React 应用中，某个组件的一个小错误可能导致整个应用白屏崩溃，用户体验极差。ErrorBoundary 就是 React 提供的“安全网”，它是一种特殊的 React 组件，可以捕获其子组件树在渲染期间发生的 JavaScript 错误。
+
+-   **核心职责**:
+    -   **捕获错误**: 捕获子组件在渲染方法、生命周期方法以及构造函数中抛出的同步错误。
+    -   **渲染回退 UI**: 当捕获到错误时，显示一个预定义的、更友好的界面，而不是让应用崩溃。
+    -   **记录错误**: 提供记录错误信息（如错误类型、组件栈）的地方，方便调试和监控。
+    -   **隔离错误**: 将错误限制在发生问题的子树中，保证应用其他部分正常运行。
+
+## ErrorBoundary 的实现基石：两个生命周期
+
+ErrorBoundary 的魔力来源于两个特殊的类组件生命周期方法：
+
+1.  **`static getDerivedStateFromError(error)`**:
+    -   **触发时机**: 在子组件抛出错误后、**渲染阶段**（Render Phase）调用。
+    -   **作用**: 接收抛出的 `error` 对象，返回一个对象来更新 ErrorBoundary 自身的 state。这是**唯一**应该用来改变状态以触发渲染回退 UI 的地方。
+    -   **特点**: 静态方法，纯函数，**不能包含副作用**（如 API 调用、`console.log`）。其目的是纯粹地根据错误更新状态。
+
+2.  **`componentDidCatch(error, errorInfo)`**:
+    -   **触发时机**: 在错误被捕获后、**提交阶段**（Commit Phase）调用。此时回退 UI 已经渲染完成。
+    -   **作用**: 接收 `error` 对象和 `errorInfo` 对象（包含 `componentStack` 属性，展示了错误发生处的组件调用栈信息）。这里是执行**副作用**的理想场所，例如：
+        -   将错误信息上报给监控服务（如 Sentry）。
+        -   打印详细的错误日志。
+    -   **注意**: 在这里调用 `setState` 也是可以的，但**不推荐**用它来触发回退 UI 的渲染，因为 `getDerivedStateFromError` 更早执行且更符合 React 的设计意图。
+
+### 为什么推荐 `getDerivedStateFromError` 更新状态？
+
+-   **时机更早**: 在渲染阶段就确定需要显示回退 UI，效率更高。
+-   **符合分阶段理念**: React Fiber 将工作分为渲染和提交阶段，`getDerivedStateFromError` 属于渲染阶段逻辑（决定渲染什么），`componentDidCatch` 属于提交阶段逻辑（处理副作用）。职责分离更清晰。
+-   **并发模式兼容**: 在未来的并发模式下，渲染阶段可能被暂停和恢复，将状态更新放在渲染阶段更可靠。
+
+### 一个基础的 ErrorBoundary
+
+```jsx
+import React from 'react';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  // 使用静态方法更新 state，准备渲染回退 UI
+  static getDerivedStateFromError(error) {
+    // 更新 state 使下一次渲染能够显示降级后的 UI
+    return { hasError: true, error: error };
+  }
+
+  // 用于记录错误信息等副作用
+  componentDidCatch(error, errorInfo) {
+    // 你同样可以将错误日志上报给服务器
+    console.error("Uncaught error:", error, errorInfo);
+    // 保存更详细的错误信息（如果需要展示）
+    this.setState({ errorInfo: errorInfo });
+    // logErrorToMyService(error, errorInfo.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // 你可以自定义降级后的 UI 并渲染
+      return (
+        <div>
+          <h2>糟糕，程序崩溃了！</h2>
+          <details style={{ whiteSpace: 'pre-wrap' }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {/* 通常不在生产环境展示详细堆栈 */}
+            {this.state.errorInfo && this.state.errorInfo.componentStack}
+          </details>
+        </div>
+      );
+    }
+
+    // 正常情况下，渲染子组件
+    return this.props.children;
+  }
+}
+
+// 如何使用:
+function App() {
+  return (
+    <div>
+      <h1>My App</h1>
+      <ErrorBoundary>
+        <ComponentThatMightThrow />
+      </ErrorBoundary>
+      <p>Other parts of the app remain functional.</p>
+    </div>
+  );
+}
+
+function ComponentThatMightThrow() {
+  if (Math.random() > 0.5) {
+    throw new Error('I crashed!');
+  }
+  return <div>Everything is fine here!</div>;
+}
+
+export default App;
+
+```
+
+### 错误是如何冒泡的？
+
+当子组件在渲染时（包括 render 方法、构造函数、生命周期方法）抛出错误，React 的 Fiber 协调器会捕获它。然后，错误会沿着 Fiber 树的 `return` 指针（指向父 Fiber 节点）向上冒泡，寻找最近的 ErrorBoundary。如果找到了，就调用它的 `getDerivedStateFromError` 和 `componentDidCatch`；如果一直冒泡到根节点都没有找到 ErrorBoundary，整个 React 应用就会卸载。
+
+## ErrorBoundary 的“盲区”：无法捕获的错误
+
+ErrorBoundary 很强大，但并非万能。以下几种错误它**无法**捕获：
+
+1.  **事件处理器 (Event Handlers)**:
+    -   **原因**: 事件处理器中的代码并不在 React 的渲染阶段执行。当你在 `onClick`, `onChange` 等回调中抛出错误时，React 的渲染流程已经结束，错误发生在浏览器正常的事件调用栈中，ErrorBoundary 无从干预。
+    -   **处理**: 需要在事件处理器内部使用 `try...catch` 手动捕获。
+    ```jsx
+    function ButtonWithError() {
+      const handleClick = () => {
+        try {
+          // 模拟可能出错的操作
+          throw new Error('Error inside event handler!');
+        } catch (error) {
+          console.error('Caught error in handler:', error);
+          // 这里可以更新状态显示错误信息，或上报错误
+        }
+      };
+      return <button onClick={handleClick}>Click Me</button>;
+    }
+    ```
+
+2.  **异步代码 (Asynchronous Code)**:
+    -   **原因**: `setTimeout`, `setInterval`, Promise 的 `.then()` 或 `async/await` 中的异步操作，其回调执行时已经脱离了最初的 React 渲染上下文和调用栈。ErrorBoundary 监听的是渲染期间的同步错误。
+    -   **处理**: 在异步回调内部使用 `try...catch`，或者对于 Promise，使用 `.catch()` 来捕获。
+    ```jsx
+    function AsyncComponent() {
+      React.useEffect(() => {
+        setTimeout(() => {
+          try {
+            throw new Error('Error inside setTimeout!');
+          } catch (error) {
+            console.error('Caught async error:', error);
+            // 可能需要更新状态来通知用户
+          }
+        }, 1000);
+
+        fetch('/api/data')
+          .then(res => {
+             if (!res.ok) throw new Error('Fetch failed');
+             return res.json();
+          })
+          .catch(error => {
+             console.error('Caught fetch error:', error);
+             // 处理 fetch 错误
+          });
+      }, []);
+      return <div>Async operations...</div>;
+    }
+    ```
+
+3.  **服务端渲染 (Server-Side Rendering, SSR)**:
+    -   **原因**: ErrorBoundary 主要设计用于客户端渲染。SSR 期间的错误通常需要在服务端处理。
+
+4.  **ErrorBoundary 组件自身的错误**:
+    -   **原因**: ErrorBoundary 不能捕获自己内部在渲染或生命周期方法中抛出的错误（否则会无限循环）。错误会向上冒泡给它的父级 ErrorBoundary（如果有的话）。
+
+## 进阶：错误监控与恢复
+
+仅仅显示“出错了”可能不够，我们还需要更好地处理错误。
+
+### 集成错误监控服务（如 Sentry）
+
+在 `componentDidCatch` 中将错误信息发送给专业的监控平台，可以帮助我们收集、聚合和分析生产环境中的错误。
+
+```jsx
+import React from 'react';
+import * as Sentry from "@sentry/react";
+
+// Sentry 初始化通常在应用入口文件
+// Sentry.init({ dsn: "YOUR_DSN" });
+
+class SentryErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, eventId: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // 使用 Sentry 上报错误
+    Sentry.withScope((scope) => {
+      scope.setExtras(errorInfo); // 添加组件栈等额外信息
+      const eventId = Sentry.captureException(error);
+      this.setState({ eventId }); // 可以选择性地展示 eventId 给用户反馈
+    });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div>
+          <h2>发生了一些错误。</h2>
+          {/* 可以提供一个按钮让用户报告问题，带上 eventId */}
+          <button onClick={() => Sentry.showReportDialog({ eventId: this.state.eventId })}>
+            报告反馈
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+```
+
+### 尝试错误恢复
+
+有时，我们可以尝试从错误中恢复，而不是仅仅显示错误信息。
+
+-   **重置状态**: 添加一个按钮，让用户点击后尝试重置ErrorBoundary 或相关组件的状态，回到正常状态。
+-   **重试操作**: 如果错误是由于临时的网络问题等引起，可以提供一个重试按钮。
+-   **使用 `react-error-boundary` 库**: 这个流行的库提供了更灵活的 API，例如 `FallbackComponent` 可以接收 `resetErrorBoundary` 函数作为 prop，方便实现恢复逻辑。
+
+```jsx
+import { ErrorBoundary } from 'react-error-boundary';
+
+function ErrorFallback({ error, resetErrorBoundary }) {
+  return (
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => {
+        // 重置应用状态的逻辑
+        console.log('Trying to reset...');
+      }}
+      // onError={(error, info) => logErrorToService(error, info)} // 自定义错误上报
+    >
+      <ComponentThatMightThrow />
+    </ErrorBoundary>
+  )
+}
+```
+
+通过合理使用 ErrorBoundary 及其相关的错误处理策略，我们可以构建出更健壮、用户体验更好的 React 应用。

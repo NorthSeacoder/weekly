@@ -1,0 +1,87 @@
+---
+tags: [React, React DOM, 虚拟 DOM, 调和, Fiber, 平台抽象]
+category: React
+date: 2022-05-20
+title: 我不知道的 React:核心与渲染层的解耦之道
+desc: 揭示 React (Core) 与 React DOM (渲染层) 分离的设计哲学、各自职责以及它们如何协作将虚拟 DOM 渲染到浏览器。
+slug: react-02
+---
+
+## React 与 React DOM：为何分离？
+
+我们通常将 React 作为一个整体框架来使用，但实际上它被巧妙地分成了两个核心部分：`react` 包和 `react-dom` 包。理解这种分离是掌握 React 工作原理的第一步。
+
+-   **`react` (React Core)**: 这是 React 的核心库。它包含了定义组件（函数组件、类组件）、管理状态 (`useState`, `useReducer`) 和 Props、处理生命周期或副作用 (`useEffect`) 以及构建和更新**虚拟 DOM (Virtual DOM)** 的所有逻辑。它本身与具体的渲染环境（如浏览器 DOM）无关。
+-   **`react-dom` (React DOM Renderer)**: 这是 React 针对**浏览器环境**的**渲染器 (Renderer)**。它的主要职责是将 React Core 生成的虚拟 DOM 变更，高效地转换为实际的浏览器 DOM 操作（如 `createElement`, `appendChild`, `setAttribute` 等）。它还负责处理浏览器中的事件系统（合成事件）。
+-   **分离的核心意义：平台抽象**: 这种分离设计是 React 能够跨平台（Write once, run anywhere）的关键。React Core 定义了组件模型和更新逻辑，而不同的渲染器则负责将这套逻辑适配到不同的目标环境。
+    -   **React DOM**: 适配 Web 浏览器。
+    -   **React Native**: 适配 iOS 和 Android 原生应用，它不操作 DOM，而是调用原生视图组件 (`UIView`, `View`)。
+    -   **其他渲染器**: 还存在用于渲染到 Canvas (`react-konva`), VR (`react-vr`), PDF (`react-pdf`) 等的渲染器。
+
+这种架构使得 React 核心逻辑可以保持稳定和通用，同时又能灵活地扩展到各种不同的渲染目标。
+
+## React Core 的核心逻辑
+
+`react` 包负责的是应用逻辑的"大脑"部分：
+
+-   **组件抽象**: 提供定义 UI 单元的方式。
+    -   函数组件 + Hooks: 现代 React 的主流，通过 `useState`, `useEffect` 等 Hooks 管理状态和副作用。
+    -   类组件: 早期的方式，通过 `this.state`, `setState` 和生命周期方法管理。
+-   **虚拟 DOM (VDOM)**: 这是 React 性能优化的关键。当你调用 `setState` 或 Hooks 触发更新时，React Core 不会立即操作真实 DOM。它会：
+    1.  根据新的状态和 Props，重新执行相关组件的 `render` 方法（或函数组件本身）。
+    2.  生成一个新的虚拟 DOM 树（一个描述 UI 结构的 JavaScript 对象）。
+    3.  将新旧虚拟 DOM 树进行比较（这个过程称为**调和 Reconciliation**），找出最小的差异集。
+-   **更新调度**: React Core 还包含一个调度器（Scheduler），用于管理更新任务的优先级，确保高优先级的更新（如用户输入响应）能够优先处理，这是实现流畅用户体验的基础（尤其在 Fiber 架构下）。
+
+简单来说，React Core 负责定义"应该是什么样子"（组件逻辑和 VDOM），但不关心"具体怎么画出来"。
+
+## React DOM 的渲染与事件处理
+
+`react-dom` 负责将 React Core 的"蓝图"（VDOM 差异）变为现实（浏览器 DOM）：
+
+-   **渲染流程**: 
+    -   **首次渲染 (Mounting)**: 当应用首次加载时，`react-dom`（通过 `createRoot().render()`）将初始的虚拟 DOM 树完整地转换为真实的 DOM 节点，并将其挂载到你指定的容器元素（如 `<div id="root">`）。
+    -   **更新渲染 (Updating)**: 当组件状态或 Props 变化，React Core 计算出 VDOM 差异后，`react-dom` 会接收这些差异信息，并执行**最小化**的真实 DOM 操作来更新界面。例如，只修改一个文本节点，或只添加/删除某个元素，而不是重新渲染整个页面。
+    -   **批量更新**: React DOM 会将同一个事件循环中触发的多个状态更新合并处理，在调和结束后一次性更新 DOM，减少昂贵的重排 (Reflow) 和重绘 (Repaint)。
+-   **事件系统**: 
+    -   如前文所述，`react-dom` 实现了合成事件系统。
+    -   它通过在根节点进行**事件代理**来监听浏览器事件。
+    -   将原生事件封装成跨浏览器一致的 `SyntheticEvent` 对象。
+    -   模拟事件冒泡机制，将事件分发给 React 组件树中对应的处理器。
+
+React DOM 是 React 与浏览器沟通的桥梁，负责所有与 DOM 和浏览器事件相关的具体工作。
+
+## 协作核心：调和过程 (Reconciliation)
+
+React Core 和 React DOM 之间的协作主要体现在**调和过程**中：
+
+1.  **React Core**: 负责比较新旧 VDOM 树，找出差异（Diffing）。这个过程依赖一些启发式算法，比如假设不同类型的元素会产生不同的子树，以及通过 `key` prop 来优化列表元素的比较效率。
+2.  **React DOM**: 接收 React Core 计算出的差异指令集（例如，"更新 id 为 'xyz' 的元素的文本内容"、"在父节点 A 下插入一个新节点 B"），然后高效地执行这些指令，完成真实 DOM 的更新。
+
+这个过程确保了 React 应用既能利用 VDOM 带来的性能优势（避免不必要的 DOM 操作），又能准确地将组件状态反映到用户界面上。
+
+## Fiber 架构：优化协作效率
+
+React 16 引入的 **Fiber 架构** 进一步优化了 React Core 和 React DOM 之间的协作方式。虽然 Fiber 的细节将在下一篇深入探讨，但这里需要了解它的核心改进：
+
+-   **背景**: 传统的调和过程（栈调和）是同步且递归的，对于大型组件树，可能会长时间阻塞主线程，导致页面卡顿。
+-   **Fiber 的改进**: Fiber 将调和过程重构成了一系列可中断、可恢复的**工作单元 (Work Unit)**。它引入了**时间分片 (Time Slicing)** 和**优先级调度**的概念。
+    -   React Core（结合 Scheduler）可以在浏览器空闲时执行这些工作单元，如果遇到更高优先级的任务（如用户输入），可以暂停当前的调和工作，优先响应用户，稍后再恢复。
+    -   这使得 React 能够更流畅地处理复杂更新和动画。
+-   **对协作的影响**: Fiber 让 React Core 输出 VDOM 差异的过程变得更加灵活和可控。React DOM 则负责在 Fiber 的"提交阶段 (Commit Phase)" 一次性地将计算好的变更应用到 DOM 上，保证 DOM 更新的原子性。
+
+Fiber 架构是现代 React 高性能的基础，它使得 React Core 和 React DOM 的协作更加智能和高效。
+
+## 实践中的优化启示
+
+理解 React Core 与 React DOM 的分工协作，对我们优化应用有实际指导意义：
+
+-   **优化渲染性能**: 
+    -   关键在于**减少不必要的调和工作**。使用 `React.memo`, `useMemo`, `useCallback` 等手段避免因父组件重渲染导致的不必要的子组件 VDOM Diff 和 DOM 更新。
+    -   合理使用 `key` prop 优化列表渲染效率。
+-   **理解事件处理**: 明白事件是代理到根节点处理的，有助于理解事件冒泡行为（尤其是在 Portals 或与原生事件混用时）。
+-   **性能分析**: 使用 React DevTools Profiler 可以帮助分析哪些组件的调和或渲染过程耗时较长，是 React Core 计算 VDOM 耗时，还是 React DOM 更新 DOM 耗时，从而针对性地进行优化。
+
+## 总结
+
+React 通过将核心逻辑 (`react`) 与特定平台的渲染实现 (`react-dom`) 分离，构建了一个强大且灵活的 UI 框架。React Core 负责组件定义、状态管理和生成 VDOM 差异，而 React DOM 则负责将这些差异高效地应用到浏览器 DOM，并处理事件。Fiber 架构的引入进一步优化了它们之间的协作流程，使得 React 能够更好地应对复杂应用和高性能要求。理解这种分工是深入掌握 React 并进行有效性能优化的基础。

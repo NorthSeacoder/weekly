@@ -1,0 +1,136 @@
+---
+tags: [React, JSX, Fiber, 虚拟 DOM, Diff 算法, Reconciliation, Key, Vue]
+category: React
+date: 2022-05-22
+title: 我不知道的 React:从 JSX 到真实 DOM，深入 Diff 算法与 Vue 对比
+desc: 探索 React 如何将 JSX 代码通过 Fiber 架构转换为浏览器中的 DOM 元素，深入解析其 Diff 算法（Reconciliation）的工作原理、Key 的重要性，并与 Vue 的 Diff 策略进行比较。
+slug: react-08
+---
+
+## 从 JSX 到 DOM：React 的渲染魔法
+
+我们写的 JSX 看似 HTML，但浏览器并不直接认识它。React 需要一套机制将 JSX 转换成最终用户在屏幕上看到的真实 DOM 元素。这个过程的核心是虚拟 DOM 和 Fiber 架构。
+
+### JSX 的编译：`React.createElement` 的桥梁
+
+JSX 首先会被 Babel 等工具编译成 JavaScript 函数调用，通常是 `React.createElement`。
+
+-   **编译过程**:
+    ```jsx
+    // 你写的 JSX
+    const element = <div className='app'>Hello React</div>;
+
+    // Babel 编译后 (大致等价)
+    const element = React.createElement(
+      'div',
+      { className: 'app' },
+      'Hello React'
+    );
+    ```
+-   **`createElement` 的产物**: 这个函数调用返回的不是真实的 DOM 节点，而是一个轻量级的 JavaScript 对象，我们称之为 **React 元素** 或 **虚拟 DOM 节点**。它描述了应该渲染成什么样子。
+    ```js
+    // element 对象的大致结构
+    {
+      $$typeof: Symbol.for('react.element'), // 标记这是一个 React 元素
+      type: 'div',
+      key: null,
+      ref: null,
+      props: {
+        className: 'app',
+        children: 'Hello React'
+      },
+      _owner: null, // ... 其他内部属性
+    }
+    ```
+
+### Fiber：新一代协调引擎
+
+React 元素还需要经过一个称为"协调"（Reconciliation）的过程，才能映射到真实的 DOM 上。React 16 引入了 Fiber 架构来重构这个过程，使其更高效、更灵活。
+
+-   **Fiber 节点**: 在协调过程中，每个 React 元素会对应一个 **Fiber 节点**。Fiber 节点是 React 内部的工作单元，它包含了组件类型、props、state、与父/子/兄弟节点的连接信息（`return`, `child`, `sibling`）、需要执行的操作（`effectTag`）等。这些节点构成了一个 **Fiber 树**。
+-   **两个阶段的工作循环**: Fiber 将渲染工作分为两个阶段：
+    1.  **Render 阶段 (可中断)**: React 遍历 Fiber 树，计算出需要进行的 DOM 更改（增、删、改）。这个阶段可以被更高优先级的任务（如用户输入）打断，然后在之后恢复。这是通过内部的调度器（Scheduler）实现的。
+    2.  **Commit 阶段 (不可中断)**: 一旦 Render 阶段完成（没有被打断），React 会一次性地将计算出的所有 DOM 更改应用到真实的 DOM 上。这个阶段必须同步完成，以保证 UI 的一致性。
+-   **优势**:
+    -   **可中断与恢复**: 使得长时间的渲染任务不会阻塞主线程，提升用户体验。
+    -   **增量渲染**: 可以将工作拆分成小块，分布在多个帧中执行。
+    -   **并发模式与 Suspense**: 为这些高级特性提供了基础。
+-   **批量更新 (Batching)**: Fiber 的调度机制天然支持批量更新。在同一个事件回调或 Render 阶段内触发的多个 `setState`，React 会将它们合并到一次更新中，只在 Commit 阶段执行一次 DOM 操作，避免不必要的重复渲染。
+
+## React Diff 算法：高效更新的秘诀
+
+当组件状态更新，React 需要将新的 React 元素树与旧的 Fiber 树进行比较，找出最小化的 DOM 操作。这个比较过程就是 **Diff 算法**（或称 Reconciliation）。
+
+### 协调（Reconciliation）的核心策略
+
+React Diff 算法基于一些启发式假设，以达到 \(O(n)\) 的复杂度：
+
+1.  **不同类型的元素会产生不同的树**: 如果根元素的类型不同（比如 `<div>` 变成了 `<span>`），React 会直接销毁旧树，创建全新的 DOM 树。
+2.  **开发者可以通过 `key` 属性标识稳定的元素**: 对于列表等动态子节点，`key` 属性告诉 React 哪些元素是保持不变的，即使它们的位置或顺序改变了。
+
+### Diff 的具体过程
+
+比较过程是逐层（Breadth-First）进行的：
+
+-   **比较节点类型**:
+    -   **类型不同**: 卸载旧组件（及其子树），挂载新组件。DOM 节点完全替换。
+    -   **类型相同**:
+        -   **DOM 元素 (如 `div`, `span`)**: React 保留对应的 DOM 节点，仅比较和更新变化的属性（如 `className`, `style`）。然后递归比较子节点。
+        -   **自定义组件 (如 `<MyComponent/>`)**: 组件实例保持不变，React 调用其 render 方法获取新的 React 元素，然后在新旧元素之间进行 Diff。
+
+-   **比较子节点**: 这是 Diff 的关键和复杂之处。
+    -   **无 Key**: React 按顺序比较子节点列表。如果列表开头插入元素，会导致后续所有元素都被认为是"修改"，效率低下。
+        ```jsx
+        // 旧: <li>A</li><li>B</li>
+        // 新: <li>C</li><li>A</li><li>B</li>
+        // 无 Key 时，React 会认为 A 变成了 C，B 变成了 A，并新增 B。
+        ```
+    -   **有 Key**: React 使用 `key` 来匹配新旧列表中的元素。
+        ```jsx
+        // 旧: <li key="A">A</li><li key="B">B</li>
+        // 新: <li key="C">C</li><li key="A">A</li><li key="B">B</li>
+        // 有 Key 时，React 知道 A 和 B 还在，只是前面插入了 C。它会高效地进行移动和插入操作。
+        ```
+        **关键**: `key` 必须在其兄弟节点中是**唯一**且**稳定**的（不应在后续渲染中改变）。通常使用数据的唯一 ID 作为 `key`，避免使用数组索引。
+
+### Key 的重要性再强调
+
+-   **目的**: 帮助 React 识别哪些元素被添加、移动或删除。
+-   **无 Key 的陷阱**: 列表渲染性能差，可能导致组件状态混乱或不必要的 DOM 重建。
+-   **使用索引作 Key**: 只有在列表项顺序固定、不会增删改时才安全。否则，它和无 Key 的问题类似。
+
+### 大型列表的性能
+
+对于非常长的列表（成千上万项），即使有 `key`，一次性 Diff 和渲染大量 DOM 节点也会有性能瓶颈。这时需要采用 **列表虚拟化**（List Virtualization）技术，如使用 `react-window` 或 `react-virtualized` 库，只渲染视口内可见的部分列表项。
+
+## 与 Vue Diff 的对比
+
+Vue 的 Diff 算法在策略上与 React 有显著不同，这源于其基于模板和响应式系统的设计。
+
+### Vue 的靶向更新与 Diff
+
+-   **响应式基础**: Vue 通过 `reactive` 或 `ref` 精确追踪数据的依赖关系。当数据变化时，Vue 知道哪些组件需要重新渲染，这是第一层优化。
+-   **模板编译**: Vue 的模板在编译时会进行优化，标记静态节点，跳过对它们的 Diff。
+-   **Diff 过程**:
+    -   对于需要更新的组件，Vue 生成新的 VNode（虚拟节点）树。
+    -   比较新旧 VNode 树，但其列表 Diff 采用了**双端比较 (Double-Ended Comparison)** 算法。
+    -   **双端比较**: 同时使用四个指针（旧列表头、旧列表尾、新列表头、新列表尾）进行比较，尝试优化节点的移动，特别是在列表两端有增删或中间有移动的情况下，比 React 的单向遍历更高效。
+
+### React 与 Vue 的 Diff 策略对比
+
+| 特性       | React                                     | Vue                                                    |
+| :--------- | :---------------------------------------- | :----------------------------------------------------- |
+| **触发时机** | `setState` -> 触发 Re-render -> 全组件树 Diff | 数据变更 -> 响应式系统通知 -> 目标组件 Diff              |
+| **比较范围** | 默认从根节点开始，依赖 `key` 和类型优化     | 依赖追踪 + 模板静态标记 + 目标组件 Diff                  |
+| **列表 Diff** | 单向遍历 + Key 匹配 (基于 Map)            | 双端比较 (头尾指针优化) + Key 匹配                     |
+| **核心思想** | "认为 UI 是状态的纯函数"，状态变则重新计算 UI | "精确追踪依赖"，数据变则靶向更新依赖该数据的 UI 部分     |
+| **性能特点** | 动态 UI 和复杂逻辑控制灵活，长列表需虚拟化 | 静态内容和中小列表更新快，模板优化和依赖追踪是优势         |
+
+### 实际影响
+
+-   **开发心智**: React 更依赖开发者通过 `key` 和 `shouldComponentUpdate`/`React.memo` 进行优化；Vue 则更多地依赖框架自身的响应式和模板优化。
+-   **性能场景**:
+    -   **小范围更新**: Vue 的精确依赖追踪通常更快。
+    -   **大型列表/复杂树**: React Fiber 的可中断渲染和调度提供了更好的基础，但列表 Diff 本身可能 Vue 的双端优化更优。实际性能需具体场景测试。
+
+总的来说，React 和 Vue 的 Diff 策略各有千秋，都是为了在保证正确性的前提下，尽可能高效地更新 UI。理解它们的原理有助于我们编写更高性能的应用。

@@ -1,0 +1,162 @@
+---
+tags: [React, Hook, useState, 状态管理, 异步更新, 批量更新, Fiber, 并发模式]
+category: React
+date: 2022-05-22
+title: 我不知道的 React:useState 的“异步”更新与 Hook 底层机制
+desc: 揭示 React useState 更新状态的“异步”本质，深入了解 React 18 的自动批量更新机制，并探索 Hook 如何通过 Fiber 节点的链表结构工作及其背后的规则。
+slug: react-10
+---
+
+## useState 的“异步”更新之谜
+
+当你刚开始使用 React Hooks 时，可能会对 `useState` 的一个行为感到困惑：调用 `setCount(count + 1)` 后，立刻 `console.log(count)`，得到的值仍然是旧的。这常被描述为 `useState` 的更新是“异步”的。
+
+### 为什么看似“异步”？
+
+严格来说，`useState` 本身不是异步函数（它不返回 Promise）。这种“异步”感源于 React 的**批量更新 (Batching)** 机制和**渲染时机**。
+
+-   **状态更新是计划性的，而非立即执行**: 调用 `set` 函数（如 `setCount`）并不会立即改变当前函数作用域中的 `count` 变量的值。它做的是：
+    1.  **计划一次状态更新**: 告诉 React：“嘿，我希望这个状态在下一次渲染时变成新值”。
+    2.  **触发一次重新渲染**: 请求 React 安排一次组件的重新渲染。
+-   **当前渲染作用域的值是固定的**: 在同一次渲染（即同一次函数调用）中，通过 `useState` 获取的状态变量（如 `count`）的值是**固定不变**的。即使你调用了 `setCount` 多次，当前这次渲染看到的 `count` 依然是这次渲染开始时的那个值。
+
+```jsx
+import React, { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    // 假设当前 count 是 0
+    setCount(count + 1); // 计划更新为 1，请求重渲染
+    console.log(count); // 输出 0 (当前渲染作用域的 count 仍为 0)
+
+    setCount(count + 1); // 再次计划更新为 1 (基于当前渲染的 count=0)，请求重渲染
+    console.log(count); // 仍然输出 0
+
+    // React 会合并这两个更新，最终只渲染一次，count 变为 1
+    // 如果想基于最新状态更新，使用函数式更新：
+    // setCount(prevCount => prevCount + 1);
+    // setCount(prevCount => prevCount + 1); // 这样会更新两次，最终 count 变为 2
+  };
+
+  console.log('Render with count:', count); // 初始渲染输出 0，点击后下一次渲染输出 1
+
+  return (
+    <button onClick={handleClick}>
+      Count: {count}
+    </button>
+  );
+}
+```
+
+-   **性能优势**: 批量更新避免了每次 `set` 都触发一次昂贵的 DOM 操作，将多次更新合并为一次渲染，提高了性能。
+
+### React 18 的自动批量更新
+
+在 React 18 之前，只有在 React 事件处理器（如 `onClick`）中的 `setState` 调用会被自动批量处理。在 Promise、`setTimeout`、原生事件监听器回调中的 `setState` 则不会，每次调用都会触发一次单独的重渲染。
+
+React 18 带来了**自动批量更新 (Automatic Batching)**：现在，默认情况下，**所有**来源的 `setState` 调用（包括 Promise、`setTimeout` 等）都会被自动批量处理。
+
+```jsx
+function AsyncBatchCounter() {
+  const [count, setCount] = useState(0);
+  const [flag, setFlag] = useState(false);
+
+  const handleClick = () => {
+    setTimeout(() => {
+      // 在 React 18 中，这两个更新会被批量处理，只触发一次重渲染
+      setCount(c => c + 1);
+      setFlag(f => !f);
+      console.log('Inside setTimeout - Count (after sets):', count); // 仍然是旧值
+    }, 0);
+  };
+
+  console.log('Render with count:', count, 'flag:', flag);
+
+  return <button onClick={handleClick}>Async Update</button>;
+}
+```
+
+-   **退出自动批量**: 如果你确实需要在每次 `set` 后立即更新 DOM 并读取（例如，集成需要同步读取布局的第三方库），可以使用 `react-dom` 提供的 `flushSync`。
+    ```jsx
+    import { flushSync } from 'react-dom';
+
+    function NonBatchedCounter() {
+      const [count, setCount] = useState(0);
+      const [flag, setFlag] = useState(false);
+
+      const handleClick = () => {
+        flushSync(() => {
+          setCount(c => c + 1); // 这个更新会立即刷新 DOM
+        });
+        // DOM 已经更新，但当前作用域的 count 仍是旧值
+
+        flushSync(() => {
+          setFlag(f => !f); // 这个更新也会立即刷新 DOM
+        });
+        // DOM 再次更新
+      };
+
+      return <button onClick={handleClick}>Flush Sync Update</button>;
+    }
+    ```
+    **注意**: `flushSync` 会破坏自动批量带来的性能优势，应谨慎使用。
+
+## Hook 的底层秘密：Fiber 节点的链表
+
+React 是如何知道哪个 `useState` 调用对应哪个状态值的呢？答案藏在 Fiber 节点的内部结构中。
+
+-   **Hook 的存储**: 当一个函数组件渲染时，React 会在该组件对应的 Fiber 节点上维护一个 **Hook 链表**。这个链表存储在 Fiber 节点的 `memoizedState` 属性上。
+-   **链表节点结构**: 每个 Hook（`useState`, `useEffect` 等）都对应链表中的一个节点，大致结构如下：
+    ```js
+    {
+      memoizedState: Hook 的状态值 (如 useState 的当前值, useEffect 的依赖项数组和 effect 函数),
+      queue: 更新队列 (对于 useState，存储待处理的更新),
+      next: 指向下一个 Hook 节点的指针
+    }
+    ```
+-   **按顺序访问**:
+    -   **首次渲染**: 每调用一个 Hook（如 `useState(0)`），React 就在链表末尾添加一个新节点，存储初始状态和 Hook 类型信息。
+    -   **后续渲染**: React 按照**与首次渲染完全相同的顺序**遍历这个链表。每次调用 `useState`，React 就移动到链表的下一个节点，并返回该节点存储的 `memoizedState`。调用 `setState` 时，更新信息会被添加到对应 Hook 节点的 `queue` 中。
+
+```jsx
+function UserProfile() {
+  // 首次渲染: 创建 Hook 1 节点 { memoizedState: 'Guest', queue: ..., next: -> Hook 2 }
+  // 后续渲染: 返回 Hook 1 节点的 memoizedState
+  const [name, setName] = useState('Guest');
+
+  // 首次渲染: 创建 Hook 2 节点 { memoizedState: 0, queue: ..., next: null }
+  // 后续渲染: 返回 Hook 2 节点的 memoizedState
+  const [age, setAge] = useState(0);
+
+  // ...
+}
+// Fiber.memoizedState -> [Hook 1 (name)] -> [Hook 2 (age)] -> null
+```
+
+### Hook 规则为何如此重要？
+
+正是因为 React 依赖**稳定不变的调用顺序**来识别 Hook，所以才有了两条必须遵守的规则：
+
+1.  **只在顶层调用 Hook**: 不要在循环、条件判断或嵌套函数中调用 Hook。否则，每次渲染时 Hook 的调用顺序可能变化，导致 React 无法正确匹配 Hook 状态。
+2.  **只在 React 函数中调用 Hook**: 要么在函数组件内部，要么在自定义 Hook 内部。
+
+违反这些规则会导致状态错乱、依赖丢失等难以调试的问题。ESLint 的 `eslint-plugin-react-hooks` 插件可以帮助检查这些规则。
+
+### 并发模式与 Hook
+
+在 React 18 的并发模式下，一次渲染可能会被更高优先级的任务（如用户输入）打断。
+
+-   **中断与恢复**: 如果渲染被中断，React 会丢弃这次未完成的渲染结果。当它稍后恢复渲染时，会**重新从头执行**该函数组件。
+-   **状态一致性**: 即使渲染被中断和重跑，由于 Hook 链表结构和严格的调用顺序规则，React 仍然能够保证每次都能正确地访问到对应 Hook 的状态。`setState` 提交的更新会被保存在 `queue` 中，不会丢失，在最终完成的渲染中会被计算。
+
+### Scheduler 与 Lane 模型：更新的优先级
+
+当多个状态更新被触发时（尤其是在并发模式下），React 需要决定哪个更新更重要，应该优先处理。这就是 Scheduler 和 Lane 模型发挥作用的地方。
+
+-   **Scheduler**: React 内部的任务调度器，负责安排更新任务的执行。
+-   **Lane 模型**: 一种优先级标记系统。每个更新会被分配一个或多个 "lane"（可以理解为优先级通道）。用户交互（如点击）产生的更新会分配高优先级 lane，而普通的后台更新（如数据获取）则分配较低优先级的 lane。
+-   **优先级处理**: Scheduler 会优先处理标记了高优先级 lane 的更新任务。这意味着用户输入会更快地得到响应，即使此时有一个低优先级的渲染任务正在进行（它可能会被中断）。
+
+理解 `useState` 的更新机制和 Hook 的底层原理，有助于我们编写出更健壮、性能更好的 React 应用。

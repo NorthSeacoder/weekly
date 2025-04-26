@@ -1,0 +1,127 @@
+---
+tags: [React, 生命周期, render, Hooks, useEffect, Fiber, 性能优化]
+category: React
+date: 2022-05-20
+title: 我不知道的 React:生命周期演进与 Render 的触发机制
+slug: react-04
+desc: 理解 React 类组件生命周期的演变及其废弃原因，深入剖析 `render` 方法的触发时机与优化之道，对比 Hooks 如何管理副作用。
+---
+
+## 类组件生命周期的演变：为何告别旧时代？
+
+在 React Hooks 出现之前，类组件的生命周期方法是管理状态、副作用和性能优化的核心。然而，随着 React 引入 Fiber 架构和异步渲染，一些旧的生命周期方法因其设计缺陷而被标记为不安全 (`UNSAFE_`) 并最终被废弃。
+
+### 被废弃的关键钩子
+
+主要涉及以下三个在 Fiber 架构下存在问题的生命周期方法：
+
+-   **`UNSAFE_componentWillMount`**: 在组件挂载到 DOM 之前执行。
+-   **`UNSAFE_componentWillUpdate`**: 在组件因状态或 Props 变化而即将重新渲染之前执行。
+-   **`UNSAFE_componentWillReceiveProps`**: 在已挂载组件接收到新的 Props 之前执行。
+
+### 废弃的核心原因：与 Fiber 异步渲染的冲突
+
+这些生命周期方法的设计基于 React 早期的同步渲染模型。在 Fiber 架构下，渲染过程（Render Phase）是**异步且可中断**的，这导致了以下问题：
+
+-   **可能被多次调用或不被调用**: 由于 Render 阶段可能暂停、中止或重新开始，这些 `Will*` 方法可能在一个更新周期中被多次触发，或者在最终提交（Commit Phase）前被放弃而不触发对应的 `Did*` 方法。如果在这些方法中执行副作用（如发起网络请求），可能导致状态不一致或资源浪费。
+-   **副作用的时机问题**: `componentWillMount` 在 DOM 渲染前执行，此时进行 DOM 操作或需要 DOM 信息的副作用是不安全的。`componentWillUpdate` 和 `componentWillReceiveProps` 也存在类似的时机问题，它们在 Render 阶段执行，但副作用（如基于新 Props 请求数据）通常应该在 DOM 更新后的 Commit 阶段执行。
+-   **诱导不良实践**: 这些方法常常被误用于派生状态 (`derived state`)，导致状态来源混乱和难以维护。React 推荐使用更明确的模式来处理派生状态。
+
+### 现代替代方案：拥抱 Hooks 与新生命周期
+
+React 提供了更安全、更适应 Fiber 架构的替代方案：
+
+-   **`useEffect` (函数组件核心)**: 用于处理副作用。它在**Commit 阶段之后异步执行**，保证了执行时 DOM 已经更新，并且其清理机制能有效防止内存泄漏。它不是简单地替代旧生命周期，而是提供了一种基于**状态同步**和**副作用声明**的新模型。
+-   **`static getDerivedStateFromProps(props, state)`**: 用于替代 `componentWillReceiveProps` 中常见的"根据 Props 更新 State"的场景。它是一个**纯函数**，在 Render 阶段执行，返回一个对象来更新 state，或者返回 `null` 表示无需更新。
+-   **`getSnapshotBeforeUpdate(prevProps, prevState)`**: 在 Commit 阶段**之前**（DOM 更新前）被调用。它使得组件能在 DOM 可能发生变化之前从中捕捉一些信息（例如滚动位置）。此生命周期方法的任何返回值将作为参数传递给 `componentDidUpdate()`。
+-   **`componentDidMount()` 和 `componentDidUpdate()`**: 这两个方法在 **Commit 阶段之后**执行，是执行需要访问 DOM 的副作用（如手动 DOM 操作、网络请求）的推荐位置。
+
+这些新的模式和 Hooks 更符合 Fiber 的异步、可中断特性，使得副作用管理更安全、逻辑更清晰。
+
+## Render 方法的运行揭秘
+
+`render()` 方法（或函数组件本身）是 React 组件的核心，它负责根据当前的 Props 和 State 返回要渲染的 UI 描述（虚拟 DOM）。
+
+### `render` 的本质：生成 UI 描述
+
+-   无论是类组件的 `render()` 方法还是函数组件的返回值，它们的核心任务都是**声明性地描述 UI 结构**。
+-   它们返回的内容可以是 JSX、React 元素、数组、Fragment、字符串、数字或 `null`/`boolean`（表示不渲染任何东西）。
+-   **关键点**: `render` 方法应该是**纯函数**，意味着对于相同的 Props 和 State，它应该总是返回相同的 UI 描述，并且不应包含任何副作用（如修改全局变量、发起网络请求）。
+
+### 触发 `render` 的时机
+
+一个组件的 `render` 方法（或函数组件本身）会在以下情况被调用（触发重渲染 Re-render）：
+
+1.  **首次挂载 (Initial Mount)**: 组件第一次被创建并添加到 DOM 时。
+2.  **状态变更**: 调用 `this.setState()` (类组件) 或状态更新函数 (如 `useState` 返回的 `setCount`) 时。
+3.  **Props 更新**: 当父组件传递给它的 Props 发生变化时（浅比较不同）。
+4.  **父组件重渲染**: **默认情况下**，只要父组件重渲染，其所有子组件（即使 Props 和 State 没有变化）也会触发重渲染。这是 React 默认行为，也是性能优化的重点关注区域。
+5.  **强制更新**: 调用 `this.forceUpdate()` (类组件，不推荐) 或自定义 Hook `useUpdate` 时。
+
+### `render` 与 Diff 算法的关系
+
+`render` 方法的输出是 React **Diff 算法**（调和过程）的输入。当组件重渲染时：
+
+1.  React 调用 `render` 方法得到**新的虚拟 DOM 树**。
+2.  React 将这个新的虚拟 DOM 树与上一次渲染生成的**旧虚拟 DOM 树**进行比较 (Diffing)。
+3.  Diff 算法找出两棵树之间的最小差异。
+4.  React DOM (或其他渲染器) 根据这些差异去更新真实的 DOM。
+
+因此，`render` 方法本身的执行成本（计算逻辑、生成 VDOM 对象）以及它触发的 Diff 和 DOM 更新成本，共同构成了组件更新的性能开销。
+
+## 优化 `render` 的策略
+
+避免不必要的 `render` 调用和减少 `render` 内部的计算量是 React 性能优化的关键。
+
+### 避免不必要的重渲染
+
+-   **`React.memo` (函数组件)**: 包裹函数组件，当其 Props 没有发生（浅比较）变化时，阻止该组件重渲染。
+    ```jsx
+    const MyComponent = React.memo(function MyComponent(props) {
+      /* 仅在 props 变化时渲染 */
+    });
+    ```
+-   **`PureComponent` (类组件)**: 继承 `React.PureComponent` 而不是 `React.Component`。它会自动实现一个基于 Props 和 State 的浅比较 `shouldComponentUpdate`。
+-   **`shouldComponentUpdate(nextProps, nextState)` (类组件)**: 手动实现此生命周期方法，精确控制组件是否需要重渲染。返回 `false` 可以跳过本次更新。
+    ```jsx
+    class MyComponent extends React.Component {
+      shouldComponentUpdate(nextProps, nextState) {
+        // 仅在特定 prop 或 state 变化时才更新
+        return nextProps.id !== this.props.id || nextState.count !== this.state.count;
+      }
+      render() { /* ... */ }
+    }
+    ```
+
+### 减少 `render` 内部计算
+
+-   **`useMemo`**: 缓存 `render` 内部的昂贵计算结果。只有当依赖项变化时才重新计算。
+    ```jsx
+    function MyComponent({ list }) {
+      const expensiveCalculation = useMemo(() => {
+        // 对 list 进行复杂处理
+        return list.map(i => i * 2).join(','); 
+      }, [list]); // 仅当 list 变化时重新计算
+      return <div>{expensiveCalculation}</div>;
+    }
+    ```
+-   **`useCallback`**: 缓存传递给子组件的回调函数引用。这对于依赖回调函数作为 `React.memo` 或 `useEffect` 依赖项的子组件优化至关重要。
+    ```jsx
+    function Parent() {
+      const [count, setCount] = useState(0);
+      // 使用 useCallback 缓存 handleClick 函数引用
+      const handleClick = useCallback(() => {
+        console.log('Button clicked!');
+      }, []); // 空依赖数组表示函数永不改变
+    
+      return <Child onClick={handleClick} />;
+    }
+    const Child = React.memo(({ onClick }) => { /* ... */ });
+    ```
+
+### 调试渲染
+
+-   **React DevTools Profiler**: 是分析组件渲染次数、耗时以及找出性能瓶颈的官方利器。
+-   **`console.log`**: 在函数组件体或类组件 `render` 方法开头添加日志，可以直观地看到组件何时被重渲染。
+
+掌握 `render` 的触发机制和优化手段，是编写高性能 React 应用的基础。

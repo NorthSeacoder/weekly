@@ -1,0 +1,276 @@
+---
+tags: [React, React-Router, SPA, 路由, History API, Vue-Router, 前端开发]
+category: React
+date: 2022-05-25
+title: 我不知道的 React-Router:核心原理、路由模式与高阶应用
+desc: 全面解析 React Router v6 核心组件 (Routes, Route, Outlet) 与 Hooks (useParams, useNavigate)，深入探讨路由模式 (BrowserRouter, HashRouter)、嵌套路由、代码分割及与 Vue Router 的对比。
+slug: react-14
+---
+
+React Router 是 React 生态中最流行的用于构建单页应用（SPA）的路由解决方案。它使得我们可以在不重新加载整个页面的情况下，根据 URL 的变化来渲染不同的用户界面，从而提供流畅的应用体验。
+
+## React Router 在 SPA 中的核心作用
+
+在传统的 Web 应用中，每次 URL 变化都会向服务器请求一个新的 HTML 页面。而在 SPA 中，应用初始化时加载一个主 HTML 文件，后续的页面切换由前端路由库（如 React Router）在客户端完成。
+
+React Router 的核心职责包括：
+
+1.  **URL 监听**: 监听浏览器地址栏 URL 的变化。
+2.  **路由匹配**: 根据预先定义的路由规则，将当前 URL 与路由路径进行匹配。
+3.  **组件渲染**: 渲染与匹配到的路由相关联的 React 组件。
+4.  **导航控制**: 提供组件（如 `Link`）和 Hooks（如 `useNavigate`）来触发 URL 变化，实现页面跳转。
+
+## 核心组件与 Hooks (React Router v6)
+
+React Router v6 引入了许多改进，使其更加 Hooks 化和声明式。以下是 v6 中的关键部分：
+
+### 路由容器 (`BrowserRouter`, `HashRouter`, `MemoryRouter`)
+
+你需要将整个应用或其路由部分包裹在一个路由容器组件中。最常用的两种是：
+
+-   **`BrowserRouter`**: 使用 HTML5 History API (`pushState`, `replaceState`, `popstate` 事件) 来保持 UI 和 URL 的同步。它生成的 URL 看起来更常规（如 `/users/123`），对 SEO 更友好，但**需要服务器配置支持**，将所有可能的应用路径都指向你的主 `index.html` 文件，否则直接访问或刷新深层链接会导致 404。
+-   **`HashRouter`**: 使用 URL 的 hash 部分 (`window.location.hash`) 来存储路由信息（如 `/#/users/123`）。它不依赖 History API，因此**不需要特殊的服务器配置**，兼容性好。但 URL 中带有 `#`，可能不那么美观，且对 SEO 不太友好。
+-   **`MemoryRouter`**: 将路由历史记录保存在内存中，不读取或写入浏览器地址栏。主要用于测试环境或非浏览器环境（如 React Native）。
+
+```jsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+function App() {
+  return (
+    <BrowserRouter> {/* 或者 <HashRouter> */}
+      {/* 路由配置通常在这里 */}
+      <Navigation />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        {/* ...更多路由 */}
+      </Routes>
+    </BrowserRouter>
+  );
+}
+```
+
+### `<Routes>` 和 `<Route>`：定义路由映射
+
+-   **`<Routes>`**: 取代了 v5 的 `<Switch>`，用于包裹一组 `<Route>` 组件。它会查找其子 `<Route>` 中路径与当前 URL **最匹配**的一个，并渲染其 `element`。
+-   **`<Route>`**: 定义一条路由规则。
+    *   `path`: 路由匹配的路径字符串。支持动态段（如 `:userId`）和通配符 (`*`)。
+    *   `element`: 当路径匹配时要渲染的 React 元素 (JSX)。
+    *   `index`: 如果设置了 `index` prop，表示这是父路由的默认子路由，当父路由匹配但没有子路由匹配时渲染。其路径是父路径。
+
+```jsx
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/users" element={<UserLayout />}>
+    {/* 嵌套路由 */}
+    <Route index element={<UserList />} /> {/* /users 路径默认显示 UserList */}
+    <Route path=":userId" element={<UserProfile />} /> {/* /users/abc */} 
+    <Route path="me" element={<OwnProfile />} />      {/* /users/me */} 
+  </Route>
+  <Route path="*" element={<NotFound />} /> {/* 404 页面 */}
+</Routes>
+```
+
+### `<Outlet>`：渲染嵌套路由
+
+当一个 `<Route>` 内部嵌套了其他 `<Route>` 时，父路由组件需要使用 `<Outlet>` 组件来指定**子路由组件渲染的位置**。
+
+```jsx
+import { Outlet } from 'react-router-dom';
+
+function UserLayout() {
+  return (
+    <div>
+      <h1>用户管理</h1>
+      <nav>{/* 用户相关的导航 */}</nav>
+      <main>
+        {/* 子路由 UserList, UserProfile 或 OwnProfile 会在这里渲染 */}
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+```
+嵌套路由对于构建共享布局（如侧边栏、顶部导航）的应用非常有用。
+
+### 核心 Hooks
+
+-   **`useNavigate()`**: 返回一个用于编程式导航的函数。（详见 `013` 笔记）
+-   **`useParams()`**: 返回一个包含 URL 中动态参数（如 `:userId`）键值对的对象。
+    ```jsx
+    // 匹配 <Route path=":userId" element={<UserProfile />} />
+    import { useParams } from 'react-router-dom';
+    function UserProfile() {
+      let { userId } = useParams(); // 如果 URL 是 /users/abc, userId 就是 "abc"
+      return <h2>用户 ID: {userId}</h2>;
+    }
+    ```
+-   **`useLocation()`**: 返回当前的 `location` 对象，包含 `pathname`, `search`, `hash`, `state` 等信息。
+    ```jsx
+    import { useLocation } from 'react-router-dom';
+    function SomeComponent() {
+      const location = useLocation();
+      console.log('当前路径:', location.pathname); // 如 /users/abc
+      console.log('查询参数字符串:', location.search); // 如 ?sort=name
+      console.log('路由状态:', location.state); // 通过 navigate 或 Link state 传递的状态
+      return <div>...</div>;
+    }
+    ```
+-   **`useSearchParams()`**: 用于读取和修改 URL 的查询参数 (`?` 后面的部分)。它返回一个包含当前 searchParams 对象和更新函数的数组，类似于 `useState`。
+    ```jsx
+    import { useSearchParams } from 'react-router-dom';
+    function ProductList() {
+      let [searchParams, setSearchParams] = useSearchParams();
+      const searchTerm = searchParams.get('q') || '';
+      const sortBy = searchParams.get('sort') || 'price';
+
+      const handleSearchChange = (event) => {
+        const newQuery = event.target.value;
+        if (newQuery) {
+          setSearchParams({ q: newQuery, sort: sortBy });
+        } else {
+          setSearchParams({ sort: sortBy });
+        }
+      };
+
+      return (
+        <div>
+          <input type="text" value={searchTerm} onChange={handleSearchChange} />
+          {/* ... 产品列表，根据 searchTerm 和 sortBy 过滤排序 ... */}
+        </div>
+      );
+    }
+    ```
+
+## 路由模式详解
+
+### Browser History 模式 (`BrowserRouter`)
+
+-   **原理**: 利用 HTML5 History API 的 `pushState`, `replaceState` 方法修改 URL，并监听 `popstate` 事件（用户点击浏览器前进/后退时触发）。
+-   **优点**: URL 美观、标准，利于 SEO。
+-   **缺点**: 需要服务器端配置。对于任意的 `/path`，服务器都应返回应用的 `index.html`，而不是查找服务器上的 `/path` 文件或目录。否则刷新或直接访问 `/path` 会 404。常见的服务器配置包括 Nginx 的 `try_files` 或 Apache 的 `mod_rewrite`。
+
+### Hash 模式 (`HashRouter`)
+
+-   **原理**: 利用 URL 的 hash 部分 (`#`) 及其变化事件 `hashchange`。
+-   **优点**: 无需服务器配置，部署简单，兼容性好。
+-   **缺点**: URL 中带有 `#`，可能不符合某些 URL 规范或审美要求，对 SEO 不如 History 模式友好（虽然现代搜索引擎能处理 hash）。
+
+### Memory 模式 (`MemoryRouter`)
+
+-   **原理**: 在内存中维护一个历史记录栈，不与浏览器地址栏交互。
+-   **适用场景**: 测试组件导航逻辑、嵌入式 Webview、React Native 等非浏览器环境。
+
+## 高阶应用
+
+### 代码分割 (Code Splitting)
+
+为了优化应用的初始加载时间，可以将不同路由对应的组件进行代码分割，只有当用户访问该路由时才加载对应的代码块。
+
+```jsx
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+
+// 使用 React.lazy 动态导入组件
+const HomePage = lazy(() => import('./pages/HomePage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+
+function App() {
+  return (
+    <BrowserRouter>
+      <nav>
+        <Link to="/">首页</Link> | <Link to="/about">关于</Link>
+      </nav>
+      {/* 使用 Suspense 包裹 Routes，提供加载状态 */}
+      <Suspense fallback={<div>页面加载中...</div>}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  );
+}
+```
+
+### 路由保护 / 导航守卫
+
+React Router v6 本身不提供内置的导航守卫 API（像 Vue Router 的 `beforeEach`）。但可以通过创建自定义组件或利用 v6.4 引入的 `loader` 功能来实现。
+
+**方法一：自定义封装组件**
+
+```jsx
+import { Navigate, useLocation } from 'react-router-dom';
+
+// 假设有一个 useAuth Hook 返回用户认证状态
+import { useAuth } from './auth'; 
+
+function RequireAuth({ children }) {
+  let auth = useAuth();
+  let location = useLocation();
+
+  if (!auth.isAuthenticated) {
+    // 用户未认证，重定向到登录页，并记录他们想去的页面 (location)
+    // 以便登录后可以跳转回去
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children; // 用户已认证，渲染子组件
+}
+
+// 在路由配置中使用
+<Routes>
+  <Route path="/login" element={<LoginPage />} />
+  <Route
+    path="/protected"
+    element={
+      <RequireAuth>
+        <ProtectedPage />
+      </RequireAuth>
+    }
+  />
+</Routes>
+```
+
+**方法二：使用 Loader (v6.4+)**
+
+React Router v6.4 引入了 `loader` 函数，可以在路由渲染前加载数据。`loader` 也可以用来实现认证检查，如果检查失败，可以抛出一个 `redirect`。
+
+```jsx
+// 在路由定义中
+import { redirect } from "react-router-dom";
+
+const protectedLoader = async () => {
+  const isAuthenticated = await checkAuthStatus(); // 检查认证状态
+  if (!isAuthenticated) {
+    return redirect("/login");
+  }
+  return null; // 或者返回需要的数据
+};
+
+<Route 
+  path="/protected" 
+  element={<ProtectedPage />} 
+  loader={protectedLoader} 
+/>
+```
+这种方式更接近数据加载和路由控制的结合。
+
+## React Router 与 Vue Router 对比
+
+虽然目标相似，但两者在设计和实现上有一些差异：
+
+| 特性           | React Router (v6)                               | Vue Router (v4)                             |
+| :------------- | :---------------------------------------------- | :------------------------------------------ |
+| **路由定义**   | JSX 中使用 `<Routes>` 和 `<Route>` 组件声明式定义 | JavaScript 对象数组 (`routes` 配置项) 集中式定义 |
+| **组件集成**   | 路由本身就像组件，使用 `<Outlet>` 渲染子路由    | 使用 `<router-view>` 组件作为占位符渲染组件   |
+| **路由模式**   | `BrowserRouter`, `HashRouter`, `MemoryRouter` 组件 | 通过 `createWebHistory()`, `createWebHashHistory()`, `createMemoryHistory()` 函数创建 `history` 实例 |
+| **编程式导航** | `useNavigate()` Hook                            | `router.push()`, `router.replace()`, `router.go()` API |
+| **路由参数**   | `useParams()` Hook                              | `route.params` (在组件内通过 `$route` 或 `useRoute()` 访问) |
+| **查询参数**   | `useSearchParams()` Hook                          | `route.query`                               |
+| **嵌套路由**   | `<Route>` 嵌套 + `<Outlet>`                     | `children` 属性 + `<router-view>`           |
+| **导航守卫**   | 无内置，需手动实现或使用 `loader` (v6.4+)       | 内置丰富的守卫 (全局 `beforeEach`, 路由独享 `beforeEnter`, 组件内 `beforeRouteEnter` 等) |
+| **路由元信息** | 无内置，可通过自定义方案或 `loader` 传递数据    | `meta` 字段，常用于权限、布局等信息         |
+| **集成方式**   | 库，与 React 核心库分离                         | 官方库，与 Vue 生态紧密集成                   |
+
+**核心差异感知**: React Router 更倾向于利用 React 的组件和 Hooks 机制，将路由视为 UI 的一部分，灵活性高但需要手动实现一些功能（如守卫）。Vue Router 则提供了更完整、内置的功能集（如守卫、路由元信息），配置更集中，与 Vue 的响应式系统结合更紧密，学习曲线可能更平缓一些。

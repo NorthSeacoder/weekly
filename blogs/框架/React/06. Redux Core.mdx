@@ -1,0 +1,158 @@
+---
+tags: [React, Redux, Redux Toolkit, 状态管理, 单向数据流, Immutability, useReducer]
+category: React
+date: 2022-05-21
+title: 我不知道的 Redux:解构核心概念与单向数据流
+desc: 深入理解 Redux 的核心设计原则：Store、Action、Reducer，掌握其严格的单向数据流，以及为何 Immutability 至关重要。
+slug: react-06
+---
+
+## Redux 是什么？为何需要它？
+
+Redux 是一个用于 JavaScript 应用的可预测状态容器，尤其在 React 生态中被广泛应用。它旨在解决随着应用复杂度增加，组件间状态共享和状态变更追踪变得困难的问题。
+
+-   **核心目的**: 提供一个**集中化、可预测、易于调试**的状态管理方案。
+-   **基本思想**: 将整个应用的 state 存储在一个单一的、称为 **Store** 的对象中。改变 state 的唯一方法是**派发 (dispatch)** 一个描述发生了什么的**动作 (Action)** 对象。这些 Action 会被**归纳器 (Reducer)** 函数处理，计算出新的 state。
+-   **主要优点**:
+    -   **可预测性**: 状态如何变化完全由纯函数 Reducer 定义，使得追踪 bug 和理解应用状态流转更容易。
+    -   **集中管理**: 所有状态集中存放，方便跨组件共享和维护。
+    -   **可调试性**: 结合 Redux DevTools，可以轻松实现时间旅行调试，查看每个 Action 引发的状态变化历史。
+    -   **生态系统**: 拥有丰富的中间件和社区支持。
+-   **现代实践：Redux Toolkit (RTK)**: 手动配置 Redux 比较繁琐。官方推荐使用 **Redux Toolkit (RTK)**，它大大简化了 Redux 的使用，内置了 Immer (简化 immutable 更新)、Thunk (处理异步逻辑)，并提供了 `configureStore` 和 `createSlice` 等高效 API。
+    ```javascript
+    // 使用 Redux Toolkit 创建 Store 和 Slice
+    import { configureStore, createSlice } from '@reduxjs/toolkit';
+
+    // createSlice 自动生成 action creators 和 reducer
+    const counterSlice = createSlice({
+      name: 'counter', // slice 的名称，用于生成 action type 前缀
+      initialState: { value: 0 },
+      reducers: { // 定义 reducer 逻辑和对应的 action creators
+        increment: (state) => {
+          // RTK 内置 Immer，可以直接修改 state 草稿
+          state.value += 1;
+        },
+        decrement: (state) => {
+          state.value -= 1;
+        },
+        incrementByAmount: (state, action) => {
+          state.value += action.payload; // payload 是 action 携带的数据
+        },
+      },
+    });
+
+    // 导出自动生成的 action creators
+    export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+
+    // 配置 store
+    const store = configureStore({
+      reducer: {
+        counter: counterSlice.reducer, // 将 slice 的 reducer 添加到 store
+        // ... 其他 slice 的 reducer
+      },
+    });
+
+    export default store;
+    ```
+
+Redux 提供了一种结构化的方式来管理应用状态，尤其适用于状态复杂、共享需求高的中大型应用。
+
+## Redux 的基石：单向数据流
+
+Redux 严格遵循**单向数据流 (Unidirectional Data Flow)**，这是其可预测性的核心保障。整个流程如下：
+
+1.  **State**: 应用的状态被存储在一个单一的 JavaScript 对象（Store 中）。这个 state 是只读的。
+    *   *示例*: `{ counter: { value: 0 }, user: { name: null } }`
+2.  **View (React 组件)**: UI 组件从 Store 中读取所需的状态数据并展示。
+    *   *示例*: 一个显示计数的组件读取 `state.counter.value`。
+3.  **Action**: 当用户与 UI 交互（如点击按钮）或发生某些事件（如网络响应返回）需要改变状态时，UI 层会**派发 (dispatch)** 一个 Action 对象。
+    *   **Action**: 是一个普通的 JavaScript 对象，必须包含一个 `type` 字段（通常是字符串常量，描述动作类型），可以包含其他字段（通常是 `payload`，携带数据）。
+    *   *示例*: `dispatch({ type: 'counter/incrementByAmount', payload: 5 })`
+4.  **Reducer**: Store 会将接收到的 Action 和当前的 State 传递给指定的 Reducer 函数。
+    *   **Reducer**: 是一个**纯函数**，它接收 `(currentState, action)` 作为参数，根据 `action.type` 判断如何处理，并**返回一个新的 State 对象**。它绝不能直接修改 `currentState`，也不能包含副作用（如 API 调用）。
+    *   *示例*: `counterSlice.reducer` 接收到 `{ type: 'counter/incrementByAmount', payload: 5 }` 和当前 state `{ value: 0 }`，计算并返回新 state `{ value: 5 }`。
+5.  **Store 更新**: Store 保存 Reducer 返回的新的 State 对象，替换掉旧的 State。
+6.  **View 更新**: Store 会通知所有**订阅 (subscribe)** 了状态变化的 UI 组件。这些组件会重新从 Store 中获取最新的状态，并根据需要更新自己的渲染。
+    *   *示例*: 显示计数的组件检测到 `state.counter.value` 变为 5，于是更新界面显示 "5"。
+
+这个严格的单向循环确保了状态变更总是可追踪且一致的。
+
+## 核心 API 解析：Action, Reducer, Dispatch, Subscribe
+
+理解 Redux 的核心 API 是掌握其工作原理的关键。
+
+-   **Action**: 如上所述，是描述变更意图的普通对象。
+    -   **Action Creator**: 通常我们会编写函数来创建 Action 对象，称为 Action Creator，这有助于保持一致性和减少错误。
+        ```javascript
+        // RTK 的 createSlice 会自动生成这些
+        // const increment = () => ({ type: 'counter/increment' });
+        // const incrementByAmount = (amount) => ({ type: 'counter/incrementByAmount', payload: amount });
+        ```
+-   **Reducer**: 
+    -   核心职责是 `(state, action) => newState`。
+    -   必须是**纯函数**：相同的输入永远产生相同的输出，且无副作用。
+    -   **绝不能**直接修改传入的 `state` 对象，必须返回一个新的对象。
+    -   对于未识别的 `action.type`，必须返回**原始的 `state`**。
+    -   可以使用 `combineReducers` 将多个管理不同状态片段的 Reducer 组合成一个根 Reducer。
+-   **Store**: 是 Redux 应用的核心，负责将 Action 和 Reducer 连接起来。
+    -   **`createStore(reducer, [preloadedState], [enhancer])`**: (传统 Redux API) 创建 Store。RTK 的 `configureStore` 是更推荐的方式，它封装了 `createStore` 并添加了默认配置和中间件。
+    -   **`store.getState()`**: 获取当前的 State 对象。
+    -   **`store.dispatch(action)`**: 派发 Action，触发 State 更新。这是**改变 State 的唯一途径**。
+        ```javascript
+        // dispatch 内部大致流程 (简化版)
+        // function dispatch(action) {
+        //   currentState = rootReducer(currentState, action);
+        //   listeners.forEach(listener => listener()); // 通知订阅者
+        //   return action;
+        // }
+        ```
+    -   **`store.subscribe(listener)`**: 注册一个监听函数，当 State 发生变化时会被调用。返回一个函数用于取消订阅。
+        ```javascript
+        const unsubscribe = store.subscribe(() => {
+          console.log('State changed:', store.getState());
+        });
+        // ... later
+        unsubscribe(); // 取消监听
+        ```
+        在 React 应用中，我们通常不直接使用 `subscribe`，而是使用 `react-redux` 提供的 `useSelector` Hook 或 `connect` HOC 来订阅更新。
+
+## `useReducer` vs. Redux
+
+React 内置的 `useReducer` Hook 与 Redux 的核心思想非常相似，都使用了 Reducer 函数来管理状态更新。
+
+-   **`useReducer(reducer, initialState)`**: 
+    -   提供了一种在**组件内部**管理**局部复杂状态**的方式。
+    -   返回当前状态和一个 `dispatch` 函数，用于派发 action 给组件自己的 reducer。
+-   **与 Redux 的关系**: 
+    -   **相似点**: 都遵循 `(state, action) => newState` 的模式，都使用纯函数 Reducer。
+    -   **不同点**: 
+        -   **作用域**: `useReducer` 管理的是**组件局部状态**，而 Redux 管理的是**全局应用状态**。
+        -   **中间件/DevTools**: Redux 拥有强大的中间件生态（用于处理异步、日志等）和优秀的开发者工具支持，`useReducer` 本身不具备这些。
+        -   **全局共享**: Redux 的 Store 是全局单例，方便跨任意层级组件共享状态；`useReducer` 的状态默认只在组件内部，跨组件共享需要通过 Props 传递或结合 Context API。
+-   **何时使用 `useReducer`**: 当一个组件的状态逻辑比较复杂，涉及多个子值，或者下一个状态依赖于前一个状态时，`useReducer` 比多个 `useState` 更清晰、更易于管理。
+-   **何时使用 Redux**: 当应用状态需要在多个不相关组件间共享，或者需要利用 Redux 的中间件、DevTools 等高级功能时。
+
+## Immutability (不可变性) 的重要性
+
+Immutability 是 Redux（以及高效使用 React）的核心原则之一。
+
+-   **什么是 Immutability**: 指一旦创建，数据结构就不能被修改。任何修改操作都会返回一个新的数据结构副本，原始结构保持不变。
+-   **为何在 Redux 中至关重要**: 
+    1.  **Reducer 纯函数要求**: Reducer 禁止直接修改 state。返回新 state 对象是实现这一点的关键。
+    2.  **变更追踪**: Redux DevTools 需要比较前后 state 的差异来展示状态变更历史。如果直接修改 state，就无法进行有效比较。
+    3.  **性能优化 (React)**: `react-redux` 和 React 本身都依赖于**引用相等性**检查来快速判断状态或 Props 是否改变，从而决定是否需要重渲染组件。如果 state 或 props 是不可变的，当它们未改变时，其引用就不会变，React 可以快速跳过对这些组件及其子树的昂贵 Diff 操作。
+-   **如何实现**: 
+    -   **手动**: 使用展开运算符 (`...`) 或 `Object.assign()` 创建新对象/数组。
+        ```javascript
+        // 错误：直接修改 state
+        // state.count++; 
+        // return state; 
+
+        // 正确：返回新对象
+        return { ...state, count: state.count + 1 };
+        ```
+    -   **使用库**: 
+        -   **Immer**: Redux Toolkit 内置了 Immer。它允许你用看似"可变"的语法编写 Reducer 逻辑（直接修改 `draft` 对象），Immer 会在底层自动处理不可变更新，生成新的 state。这大大简化了处理嵌套状态的代码。
+        -   **Immutable.js**: (较少在新项目中使用) 提供了专门的不可变数据结构 (Map, List 等)。
+
+坚持 Immutability 是保证 Redux 应用可预测性和性能的关键。
