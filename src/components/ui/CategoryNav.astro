@@ -1,0 +1,257 @@
+---
+import { cn } from '@/lib/utils';
+import { Icon } from 'astro-icon/components';
+
+interface Category {
+  name: string;
+  id: string;
+}
+
+interface Props {
+  categories: Category[];
+  className?: string;
+  layout?: 'horizontal' | 'sidebar';
+}
+
+const { categories = [], className = '', layout = 'horizontal' } = Astro.props;
+
+// 根据布局选择不同的样式
+const containerClasses = layout === 'horizontal' 
+  ? cn(
+      'flex gap-2 mb-6 sticky top-24 z-30 py-3 px-4',
+      'bg-transparent backdrop-blur-sm',
+      'rounded-lg border border-gray-200/80 dark:border-gray-700/40',
+      'overflow-x-auto overflow-y-hidden scrollbar-thin',
+      'transition-all duration-300',
+      className
+    )
+  : cn(
+      'h-full sticky max-h-screen-minus-footer top-28 w-full md:w-64 z-30 transition-all duration-300',
+      'py-3 px-3 bg-transparent backdrop-blur-sm',
+      'rounded-lg border border-gray-200/80 dark:border-gray-700/40',
+      'scrollbar-thin',
+      'flex-shrink-0 mb-0 md:mr-6',
+      className
+    );
+
+// 根据布局选择按钮样式
+const buttonClasses = layout === 'horizontal'
+  ? cn(
+      'px-2.5 py-1 text-sm font-medium rounded-full whitespace-nowrap',
+      'flex items-center gap-1 flex-shrink-0',
+      'transition-all duration-300 ease-in-out',
+      'border border-gray-200/80 dark:border-gray-700/40',
+      'bg-gray-50/70 text-gray-700 hover:bg-gray-100 hover:text-gray-800',
+      'dark:bg-gray-900/30 dark:text-gray-300 dark:hover:bg-gray-900/60 dark:hover:text-white'
+    )
+  : cn(
+      'px-2.5 py-1.5 text-sm font-medium rounded-md whitespace-nowrap w-full',
+      'flex items-center gap-1',
+      'transition-all duration-300 ease-in-out mb-1.5 last:mb-0',
+      'border border-gray-200/80 dark:border-gray-700/40',
+      'bg-gray-50/70 text-gray-700 hover:bg-gray-100 hover:text-gray-800',
+      'dark:bg-gray-900/30 dark:text-gray-300 dark:hover:bg-gray-900/60 dark:hover:text-white'
+    );
+
+// 标题样式
+const titleClasses = layout === 'horizontal'
+  ? 'flex items-center mr-2 text-gray-600 dark:text-gray-400 flex-shrink-0'
+  : 'flex items-center mb-2 text-gray-600 dark:text-gray-400 px-2';
+---
+
+{layout === 'horizontal' ? (
+  <div class={containerClasses} data-name="category-nav-horizontal">
+    <div class={titleClasses}>
+      <Icon name="tabler:folder" class="w-4 h-4 mr-1" />
+      <span class="text-sm font-semibold">分类:</span>
+    </div>
+    {categories.map((category) => (
+      <a 
+        href={`#category-${category.id}`} 
+        class={buttonClasses}
+        data-category-nav-item
+      >
+        <Icon name="tabler:folder" class="w-4 h-4" />
+        {category.name}
+      </a>
+    ))}
+  </div>
+) : (
+  <div class={containerClasses} data-name="category-nav-sidebar">
+    <div class="flex flex-col w-full">
+      <div class={titleClasses}>
+        <Icon name="tabler:folder" class="w-4 h-4 mr-1" />
+        <span class="text-sm font-semibold">分类导航</span>
+      </div>
+      <div class="overflow-y-auto max-h-[calc(100vh-250px)] px-0.5">
+        {categories.map((category) => (
+          <a 
+            href={`#category-${category.id}`} 
+            class={buttonClasses}
+            data-category-nav-item
+          >
+            <Icon name="tabler:folder" class="w-4 h-4" />
+            <span class="truncate">{category.name}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
+<style>
+  /* 自定义滚动条 */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  
+  .dark .scrollbar-thin::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* 修复闪白问题 */
+  html {
+    background-color: var(--bg-color, #f9fafb);
+  }
+  
+  html.dark {
+    background-color: var(--bg-color-dark, #111827);
+  }
+  
+  /* 防止侧边栏滚动到footer */
+  .max-h-screen-minus-footer {
+    max-height: calc(100vh - 240px);
+  }
+  
+  /* 确保暗色模式下边框可见 */
+  .dark [data-name="category-nav-horizontal"],
+  .dark [data-name="category-nav-sidebar"],
+  .dark [data-category-nav-item] {
+    border-color: rgba(75, 85, 99, 0.4);
+  }
+  
+  /* 修复主题切换时的闪烁问题 */
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) [data-category-nav-item] {
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    :root.dark [data-category-nav-item] {
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+  }
+  
+  /* 确保按钮不超出容器 */
+  [data-name="category-nav-sidebar"] {
+    padding: 12px 12px;
+  }
+  
+  [data-name="category-nav-sidebar"] [data-category-nav-item] {
+    margin-left: 1px;
+    margin-right: 1px;
+    width: calc(100% - 2px);
+  }
+</style>
+
+<script is:inline>
+  // 设置背景色变量，用于修复闪白问题
+  document.documentElement.style.setProperty('--bg-color', '#f9fafb');
+  document.documentElement.style.setProperty('--bg-color-dark', '#111827');
+  
+  // 添加滚动到分类的平滑效果
+  function initCategoryNav() {
+    const navItems = document.querySelectorAll('[data-category-nav-item]');
+    
+    // 处理点击事件
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        const href = item.getAttribute('href');
+        if (href) {
+          const targetElement = document.querySelector(href);
+          if (targetElement) {
+            // 获取header高度并加上一些额外空间
+            const header = document.querySelector('header');
+            const headerHeight = header ? header.offsetHeight + 16 : 90;
+            
+            // 平滑滚动到目标位置，并考虑顶部固定导航的高度
+            const y = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+            window.scrollTo({top: y, behavior: 'smooth'});
+            
+            // 打开目标分类
+            const accordionBody = targetElement.querySelector('[data-accordion-body]');
+            const accordionIcon = targetElement.querySelector('[data-accordion-icon]');
+            
+            if (accordionBody instanceof HTMLElement && accordionIcon) {
+              accordionBody.style.maxHeight = "";
+              accordionIcon.classList.add('rotate-180');
+            }
+          }
+        }
+      });
+    });
+    
+    // 检测滚动，防止导航栏覆盖footer
+    function adjustNavOnScroll() {
+      const sidebarNav = document.querySelector('[data-name="category-nav-sidebar"]');
+      if (!sidebarNav) return;
+      
+      const footer = document.querySelector('footer');
+      if (!footer) return;
+      
+      const header = document.querySelector('header');
+      const headerHeight = header ? header.offsetHeight + 8 : 72;
+      
+      // 更新顶部位置
+      if (window.innerWidth >= 768) { // 只在桌面版调整
+        sidebarNav.style.top = `${headerHeight}px`;
+      }
+      
+      const footerTop = footer.getBoundingClientRect().top;
+      const windowHeight = window.innerHeight;
+      
+      if (footerTop < windowHeight) {
+        // 如果footer可见，调整sidebar的位置避免重叠
+        const overlap = windowHeight - footerTop;
+        sidebarNav.style.top = `calc(${headerHeight}px - ${overlap}px)`;
+      }
+    }
+    
+    // 监听滚动事件
+    window.addEventListener('scroll', adjustNavOnScroll);
+    window.addEventListener('resize', adjustNavOnScroll);
+    
+    // 初始运行一次
+    setTimeout(adjustNavOnScroll, 200);
+  }
+  
+  // 页面加载和转换时都执行初始化
+  document.addEventListener('DOMContentLoaded', initCategoryNav);
+  document.addEventListener('astro:page-load', initCategoryNav);
+</script> 

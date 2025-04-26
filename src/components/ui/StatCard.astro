@@ -20,14 +20,14 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
 });
 
 const cardClasses = cn(
-    'group relative p-6 rounded-lg z-10',
-    'border border-slate-400 dark:border-gray-800',
-    'bg-gradient-to-br from-white/[0.08] to-white/[0.02]',
+    'group relative p-5 rounded-lg z-10',
+    'border border-gray-200 dark:border-gray-700/50',
+    'bg-gradient-to-br from-gray-50/80 to-white/70',
     'dark:from-gray-800/50 dark:to-gray-900/50',
     'backdrop-blur-md backdrop-saturate-150',
-    'hover:from-white/[0.12] hover:to-white/[0.04]',
-    'dark:hover:from-gray-800/70 dark:hover:to-gray-900/70',
-    'hover:border-slate-500 dark:hover:border-gray-700',
+    'hover:from-gray-50/90 hover:to-white/80',
+    'dark:hover:from-gray-800/60 dark:hover:to-gray-900/60',
+    'hover:border-gray-300 dark:hover:border-gray-600',
     'hover:-translate-y-0.5',
     'transition-all duration-300 ease-out',
     'cursor-pointer shadow-lg shadow-black/5',
@@ -71,35 +71,24 @@ const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
         )
     }
 
-    {/* Title and Date */}
-    <div class='mb-4'>
-        <div class='flex flex-col sm:flex-row sm:items-center sm:justify-between'>
-            <h3
-                class={cn(
-                    'text-lg font-medium text-gray-900/90 dark:text-white/90',
-                    'group-hover:text-gray-900 dark:group-hover:text-white',
-                    'transition-colors'
-                )}
-                data-name='stat-title'>
-                {title}
-            </h3>
-            <span
-                class={cn(
-                    'text-sm text-gray-500 dark:text-gray-400',
-                    'group-hover:text-gray-700 dark:group-hover:text-gray-300',
-                    'transition-colors',
-                    'mt-1 sm:mt-0'
-                )}
-                data-name='stat-date'>
-                {formattedDate}
-            </span>
-        </div>
+    {/* 先显示标题，更加突出 */}
+    <div class='mb-3'>
+        <h3
+            class={cn(
+                'text-lg font-bold text-gray-900 dark:text-white',
+                'group-hover:text-gray-900 dark:group-hover:text-white',
+                'line-clamp-2 transition-colors',
+                'leading-tight mb-1'
+            )}
+            data-name='stat-title'>
+            {title}
+        </h3>
         {
             desc && (
                 <p
-                    class='mt-2 text-sm text-gray-400 
-                      group-hover:text-gray-300 
-                      transition-colors line-clamp-2'
+                    class='text-xs text-gray-500 dark:text-gray-400
+                      group-hover:text-gray-600 dark:group-hover:text-gray-300 
+                      transition-colors line-clamp-2 leading-relaxed'
                     data-name='stat-description'>
                     {desc}
                 </p>
@@ -107,6 +96,58 @@ const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
         }
     </div>
 
-    {/* Tags */}
-    <Tags tags={tags} maxVisible={desc ? 20 : 2} />
+    {/* 标签和日期放在底部 */}
+    <div class="flex items-center justify-between gap-2 mt-auto">
+        <div class="flex-grow min-w-0">
+            {tags && tags.length > 0 && (
+                <Tags tags={tags} maxVisible={2} compact={true} />
+            )}
+        </div>
+        <div class="flex-shrink-0">
+            <span
+                class={cn(
+                    'text-[10px] text-gray-500 dark:text-gray-400',
+                    'group-hover:text-gray-700 dark:group-hover:text-gray-300',
+                    'transition-colors whitespace-nowrap',
+                )}
+                data-name='stat-date'>
+                {formattedDate}
+            </span>
+        </div>
+    </div>
 </div>
+
+<style>
+    /* 修复主题切换时的闪烁问题 */
+    @media (prefers-color-scheme: light) {
+        :root:not(.dark) [data-name="stat-card"] {
+            transition: background-color 0.3s ease, background-image 0.3s ease, 
+                      border-color 0.3s ease, transform 0.3s ease;
+        }
+    }
+    
+    @media (prefers-color-scheme: dark) {
+        :root.dark [data-name="stat-card"] {
+            transition: background-color 0.3s ease, background-image 0.3s ease, 
+                      border-color 0.3s ease, transform 0.3s ease;
+        }
+    }
+    
+    /* 优化标题显示并添加悬停效果 */
+    [data-name="stat-card"] {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    [data-name="stat-title"] {
+        word-break: break-word;
+        overflow-wrap: break-word;
+        position: relative;
+        z-index: 1;
+    }
+    
+    [data-name="stat-card"]:hover [data-name="stat-title"] {
+        text-shadow: 0 0 0.5px currentColor;
+    }
+</style>

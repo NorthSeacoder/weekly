@@ -12,12 +12,14 @@ interface TagProps {
     tags?: string[];
     maxVisible?: number;
     tooltipProps?: TooltipProps;
+    compact?: boolean;
 }
 
 const { 
     tags = [], 
     maxVisible = 2,
-    tooltipProps = {} 
+    tooltipProps = {},
+    compact = false
 } = Astro.props as TagProps;
 
 // 首先计算可见和剩余标签
@@ -47,22 +49,20 @@ const tagThemes = visibleTags.map(() => {
 });
 
 const baseTagClasses = cn(
-    'text-xs px-2 py-0.5 rounded border',
-    'backdrop-blur-sm transition-all duration-300',
-    'hover:scale-105'
+    compact ? 'text-[10px] px-1.5 py-0' : 'text-xs px-2 py-0.5',
+    'rounded border backdrop-blur-sm transition-all duration-300 hover:scale-105'
 );
 
 const remainingTagClasses = cn(
-    'text-xs px-2 py-0.5 rounded',
-    'bg-gradient-to-br from-gray-500/10 to-gray-500/5',
+    compact ? 'text-[10px] px-1.5 py-0' : 'text-xs px-2 py-0.5',
+    'rounded bg-gradient-to-br from-gray-500/10 to-gray-500/5',
     'text-gray-400 border border-gray-500/20',
-    'backdrop-blur-sm',
-    'hover:from-gray-500/20 hover:to-gray-500/10',
+    'backdrop-blur-sm hover:from-gray-500/20 hover:to-gray-500/10',
     'transition-all duration-300'
 );
 ---
 
-<div class="flex flex-wrap gap-2 items-center" data-name="tags-container">
+<div class={`flex flex-wrap ${compact ? 'gap-1.5' : 'gap-2'} items-center`} data-name="tags-container">
     {visibleTags.map((tag, index) => (
         <span
             class={cn(baseTagClasses, themes[tagThemes[index]])}

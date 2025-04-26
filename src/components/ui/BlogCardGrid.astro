@@ -1,0 +1,141 @@
+---
+import { cn } from '@/lib/utils';
+import StatCard from './StatCard.astro';
+import { Icon } from 'astro-icon/components';
+import type { BlogPost } from '@/types/blog';
+
+type BlogItem = BlogPost & {
+  subCategory?: string;
+};
+
+interface Props {
+  blogs: BlogItem[];
+  columns?: number;
+  className?: string;
+  showSubCategories?: boolean;
+}
+
+const { blogs = [], columns = 1, className = '', showSubCategories = true } = Astro.props;
+
+const blogsBySubCategory = showSubCategories 
+  ? blogs.reduce((acc, blog) => {
+      const subCategory = blog.subCategory || '默认';
+      if (!acc[subCategory]) {
+        acc[subCategory] = [];
+      }
+      acc[subCategory].push(blog);
+      return acc;
+    }, {} as Record<string, BlogItem[]>)
+  : { '默认': blogs };
+
+const gridClasses = cn(
+  'grid gap-4',
+  columns === 1 ? 'grid-cols-1' : 
+  columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 
+  'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+  className
+);
+
+const hasMultipleSubCategories = Object.keys(blogsBySubCategory).length > 1 && showSubCategories;
+
+const sortedSubCategories = Object.keys(blogsBySubCategory).sort((a, b) => {
+  if (a === '默认') return -1;
+  if (b === '默认') return 1;
+  return a.localeCompare(b);
+});
+---
+
+{hasMultipleSubCategories ? (
+  <div class="space-y-8">
+    {sortedSubCategories.map((subCategory) => (
+      <div class="mb-8 last:mb-0">
+        <div class="flex items-center mb-4">
+          <div class="w-1.5 h-1.5  rounded-full mr-2"></div>
+          <h4 class="text-lg font-medium text-gray-600 dark:text-gray-400 flex items-center">
+            {subCategory}
+            <span class="text-sm text-gray-500 dark:text-gray-400 ml-2 font-normal">
+              ({blogsBySubCategory[subCategory].length})
+            </span>
+          </h4>
+        </div>
+        
+        <div class={gridClasses}>
+          {blogsBySubCategory[subCategory].sort((a, b) => Number(a.id ?? '0') - Number(b.id ?? '0')).map((blog) => (
+            <a href={blog.permalink} class="group transition-all duration-300 block">
+              <StatCard title={blog.title} desc={blog.desc} date={blog.date} tags={blog.tags} />
+            </a>
+          ))}
+        </div>
+        
+        {blogsBySubCategory[subCategory].length > 6 && (
+          <div class="flex justify-center mt-4">
+            <button 
+              class="text-sm flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300 transition-colors"
+              data-show-more
+              data-subcategory={subCategory}
+            >
+              <Icon name="tabler:chevron-down" class="w-4 h-4" />
+              查看更多
+            </button>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+) : (
+  <div class={gridClasses}>
+    {blogs.sort((a, b) => Number(a.id ?? '0') - Number(b.id ?? '0')).map((blog) => (
+      <a href={blog.permalink} class="group transition-all duration-300 block">
+        <StatCard title={blog.title} desc={blog.desc} date={blog.date} tags={blog.tags} />
+      </a>
+    ))}
+  </div>
+)}
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const showMoreButtons = document.querySelectorAll('[data-show-more]');
+    
+    showMoreButtons.forEach(button => {
+      const subCategory = button.getAttribute('data-subcategory');
+      const gridContainer = button.closest('div').previousElementSibling;
+      
+      if (gridContainer) {
+        const cards = gridContainer.querySelectorAll('a');
+        
+        if (cards.length > 6) {
+          let showing = 6;
+          
+          cards.forEach((card, index) => {
+            if (index >= showing) {
+              card.style.display = 'none';
+            }
+          });
+          
+          button.addEventListener('click', () => {
+            if (showing === 6) {
+              cards.forEach(card => {
+                card.style.display = 'block';
+              });
+              button.innerHTML = '<svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>收起';
+              showing = cards.length;
+            } else {
+              cards.forEach((card, index) => {
+                if (index >= 6) {
+                  card.style.display = 'none';
+                }
+              });
+              button.innerHTML = '<svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>查看更多';
+              showing = 6;
+              
+              const section = button.closest('.mb-8');
+              if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
+          });
+        }
+      }
+    });
+  });
+</script> 

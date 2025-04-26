@@ -1,9 +1,52 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
 import StatCard from '~/components/ui/StatCard.astro';
+import CategoryAccordion from '~/components/ui/CategoryAccordion.astro';
+import BlogCardGrid from '~/components/ui/BlogCardGrid.astro';
+import CategoryNav from '~/components/ui/CategoryNav.astro';
 import {getBlogPosts} from '@/src/utils/contents/blog';
+import { Icon } from 'astro-icon/components';
+import type { BlogPost } from '@/types/blog';
 
+// 获取博客列表
 const blogList = await getBlogPosts();
+
+// 处理分类和子分类
+type ProcessedBlogList = Record<string, (BlogPost & { subCategory?: string })[]>;
+
+const processedBlogList = Object.entries(blogList).reduce((acc, [category, blogs]) => {
+    // 检查是否有斜杠来标识子分类
+    const categoryParts = category.split('/').map(part => part.trim());
+    const mainCategory = categoryParts[0];
+    const subCategory = categoryParts.length > 1 ? categoryParts[1] : undefined;
+    
+    if (!acc[mainCategory]) {
+        acc[mainCategory] = [];
+    }
+    
+    // 将博客添加到主分类下，并标记子分类
+    blogs.forEach(blog => {
+        acc[mainCategory].push({
+            ...blog,
+            subCategory: subCategory
+        });
+    });
+    
+    return acc;
+}, {} as ProcessedBlogList);
+
+// 创建分类导航数据
+const categories = Object.keys(processedBlogList).map((category, index) => ({
+    name: category,
+    id: index.toString()
+}));
+
+// 计算总博客数
+const totalBlogs = Object.values(processedBlogList).flat().length;
+
+// 检测是否需要使用侧边栏布局（分类数量超过阈值）
+const useSidebarLayout = categories.length > 5;
+
 const metadata = {
     title: '博客列表',
     description: '博客列表',
@@ -14,24 +57,162 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-    <section class='py-12 dark:bg-dark'>
-        <div class='container mx-auto px-4'>
-            {
-                Object.entries(blogList).map(([category, blogs]) => (
-                    <div class='mb-12'>
-                        <h2 class='text-2xl font-bold mb-4'>{category}</h2>
-                        <ul class='grid grid-cols-1 gap-6'>
-                            {blogs.sort((a, b) => Number(a.id) - Number(b.id)).map((blog) => (
-                                <li>
-                                <a href={blog.permalink} class='block'>
-                                    <StatCard title={blog.title} desc={blog.desc} date={blog.date} tags={blog.tags} />
-                                </a>
-                            </li>
+    <section class="py-12 bg-gray-50/70 dark:bg-gray-900/30 min-h-screen">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">博客列表</h1>
+                <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <Icon name="tabler:book" class="w-4 h-4" />
+                    <span>共 {totalBlogs} 篇博客</span>
+                </div>
+            </div>
+
+            {useSidebarLayout ? (
+                <div class="flex flex-col md:flex-row gap-6">
+                    <!-- 侧边栏导航 -->
+                    <CategoryNav categories={categories} layout="sidebar" />
+                    
+                    <!-- 博客列表内容区 -->
+                    <div class="flex-1">
+                        {Object.entries(processedBlogList).map(([category, blogs], index) => (
+                            <div id={`category-${index}`} class="mb-6">
+                                <CategoryAccordion 
+                                    title={`${category} (${blogs.length})`} 
+                                    defaultOpen={index === 0}
+                                >
+                                    <BlogCardGrid 
+                                        blogs={blogs} 
+                                        columns={blogs.length > 4 ? 2 : 1}
+                                        showSubCategories={true}
+                                    />
+                                </CategoryAccordion>
+                            </div>
                         ))}
-                        </ul>
                     </div>
-                ))
-            }
+                </div>
+            ) : (
+                <div>
+                    <!-- 水平导航 -->
+                    <CategoryNav categories={categories} layout="horizontal" />
+                    
+                    <!-- 博客列表按分类分组 -->
+                    {Object.entries(processedBlogList).map(([category, blogs], index) => (
+                        <div id={`category-${index}`} class="mb-6">
+                            <CategoryAccordion 
+                                title={`${category} (${blogs.length})`} 
+                                defaultOpen={index === 0}
+                            >
+                                <BlogCardGrid 
+                                    blogs={blogs} 
+                                    columns={blogs.length > 4 ? 2 : 1}
+                                    showSubCategories={true}
+                                />
+                            </CategoryAccordion>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            <div class="mt-10 flex justify-center">
+                <a 
+                    href="#" 
+                    class="flex items-center gap-1 px-4 py-2 bg-gray-100/70 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800/80 transition-colors"
+                    onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"
+                >
+                    <Icon name="tabler:arrow-up" class="w-4 h-4" />
+                    返回顶部
+                </a>
+            </div>
         </div>
     </section>
 </Layout>
+
+<script>
+// 根据URL hash自动打开对应分类
+document.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash;
+    if (hash) {
+        const targetAccordion = document.querySelector(hash);
+        if (targetAccordion) {
+            // 找到对应的accordion并打开
+            const accordionBody = targetAccordion.querySelector('[data-accordion-body]');
+            const accordionIcon = targetAccordion.querySelector('[data-accordion-icon]');
+            
+            if (accordionBody instanceof HTMLElement && accordionIcon) {
+                accordionBody.style.maxHeight = "";
+                accordionIcon.classList.add('rotate-180');
+                
+                // 滚动到目标位置
+                setTimeout(() => {
+                    const yOffset = -120;
+                    const y = targetAccordion.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                }, 100);
+            }
+        }
+    }
+});
+</script>
+
+<style>
+/* 修复闪白问题 */
+:global(html) {
+    background-color: var(--bg-color, #f9fafb);
+}
+
+:global(html.dark) {
+    background-color: var(--bg-color-dark, #111827);
+}
+
+/* 确保页面最小高度，避免内容过少时的布局问题 */
+section {
+    min-height: calc(100vh - 240px);
+    padding-bottom: 60px; /* 增加底部空间，防止导航与footer重叠 */
+}
+
+/* 在大屏幕上限制内容区域最大宽度 */
+@media (min-width: 1536px) {
+    .container {
+        max-width: 1400px;
+    }
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+.dark ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 修复主题切换时的闪烁问题 */
+@media (prefers-color-scheme: light) {
+    :root:not(.dark) section {
+        transition: background-color 0.3s ease;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root.dark section {
+        transition: background-color 0.3s ease;
+    }
+}
+</style>
