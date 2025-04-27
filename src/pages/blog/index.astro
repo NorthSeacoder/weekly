@@ -7,6 +7,7 @@ import CategoryNav from '~/components/ui/CategoryNav.astro';
 import {getBlogPosts} from '@/src/utils/contents/blog';
 import { Icon } from 'astro-icon/components';
 import type { BlogPost } from '@/types/blog';
+import { cn } from '@/lib/utils';
 
 // 获取博客列表
 const blogList = await getBlogPosts();
@@ -44,9 +45,6 @@ const categories = Object.keys(processedBlogList).map((category, index) => ({
 // 计算总博客数
 const totalBlogs = Object.values(processedBlogList).flat().length;
 
-// 检测是否需要使用侧边栏布局（分类数量超过阈值）
-const useSidebarLayout = categories.length > 5;
-
 const metadata = {
     title: '博客列表',
     description: '博客列表',
@@ -57,69 +55,52 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-    <section class="py-12 bg-gray-50/70 dark:bg-gray-900/30 min-h-screen">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">博客列表</h1>
-                <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <Icon name="tabler:book" class="w-4 h-4" />
-                    <span>共 {totalBlogs} 篇博客</span>
-                </div>
-            </div>
-
-            {useSidebarLayout ? (
-                <div class="flex flex-col md:flex-row gap-6">
-                    <!-- 侧边栏导航 -->
-                    <CategoryNav categories={categories} layout="sidebar" />
-                    
-                    <!-- 博客列表内容区 -->
-                    <div class="flex-1">
-                        {Object.entries(processedBlogList).map(([category, blogs], index) => (
-                            <div id={`category-${index}`} class="mb-6">
-                                <CategoryAccordion 
-                                    title={`${category} (${blogs.length})`} 
-                                    defaultOpen={index === 0}
-                                >
-                                    <BlogCardGrid 
-                                        blogs={blogs} 
-                                        columns={blogs.length > 4 ? 2 : 1}
-                                        showSubCategories={true}
-                                    />
-                                </CategoryAccordion>
-                            </div>
-                        ))}
+    <section class="py-8 sm:py-12 bg-gray-50/70 dark:bg-gray-900/30 min-h-screen">
+        <div class={cn(
+            "container mx-auto px-4",
+            "min-h-[calc(100vh-240px)] pb-[60px]"
+        )}>
+            <div class="w-full md:flex md:flex-row md:gap-6">
+                {/* 分类导航 */}
+                <CategoryNav categories={categories} />
+                
+                <div class="flex-1 w-full md:max-w-[calc(100%-280px)]">
+                    {/* 博客列表标题 */}
+                    <div class="mb-4 sm:mb-6 mt-6 sm:mt-8 md:mt-0">
+                        <h1 class="text-3xl font-bold mb-1 dark:text-white">
+                            博客文章
+                        </h1>
+                        <div class="flex items-center text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+                            <span>共 {totalBlogs} 篇文章</span>
+                            {categories.length > 0 && (
+                                <span class="mx-2">·</span>
+                                <span>{categories.length} 个分类</span>
+                            )}
+                        </div>
                     </div>
-                </div>
-            ) : (
-                <div>
-                    <!-- 水平导航 -->
-                    <CategoryNav categories={categories} layout="horizontal" />
-                    
-                    <!-- 博客列表按分类分组 -->
-                    {Object.entries(processedBlogList).map(([category, blogs], index) => (
-                        <div id={`category-${index}`} class="mb-6">
-                            <CategoryAccordion 
-                                title={`${category} (${blogs.length})`} 
-                                defaultOpen={index === 0}
-                            >
+
+                    {/* 循环渲染分类和对应的博客 */}
+                    {categories.map((category, index) => (
+                        <div class="mb-10 sm:mb-12" id={`category-${category.id}`}>
+                            <CategoryAccordion title={category.name} defaultOpen={index === 0}>
                                 <BlogCardGrid 
-                                    blogs={blogs} 
-                                    columns={blogs.length > 4 ? 2 : 1}
+                                    blogs={processedBlogList[category.name] || []} 
+                                    columns={processedBlogList[category.name].length > 3 ? 2 : 1}
                                     showSubCategories={true}
                                 />
                             </CategoryAccordion>
                         </div>
                     ))}
                 </div>
-            )}
+            </div>
 
-            <div class="mt-10 flex justify-center">
+            <div class="mt-8 sm:mt-10 flex justify-center">
                 <a 
                     href="#" 
-                    class="flex items-center gap-1 px-4 py-2 bg-gray-100/70 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800/80 transition-colors"
+                    class="flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-100/70 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 text-sm rounded-full hover:bg-gray-200 dark:hover:bg-gray-800/80 transition-colors"
                     onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"
                 >
-                    <Icon name="tabler:arrow-up" class="w-4 h-4" />
+                    <Icon name="tabler:arrow-up" class="w-3 h-3 sm:w-4 sm:h-4" />
                     返回顶部
                 </a>
             </div>
@@ -144,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // 滚动到目标位置
                 setTimeout(() => {
-                    const yOffset = -120;
+                    const yOffset = -100;
                     const y = targetAccordion.getBoundingClientRect().top + window.pageYOffset + yOffset;
                     window.scrollTo({top: y, behavior: 'smooth'});
                 }, 100);
@@ -174,6 +155,24 @@ section {
 @media (min-width: 1536px) {
     .container {
         max-width: 1400px;
+    }
+}
+
+/* 移动端优化 */
+@media (max-width: 639px) {
+    /* 优化卡片网格间距 */
+    [class*="grid gap-4"] {
+        gap: 0.75rem;
+    }
+    
+    /* 减少子分类标题的上下边距 */
+    .mb-8.last\:mb-0 {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* 减小底部空间 */
+    .mt-8 {
+        margin-top: 1.5rem;
     }
 }
 

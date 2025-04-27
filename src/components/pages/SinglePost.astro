@@ -29,73 +29,309 @@ const sections = await Promise.all(
 ---
 
 <section class='py-8 sm:py-16 lg:py-20 mx-auto'>
-    <article>
+    <article class="bg-gray-50/50 dark:bg-gray-900/30 py-6 sm:py-10 rounded-xl">
         <header
-            class='space-y-4 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
+            class='space-y-6 mb-8 max-w-4xl mx-auto px-6 sm:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
             <h1
-                class='px-4 sm:px-6 max-w-3xl mx-auto text-4xl md:text-5xl font-bold leading-tighter tracking-tighter font-heading'>
+                class='text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-gray-900 dark:text-white'>
                 {post.title}
             </h1>
-            <div
-                class='flex justify-between flex-col sm:flex-row max-w-3xl mx-auto mt-0 mb-2 px-4 sm:px-6 sm:items-center'>
-                <span class='flex items-center'>
-                    <Icon name='tabler:calendar' class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400' />
-                    <time datetime={String(post.date)} class='inline-block'>{post.date}</time>
-                </span>
-                {
-                    post.wordCount && (
-                        <span class='flex items-center'>
-                            <Icon
-                                name='tabler:file-word'
-                                class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400'
-                            />
-                            {post.wordCount.toLocaleString()} words
-                        </span>
-                    )
-                }
-                {
-                    post.readingTime && (
-                        <span class='flex items-center'>
-                            <Icon name='tabler:clock' class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400' />
-                            {post.readingTime}
-                        </span>
-                    )
-                }
-                <!-- {
-                    post.lastUpdated && (
-                        <span class='flex items-center'>
-                            <Icon name='tabler:history' class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400' />
-                            <time datetime={String(post.lastUpdated)} class='inline-block'>
-                                Updated {post.lastUpdated}
-                            </time>
-                        </span>
-                    )
-                } -->
+            
+            {/* 顶部信息栏 */}
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 border-b border-gray-200/70 dark:border-gray-700/30 pb-6">
+                <div class='flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400'>
+                    <span class='flex items-center'>
+                        <Icon name='tabler:calendar' class='w-4 h-4 inline-block mr-2' />
+                        <time datetime={String(post.date)} class='inline-block'>{post.date}</time>
+                    </span>
+                    {
+                        post.wordCount && (
+                            <span class='flex items-center'>
+                                <Icon
+                                    name='tabler:file-word'
+                                    class='w-4 h-4 inline-block mr-2'
+                                />
+                                {post.wordCount.toLocaleString()} 字
+                            </span>
+                        )
+                    }
+                    {
+                        post.readingTime && (
+                            <span class='flex items-center'>
+                                <Icon name='tabler:clock' class='w-4 h-4 inline-block mr-2' />
+                                {post.readingTime}
+                            </span>
+                        )
+                    }
+                </div>
             </div>
         </header>
-        <div
-            class='mx-auto px-6 sm:px-6 max-w-3xl prose prose-md lg:prose-xl dark:prose-invert dark:prose-headings:text-slate-300 prose-headings:font-heading prose-headings:leading-tighter prose-headings:tracking-tighter prose-headings:font-bold prose-a:text-primary dark:prose-a:text-blue-400 prose-img:rounded-md prose-img:shadow-lg mt-8 prose-headings:scroll-mt-[80px] prose-li:my-0'>
-            {
-                sections?.map((section, index) => (
-                    <section
-                        class={cn(
-                            'mb-4 p-6 rounded-lg',
-                            'border border-slate-400 dark:border-dark-lighter',
-                            'hover:scale-101 backdrop-blur-sm transition-colors duration-300',
-                            'bg-white dark:bg-dark',
-                            'text-gray-900/90 dark:text-gray-300',
-                            'hover:border-purple-300 dark:hover:border-purple-500/30'
-                        )}>
-                        <div class='mb-4'>
-                            <Tags tags={section.tags} maxVisible={8} />
-                        </div>
-                        <Fragment class='break-all' set:html={section.content} />
-                    </section>
-                ))
-            }
+        
+        {/* 文章内容 */}
+        <div class='mx-auto max-w-4xl px-6 sm:px-8'>
+            <div class="space-y-6">
+                {
+                    sections?.map((section, index) => (
+                        <section
+                            class={cn(
+                                'p-6 rounded-lg',
+                                'border border-gray-300/70 dark:border-gray-700/50',
+                                'transition-all duration-300',
+                                'bg-white/80 dark:bg-gray-800/30',
+                                'hover:border-gray-400 dark:hover:border-gray-600',
+                                'hover:shadow-md'
+                            )}>
+                            {/* 分类与来源 */}
+                            <div class="flex justify-between items-center mb-4 text-sm">
+                                {section.category && (
+                                    <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 rounded-md text-gray-700 dark:text-gray-300 font-medium">
+                                        {section.category}
+                                    </span>
+                                )}
+                                {section.source && (
+                                    <a href={section.source} target="_blank" rel="noopener noreferrer" 
+                                       class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 flex items-center">
+                                        <Icon name="tabler:external-link" class="w-4 h-4 mr-1" />
+                                        来源
+                                    </a>
+                                )}
+                            </div>
+                            
+                            {/* 标签 */}
+                            <div class='mb-4'>
+                                <Tags tags={section.tags} maxVisible={5} compact={true} />
+                            </div>
+                            
+                            {/* 内容 */}
+                            <div 
+                                class={cn(
+                                    'prose prose-lg mx-auto',
+                                    'dark:prose-invert prose-headings:scroll-mt-[80px]',
+                                    'prose-headings:font-bold prose-headings:tracking-tight prose-headings:leading-tight prose-headings:text-gray-900 dark:prose-headings:text-white',
+                                    'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:underline-offset-4',
+                                    'prose-img:rounded-xl prose-img:shadow-md prose-img:my-8',
+                                    'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed',
+                                    'prose-li:my-1 prose-li:text-gray-700 dark:prose-li:text-gray-300',
+                                    'prose-pre:bg-gray-100 dark:prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-300 dark:prose-pre:border-gray-700 prose-pre:rounded-lg',
+                                    'prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-code:bg-gray-100 dark:prose-code:bg-gray-800/70 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none'
+                                )}>
+                                <Fragment set:html={section.content} />
+                            </div>
+                        </section>
+                    ))
+                }
+            </div>
         </div>
-        <!-- <div class='mx-auto px-6 sm:px-6 max-w-3xl mt-8 flex justify-between flex-col sm:flex-row'>
-            <Tags tags={post.tags} maxVisible={200} />
-        </div> -->
+        
+        {/* 文章页脚 */}
+        <footer class="max-w-4xl mx-auto mt-16 px-6 sm:px-8 border-t border-gray-200/70 dark:border-gray-700/30 pt-6 text-sm text-gray-500 dark:text-gray-400">
+            <div class="flex justify-between items-center">
+                <a href="/weekly" class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                    <Icon name="tabler:chevron-left" class="w-4 h-4 mr-1" />
+                    返回周刊列表
+                </a>
+                <div class="flex items-center gap-4">
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                        <Icon name="tabler:arrow-up" class="w-4 h-4 mr-1" />
+                        回到顶部
+                    </button>
+                </div>
+            </div>
+        </footer>
     </article>
 </section>
+
+<style>
+    /* 增强代码块样式 */
+    :global(.astro-code) {
+        border-radius: 0.5rem;
+        padding: 1.25rem !important;
+        margin: 1.5rem 0;
+        border: 1px solid rgba(75, 85, 99, 0.2);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        background-color: #f9f9f9 !important;
+    }
+    
+    :global(.dark .astro-code) {
+        background-color: #1a1a1a !important;
+        border-color: rgba(75, 85, 99, 0.4);
+    }
+    
+    /* 优化文章内链接的悬停效果 */
+    :global(article a:hover) {
+        text-decoration-thickness: 2px;
+    }
+    
+    /* 优化引用块样式 */
+    :global(article blockquote) {
+        border-left-width: 3px;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-radius: 0.25rem;
+        padding: 1rem 1.5rem;
+    }
+    
+    :global(.dark article blockquote) {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+    
+    /* 优化表格样式 */
+    :global(article table) {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        margin: 2rem 0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(75, 85, 99, 0.2);
+    }
+    
+    :global(article th, article td) {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(75, 85, 99, 0.1);
+        border-right: 1px solid rgba(75, 85, 99, 0.1);
+    }
+    
+    :global(article tr:last-child td) {
+        border-bottom: none;
+    }
+    
+    :global(article td:last-child, article th:last-child) {
+        border-right: none;
+    }
+    
+    :global(article th) {
+        background-color: rgba(0, 0, 0, 0.03);
+        font-weight: 600;
+    }
+    
+    :global(.dark article table) {
+        border-color: rgba(75, 85, 99, 0.4);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    :global(.dark article th, .dark article td) {
+        border-color: rgba(75, 85, 99, 0.3);
+    }
+    
+    :global(.dark article th) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    /* 光滑的卡片悬停效果 */
+    section section {
+        transform: translateY(0);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    
+    section section:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* 优化代码块样式 */
+    :global(pre) {
+        position: relative;
+        overflow-x: auto;
+        white-space: pre;
+        max-width: 100%;
+    }
+    
+    :global(code) {
+        font-family: 'Fira Code', 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+        font-size: 0.9em;
+        font-feature-settings: "liga" 0;
+    }
+    
+    /* 为代码块添加语言标签 */
+    :global(pre[class*="language-"]) {
+        position: relative;
+        padding-top: 2.5rem !important;
+    }
+    
+    :global(pre[class*="language-"]::before) {
+        content: attr(data-language);
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: #888;
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        background: rgba(0, 0, 0, 0.05);
+        border-bottom-left-radius: 0.25rem;
+        text-transform: uppercase;
+    }
+    
+    :global(.dark pre[class*="language-"]::before) {
+        background: rgba(255, 255, 255, 0.05);
+        color: #aaa;
+    }
+    
+    /* 添加JavaScript脚本设置语言标签 */
+    :global(pre) {
+        counter-reset: line;
+    }
+    
+    :global(pre[class*="language-js"]::before) { content: "JavaScript"; }
+    :global(pre[class*="language-ts"]::before) { content: "TypeScript"; }
+    :global(pre[class*="language-jsx"]::before) { content: "JSX"; }
+    :global(pre[class*="language-tsx"]::before) { content: "TSX"; }
+    :global(pre[class*="language-html"]::before) { content: "HTML"; }
+    :global(pre[class*="language-css"]::before) { content: "CSS"; }
+    :global(pre[class*="language-scss"]::before) { content: "SCSS"; }
+    :global(pre[class*="language-python"]::before) { content: "Python"; }
+    :global(pre[class*="language-java"]::before) { content: "Java"; }
+    :global(pre[class*="language-php"]::before) { content: "PHP"; }
+    :global(pre[class*="language-go"]::before) { content: "Go"; }
+    :global(pre[class*="language-rust"]::before) { content: "Rust"; }
+    :global(pre[class*="language-c"]::before) { content: "C"; }
+    :global(pre[class*="language-cpp"]::before) { content: "C++"; }
+    :global(pre[class*="language-csharp"]::before) { content: "C#"; }
+    :global(pre[class*="language-ruby"]::before) { content: "Ruby"; }
+    :global(pre[class*="language-swift"]::before) { content: "Swift"; }
+    :global(pre[class*="language-kotlin"]::before) { content: "Kotlin"; }
+    :global(pre[class*="language-bash"]::before) { content: "Bash"; }
+    :global(pre[class*="language-shell"]::before) { content: "Shell"; }
+    :global(pre[class*="language-sql"]::before) { content: "SQL"; }
+    :global(pre[class*="language-json"]::before) { content: "JSON"; }
+    :global(pre[class*="language-yaml"]::before) { content: "YAML"; }
+    :global(pre[class*="language-markdown"]::before) { content: "Markdown"; }
+    :global(pre[class*="language-mdx"]::before) { content: "MDX"; }
+    :global(pre[class*="language-astro"]::before) { content: "Astro"; }
+</style>
+
+<script>
+    // 为代码块添加语言标识
+    function addLanguageLabelsToCodeBlocks() {
+        const preElements = document.querySelectorAll('pre');
+        
+        preElements.forEach(pre => {
+            // 查找代码块的语言类
+            const classList = Array.from(pre.classList);
+            let languageClass: string | null = null;
+            
+            // 查找语言类 (language-xxx 或 lang-xxx)
+            for (const className of classList) {
+                if (className.startsWith('language-') || className.startsWith('lang-')) {
+                    languageClass = className;
+                    break;
+                }
+            }
+            
+            // 如果找到语言类，设置数据属性
+            if (languageClass) {
+                const language = languageClass.replace('language-', '').replace('lang-', '');
+                pre.setAttribute('data-language', language);
+            } else {
+                // 如果没有语言类，设置为代码
+                pre.setAttribute('data-language', 'code');
+            }
+        });
+    }
+    
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', addLanguageLabelsToCodeBlocks);
+    
+    // 对于使用 Astro View Transitions 的页面，监听导航事件
+    document.addEventListener('astro:page-load', addLanguageLabelsToCodeBlocks);
+</script>

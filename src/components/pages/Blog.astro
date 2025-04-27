@@ -3,7 +3,6 @@ import {Icon} from 'astro-icon/components';
 import {cn} from '@/lib/utils';
 import Tags from '~/components/ui/Tags.astro';
 
-
 import type {BlogPost} from '@/types/blog';
 
 export interface Props {
@@ -14,66 +13,236 @@ const {post} = Astro.props;
 ---
 
 <section class='py-8 sm:py-16 lg:py-20 mx-auto'>
-    <article>
+    <article class="bg-gray-50/50 dark:bg-gray-900/30 py-4 sm:py-6 md:py-10 rounded-xl">
         <header
-            class='space-y-4 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
+            class='space-y-4 sm:space-y-6 mb-6 sm:mb-8 max-w-4xl mx-auto px-4 sm:px-6 md:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
             <h1
-                class='px-4 sm:px-6 max-w-3xl mx-auto text-4xl md:text-5xl font-bold leading-tighter tracking-tighter font-heading'>
+                class='text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-gray-900 dark:text-white'>
                 {post.title}
             </h1>
-            <div
-                class='flex justify-between flex-col sm:flex-row max-w-3xl mx-auto mt-0 mb-2 px-4 sm:px-6 sm:items-center'>
-                <span class='flex items-center'>
-                    <Icon name='tabler:calendar' class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400' />
-                    <time datetime={String(post.date)} class='inline-block'>{post.date}</time>
-                </span>
-                {
-                    post.wordCount && (
-                        <span class='flex items-center'>
-                            <Icon
-                                name='tabler:file-word'
-                                class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400'
-                            />
-                            {post.wordCount.toLocaleString()} words
-                        </span>
-                    )
-                }
-                {
-                    post.readingTime && (
-                        <span class='flex items-center'>
-                            <Icon name='tabler:clock' class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400' />
-                            {post.readingTime}
-                        </span>
-                    )
-                }
-                <!-- {
-                    post.lastUpdated && (
-                        <span class='flex items-center'>
-                            <Icon name='tabler:history' class='w-4 h-4 inline-block -mt-0.5 mr-2 dark:text-gray-400' />
-                            <time datetime={String(post.lastUpdated)} class='inline-block'>
-                                Updated {post.lastUpdated}
-                            </time>
-                        </span>
-                    )
-                } -->
+            
+            {/* 顶部信息栏，包含日期、阅读时间和标签 */}
+            <div class="flex flex-col gap-3 border-b border-gray-200/70 dark:border-gray-700/30 pb-4 sm:pb-6">
+                <div class='flex flex-wrap gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
+                    <span class='flex items-center'>
+                        <Icon name='tabler:calendar' class='w-3 h-3 sm:w-4 sm:h-4 inline-block mr-1 sm:mr-2' />
+                        <time datetime={String(post.date)} class='inline-block'>{post.date}</time>
+                    </span>
+                    {
+                        post.wordCount && (
+                            <span class='flex items-center'>
+                                <Icon
+                                    name='tabler:file-word'
+                                    class='w-3 h-3 sm:w-4 sm:h-4 inline-block mr-1 sm:mr-2'
+                                />
+                                {post.wordCount.toLocaleString()} 字
+                            </span>
+                        )
+                    }
+                    {
+                        post.readingTime && (
+                            <span class='flex items-center'>
+                                <Icon name='tabler:clock' class='w-3 h-3 sm:w-4 sm:h-4 inline-block mr-1 sm:mr-2' />
+                                {post.readingTime}
+                            </span>
+                        )
+                    }
+                </div>
+                
+                {/* 标签 */}
+                <div class=''>
+                    <Tags tags={post.tags} maxVisible={99} compact={true} />
+                </div>
             </div>
         </header>
-        <div class='mx-auto px-6 sm:px-6 max-w-3xl my-4  flex justify-between flex-col sm:flex-row'>
-            <Tags tags={post.tags} maxVisible={200} />
-        </div>
-        <div
-            class='mx-auto px-6 sm:px-6 max-w-3xl prose prose-md prose-pre:p-[1px] prose-pre:rounded-none lg:prose-xl dark:prose-invert dark:prose-headings:text-gray-300 prose-headings:font-heading prose-headings:leading-tighter prose-headings:tracking-tighter prose-headings:font-bold prose-a:text-primary dark:prose-a:text-blue-400 prose-img:rounded-md prose-img:shadow-lg mt-8 prose-headings:scroll-mt-[80px] prose-li:my-0'>
-            <section
+        
+        {/* 文章内容 */}
+        <div class='mx-auto max-w-4xl px-4 sm:px-6 md:px-8'>
+            <div
                 class={cn(
-                    'p-6 pt-0 rounded-lg ',
-                    'border border-gray-400 dark:border-dark-lighter',
-                    'hover:scale-101 backdrop-blur-sm transition-colors duration-300',
-                    'bg-white dark:bg-dark',
-                    'text-gray-900/90 dark:text-gray-300',
-                    'hover:border-purple-300 dark:hover:border-purple-500/30'
+                    'prose prose-base md:prose-lg lg:prose-xl mx-auto',
+                    'dark:prose-invert prose-headings:scroll-mt-[80px]',
+                    'prose-headings:font-bold prose-headings:tracking-tight prose-headings:leading-tight prose-headings:text-gray-900 dark:prose-headings:text-white',
+                    'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:underline-offset-4',
+                    'prose-img:rounded-xl prose-img:shadow-md prose-img:my-6 sm:prose-img:my-8',
+                    'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed',
+                    'prose-li:my-1 prose-li:text-gray-700 dark:prose-li:text-gray-300',
+                    'prose-pre:bg-gray-100 dark:prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-300 dark:prose-pre:border-gray-700 prose-pre:rounded-lg',
+                    'prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-code:bg-gray-100 dark:prose-code:bg-gray-800/70 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none'
                 )}>
-                <Fragment class='break-all' set:html={post.content} />
-            </section>
+                <Fragment set:html={post.content} />
+            </div>
         </div>
+        
+        {/* 文章页脚 */}
+        <footer class="max-w-4xl mx-auto mt-10 sm:mt-16 px-4 sm:px-6 md:px-8 border-t border-gray-200/70 dark:border-gray-700/30 pt-4 sm:pt-6 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+            <div class="flex justify-between items-center">
+                <a href="/blog" class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                    <Icon name="tabler:chevron-left" class="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                    返回文章列表
+                </a>
+                <div class="flex items-center gap-4">
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                        <Icon name="tabler:arrow-up" class="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                        回到顶部
+                    </button>
+                </div>
+            </div>
+        </footer>
     </article>
 </section>
+
+<style>
+    /* 增强代码块样式 */
+    :global(.astro-code) {
+        border-radius: 0.5rem;
+        padding: 1rem !important;
+        margin: 1.25rem 0;
+        border: 1px solid rgba(75, 85, 99, 0.2);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        background-color: #f9f9f9 !important;
+        font-size: 0.85rem !important;
+    }
+    
+    @media (min-width: 640px) {
+        :global(.astro-code) {
+            padding: 1.25rem !important;
+            margin: 1.5rem 0;
+            font-size: 0.9rem !important;
+        }
+    }
+    
+    :global(.dark .astro-code) {
+        background-color: #1a1a1a !important;
+        border-color: rgba(75, 85, 99, 0.4);
+    }
+    
+    /* 优化文章内链接的悬停效果 */
+    :global(article a:hover) {
+        text-decoration-thickness: 2px;
+    }
+    
+    /* 优化标题锚点的显示 */
+    :global(article .heading-link) {
+        text-decoration: none;
+        opacity: 0;
+        margin-left: 0.5rem;
+        transition: opacity 0.2s;
+    }
+    
+    :global(article h2:hover .heading-link),
+    :global(article h3:hover .heading-link),
+    :global(article h4:hover .heading-link) {
+        opacity: 0.7;
+    }
+    
+    /* 优化引用块样式 */
+    :global(article blockquote) {
+        border-left-width: 3px;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-radius: 0.25rem;
+        padding: 0.75rem 1rem;
+        margin: 1.25rem 0;
+        font-size: 0.95em;
+    }
+    
+    @media (min-width: 640px) {
+        :global(article blockquote) {
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+    }
+    
+    :global(.dark article blockquote) {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+    
+    /* 优化表格样式 */
+    :global(article table) {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin: 1.25rem 0;
+        font-size: 0.85rem;
+    }
+    
+    @media (min-width: 640px) {
+        :global(article table) {
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+    }
+    
+    :global(article th) {
+        background-color: rgba(0, 0, 0, 0.03);
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    :global(article td) {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    @media (min-width: 640px) {
+        :global(article th),
+        :global(article td) {
+            padding: 0.75rem 1rem;
+        }
+    }
+    
+    :global(.dark article th) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    /* 移动端优化 */
+    @media (max-width: 639px) {
+        :global(article h1) {
+            font-size: 1.75rem !important;
+            margin-bottom: 1rem;
+        }
+        
+        :global(article h2) {
+            font-size: 1.5rem !important;
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        :global(article h3) {
+            font-size: 1.25rem !important;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        :global(article p) {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        :global(article ul, article ol) {
+            padding-left: 1.25rem;
+        }
+        
+        :global(article li) {
+            margin-bottom: 0.5rem;
+        }
+        
+        :global(article img) {
+            margin: 1.25rem 0;
+        }
+    }
+    
+    /* 优化阅读舒适度 */
+    :global(article p),
+    :global(article li) {
+        letter-spacing: 0.01em;
+    }
+    
+    @media (max-width: 639px) {
+        :global(article) {
+            font-size: 0.95rem;
+        }
+    }
+</style>
