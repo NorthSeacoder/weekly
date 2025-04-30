@@ -125,12 +125,13 @@ jobs:
                 NEXT_PUBLIC_INPUT_POSITION: ${{ vars.NEXT_PUBLIC_INPUT_POSITION }}
                 NEXT_PUBLIC_THEME: ${{ vars.NEXT_PUBLIC_THEME }}
                 NEXT_PUBLIC_LANG: ${{ vars.NEXT_PUBLIC_LANG }}
-                NEXT_PUBLIC_UMAMI: ${{ vars.NEXT_PUBLIC_UMAMI }}
                 NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
                 NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
                 NEXT_PUBLIC_AUTHOR_NAME: ${{ vars.NEXT_PUBLIC_AUTHOR_NAME }}
                 NEXT_PUBLIC_SITE_NAME: ${{ vars.NEXT_PUBLIC_SITE_NAME }}
                 NEXT_PUBLIC_SITE_DESCRIPTION: ${{ vars.NEXT_PUBLIC_SITE_DESCRIPTION }}
+                SENTRY_AUTH_TOKEN: ${{ vars.SENTRY_AUTH_TOKEN }}
+                SENTRY_DSN: ${{ vars.SENTRY_DSN }}
                 PUBLIC_UMAMI_ID: ${{ vars.PUBLIC_UMAMI_ID }}
                 PUBLIC_CLARITY_ID: ${{ vars.PUBLIC_CLARITY_ID }}
             - name: Deploy to Server

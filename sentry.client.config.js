@@ -2,6 +2,7 @@
 import * as Sentry from '@sentry/astro';
 
 Sentry.init({
+    dsn: process.env.SENTRY_DSN, // 添加DSN配置
     tracesSampleRate: 1.0, // 性能跟踪采样率
     replaysSessionSampleRate: 0.1, // 10% 的会话回放
     replaysOnErrorSampleRate: 1.0, // 错误时 100% 回放

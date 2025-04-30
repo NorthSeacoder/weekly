@@ -30,7 +30,7 @@ export default defineConfig({
             sourceMapsUploadOptions: {
                 project: 'weekly', // 在 Sentry 中设置的项目名称
                 org: 'nsea',
-                authToken: process.env.NEXT_PUBLIC_SENTRY_AUTH_TOKEN // 用于上传 source maps 的 token
+                authToken: process.env.SENTRY_AUTH_TOKEN // 用于上传 source maps 的 token
             }
         })
     ],
