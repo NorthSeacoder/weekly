@@ -18,7 +18,7 @@ interface Metadata {
 export type DataItem = EnhancedEntry<'weekly'>;
 
 // 固定的 category 顺序
-const categoryOrder = ['工具', '文章', '教程', '言论', 'bug', '面试题', 'repos', 'bigones', '网站', 'demo'];
+const categoryOrder = ['工具', '文章', '教程', '言论', 'bug', '面试题', 'repos', 'bigones', '网站', 'prompt'];
 // 添加一个新的辅助函数来移除 frontmatter
 function removeFrontmatter(content: string | undefined): string {
     // 匹配开头的 frontmatter 部分

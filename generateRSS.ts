@@ -34,7 +34,10 @@ const generateRssFeed = async () => {
             rss2: `${SITE_URL}/rss.xml`
         },
         author,
-        copyright: `Copyright © ${new Date().getFullYear()} by ${AUTHOR_NAME}`
+        copyright: `Copyright © ${new Date().getFullYear()} by ${AUTHOR_NAME}`,
+        language: 'zh-CN',
+        favicon: `${SITE_URL}/favicon.ico`,
+        image: `${SITE_URL}/og-image.jpg`
     });
 
     latestPosts.forEach((post) => {
@@ -45,11 +48,26 @@ const generateRssFeed = async () => {
             description: post.title || '',
             content: markdownToHtml(post.content),
             date: new Date(post.date),
-            author: [author]
+            author: [author],
+            category: post.tags ? post.tags.map(tag => ({ name: tag })) : []
         });
     });
 
-    fs.writeFileSync(`./dist/rss.xml`, feed.rss2(), 'utf8');
+    const rssOutput = feed.rss2();
+    
+    const styleSheetProcessingInstruction = '<?xml-stylesheet href="/pretty-feed-v3.xsl" type="text/xsl"?>';
+    
+    const finalRssOutput = rssOutput.replace(
+        '<?xml version="1.0" encoding="utf-8"?>',
+        '<?xml version="1.0" encoding="utf-8"?>\n' + styleSheetProcessingInstruction
+    );
+
+    if (!fs.existsSync('./public/pretty-feed-v3.xsl')) {
+        console.warn('警告: public目录中未找到pretty-feed-v3.xsl文件。RSS样式将不会生效。');
+    }
+    
+    fs.writeFileSync(`./dist/rss.xml`, finalRssOutput, 'utf8');
+    console.log('RSS feed 生成成功，已应用样式表。');
 };
 
 generateRssFeed();

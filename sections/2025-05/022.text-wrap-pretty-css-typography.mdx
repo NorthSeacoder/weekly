@@ -1,0 +1,19 @@
+---
+tags: [CSS, 前端开发, 网页排版, text-wrap, Typography]
+category: 文章
+source: 阮一峰的网络日志
+date: 2025-05-10
+title: text-wrap:pretty——网页排版的美学新突破
+---
+
+### [text-wrap: pretty——网页排版的美学新突破](https://webkit.org/blog/16547/better-typography-with-text-wrap-pretty/)
+
+![img](https://img.mengpeng.tech/i/2025/05/11/68205a4dac3e7.webp)
+
+WebKit 团队最新发布的 `text-wrap: pretty` 特性，为网页排版带来了前所未有的美学提升。该特性通过多行算法整体评估段落文本，智能优化短行、rag（参差边缘）、连字符断词和"typographic rivers"等传统排版难题，极大提升了网页的可读性与视觉美感。
+
+与传统的逐行"贪婪"换行不同，`text-wrap: pretty` 能全局考量段落，避免短末行、改善rag、减少不合理断词。WebKit实现比Chromium更激进，支持全段落优化，而Chromium仅优化段落最后四行。该特性已在Safari Technology Preview 216上线，Chrome/Edge/Opera/Samsung等主流浏览器也已支持部分能力。
+
+文中还对比了 `text-wrap: balance`（适合标题、让所有行等长）、`auto`（默认单行贪婪换行）、`stable`（适合可编辑内容，保证换行稳定）等模式的适用场景和表现差异。开发者可根据内容类型灵活选择，兼顾美观与性能。
+
+`text-wrap: pretty` 让网页排版更接近传统印刷美学，是提升可读性和用户体验的前沿CSS利器。

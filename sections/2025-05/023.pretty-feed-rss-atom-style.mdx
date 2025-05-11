@@ -1,0 +1,21 @@
+---
+tags: [RSS, Atom, XSLT, 信息流美化, 前端技巧]
+category: 文章
+source: 阮一峰的网络日志
+date: 2025-05-10
+title: Pretty Feed——用XSLT让RSS/Atom订阅流更美观
+---
+
+### [Pretty Feed——用XSLT让RSS/Atom订阅流更美观](https://taxodium.ink/pretty-feed.html)
+
+![img](https://img.mengpeng.tech/i/2025/05/11/68205b625bbf3.webp)
+
+Pretty Feed 是一套基于 XSLT 的 RSS/Atom 订阅流美化方案，只需在 XML 文件头部引入 `xml-stylesheet`，即可将原本枯燥的 XML 标签转化为友好的 HTML 页面。该方法兼容主流 RSS/Atom 规范，支持自定义样式和内容结构，适合博客、资讯站点提升订阅体验。
+
+实现方式简单：在 RSS/Atom 源文件头部添加如下代码，即可引用开源样式表（如 pretty-feed-v3.xsl）：
+
+```xml
+<?xml-stylesheet href="/path/to/pretty-feed-v3.xsl" type="text/xsl"?>
+```
+
+XSLT 支持 HTML 标签和 CSS 样式，开发者可根据需求定制页面结构和样式。对于 Atom 源，可参考 Spike Leung 的适配方案。无需复杂后端，纯前端即可实现美观、可读性强的订阅流。

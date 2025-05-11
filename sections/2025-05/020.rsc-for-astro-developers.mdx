@@ -1,0 +1,13 @@
+---
+tags: [前端框架, React, Astro, RSC, 架构思考]
+category: 文章
+source: 阮一峰的网络日志
+date: 2025-05-10
+title: Astro开发者视角下的React Server Components（RSC）模型解析
+---
+
+### [Astro开发者视角下的React Server Components（RSC）模型解析](https://overreacted.io/rsc-for-astro-developers/)
+
+![img](https://img.mengpeng.tech/i/2025/05/11/6820516d45eb8.webp)
+
+Dan Abramov 在《RSC for Astro Developers》中深入剖析了 Astro 与 React Server Components（RSC）两种前端架构模型的异同。Astro 通过 .astro 组件（仅服务端/构建时运行）与 Client Islands（如 React/Vue 组件）实现静态与动态的分离，数据单向流动，交互逻辑交由 Islands 处理。RSC 则以 Server/Client 组件区分，通过 'use client' 指令灵活切换，所有组件本质上都是 React 函数，边界更流动，支持更自然的嵌套与复用。
