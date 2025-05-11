@@ -11,13 +11,15 @@ import html from 'remark-html';
 
 export interface Props {
     post: WeeklyPost;
+    prevPost?: WeeklyPost;
+    nextPost?: WeeklyPost;
 }
 async function processMarkdown(markdownString) {
     const result = await remark().use(html).process(markdownString);
     return result.value;
 }
 
-const {post} = Astro.props;
+const {post, prevPost, nextPost} = Astro.props;
 const sections = await Promise.all(
     post.sections.map(async (section) => ({
         content: await processMarkdown(section.content),
@@ -26,10 +28,61 @@ const sections = await Promise.all(
         source: section.source
     }))
 );
+
+// 生成分类的颜色映射
+const categoryColors = {
+    "技术": { 
+        bg: "bg-blue-100 dark:bg-blue-900/40", 
+        text: "text-blue-700 dark:text-blue-300",
+        icon: "tabler:code"
+    },
+    "工具": { 
+        bg: "bg-emerald-100 dark:bg-emerald-900/40", 
+        text: "text-emerald-700 dark:text-emerald-300",
+        icon: "tabler:tool"
+    },
+    "设计": { 
+        bg: "bg-purple-100 dark:bg-purple-900/40", 
+        text: "text-purple-700 dark:text-purple-300",
+        icon: "tabler:brush"
+    },
+    "资源": { 
+        bg: "bg-amber-100 dark:bg-amber-900/40", 
+        text: "text-amber-700 dark:text-amber-300",
+        icon: "tabler:book"
+    },
+    "观点": { 
+        bg: "bg-rose-100 dark:bg-rose-900/40", 
+        text: "text-rose-700 dark:text-rose-300",
+        icon: "tabler:message-circle"
+    },
+    "新闻": { 
+        bg: "bg-sky-100 dark:bg-sky-900/40", 
+        text: "text-sky-700 dark:text-sky-300",
+        icon: "tabler:news"
+    },
+    "学习": { 
+        bg: "bg-indigo-100 dark:bg-indigo-900/40", 
+        text: "text-indigo-700 dark:text-indigo-300",
+        icon: "tabler:school"
+    }
+};
+
+// 默认分类样式
+const defaultCategoryStyle = { 
+    bg: "bg-gray-100 dark:bg-gray-800/60", 
+    text: "text-gray-700 dark:text-gray-300",
+    icon: "tabler:tag"
+};
+
+// 获取分类样式
+const getCategoryStyle = (category) => {
+    return categoryColors[category] || defaultCategoryStyle;
+};
 ---
 
 <section class='py-8 sm:py-16 lg:py-20 mx-auto'>
-    <article class="bg-gray-50/50 dark:bg-gray-900/30 py-6 sm:py-10 rounded-xl">
+    <article class="py-6 sm:py-10 rounded-xl max-w-5xl mx-auto">
         <header
             class='space-y-6 mb-8 max-w-4xl mx-auto px-6 sm:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
             <h1
@@ -69,109 +122,198 @@ const sections = await Promise.all(
         
         {/* 文章内容 */}
         <div class='mx-auto max-w-4xl px-6 sm:px-8'>
-            <div class="space-y-6">
+            <div class="space-y-8">
                 {
-                    sections?.map((section, index) => (
-                        <section
-                            class={cn(
-                                'p-6 rounded-lg',
-                                'border border-gray-300/70 dark:border-gray-700/50',
-                                'transition-all duration-300',
-                                'bg-white/80 dark:bg-gray-800/30',
-                                'hover:border-gray-400 dark:hover:border-gray-600',
-                                'hover:shadow-md'
-                            )}>
-                            {/* 分类与来源 */}
-                            <div class="flex justify-between items-center mb-4 text-sm">
-                                {section.category && (
-                                    <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 rounded-md text-gray-700 dark:text-gray-300 font-medium">
-                                        {section.category}
-                                    </span>
-                                )}
-                                {section.source && (
-                                    <a href={section.source} target="_blank" rel="noopener noreferrer" 
-                                       class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 flex items-center">
-                                        <Icon name="tabler:external-link" class="w-4 h-4 mr-1" />
-                                        来源
-                                    </a>
-                                )}
-                            </div>
-                            
-                            {/* 标签 */}
-                            <div class='mb-4'>
-                                <Tags tags={section.tags} maxVisible={5} compact={true} />
-                            </div>
-                            
-                            {/* 内容 */}
-                            <div 
+                    sections?.map((section, index) => {
+                        const categoryStyle = getCategoryStyle(section.category);
+                        return (
+                            <section
                                 class={cn(
-                                    'prose prose-lg mx-auto',
-                                    'dark:prose-invert prose-headings:scroll-mt-[80px]',
-                                    'prose-headings:font-bold prose-headings:tracking-tight prose-headings:leading-tight prose-headings:text-gray-900 dark:prose-headings:text-white',
-                                    'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:underline-offset-4',
-                                    'prose-img:rounded-xl prose-img:shadow-md prose-img:my-8',
-                                    'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed',
-                                    'prose-li:my-1 prose-li:text-gray-700 dark:prose-li:text-gray-300',
-                                    'prose-pre:bg-gray-100 dark:prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-300 dark:prose-pre:border-gray-700 prose-pre:rounded-lg',
-                                    'prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-code:bg-gray-100 dark:prose-code:bg-gray-800/70 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none'
+                                    'p-8 rounded-xl',
+                                    'border border-gray-200/70 dark:border-gray-700/40',
+                                    'transition-all duration-300',
+                                    'bg-white/80 dark:bg-gray-800/30',
+                                    'hover:border-gray-300 dark:hover:border-gray-600',
+                                    'hover:shadow-lg dark:hover:shadow-gray-900/30',
+                                    'backdrop-blur-sm'
                                 )}>
-                                <Fragment set:html={section.content} />
-                            </div>
-                        </section>
-                    ))
+                                {/* 分类与来源 */}
+                                <div class="flex justify-between items-center mb-5 text-sm">
+                                    {section.category && (
+                                        <span class={cn(
+                                            "px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5",
+                                            categoryStyle.bg,
+                                            categoryStyle.text
+                                        )}>
+                                            <Icon name={categoryStyle.icon} class="w-4 h-4" />
+                                            {section.category}
+                                        </span>
+                                    )}
+                                    {section.source && (
+                                        <a href={section.source} target="_blank" rel="noopener noreferrer" 
+                                           class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center transition-colors group">
+                                            <span class="mr-1.5 group-hover:underline">来源</span>
+                                            <Icon name="tabler:external-link" class="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                        </a>
+                                    )}
+                                </div>
+                                
+                                {/* 标签 */}
+                                <div class='mb-6'>
+                                    <Tags tags={section.tags} maxVisible={5} compact={true} />
+                                </div>
+                                
+                                {/* 内容 */}
+                                <div 
+                                    class={cn(
+                                        'prose prose-lg mx-auto',
+                                        'dark:prose-invert prose-headings:scroll-mt-[80px]',
+                                        'prose-headings:font-bold prose-headings:tracking-tight prose-headings:leading-tight prose-headings:text-gray-900 dark:prose-headings:text-white',
+                                        'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:underline-offset-4 prose-a:transition-all',
+                                        'prose-img:rounded-xl prose-img:shadow-md prose-img:my-8',
+                                        'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed',
+                                        'prose-li:my-1 prose-li:text-gray-700 dark:prose-li:text-gray-300',
+                                        'prose-pre:bg-gray-100 dark:prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-300 dark:prose-pre:border-gray-700 prose-pre:rounded-lg',
+                                        'prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-code:bg-gray-100 dark:prose-code:bg-gray-800/70 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none'
+                                    )}>
+                                    <Fragment set:html={section.content} />
+                                </div>
+                            </section>
+                        )
+                    })
                 }
             </div>
         </div>
         
-        {/* 文章页脚 */}
-        <footer class="max-w-4xl mx-auto mt-16 px-6 sm:px-8 border-t border-gray-200/70 dark:border-gray-700/30 pt-6 text-sm text-gray-500 dark:text-gray-400">
-            <div class="flex justify-between items-center">
-                <a href="/weekly" class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
-                    <Icon name="tabler:chevron-left" class="w-4 h-4 mr-1" />
-                    返回周刊列表
+        {/* 文章导航 */}
+        <div class="max-w-4xl mx-auto mt-16 px-6 sm:px-8">
+            <nav class="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 mb-8">
+                {prevPost ? (
+                    <a href={`/weekly/${prevPost.slug}`} class="group w-full sm:w-auto">
+                        <div class="flex items-center p-4 border border-gray-200/70 dark:border-gray-700/40 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-all hover:shadow-md hover:-translate-y-0.5">
+                            <Icon name="tabler:chevron-left" class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-transform group-hover:-translate-x-1" />
+                            <div class="ml-3 overflow-hidden">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">上一期</p>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{prevPost.title}</h4>
+                            </div>
+                        </div>
+                    </a>
+                ) : (
+                    <div class="w-full sm:w-auto"></div>
+                )}
+                
+                <a href="/weekly" class="flex items-center justify-center w-full sm:w-auto px-5 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 border border-gray-200/70 dark:border-gray-700/40 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-all hover:shadow-md">
+                    <Icon name="tabler:layout-grid" class="w-4 h-4 mr-2" />
+                    所有周刊
                 </a>
-                <div class="flex items-center gap-4">
-                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
-                        <Icon name="tabler:arrow-up" class="w-4 h-4 mr-1" />
-                        回到顶部
-                    </button>
-                </div>
+                
+                {nextPost ? (
+                    <a href={`/weekly/${nextPost.slug}`} class="group w-full sm:w-auto">
+                        <div class="flex items-center justify-end p-4 border border-gray-200/70 dark:border-gray-700/40 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-all hover:shadow-md hover:-translate-y-0.5">
+                            <div class="mr-3 overflow-hidden text-right">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">下一期</p>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{nextPost.title}</h4>
+                            </div>
+                            <Icon name="tabler:chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-transform group-hover:translate-x-1" />
+                        </div>
+                    </a>
+                ) : (
+                    <div class="w-full sm:w-auto"></div>
+                )}
+            </nav>
+        </div>
+        
+        {/* 文章页脚 */}
+        <footer class="max-w-4xl mx-auto mt-4 px-6 sm:px-8 border-t border-gray-200/70 dark:border-gray-700/30 pt-6 text-sm text-gray-500 dark:text-gray-400">
+            <div class="flex justify-end items-center">
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+                        class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors group px-3 py-2">
+                    <span class="mr-2 group-hover:underline">回到顶部</span>
+                    <Icon name="tabler:arrow-up" class="w-4 h-4 transition-transform group-hover:-translate-y-1" />
+                </button>
             </div>
         </footer>
     </article>
 </section>
 
 <style>
+    /* 字体优化 */
+    article {
+        --font-sans: 'Noto Sans SC', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        --font-serif: 'Noto Serif SC', Georgia, Cambria, 'Times New Roman', Times, serif;
+        --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace;
+        
+        font-family: var(--font-sans);
+        letter-spacing: -0.01em;
+    }
+    
+    :global(article h1, article h2, article h3, article h4, article h5, article h6) {
+        font-family: var(--font-sans);
+        letter-spacing: -0.02em;
+    }
+    
+    :global(article p) {
+        line-height: 1.75;
+        letter-spacing: 0.01em;
+    }
+    
+    :global(article code) {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+        font-feature-settings: "liga" 0, "calt" 1;
+    }
+    
     /* 增强代码块样式 */
     :global(.astro-code) {
-        border-radius: 0.5rem;
-        padding: 1.25rem !important;
-        margin: 1.5rem 0;
-        border: 1px solid rgba(75, 85, 99, 0.2);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        background-color: #f9f9f9 !important;
+        border-radius: 0.75rem;
+        padding: 1.5rem !important;
+        margin: 1.75rem 0;
+        border: 1px solid rgba(75, 85, 99, 0.15);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+        background-color: #f9fafb !important;
     }
     
     :global(.dark .astro-code) {
-        background-color: #1a1a1a !important;
-        border-color: rgba(75, 85, 99, 0.4);
+        background-color: #111827 !important;
+        border-color: rgba(75, 85, 99, 0.3);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05);
     }
     
     /* 优化文章内链接的悬停效果 */
+    :global(article a) {
+        transition: all 0.2s ease;
+    }
+    
     :global(article a:hover) {
         text-decoration-thickness: 2px;
+        color: #4f46e5 !important;
+    }
+    
+    :global(.dark article a:hover) {
+        color: #818cf8 !important;
     }
     
     /* 优化引用块样式 */
     :global(article blockquote) {
-        border-left-width: 3px;
-        background-color: rgba(0, 0, 0, 0.02);
-        border-radius: 0.25rem;
-        padding: 1rem 1.5rem;
+        border-left-width: 4px;
+        border-left-color: #d1d5db;
+        background-color: rgba(243, 244, 246, 0.7);
+        border-radius: 0.5rem;
+        padding: 1.25rem 1.5rem;
+        margin: 1.75rem 0;
+        font-style: italic;
+        color: #4b5563;
+        font-family: var(--font-serif);
     }
     
     :global(.dark article blockquote) {
-        background-color: rgba(255, 255, 255, 0.03);
+        background-color: rgba(31, 41, 55, 0.5);
+        border-left-color: #4b5563;
+        color: #d1d5db;
+    }
+    
+    :global(article blockquote p:last-child) {
+        margin-bottom: 0;
     }
     
     /* 优化表格样式 */
@@ -180,14 +322,14 @@ const sections = await Promise.all(
         border-spacing: 0;
         width: 100%;
         margin: 2rem 0;
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        border: 1px solid rgba(75, 85, 99, 0.2);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(75, 85, 99, 0.15);
     }
     
     :global(article th, article td) {
-        padding: 0.75rem 1rem;
+        padding: 0.875rem 1.25rem;
         border-bottom: 1px solid rgba(75, 85, 99, 0.1);
         border-right: 1px solid rgba(75, 85, 99, 0.1);
     }
@@ -201,31 +343,69 @@ const sections = await Promise.all(
     }
     
     :global(article th) {
-        background-color: rgba(0, 0, 0, 0.03);
+        background-color: rgba(243, 244, 246, 0.8);
         font-weight: 600;
+        color: #1f2937;
+    }
+    
+    :global(article tr:nth-child(even)) {
+        background-color: rgba(249, 250, 251, 0.7);
     }
     
     :global(.dark article table) {
-        border-color: rgba(75, 85, 99, 0.4);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-color: rgba(75, 85, 99, 0.3);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
     }
     
     :global(.dark article th, .dark article td) {
-        border-color: rgba(75, 85, 99, 0.3);
+        border-color: rgba(75, 85, 99, 0.25);
     }
     
     :global(.dark article th) {
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: rgba(31, 41, 55, 0.7);
+        color: #f3f4f6;
+    }
+    
+    :global(.dark article tr:nth-child(even)) {
+        background-color: rgba(17, 24, 39, 0.4);
     }
     
     /* 光滑的卡片悬停效果 */
     section section {
         transform: translateY(0);
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
     
     section section:hover {
-        transform: translateY(-2px);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
+    }
+    
+    .dark section section:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 强化标题样式 */
+    :global(article h2) {
+        font-size: 1.75rem;
+        margin-top: 2.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(209, 213, 219, 0.5);
+    }
+    
+    :global(.dark article h2) {
+        border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+    }
+    
+    :global(article h3) {
+        font-size: 1.5rem;
+        margin-top: 2rem;
+        color: #111827;
+    }
+    
+    :global(.dark article h3) {
+        color: #f9fafb;
     }
     
     /* 优化代码块样式 */
@@ -237,7 +417,7 @@ const sections = await Promise.all(
     }
     
     :global(code) {
-        font-family: 'Fira Code', 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+        font-family: var(--font-mono);
         font-size: 0.9em;
         font-feature-settings: "liga" 0;
     }
@@ -253,18 +433,19 @@ const sections = await Promise.all(
         position: absolute;
         top: 0;
         right: 0;
-        color: #888;
+        color: #6b7280;
         font-size: 0.75rem;
         font-weight: 500;
-        padding: 0.25rem 0.75rem;
-        background: rgba(0, 0, 0, 0.05);
-        border-bottom-left-radius: 0.25rem;
+        padding: 0.25rem 0.875rem;
+        background: rgba(243, 244, 246, 0.8);
+        border-bottom-left-radius: 0.375rem;
         text-transform: uppercase;
+        letter-spacing: 0.025em;
     }
     
     :global(.dark pre[class*="language-"]::before) {
-        background: rgba(255, 255, 255, 0.05);
-        color: #aaa;
+        background: rgba(31, 41, 55, 0.8);
+        color: #d1d5db;
     }
     
     /* 添加JavaScript脚本设置语言标签 */
@@ -298,6 +479,70 @@ const sections = await Promise.all(
     :global(pre[class*="language-markdown"]::before) { content: "Markdown"; }
     :global(pre[class*="language-mdx"]::before) { content: "MDX"; }
     :global(pre[class*="language-astro"]::before) { content: "Astro"; }
+    
+    /* 增强图片样式 */
+    :global(article img) {
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    :global(article img:hover) {
+        transform: scale(1.01);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* 列表样式增强 */
+    :global(article ul) {
+        padding-left: 1.25rem;
+    }
+    
+    :global(article ul li) {
+        position: relative;
+        padding-left: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    :global(article ul li::before) {
+        content: "•";
+        position: absolute;
+        left: -1rem;
+        color: #6b7280;
+        font-weight: bold;
+    }
+    
+    :global(.dark article ul li::before) {
+        color: #9ca3af;
+    }
+
+    /* 改进正文文本的可读性 */
+    :global(article p) {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+        color: #374151;
+    }
+    
+    :global(.dark article p) {
+        color: #d1d5db;
+    }
+    
+    /* 优化整体文字间距 */
+    article {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* 添加首字下沉效果 */
+    :global(article section > div > p:first-of-type:first-letter) {
+        font-family: var(--font-serif);
+        font-size: 3.5em;
+        line-height: 0.8;
+        float: left;
+        margin-right: 0.1em;
+        margin-top: 0.1em;
+    }
 </style>
 
 <script>

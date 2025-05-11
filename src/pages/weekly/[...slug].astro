@@ -6,16 +6,28 @@ import { getStaticPathsWeeklyPost } from '~/utils/contents/weekly';
 
 export const getStaticPaths = (async () => {
   const paths = await getStaticPathsWeeklyPost();
-  return paths;
+  
+  // 为每个文章添加前一篇和后一篇的引用
+  return paths.map((path, index) => {
+    const prevPost = index > 0 ? paths[index - 1].props.post : undefined;
+    const nextPost = index < paths.length - 1 ? paths[index + 1].props.post : undefined;
+    
+    return {
+      ...path,
+      props: {
+        ...path.props,
+        prevPost,
+        nextPost,
+      },
+    };
+  });
 }) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
-const { post } = Astro.props as Props;
+const { post, prevPost, nextPost } = Astro.props as Props;
 ---
 
 <Layout>
-  <SinglePost post={post} >
-    
-  </SinglePost>
+  <SinglePost post={post} prevPost={prevPost} nextPost={nextPost} />
 </Layout>
