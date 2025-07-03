@@ -2,7 +2,7 @@
 import Layout from '~/layouts/PageLayout.astro';
 import SinglePost from '~/components/pages/SinglePost.astro';
 import type { InferGetStaticPropsType, GetStaticPaths } from 'astro';
-import { getStaticPathsWeeklyPost } from '~/utils/contents/weekly';
+import { getStaticPathsWeeklyPost } from '~/utils/contents/unified-content';
 
 export const getStaticPaths = (async () => {
   const paths = await getStaticPathsWeeklyPost();
