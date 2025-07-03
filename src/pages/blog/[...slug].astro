@@ -2,7 +2,7 @@
 import Layout from '~/layouts/PageLayout.astro';
 import Blog from '~/components/pages/Blog.astro';
 import type { InferGetStaticPropsType, GetStaticPaths } from 'astro';
-import { getStaticPathsBlogPost } from '~/utils/contents/blog';
+import { getStaticPathsBlogPost } from '~/utils/contents/unified-content';
 
 export const getStaticPaths = (async () => {
   const paths = await getStaticPathsBlogPost();
