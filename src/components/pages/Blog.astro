@@ -13,37 +13,37 @@ const {post} = Astro.props;
 ---
 
 <section class='py-8 sm:py-16 lg:py-20 mx-auto'>
-    <article class="bg-gray-50/50 dark:bg-gray-900/30 py-4 sm:py-6 md:py-10 rounded-xl">
+    <article class="bg-white/80 dark:bg-gray-900/50 py-6 sm:py-8 md:py-12 rounded-2xl shadow-sm border border-gray-200/40 dark:border-gray-700/30 backdrop-blur-sm">
         <header
-            class='space-y-4 sm:space-y-6 mb-6 sm:mb-8 max-w-4xl mx-auto px-4 sm:px-6 md:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
-            <h1
-                class='text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-gray-900 dark:text-white'>
-                {post.title}
-            </h1>
+            class='space-y-6 sm:space-y-8 mb-8 sm:mb-12 max-w-4xl mx-auto px-4 sm:px-6 md:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
+            <div class="mb-6">
+                <h1
+                    class='text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-gray-900 dark:text-white mb-3'>
+                    {post.title}
+                </h1>
+                <div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+            </div>
             
             {/* 顶部信息栏，包含日期、阅读时间和标签 */}
-            <div class="flex flex-col gap-3 border-b border-gray-200/70 dark:border-gray-700/30 pb-4 sm:pb-6">
-                <div class='flex flex-wrap gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
-                    <span class='flex items-center'>
-                        <Icon name='tabler:calendar' class='w-3 h-3 sm:w-4 sm:h-4 inline-block mr-1 sm:mr-2' />
-                        <time datetime={String(post.date)} class='inline-block'>{post.date}</time>
+            <div class="flex flex-col gap-4 border-b border-gray-200/60 dark:border-gray-700/40 pb-6 sm:pb-8">
+                <div class='flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400'>
+                    <span class='flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 dark:bg-gray-800/50 rounded-full transition-colors hover:bg-gray-200/80 dark:hover:bg-gray-700/50'>
+                        <Icon name='tabler:calendar' class='w-4 h-4' />
+                        <time datetime={String(post.date)} class='font-medium'>{post.date}</time>
                     </span>
                     {
                         post.wordCount && (
-                            <span class='flex items-center'>
-                                <Icon
-                                    name='tabler:file-word'
-                                    class='w-3 h-3 sm:w-4 sm:h-4 inline-block mr-1 sm:mr-2'
-                                />
-                                {post.wordCount.toLocaleString()} 字
+                            <span class='flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 dark:bg-gray-800/50 rounded-full transition-colors hover:bg-gray-200/80 dark:hover:bg-gray-700/50'>
+                                <Icon name='tabler:file-word' class='w-4 h-4' />
+                                <span class='font-medium'>{post.wordCount.toLocaleString()} 字</span>
                             </span>
                         )
                     }
                     {
                         post.readingTime && (
-                            <span class='flex items-center'>
-                                <Icon name='tabler:clock' class='w-3 h-3 sm:w-4 sm:h-4 inline-block mr-1 sm:mr-2' />
-                                {post.readingTime}
+                            <span class='flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 dark:bg-gray-800/50 rounded-full transition-colors hover:bg-gray-200/80 dark:hover:bg-gray-700/50'>
+                                <Icon name='tabler:clock' class='w-4 h-4' />
+                                <span class='font-medium'>{post.readingTime}</span>
                             </span>
                         )
                     }
@@ -62,29 +62,53 @@ const {post} = Astro.props;
                 class={cn(
                     'prose prose-base md:prose-lg lg:prose-xl mx-auto',
                     'dark:prose-invert prose-headings:scroll-mt-[80px]',
-                    'prose-headings:font-bold prose-headings:tracking-tight prose-headings:leading-tight prose-headings:text-gray-900 dark:prose-headings:text-white',
-                    'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:underline-offset-4',
-                    'prose-img:rounded-xl prose-img:shadow-md prose-img:my-6 sm:prose-img:my-8',
-                    'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed',
-                    'prose-li:my-1 prose-li:text-gray-700 dark:prose-li:text-gray-300',
-                    'prose-pre:bg-gray-100 dark:prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-300 dark:prose-pre:border-gray-700 prose-pre:rounded-lg',
-                    'prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-code:bg-gray-100 dark:prose-code:bg-gray-800/70 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none'
+                    // 标题样式优化
+                    'prose-headings:font-semibold prose-headings:tracking-tight prose-headings:leading-snug',
+                    'prose-h1:text-3xl md:prose-h1:text-4xl prose-h1:text-gray-900 dark:prose-h1:text-white prose-h1:mb-6 prose-h1:mt-8',
+                    'prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:text-gray-800 dark:prose-h2:text-gray-100 prose-h2:mb-4 prose-h2:mt-8 prose-h2:border-b prose-h2:border-gray-200/60 dark:prose-h2:border-gray-700/40 prose-h2:pb-2',
+                    'prose-h3:text-xl md:prose-h3:text-2xl prose-h3:text-gray-800 dark:prose-h3:text-gray-100 prose-h3:mb-3 prose-h3:mt-6',
+                    'prose-h4:text-lg md:prose-h4:text-xl prose-h4:text-gray-700 dark:prose-h4:text-gray-200 prose-h4:mb-3 prose-h4:mt-5',
+                    // 段落和文本样式优化
+                    'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4 prose-p:text-[15px] md:prose-p:text-base',
+                    'prose-p:font-normal prose-p:tracking-wide',
+                    // 链接样式优化
+                    'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:underline-offset-4 prose-a:decoration-blue-600/30 dark:prose-a:decoration-blue-400/30',
+                    'prose-a:transition-all prose-a:duration-200 hover:prose-a:decoration-blue-600/60 dark:hover:prose-a:decoration-blue-400/60',
+                    // 列表样式优化
+                    'prose-li:my-1.5 prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:text-[15px] md:prose-li:text-base',
+                    'prose-ul:my-4 prose-ol:my-4 prose-ul:space-y-1 prose-ol:space-y-1',
+                    'prose-li:leading-relaxed prose-li:tracking-wide',
+                    // 图片样式优化
+                    'prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8 prose-img:border prose-img:border-gray-200/50 dark:prose-img:border-gray-700/30',
+                    'prose-img:transition-all prose-img:duration-300 hover:prose-img:shadow-xl hover:prose-img:scale-[1.02]',
+                    // 代码样式优化
+                    'prose-pre:bg-gray-50 dark:prose-pre:bg-gray-900/80 prose-pre:border prose-pre:border-gray-200/60 dark:prose-pre:border-gray-700/40 prose-pre:rounded-xl prose-pre:shadow-sm',
+                    'prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-code:bg-gray-100/80 dark:prose-code:bg-gray-800/60',
+                    'prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-medium',
+                    'prose-code:before:content-none prose-code:after:content-none prose-code:border prose-code:border-gray-200/40 dark:prose-code:border-gray-700/30',
+                    // 引用样式优化
+                    'prose-blockquote:border-l-4 prose-blockquote:border-blue-500/40 prose-blockquote:bg-blue-50/30 dark:prose-blockquote:bg-blue-900/10',
+                    'prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300 prose-blockquote:italic prose-blockquote:font-normal',
+                    // 表格样式优化
+                    'prose-table:border-collapse-separate prose-table:border-spacing-0 prose-table:rounded-xl prose-table:overflow-hidden prose-table:shadow-sm prose-table:border prose-table:border-gray-200/60 dark:prose-table:border-gray-700/40',
+                    'prose-th:bg-gray-50/80 dark:prose-th:bg-gray-800/40 prose-th:font-semibold prose-th:text-gray-900 dark:prose-th:text-gray-100',
+                    'prose-td:border-t prose-td:border-gray-200/40 dark:prose-td:border-gray-700/30'
                 )}>
                 <Fragment set:html={post.content} />
             </div>
         </div>
         
         {/* 文章页脚 */}
-        <footer class="max-w-4xl mx-auto mt-10 sm:mt-16 px-4 sm:px-6 md:px-8 border-t border-gray-200/70 dark:border-gray-700/30 pt-4 sm:pt-6 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+        <footer class="max-w-4xl mx-auto mt-12 sm:mt-20 px-4 sm:px-6 md:px-8 border-t border-gray-200/60 dark:border-gray-700/40 pt-6 sm:pt-8">
             <div class="flex justify-between items-center">
-                <a href="/blog" class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
-                    <Icon name="tabler:chevron-left" class="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                    返回文章列表
+                <a href="/blog" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100/50 dark:hover:bg-gray-800/30 rounded-lg transition-all duration-200 group">
+                    <Icon name="tabler:chevron-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                    <span class="font-medium">返回文章列表</span>
                 </a>
-                <div class="flex items-center gap-4">
-                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
-                        <Icon name="tabler:arrow-up" class="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                        回到顶部
+                <div class="flex items-center gap-3">
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100/50 dark:hover:bg-gray-800/30 rounded-lg transition-all duration-200 group">
+                        <Icon name="tabler:arrow-up" class="w-4 h-4 transition-transform group-hover:-translate-y-1" />
+                        <span class="font-medium">回到顶部</span>
                     </button>
                 </div>
             </div>
@@ -95,31 +119,69 @@ const {post} = Astro.props;
 <style>
     /* 增强代码块样式 */
     :global(.astro-code) {
-        border-radius: 0.5rem;
-        padding: 1rem !important;
-        margin: 1.25rem 0;
-        border: 1px solid rgba(75, 85, 99, 0.2);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        background-color: #f9f9f9 !important;
-        font-size: 0.85rem !important;
+        border-radius: 0.75rem !important;
+        padding: 1.25rem !important;
+        margin: 2rem 0 !important;
+        border: 1px solid rgba(156, 163, 175, 0.2) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        background-color: #fafafa !important;
+        font-size: 0.875rem !important;
+        line-height: 1.6 !important;
+        font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
+        position: relative;
+        overflow-x: auto;
     }
     
     @media (min-width: 640px) {
         :global(.astro-code) {
-            padding: 1.25rem !important;
-            margin: 1.5rem 0;
+            padding: 1.5rem !important;
+            margin: 2.5rem 0 !important;
             font-size: 0.9rem !important;
         }
     }
     
     :global(.dark .astro-code) {
-        background-color: #1a1a1a !important;
-        border-color: rgba(75, 85, 99, 0.4);
+        background-color: #111827 !important;
+        border-color: rgba(156, 163, 175, 0.3) !important;
+    }
+    
+    /* 代码块语言标签 */
+    :global(.astro-code::before) {
+        content: attr(data-language);
+        position: absolute;
+        top: 0.75rem;
+        right: 1rem;
+        font-size: 0.75rem;
+        color: rgba(107, 114, 128, 0.7);
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 0.05em;
     }
     
     /* 优化文章内链接的悬停效果 */
+    :global(article a) {
+        position: relative;
+        transition: all 0.2s ease-in-out;
+    }
+    
     :global(article a:hover) {
         text-decoration-thickness: 2px;
+        transform: translateY(-1px);
+    }
+    
+    :global(article a::after) {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        transition: width 0.3s ease-in-out;
+    }
+    
+    :global(article a:hover::after) {
+        width: 100%;
     }
     
     /* 优化标题锚点的显示 */
@@ -127,34 +189,56 @@ const {post} = Astro.props;
         text-decoration: none;
         opacity: 0;
         margin-left: 0.5rem;
-        transition: opacity 0.2s;
+        transition: all 0.2s ease-in-out;
+        color: #6b7280;
+        font-size: 0.8em;
     }
     
     :global(article h2:hover .heading-link),
     :global(article h3:hover .heading-link),
     :global(article h4:hover .heading-link) {
         opacity: 0.7;
+        transform: translateX(4px);
     }
     
     /* 优化引用块样式 */
     :global(article blockquote) {
-        border-left-width: 3px;
-        background-color: rgba(0, 0, 0, 0.02);
-        border-radius: 0.25rem;
-        padding: 0.75rem 1rem;
-        margin: 1.25rem 0;
+        border-left-width: 4px;
+        border-left-color: #3b82f6;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.02));
+        border-radius: 0.5rem;
+        padding: 1rem 1.5rem;
+        margin: 2rem 0;
         font-size: 0.95em;
+        position: relative;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    :global(article blockquote::before) {
+        content: '"';
+        position: absolute;
+        top: -0.5rem;
+        left: 1rem;
+        font-size: 3rem;
+        color: rgba(59, 130, 246, 0.2);
+        font-family: serif;
+        line-height: 1;
     }
     
     @media (min-width: 640px) {
         :global(article blockquote) {
-            padding: 1rem 1.5rem;
-            margin: 1.5rem 0;
+            padding: 1.25rem 2rem;
+            margin: 2.5rem 0;
         }
     }
     
     :global(.dark article blockquote) {
-        background-color: rgba(255, 255, 255, 0.03);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+        border-left-color: #60a5fa;
+    }
+    
+    :global(.dark article blockquote::before) {
+        color: rgba(96, 165, 250, 0.3);
     }
     
     /* 优化表格样式 */
@@ -162,63 +246,103 @@ const {post} = Astro.props;
         border-collapse: separate;
         border-spacing: 0;
         width: 100%;
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        margin: 1.25rem 0;
-        font-size: 0.85rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        margin: 2rem 0;
+        font-size: 0.875rem;
+        border: 1px solid rgba(229, 231, 235, 0.8);
     }
     
     @media (min-width: 640px) {
         :global(article table) {
-            margin: 1.5rem 0;
+            margin: 2.5rem 0;
             font-size: 0.9rem;
         }
     }
     
     :global(article th) {
-        background-color: rgba(0, 0, 0, 0.03);
+        background: linear-gradient(135deg, rgba(249, 250, 251, 0.8), rgba(243, 244, 246, 0.8));
         font-weight: 600;
-        padding: 0.5rem 0.75rem;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        color: #374151;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
     
     :global(article td) {
-        padding: 0.5rem 0.75rem;
+        padding: 0.75rem 1rem;
+        border-top: 1px solid rgba(229, 231, 235, 0.5);
+        transition: background-color 0.2s ease-in-out;
+    }
+    
+    :global(article tr:hover td) {
+        background-color: rgba(249, 250, 251, 0.5);
     }
     
     @media (min-width: 640px) {
         :global(article th),
         :global(article td) {
-            padding: 0.75rem 1rem;
+            padding: 1rem 1.25rem;
         }
     }
     
+    :global(.dark article table) {
+        border-color: rgba(75, 85, 99, 0.4);
+    }
+    
     :global(.dark article th) {
-        background-color: rgba(255, 255, 255, 0.05);
+        background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.8));
+        color: #e5e7eb;
+    }
+    
+    :global(.dark article td) {
+        border-top-color: rgba(75, 85, 99, 0.3);
+    }
+    
+    :global(.dark article tr:hover td) {
+        background-color: rgba(31, 41, 55, 0.3);
+    }
+    
+    /* 保持默认列表样式，只做基本优化 */
+    :global(article ul),
+    :global(article ol) {
+        padding-left: 1.5rem;
+        margin: 1rem 0;
+    }
+    
+    :global(article li) {
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
     }
     
     /* 移动端优化 */
     @media (max-width: 639px) {
         :global(article h1) {
-            font-size: 1.75rem !important;
-            margin-bottom: 1rem;
+            font-size: 1.875rem !important;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
         }
         
         :global(article h2) {
             font-size: 1.5rem !important;
-            margin-top: 1.75rem;
-            margin-bottom: 0.75rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
         }
         
         :global(article h3) {
             font-size: 1.25rem !important;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
         }
         
         :global(article p) {
-            margin-bottom: 1rem;
-            line-height: 1.6;
+            margin-bottom: 1.25rem;
+            line-height: 1.7;
         }
         
         :global(article ul, article ol) {
@@ -226,11 +350,27 @@ const {post} = Astro.props;
         }
         
         :global(article li) {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
         
         :global(article img) {
-            margin: 1.25rem 0;
+            margin: 1.5rem 0;
+        }
+        
+        :global(article blockquote) {
+            margin: 1.5rem 0;
+            padding: 1rem;
+        }
+        
+        :global(article table) {
+            margin: 1.5rem 0;
+            font-size: 0.8rem;
+        }
+        
+        :global(.astro-code) {
+            margin: 1.5rem 0 !important;
+            padding: 1rem !important;
+            font-size: 0.8rem !important;
         }
     }
     
@@ -238,11 +378,61 @@ const {post} = Astro.props;
     :global(article p),
     :global(article li) {
         letter-spacing: 0.01em;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
     
-    @media (max-width: 639px) {
-        :global(article) {
-            font-size: 0.95rem;
-        }
+    /* 添加段落首行缩进（可选） */
+    :global(article p + p) {
+        text-indent: 0;
+        margin-top: 1rem;
+    }
+    
+    /* 强调文本样式 */
+    :global(article strong) {
+        font-weight: 600;
+        color: #1f2937;
+    }
+    
+    :global(.dark article strong) {
+        color: #f9fafb;
+    }
+    
+    :global(article em) {
+        font-style: italic;
+        color: #4b5563;
+    }
+    
+    :global(.dark article em) {
+        color: #d1d5db;
+    }
+    
+    /* 分隔线样式 */
+    :global(article hr) {
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+        margin: 3rem 0;
+    }
+    
+    :global(.dark article hr) {
+        background: linear-gradient(90deg, transparent, #374151, transparent);
+    }
+    
+    /* 添加平滑滚动 */
+    :global(html) {
+        scroll-behavior: smooth;
+    }
+    
+    /* 优化选中文本样式 */
+    :global(article ::selection) {
+        background-color: rgba(59, 130, 246, 0.2);
+        color: #1f2937;
+    }
+    
+    :global(.dark article ::selection) {
+        background-color: rgba(96, 165, 250, 0.3);
+        color: #f9fafb;
     }
 </style>
