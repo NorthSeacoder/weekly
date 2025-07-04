@@ -5,6 +5,7 @@ import type { WeeklyPost, Section } from '@/types/weekly';
 import type { BlogPost } from '@/types/blog';
 import dayjs from 'dayjs';
 import { getPermalink } from '@/src/utils/permalinks';
+import { processMarkdown } from '@/src/utils/remark';
 
 // 初始化数据库连接
 initDatabase();
@@ -86,7 +87,9 @@ export class BlogService {
                         return {};
                     }
                     
-                    const blogList = rows.map(row => this.transformToBlogPost(row));
+                    const blogList = await Promise.all(
+                        rows.map(row => this.transformToBlogPost(row))
+                    );
                     
                     // 按分类分组
                     return blogList.reduce((acc, item) => {
@@ -105,18 +108,58 @@ export class BlogService {
         );
     }
 
-    private static transformToBlogPost(row: ContentRow): BlogPost {
+    /**
+     * 根据slug获取单篇博客文章
+     */
+    static async getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+        try {
+            const sql = `
+                SELECT 
+                    c.*,
+                    cat.name as category_name,
+                    cat.slug as category_slug,
+                    GROUP_CONCAT(t.name SEPARATOR ',') as tags
+                FROM contents c
+                LEFT JOIN categories cat ON c.category_id = cat.id
+                LEFT JOIN content_tags ct ON c.id = ct.content_id
+                LEFT JOIN tags t ON ct.tag_id = t.id
+                LEFT JOIN content_types ct_type ON c.content_type_id = ct_type.id
+                WHERE ct_type.slug = 'blog' 
+                    AND c.status = 'published'
+                    AND c.slug = ?
+                GROUP BY c.id
+                LIMIT 1
+            `;
+            
+            const rows = await query<ContentRow[]>(sql, [slug]);
+            
+            if (!rows || rows.length === 0) {
+                return null;
+            }
+            
+            return await this.transformToBlogPost(rows[0]);
+            
+        } catch (error) {
+            console.error('Error getting blog post by slug:', error);
+            return null;
+        }
+    }
+
+    private static async transformToBlogPost(row: ContentRow): Promise<BlogPost> {
+        // 处理 markdown 内容转换为 HTML
+        const content = await processMarkdown(row.content);
+        
         return {
             id: row.id.toString(),
             title: row.title,
             slug: row.slug,
             desc: row.description,
-            content: row.content,
+            content: content,
             category: row.category_name,
             tags: row.tags ? row.tags.split(',').map(tag => tag.trim()) : [],
             date: dayjs(row.published_at).format('YYYY-MM-DD'),
             permalink: getPermalink(row.slug, 'blog-post'),
-            readingTime: `${row.reading_time} min read`,
+            readingTime: `${row.reading_time} 分钟`,
             wordCount: row.word_count,
             lastUpdated: dayjs(row.updated_at).format('YYYY-MM-DD HH:mm:ss')
         };

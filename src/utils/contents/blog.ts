@@ -62,3 +62,17 @@ export const getStaticPathsBlogPost = async () => {
         return [];
     }
 };
+
+/**
+ * 根据slug获取单篇博客文章（文件系统版本）
+ */
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+    try {
+        const posts = await getBlogPosts();
+        const blogList = Object.values(posts).flat();
+        return blogList.find(post => post.slug === slug) || null;
+    } catch (error) {
+        console.error('Error getting blog post by slug:', error);
+        return null;
+    }
+}

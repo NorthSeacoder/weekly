@@ -34,6 +34,19 @@ export async function getWeeklyPosts(): Promise<WeeklyPost[]> {
 }
 
 /**
+ * 统一的博客文章获取接口（通过slug）
+ */
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+    if (useDatabase()) {
+        const { getBlogPostBySlug: getBlogPostBySlugFromDB } = await import('./blog-db');
+        return getBlogPostBySlugFromDB(slug);
+    } else {
+        const { getBlogPostBySlug: getBlogPostBySlugFromFS } = await import('./blog');
+        return getBlogPostBySlugFromFS(slug);
+    }
+}
+
+/**
  * 统一的博客静态路径生成
  */
 export const getStaticPathsBlogPost = async () => {

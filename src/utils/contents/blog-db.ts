@@ -31,12 +31,5 @@ export const getStaticPathsBlogPost = async () => {
  * 根据slug获取单篇博客文章（数据库版本）
  */
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-    try {
-        const allPosts = await getBlogPosts();
-        const blogList = Object.values(allPosts).flat();
-        return blogList.find(post => post.slug === slug) || null;
-    } catch (error) {
-        console.error('Error getting blog post by slug:', error);
-        return null;
-    }
+    return BlogService.getBlogPostBySlug(slug);
 } 
