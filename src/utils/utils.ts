@@ -1,4 +1,6 @@
 import { I18N } from 'weekly:config';
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 
 export const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat(I18N?.language, {
   year: 'numeric',
@@ -50,3 +52,7 @@ export const toUiAmount = (amount: number) => {
 
   return value;
 };
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
