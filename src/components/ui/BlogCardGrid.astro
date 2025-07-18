@@ -15,7 +15,7 @@ interface Props {
   showSubCategories?: boolean;
 }
 
-const { blogs = [], columns = 1, className = '', showSubCategories = true } = Astro.props;
+const { blogs = [], columns = 3, className = '', showSubCategories = true } = Astro.props;
 
 const blogsBySubCategory = showSubCategories 
   ? blogs.reduce((acc, blog) => {
@@ -28,11 +28,31 @@ const blogsBySubCategory = showSubCategories
     }, {} as Record<string, BlogItem[]>)
   : { '默认': blogs };
 
+// 智能响应式网格类 - 优化版本
+const getGridClasses = (cols: number) => {
+  const baseClasses = 'grid gap-4 sm:gap-6 lg:gap-8 xl:gap-10';
+  
+  switch (cols) {
+    case 1:
+      return cn(baseClasses, 'grid-cols-1');
+    case 2:
+      return cn(baseClasses, 'grid-cols-1 md:grid-cols-2');
+    case 3:
+      return cn(baseClasses, 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3');
+    case 4:
+      return cn(baseClasses, 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4');
+    case 5:
+      return cn(baseClasses, 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5');
+    case 6:
+      return cn(baseClasses, 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6');
+    default:
+      return cn(baseClasses, 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3');
+  }
+};
+
 const gridClasses = cn(
-  'grid gap-4',
-  columns === 1 ? 'grid-cols-1' : 
-  columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 
-  'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+  getGridClasses(columns),
+  'auto-rows-fr', // 确保行高一致
   className
 );
 
@@ -43,99 +63,549 @@ const sortedSubCategories = Object.keys(blogsBySubCategory).sort((a, b) => {
   if (b === '默认') return 1;
   return a.localeCompare(b);
 });
+
+// 分类图标映射
+const getCategoryIcon = (category: string) => {
+  const icons = {
+    'React': 'tabler:brand-react',
+    'Vue': 'tabler:brand-vue',
+    'Angular': 'tabler:brand-angular',
+    'JavaScript': 'tabler:brand-javascript',
+    'TypeScript': 'tabler:brand-typescript',
+    'CSS': 'tabler:brand-css3',
+    'HTML': 'tabler:brand-html5',
+    'Node.js': 'tabler:brand-nodejs',
+    'Python': 'tabler:brand-python',
+    'Java': 'tabler:coffee',
+    'PHP': 'tabler:brand-php',
+    'Go': 'tabler:brand-golang',
+    'Rust': 'tabler:brand-rust',
+    'Swift': 'tabler:brand-swift',
+    'Kotlin': 'tabler:brand-kotlin',
+    '默认': 'tabler:folder',
+  };
+  return icons[category] || 'tabler:code';
+};
 ---
 
 {hasMultipleSubCategories ? (
-  <div class="space-y-8">
-    {sortedSubCategories.map((subCategory) => (
-      <div class="mb-8 last:mb-0">
-        <div class="flex items-center mb-4">
-          <div class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2"></div>
-          <h4 class="text-lg font-medium text-gray-600 dark:text-gray-400 flex items-center">
-            {subCategory}
-            <span class="text-sm text-gray-500 dark:text-gray-400 ml-2 font-normal">
-              ({blogsBySubCategory[subCategory].length})
-            </span>
-          </h4>
+  <div class="space-y-20 lg:space-y-24">
+    {sortedSubCategories.map((subCategory, categoryIndex) => (
+      <section 
+        class="animate-fade-in-up relative" 
+        style={`animation-delay: ${categoryIndex * 0.1}s;`}
+        data-category={subCategory}
+      >
+        <!-- 背景装饰 -->
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/2 via-transparent to-accent-warm/2 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10"></div>
+        
+        <!-- 精致的分类标题 -->
+        <div class="flex items-center justify-between mb-10 lg:mb-14">
+          <div class="flex items-center space-x-5">
+            <!-- 增强装饰性图标容器 -->
+            <div class="flex-shrink-0 relative group">
+              <div class="w-14 h-14 bg-gradient-to-br from-primary/15 via-accent-warm/10 to-accent-cool/15 rounded-2xl flex items-center justify-center shadow-xl shadow-primary/10 backdrop-blur-sm border border-primary/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-primary/20">
+                <Icon name={getCategoryIcon(subCategory)} class="w-7 h-7 text-primary transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
+                <!-- 增强装饰性光晕 -->
+                <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent-warm/40 rounded-2xl blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-300 -z-10"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent-warm/20 rounded-2xl blur-2xl opacity-50 group-hover:opacity-80 transition-opacity duration-500 -z-20"></div>
+              </div>
+            </div>
+            
+            <!-- 分类信息 -->
+            <div class="flex-shrink-0">
+              <h3 class="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white font-heading tracking-tight">
+                {subCategory}
+              </h3>
+              <div class="flex items-center gap-3 mt-2">
+                <div class="flex items-center gap-2 text-sm lg:text-base text-gray-500 dark:text-gray-400">
+                  <Icon name="tabler:files" class="w-4 h-4 opacity-70" />
+                  <span class="font-medium">{blogsBySubCategory[subCategory].length} 篇文章</span>
+                </div>
+                <div class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                <div class="flex items-center gap-2 text-sm lg:text-base text-gray-500 dark:text-gray-400">
+                  <Icon name="tabler:clock" class="w-4 h-4 opacity-70" />
+                  <span class="font-medium">最近更新</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 装饰性分隔线 -->
+          <div class="flex-1 ml-8 lg:ml-12">
+            <div class="relative">
+              <div class="h-px bg-gradient-to-r from-gray-200 via-gray-300 to-transparent dark:from-gray-700 dark:via-gray-600 dark:to-transparent"></div>
+              <div class="absolute top-0 left-0 h-px w-20 bg-gradient-to-r from-primary/80 via-accent-warm/80 to-primary/40 animate-pulse"></div>
+              <div class="absolute top-0 left-0 h-px w-8 bg-gradient-to-r from-primary to-accent-warm animate-shimmer"></div>
+            </div>
+          </div>
+          
+          <!-- 分类统计 -->
+          <div class="hidden lg:flex items-center gap-4">
+            <div class="px-4 py-2 bg-gradient-to-r from-primary/10 to-accent-warm/10 rounded-xl border border-primary/20 backdrop-blur-sm">
+              <span class="text-sm font-semibold text-primary">{blogsBySubCategory[subCategory].length}</span>
+            </div>
+          </div>
         </div>
         
-        <div class={gridClasses}>
-          {blogsBySubCategory[subCategory].sort((a, b) => Number(a.id ?? '0') - Number(b.id ?? '0')).map((blog) => (
-            <a href={blog.permalink} class="group transition-all duration-300 block">
-              <StatCard title={blog.title} desc={blog.desc} date={blog.date} tags={blog.tags} />
-            </a>
-          ))}
+        <!-- 文章网格 -->
+        <div class={cn(gridClasses, 'mb-8 lg:mb-12')}>
+          {blogsBySubCategory[subCategory]
+            .sort((a, b) => Number(a.id ?? '0') - Number(b.id ?? '0'))
+            .slice(0, 6)
+            .map((blog, index) => (
+              <div 
+                class="animate-fade-in-up group transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1" 
+                style={`animation-delay: ${(categoryIndex * 0.1) + (index * 0.05)}s;`}
+              >
+                <a 
+                  href={blog.permalink} 
+                  class="group block h-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-4 rounded-2xl focus:scale-[1.02]"
+                  aria-label={`阅读文章: ${blog.title}`}
+                >
+                  <StatCard 
+                    title={blog.title} 
+                    desc={blog.desc} 
+                    date={blog.date} 
+                    tags={blog.tags} 
+                  />
+                </a>
+              </div>
+            ))}
         </div>
         
+        <!-- 增强展开/收起按钮 -->
         {blogsBySubCategory[subCategory].length > 6 && (
-          <div class="flex justify-center mt-4">
+          <div class="flex justify-center">
             <button 
-              class="text-sm flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300 transition-colors"
+              class="group relative inline-flex items-center gap-4 px-10 py-5 text-base font-bold text-gray-600 dark:text-gray-400 bg-gradient-to-br from-white/95 to-gray-50/90 dark:from-gray-800/95 dark:to-gray-700/90 border border-gray-200/80 dark:border-gray-700/80 rounded-2xl hover:border-primary/60 dark:hover:border-primary/70 hover:text-primary dark:hover:text-primary hover:bg-gradient-to-br hover:from-primary/8 hover:to-accent-warm/8 dark:hover:from-primary/15 dark:hover:to-accent-warm/15 transition-all duration-500 hover:-translate-y-2 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-4 backdrop-blur-lg animate-gpu overflow-hidden"
               data-show-more
               data-subcategory={subCategory}
+              data-remaining-count={blogsBySubCategory[subCategory].length - 6}
+              aria-label={`展开查看更多 ${subCategory} 文章`}
             >
-              <Icon name="tabler:chevron-down" class="w-4 h-4" />
-              查看更多
+              <!-- 背景装饰 -->
+              <div class="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent-warm/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+              
+              <!-- 图标容器 -->
+              <div class="relative z-10 flex items-center justify-center w-8 h-8 bg-gradient-to-br from-primary/20 to-accent-warm/20 rounded-xl group-hover:from-primary/30 group-hover:to-accent-warm/30 transition-all duration-300">
+                <Icon name="tabler:chevron-down" class="w-5 h-5 transition-all duration-300 group-hover:translate-y-1 group-hover:scale-110 text-primary" />
+                <div class="absolute inset-0 bg-primary/30 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              </div>
+              
+              <!-- 文本 -->
+              <span class="relative z-10 transition-all duration-300 group-hover:scale-105 tracking-wide">查看更多</span>
+              
+              <!-- 数量标识 -->
+              <div class="relative z-10 flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-gray-100/95 to-gray-200/90 dark:from-gray-700/95 dark:to-gray-600/90 rounded-xl border border-gray-200/60 dark:border-gray-600/60 transition-all duration-300 group-hover:from-primary/15 group-hover:to-accent-warm/15 group-hover:border-primary/40 group-hover:text-primary dark:group-hover:text-primary">
+                <Icon name="tabler:plus" class="w-4 h-4 transition-transform duration-300 group-hover:rotate-90" />
+                <span class="text-sm font-bold">{blogsBySubCategory[subCategory].length - 6}</span>
+              </div>
+              
+              <!-- 微光效果 -->
+              <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/25 to-transparent dark:via-white/15 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+              </div>
+              
+              <!-- 边缘发光 -->
+              <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 via-accent-warm/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"></div>
             </button>
           </div>
         )}
-      </div>
+      </section>
     ))}
   </div>
 ) : (
-  <div class={gridClasses}>
-    {blogs.sort((a, b) => Number(a.id ?? '0') - Number(b.id ?? '0')).map((blog) => (
-      <a href={blog.permalink} class="group transition-all duration-300 block">
-        <StatCard title={blog.title} desc={blog.desc} date={blog.date} tags={blog.tags} />
-      </a>
-    ))}
+  <div class="relative">
+    <!-- 单一分类背景装饰 -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-accent-warm/3 rounded-3xl opacity-50 -z-10"></div>
+    
+    <div class={cn(gridClasses, 'animate-fade-in-up')}>
+      {blogs
+        .sort((a, b) => Number(a.id ?? '0') - Number(b.id ?? '0'))
+        .map((blog, index) => (
+          <div 
+            class="animate-fade-in-up group transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1" 
+            style={`animation-delay: ${index * 0.05}s;`}
+          >
+            <a 
+              href={blog.permalink} 
+              class="group block h-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-4 rounded-2xl focus:scale-[1.02]"
+              aria-label={`阅读文章: ${blog.title}`}
+            >
+              <StatCard 
+                title={blog.title} 
+                desc={blog.desc} 
+                date={blog.date} 
+                tags={blog.tags} 
+              />
+            </a>
+          </div>
+        ))}
+    </div>
   </div>
 )}
 
-<script is:inline>
-  document.addEventListener('DOMContentLoaded', () => {
+<script>
+  // 增强展开/收起功能
+  function initShowMoreButtons() {
     const showMoreButtons = document.querySelectorAll('[data-show-more]');
     
     showMoreButtons.forEach(button => {
+      let isExpanded = false;
       const subCategory = button.getAttribute('data-subcategory');
-      const gridContainer = button.closest('div').previousElementSibling;
+      const remainingCount = button.getAttribute('data-remaining-count');
       
-      if (gridContainer) {
-        const cards = gridContainer.querySelectorAll('a');
+      button.addEventListener('click', async function(e) {
+        e.preventDefault();
         
-        if (cards.length > 6) {
-          let showing = 6;
+        // 防止重复点击
+        if (this.getAttribute('aria-busy') === 'true') return;
+        
+        this.setAttribute('aria-busy', 'true');
+        const section = this.closest('section');
+        const grid = section?.querySelector('.grid');
+        
+        if (!isExpanded) {
+          // 展开状态
+          this.innerHTML = `
+            <div class="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent-warm/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+            
+            <div class="relative z-10 flex items-center justify-center w-8 h-8 bg-gradient-to-br from-primary/20 to-accent-warm/20 rounded-xl group-hover:from-primary/30 group-hover:to-accent-warm/30 transition-all duration-300">
+              <svg class="w-5 h-5 transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-110 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+              </svg>
+              <div class="absolute inset-0 bg-primary/30 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+            </div>
+            
+            <span class="relative z-10 transition-all duration-300 group-hover:scale-105 tracking-wide">收起</span>
+            
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl overflow-hidden">
+              <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/25 to-transparent dark:via-white/15 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+            </div>
+            
+            <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 via-accent-warm/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"></div>
+          `;
           
-          cards.forEach((card, index) => {
-            if (index >= showing) {
-              card.style.display = 'none';
-            }
-          });
+          // 这里可以添加加载更多文章的逻辑
+          // 暂时模拟异步加载
+          await new Promise(resolve => setTimeout(resolve, 500));
           
-          button.addEventListener('click', () => {
-            if (showing === 6) {
-              cards.forEach(card => {
-                card.style.display = 'block';
-              });
-              button.innerHTML = '<svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>收起';
-              showing = cards.length;
-            } else {
-              cards.forEach((card, index) => {
-                if (index >= 6) {
-                  card.style.display = 'none';
-                }
-              });
-              button.innerHTML = '<svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>查看更多';
-              showing = 6;
-              
-              const section = button.closest('.mb-8');
-              if (section) {
-                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
-            }
-          });
+          isExpanded = true;
+        } else {
+          // 收起状态
+          this.innerHTML = `
+            <div class="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent-warm/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+            
+            <div class="relative z-10 flex items-center justify-center w-8 h-8 bg-gradient-to-br from-primary/20 to-accent-warm/20 rounded-xl group-hover:from-primary/30 group-hover:to-accent-warm/30 transition-all duration-300">
+              <svg class="w-5 h-5 transition-all duration-300 group-hover:translate-y-1 group-hover:scale-110 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+              <div class="absolute inset-0 bg-primary/30 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+            </div>
+            
+            <span class="relative z-10 transition-all duration-300 group-hover:scale-105 tracking-wide">查看更多</span>
+            
+            <div class="relative z-10 flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-gray-100/95 to-gray-200/90 dark:from-gray-700/95 dark:to-gray-600/90 rounded-xl border border-gray-200/60 dark:border-gray-600/60 transition-all duration-300 group-hover:from-primary/15 group-hover:to-accent-warm/15 group-hover:border-primary/40 group-hover:text-primary dark:group-hover:text-primary">
+              <svg class="w-4 h-4 transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span class="text-sm font-bold">${remainingCount}</span>
+            </div>
+            
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl overflow-hidden">
+              <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/25 to-transparent dark:via-white/15 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+            </div>
+            
+            <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 via-accent-warm/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"></div>
+          `;
+          
+          isExpanded = false;
         }
-      }
+        
+        this.removeAttribute('aria-busy');
+        this.setAttribute('aria-expanded', isExpanded.toString());
+      });
     });
-  });
-</script> 
+  }
+  
+  // 初始化
+  document.addEventListener('DOMContentLoaded', initShowMoreButtons);
+  
+  // 页面导航时重新初始化
+  document.addEventListener('astro:after-swap', initShowMoreButtons);
+</script>
+
+<style>
+  /* 分阶段动画 */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(40px) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-30px) scale(0.95);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* 网格布局优化 */
+  .grid {
+    display: grid;
+    align-items: stretch;
+  }
+
+  /* 确保卡片高度一致 */
+  .grid > div {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .grid > div > a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 按钮动画性能优化 */
+  [data-show-more] {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform, box-shadow;
+  }
+
+  /* 分类标题增强 */
+  h3 {
+    position: relative;
+    background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--foreground-muted)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  h3::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent-warm)));
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  h3:hover::after {
+    width: 100%;
+  }
+
+  /* 装饰性背景 */
+  section::before {
+    content: '';
+    position: absolute;
+    top: -2rem;
+    left: -2rem;
+    right: -2rem;
+    bottom: -2rem;
+    background: radial-gradient(circle at 30% 20%, rgba(var(--primary-rgb), 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(var(--accent-warm-rgb), 0.03) 0%, transparent 50%);
+    border-radius: 2rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: -1;
+  }
+
+  section:hover::before {
+    opacity: 1;
+  }
+
+  /* 响应式优化 */
+  @media (max-width: 640px) {
+    .space-y-20 {
+      gap: 3rem;
+    }
+    
+    .space-y-24 {
+      gap: 4rem;
+    }
+    
+    [data-show-more] {
+      padding: 1rem 1.5rem;
+      font-size: 0.875rem;
+      gap: 0.75rem;
+    }
+    
+    h3 {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .grid {
+      gap: 1rem;
+    }
+    
+    section {
+      padding: 1rem;
+      border-radius: 1rem;
+    }
+  }
+
+  /* 大屏幕优化 */
+  @media (min-width: 1024px) {
+    .grid {
+      gap: 2rem;
+    }
+    
+    section {
+      padding: 2rem;
+      border-radius: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .grid {
+      gap: 2.5rem;
+    }
+    
+    h3 {
+      font-size: 2.5rem;
+    }
+  }
+
+  /* 暗色模式特殊处理 */
+  .dark [data-show-more] {
+    backdrop-filter: blur(16px) saturate(180%);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .dark section::before {
+    background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+  }
+
+  /* 可访问性增强 */
+  [data-show-more]:focus-visible {
+    outline: 3px solid hsl(var(--primary));
+    outline-offset: 3px;
+  }
+
+  [data-show-more]:focus-visible::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 2px solid hsl(var(--primary));
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  /* 加载状态 */
+  [data-show-more][aria-busy="true"] {
+    cursor: wait;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  [data-show-more][aria-busy="true"]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 1.5s linear infinite;
+    border-radius: inherit;
+  }
+
+  /* 减少动画 */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in-up,
+    .animate-shimmer,
+    [data-show-more],
+    [data-show-more] *,
+    h3::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* 触摸设备优化 */
+  @media (hover: none) {
+    [data-show-more]:hover,
+    .group:hover,
+    h3:hover::after {
+      transform: none;
+    }
+    
+    section:hover::before {
+      opacity: 0;
+    }
+  }
+
+  /* 高对比度模式 */
+  @media (prefers-contrast: high) {
+    [data-show-more] {
+      border-width: 2px;
+      font-weight: 700;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }
+    
+    h3 {
+      color: hsl(var(--foreground)) !important;
+      background: none !important;
+      -webkit-background-clip: unset !important;
+      background-clip: unset !important;
+    }
+  }
+
+  /* 性能优化 */
+  .grid,
+  section,
+  [data-show-more] {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* 打印样式 */
+  @media print {
+    [data-show-more] {
+      display: none;
+    }
+    
+    .animate-fade-in-up {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style> 

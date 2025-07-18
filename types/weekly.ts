@@ -11,6 +11,7 @@ export type WeeklyPost = {
     readingTime?: string;
     wordCount?: number;
     lastUpdated?: string;
+    screenshot_api?: 'ScreenshotLayer' | 'HCTI' | 'manual';
     sections: Section[];
 };
 export type Section = {
@@ -18,6 +19,7 @@ export type Section = {
     tags: string[];
     category?: string;
     source?: string;
+    screenshot_api?: 'ScreenshotLayer' | 'HCTI' | 'manual';
 };
 
 export type PostsByMonth = string[];

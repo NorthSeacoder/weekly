@@ -19,6 +19,7 @@ interface WeeklyItemData {
     source?: string;
     content: string;
     date: string;
+    screenshot_api?: 'ScreenshotLayer' | 'HCTI' | 'manual';
 }
 
 class WeeklyItemCreator {
@@ -164,6 +165,7 @@ class WeeklyItemCreator {
                 status: 'published',
                 published_at: dayjs(itemData.date).format('YYYY-MM-DD HH:mm:ss'),
                 source: itemData.source || '',
+                screenshot_api: itemData.screenshot_api || 'manual',
                 word_count: readingTime.words,
                 reading_time: Math.ceil(readingTime.minutes),
                 created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),

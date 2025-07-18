@@ -10,22 +10,146 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-    <!-- Site Card ******************* -->
+    <!-- 极简优雅 Hero Section -->
     <Hero
+        tagline="AI 驱动的前端技术周刊"
         actions={[
-            {text: '往期内容', href: '/weekly'}
+            {
+                text: '开始阅读', 
+                href: '/weekly',
+                variant: 'primary'
+            },
+            {
+                text: '最新内容', 
+                href: '#latest-content',
+                variant: 'secondary'
+            }
         ]}
-        image={{src: '~/assets/images/hero-image.png', alt: 'AstroWind Hero Image'}}>
+        image={{src: '~/assets/images/hero-image.png', alt: 'AI驱动的前端技术周刊'}}>
+        
         <Fragment slot='title'>
-            我不知道的周刊<br />
-            <span class='hidden xl:inline'>created with</span>
-            <span class='text-accent dark:text-white highlight'> Astro 5.0</span> + Tailwind CSS
+            我不知道的周刊
         </Fragment>
 
         <Fragment slot='subtitle'>
-            AI驱动的前端技术周刊，精选并深度解读 Web 前端及周边生态的优质内容，涵盖实用工具、开源项目、前沿资讯与最佳实践。依托 AI 技术智能分析与筛选，本周刊致力于为开发者提供高质量、可落地的前沿技术参考与实战指南，助力提升技术深度与广度
+            <div class="text-center space-y-12">
+                <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 font-light leading-relaxed max-w-3xl mx-auto">
+                    发现前端技术的未知之美，每周精选优质内容
+                </p>
+                
+                <!-- 精简特色 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-16">
+                    <div class="group relative h-48">
+                        <!-- 背景光效 -->
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                        
+                        <!-- 主要内容 -->
+                        <div class="relative bg-white dark:bg-gray-900 rounded-2xl p-6 text-center transform transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-2xl h-full flex flex-col justify-center">
+                            <!-- 图标容器 -->
+                            <div class="relative mx-auto mb-4 w-16 h-16">
+                                <!-- 旋转背景环 -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-300 group-hover:animate-spin" style="animation-duration: 3s;"></div>
+                                
+                                <!-- 图标背景 - 统一为正方形 -->
+                                <div class="relative w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-12">
+                                    <span class="text-white text-2xl transform transition-transform duration-300 group-hover:scale-110">🔍</span>
+                                </div>
+                                
+                                <!-- 脉冲效果 -->
+                                <div class="absolute inset-0 bg-blue-500 rounded-xl opacity-0 group-hover:opacity-20 group-hover:animate-ping"></div>
+                            </div>
+                            
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                                AI 智能筛选
+                            </h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                                基于机器学习算法，智能筛选高质量前端技术内容
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="group relative h-48">
+                        <!-- 背景光效 -->
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200 animate-pulse" style="animation-delay: 0.5s;"></div>
+                        
+                        <!-- 主要内容 -->
+                        <div class="relative bg-white dark:bg-gray-900 rounded-2xl p-6 text-center transform transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-2xl h-full flex flex-col justify-center">
+                            <!-- 图标容器 -->
+                            <div class="relative mx-auto mb-4 w-16 h-16">
+                                <!-- 旋转背景环 -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-300 group-hover:animate-spin" style="animation-duration: 3s; animation-delay: 0.5s;"></div>
+                                
+                                <!-- 图标背景 - 统一为正方形 -->
+                                <div class="relative w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-12">
+                                    <span class="text-white text-2xl transform transition-transform duration-300 group-hover:scale-110">🛠️</span>
+                                </div>
+                                
+                                <!-- 脉冲效果 -->
+                                <div class="absolute inset-0 bg-blue-500 rounded-xl opacity-0 group-hover:opacity-20 group-hover:animate-ping"></div>
+                            </div>
+                            
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                                实用工具
+                            </h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                                精选开源项目、开发工具和实战案例
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="group relative h-48">
+                        <!-- 背景光效 -->
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200 animate-pulse" style="animation-delay: 1s;"></div>
+                        
+                        <!-- 主要内容 -->
+                        <div class="relative bg-white dark:bg-gray-900 rounded-2xl p-6 text-center transform transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-2xl h-full flex flex-col justify-center">
+                            <!-- 图标容器 -->
+                            <div class="relative mx-auto mb-4 w-16 h-16">
+                                <!-- 旋转背景环 -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-300 group-hover:animate-spin" style="animation-duration: 3s; animation-delay: 1s;"></div>
+                                
+                                <!-- 图标背景 - 统一为正方形 -->
+                                <div class="relative w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-12">
+                                    <span class="text-white text-2xl transform transition-transform duration-300 group-hover:scale-110">🚀</span>
+                                </div>
+                                
+                                <!-- 脉冲效果 -->
+                                <div class="absolute inset-0 bg-blue-500 rounded-xl opacity-0 group-hover:opacity-20 group-hover:animate-ping"></div>
+                            </div>
+                            
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                                前沿洞察
+                            </h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                                追踪最新技术趋势和最佳实践
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </Fragment>
     </Hero>
-    <!-- 最新内容 -->
-    <LatestWeeklyList />
+    
+    <!-- 最新内容区域 -->
+    <section id="latest-content" class="scroll-mt-20">
+        <LatestWeeklyList />
+    </section>
 </Layout>
+
+<style>
+    /* 极简动画 */
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-fade-in {
+        animation: fade-in 0.8s ease-out forwards;
+    }
+</style>

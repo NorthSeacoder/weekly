@@ -324,6 +324,7 @@ class ContentMigrator {
             status: 'published',
             published_at: frontmatter.date ? dayjs(frontmatter.date).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss'),
             source: frontmatter.source || '',
+            screenshot_api: 'manual',
             word_count: readingTime.words,
             reading_time: Math.ceil(readingTime.minutes),
             created_at: frontmatter.date ? dayjs(frontmatter.date).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss'),

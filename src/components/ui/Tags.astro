@@ -1,81 +1,336 @@
 ---
-import Tooltip from './Tooltip.astro'; // 引入 Tooltip 组件
 import { cn } from '~/utils/utils';
-import { themes } from '~/utils/theme';
-interface TooltipProps {
-    maxWidth?: string;
-    columns?: number;
-    position?: 'top' | 'bottom' | 'left' | 'right';
-}
 
 interface TagProps {
     tags?: string[];
     maxVisible?: number;
-    tooltipProps?: TooltipProps;
     compact?: boolean;
+    variant?: 'default' | 'colored' | 'outlined' | 'minimal';
+    size?: 'sm' | 'md' | 'lg';
 }
 
 const { 
     tags = [], 
-    maxVisible = 2,
-    tooltipProps = {},
-    compact = false
+    maxVisible = 3,
+    compact = false,
+    variant = 'default',
+    size = 'sm'
 } = Astro.props as TagProps;
 
-// 首先计算可见和剩余标签
+// 计算可见和剩余标签
 const visibleTags = tags.slice(0, maxVisible);
 const remainingTags = tags.slice(maxVisible);
 
-
-const getRandomTheme = (excludeThemes: string[] = []) => {
-    const availableThemes = Object.keys(themes).filter(t => !excludeThemes.includes(t));
-    if (availableThemes.length === 0) {
-        return Object.keys(themes)[Math.floor(Math.random() * Object.keys(themes).length)];
+// 精致的色彩主题配置
+const colorThemes = [
+    {
+        bg: 'bg-gradient-to-br from-blue-50 to-blue-100/60 dark:from-blue-950/50 dark:to-blue-900/40',
+        text: 'text-blue-700 dark:text-blue-300',
+        border: 'border-blue-200/70 dark:border-blue-800/50',
+        hover: 'hover:from-blue-100 hover:to-blue-200/70 dark:hover:from-blue-900/60 dark:hover:to-blue-800/50',
+        shadow: 'shadow-blue-500/15 hover:shadow-blue-500/25'
+    },
+    {
+        bg: 'bg-gradient-to-br from-emerald-50 to-emerald-100/60 dark:from-emerald-950/50 dark:to-emerald-900/40',
+        text: 'text-emerald-700 dark:text-emerald-300',
+        border: 'border-emerald-200/70 dark:border-emerald-800/50',
+        hover: 'hover:from-emerald-100 hover:to-emerald-200/70 dark:hover:from-emerald-900/60 dark:hover:to-emerald-800/50',
+        shadow: 'shadow-emerald-500/15 hover:shadow-emerald-500/25'
+    },
+    {
+        bg: 'bg-gradient-to-br from-purple-50 to-purple-100/60 dark:from-purple-950/50 dark:to-purple-900/40',
+        text: 'text-purple-700 dark:text-purple-300',
+        border: 'border-purple-200/70 dark:border-purple-800/50',
+        hover: 'hover:from-purple-100 hover:to-purple-200/70 dark:hover:from-purple-900/60 dark:hover:to-purple-800/50',
+        shadow: 'shadow-purple-500/15 hover:shadow-purple-500/25'
+    },
+    {
+        bg: 'bg-gradient-to-br from-amber-50 to-amber-100/60 dark:from-amber-950/50 dark:to-amber-900/40',
+        text: 'text-amber-700 dark:text-amber-300',
+        border: 'border-amber-200/70 dark:border-amber-800/50',
+        hover: 'hover:from-amber-100 hover:to-amber-200/70 dark:hover:from-amber-900/60 dark:hover:to-amber-800/50',
+        shadow: 'shadow-amber-500/15 hover:shadow-amber-500/25'
+    },
+    {
+        bg: 'bg-gradient-to-br from-rose-50 to-rose-100/60 dark:from-rose-950/50 dark:to-rose-900/40',
+        text: 'text-rose-700 dark:text-rose-300',
+        border: 'border-rose-200/70 dark:border-rose-800/50',
+        hover: 'hover:from-rose-100 hover:to-rose-200/70 dark:hover:from-rose-900/60 dark:hover:to-rose-800/50',
+        shadow: 'shadow-rose-500/15 hover:shadow-rose-500/25'
+    },
+    {
+        bg: 'bg-gradient-to-br from-indigo-50 to-indigo-100/60 dark:from-indigo-950/50 dark:to-indigo-900/40',
+        text: 'text-indigo-700 dark:text-indigo-300',
+        border: 'border-indigo-200/70 dark:border-indigo-800/50',
+        hover: 'hover:from-indigo-100 hover:to-indigo-200/70 dark:hover:from-indigo-900/60 dark:hover:to-indigo-800/50',
+        shadow: 'shadow-indigo-500/15 hover:shadow-indigo-500/25'
     }
-    return availableThemes[Math.floor(Math.random() * availableThemes.length)];
+];
+
+// 尺寸配置
+const sizeClasses = {
+    sm: compact ? 'text-[10px] px-2 py-0.5 min-h-[1.25rem]' : 'text-xs px-2.5 py-1 min-h-[1.5rem]',
+    md: compact ? 'text-xs px-2.5 py-1 min-h-[1.5rem]' : 'text-sm px-3 py-1.5 min-h-[2rem]',
+    lg: compact ? 'text-sm px-3 py-1.5 min-h-[2rem]' : 'text-base px-4 py-2 min-h-[2.5rem]',
 };
 
-// 用于存储已使用的主题
-const usedThemes: string[] = [];
-
-// 为每个可见标签生成主题，如果所有主题都被使用过，则重新开始
-const tagThemes = visibleTags.map(() => {
-    if (usedThemes.length === Object.keys(themes).length) {
-        usedThemes.length = 0; // 重置已使用的主题
+// 变体样式
+const getVariantClasses = (themeIndex: number) => {
+    const theme = colorThemes[themeIndex % colorThemes.length];
+    
+    switch (variant) {
+        case 'colored':
+            return cn(
+                theme.bg,
+                theme.text,
+                theme.border,
+                theme.hover,
+                theme.shadow,
+                'border backdrop-blur-sm'
+            );
+        case 'outlined':
+            return cn(
+                'bg-transparent backdrop-blur-sm',
+                theme.text,
+                theme.border,
+                'border-2',
+                'hover:bg-gray-50/90 dark:hover:bg-gray-800/60',
+                'hover:shadow-sm'
+            );
+        case 'minimal':
+            return cn(
+                'bg-gray-100/90 dark:bg-gray-800/90',
+                'text-gray-700 dark:text-gray-300',
+                'border-transparent backdrop-blur-sm',
+                'hover:bg-gray-200/90 dark:hover:bg-gray-700/90',
+                'hover:shadow-sm'
+            );
+        default:
+            return cn(
+                theme.bg,
+                theme.text,
+                'border border-gray-200/60 dark:border-gray-700/60',
+                theme.hover,
+                'backdrop-blur-sm shadow-sm hover:shadow-md'
+            );
     }
-    let theme = getRandomTheme(usedThemes);
-    usedThemes.push(theme);
-    return theme;
-});
+};
 
 const baseTagClasses = cn(
-    compact ? 'text-[10px] px-1.5 py-0' : 'text-xs px-2 py-0.5',
-    'rounded border backdrop-blur-sm transition-all duration-300 hover:scale-105'
+    sizeClasses[size],
+    'relative inline-flex items-center justify-center',
+    'font-medium rounded-full',
+    'transition-all duration-300 ease-out',
+    'hover:scale-105 hover:-translate-y-0.5',
+    'cursor-default select-none',
+    'overflow-hidden group',
+    'focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1'
 );
 
 const remainingTagClasses = cn(
-    compact ? 'text-[10px] px-1.5 py-0' : 'text-xs px-2 py-0.5',
-    'rounded bg-gradient-to-br from-gray-500/10 to-gray-500/5',
-    'text-gray-400 border border-gray-500/20',
-    'backdrop-blur-sm hover:from-gray-500/20 hover:to-gray-500/10',
-    'transition-all duration-300'
+    sizeClasses[size],
+    'relative inline-flex items-center justify-center',
+    'font-medium rounded-full',
+    'bg-gradient-to-br from-gray-100/95 to-gray-50/90',
+    'dark:from-gray-800/95 dark:to-gray-700/90',
+    'text-gray-600 dark:text-gray-400',
+    'border border-gray-200/70 dark:border-gray-600/70',
+    'backdrop-blur-sm shadow-sm',
+    'transition-all duration-300 ease-out',
+    'hover:from-gray-200/95 hover:to-gray-100/90',
+    'dark:hover:from-gray-700/95 dark:hover:to-gray-600/90',
+    'hover:text-gray-700 dark:hover:text-gray-300',
+    'hover:scale-105 hover:-translate-y-0.5 hover:shadow-md',
+    'cursor-default select-none',
+    'overflow-hidden group',
+    'focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:ring-offset-1'
 );
 ---
 
-<div class={`flex flex-wrap ${compact ? 'gap-1.5' : 'gap-2'} items-center`} data-name="tags-container">
-    {visibleTags.map((tag, index) => (
-        <span
-            class={cn(baseTagClasses, themes[tagThemes[index]])}
-            data-name={`tag-${index}`}
-            data-theme={tagThemes[index]}
-        >
-            {tag}
-        </span>
-    ))}
+{tags.length > 0 && (
+    <div class={cn(
+        'flex flex-wrap items-center',
+        compact ? 'gap-1.5' : 'gap-2'
+    )}>
+        {visibleTags.map((tag, index) => (
+            <span
+                class={cn(baseTagClasses, getVariantClasses(index))}
+                title={tag}
+                role="button"
+                tabindex="0"
+                aria-label={`标签: ${tag}`}
+            >
+                <!-- 微光效果 -->
+                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent dark:via-white/25 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+                </div>
+                
+                <!-- 文本内容 -->
+                <span class="relative z-10 truncate max-w-20 sm:max-w-24 md:max-w-none transition-transform duration-300 group-hover:scale-105">
+                    {tag}
+                </span>
+                
+                <!-- 装饰性小点 -->
+                <div class="absolute top-1 right-1 w-1 h-1 bg-current opacity-20 rounded-full group-hover:opacity-40 transition-opacity duration-300"></div>
+            </span>
+        ))}
 
-    {remainingTags.length > 0 && (
-        <span class={remainingTagClasses} data-name="remaining-tags-count">
-            +{remainingTags.length}
-        </span>
-    )}
-</div> 
+        {remainingTags.length > 0 && (
+            <span
+                class={remainingTagClasses}
+                title={`还有 ${remainingTags.length} 个标签: ${remainingTags.join(', ')}`}
+                role="button"
+                tabindex="0"
+                aria-label={`还有 ${remainingTags.length} 个标签`}
+            >
+                <!-- 微光效果 -->
+                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent dark:via-white/25 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+                </div>
+                
+                <!-- 内容 -->
+                <div class="relative z-10 flex items-center gap-1 transition-transform duration-300 group-hover:scale-105">
+                    <svg class="w-3 h-3 transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span class="font-semibold">{remainingTags.length}</span>
+                </div>
+                
+                <!-- 装饰性边框 -->
+                <div class="absolute inset-0 rounded-full border border-gray-300/50 dark:border-gray-600/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </span>
+        )}
+    </div>
+)}
+
+<style>
+    /* 增强可访问性 */
+    [role="button"]:focus-visible {
+        outline: 2px solid hsl(var(--primary));
+        outline-offset: 2px;
+    }
+
+    /* 键盘导航 */
+    [role="button"]:focus {
+        z-index: 10;
+    }
+
+    /* 优化文字渲染 */
+    [role="button"] {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* 触摸设备优化 */
+    @media (hover: none) {
+        [role="button"]:hover {
+            transform: none;
+        }
+    }
+
+    /* 减少动画 */
+    @media (prefers-reduced-motion: reduce) {
+        [role="button"],
+        [role="button"] * {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+
+    /* 高对比度模式 */
+    @media (prefers-contrast: high) {
+        [role="button"] {
+            border-width: 2px;
+            font-weight: 600;
+        }
+    }
+
+    /* 响应式文本截断 */
+    @media (max-width: 640px) {
+        .truncate {
+            max-width: 4rem;
+        }
+    }
+
+    @media (min-width: 641px) and (max-width: 768px) {
+        .truncate {
+            max-width: 5rem;
+        }
+    }
+
+    /* 暗色模式下的特殊效果 */
+    .dark [role="button"] {
+        backdrop-filter: blur(8px) saturate(150%);
+    }
+
+    /* 标签动画性能优化 */
+    [role="button"] {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+
+    /* 悬停时的特殊效果 */
+    [role="button"]:hover {
+        filter: brightness(1.05);
+    }
+
+    .dark [role="button"]:hover {
+        filter: brightness(1.1);
+    }
+
+    /* 活跃状态 */
+    [role="button"]:active {
+        transform: translateY(1px) scale(0.98);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        [role="button"]:active {
+            transform: none;
+        }
+    }
+
+    /* 标签组布局优化 */
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    /* 提升可读性 */
+    [role="button"] span {
+        line-height: 1.2;
+        letter-spacing: 0.025em;
+    }
+
+    /* 工具提示样式增强 */
+    [role="button"][title] {
+        position: relative;
+    }
+
+    /* 标签边框渐变效果 */
+    [role="button"]::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    [role="button"]:hover::before {
+        opacity: 1;
+    }
+
+    .dark [role="button"]::before {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+    }
+</style> 
