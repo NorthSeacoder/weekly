@@ -8,10 +8,10 @@ const weekly = await getWeeklyPosts()
 const latestWeeklyList = weekly.slice(0, 12);
 ---
 
-<section class="py-12 dark:bg-dark">
+<section class="py-6 lg:py-8 dark:bg-dark">
     <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">最新周刊</h2>
-        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h2 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6">最新周刊</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {latestWeeklyList.map((weekly) => (
                 <li>
                     <a href={weekly.permalink} class="block">
@@ -24,7 +24,7 @@ const latestWeeklyList = weekly.slice(0, 12);
                 </li>
             ))}
         </ul>
-        <div class="mt-8 text-center">
+        <div class="mt-4 lg:mt-6 text-center">
             <Button href="/weekly">
                 更多内容
             </Button>

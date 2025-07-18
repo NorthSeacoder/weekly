@@ -62,6 +62,7 @@ CREATE TABLE contents (
     -- 来源信息（用于weekly内容）
     source VARCHAR(200) COMMENT '来源',
     source_url VARCHAR(1000) COMMENT '来源链接',
+    screenshot_api ENUM('ScreenshotLayer', 'HCTI', 'manual') DEFAULT 'manual' COMMENT '截图API类型',
     
     -- 排序和组织
     sort_order INT DEFAULT 0 COMMENT '排序权重',

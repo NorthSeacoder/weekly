@@ -12,6 +12,7 @@ interface Link {
     href?: string;
     ariaLabel?: string;
     icon?: string;
+    links?: Link[];
 }
 
 export interface Props {
@@ -60,99 +61,406 @@ const actions: Array<CallToAction> = [];
 
 <header
     class:list={[
-        {sticky: isSticky, relative: !isSticky, dark: isDark},
-        'top-0 z-40 flex-none mx-auto w-full border-b border-gray-50/0 transition-[opacity] ease-in-out'
+        'top-0 z-40 flex-none mx-auto w-full border-b border-gray-50/0 transition-all duration-300 ease-in-out',
+        'bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl backdrop-saturate-150',
+        'supports-[backdrop-filter]:bg-white/60 supports-[backdrop-filter]:dark:bg-gray-900/60',
+        {
+            'sticky': isSticky,
+            'relative': !isSticky,
+        }
     ]}
-    {...isSticky ? {'data-aw-sticky-header': true} : {}}
-    {...id ? {id} : {}}>
-    <div class='absolute inset-0'></div>
-    <div
-        class:list={[
-            'relative text-default py-3 px-3 md:px-6 mx-auto w-full',
-            {
-                'md:flex md:justify-between': position !== 'center'
-            },
-            {
-                'md:grid md:grid-cols-3 md:items-center': position === 'center'
-            },
-            {
-                'max-w-7xl': !isFullWidth
-            }
-        ]}>
-        <div class:list={[{'mr-auto rtl:mr-0 rtl:ml-auto': position === 'right'}, 'flex justify-between']}>
-            <a class='flex items-center' href={getHomePermalink()}>
-                <Logo />
-            </a>
-            <div class='flex items-center md:hidden'>
-                <ToggleMenu />
+    {...id ? { id } : {}}>
+    
+    <!-- 装饰性顶部渐变线 -->
+    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+    
+    <!-- 微光效果 -->
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer-slow pointer-events-none"></div>
+    
+    <div class:list={['relative text-default py-3 px-3 md:px-6 mx-auto w-full', { 'max-w-7xl': !isFullWidth }]}>
+        <div class="flex justify-between items-center">
+            <!-- Logo部分 -->
+            <div class="flex items-center">
+                <a class="flex items-center group" href={getHomePermalink()}>
+                    <Logo class="transition-transform duration-300 group-hover:scale-105" />
+                </a>
             </div>
-        </div>
-        <nav
-            class='items-center w-full md:w-auto hidden md:flex md:mx-5 text-default overflow-y-auto overflow-x-hidden md:overflow-y-visible md:overflow-x-auto md:justify-self-center'
-            aria-label='Main navigation'>
-            <ul
-                class='flex flex-col md:flex-row md:self-center w-full md:w-auto text-xl md:text-[0.9375rem] tracking-[0.01rem] font-medium md:justify-center'>
+            
+            <!-- 桌面导航 -->
+            <nav
+                class="items-center w-full md:w-auto hidden md:flex text-default overflow-y-auto overflow-x-hidden md:overflow-y-visible md:overflow-x-auto md:mx-5"
+                aria-label="Main navigation">
                 {
-                    links.map(({text, href}) => (
-                        <li>
-                            <a
-                                class:list={[
-                                    'hover:text-link dark:hover:text-white px-4 py-3 flex items-center whitespace-nowrap',
-                                    {'aw-link-active': href === currentPath}
-                                ]}
-                                href={href}>
-                                {text}
-                            </a>
-                        </li>
+                    links.map(({ text, href, links }) => (
+                        <div class="relative group">
+                            {!links || links.length === 0 ? (
+                                <a
+                                    class:list={[
+                                        'font-medium hover:text-blue-600 dark:hover:text-blue-400 px-4 py-3 flex items-center transition-colors duration-300 rounded-xl',
+                                        'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2',
+                                        'relative overflow-hidden',
+                                        {
+                                            'text-blue-600 dark:text-blue-400': href === currentPath,
+                                            'text-gray-600 dark:text-gray-300': href !== currentPath,
+                                        },
+                                    ]}
+                                    href={href}
+                                >
+                                    <!-- 移除背景装饰效果 -->
+                                    
+                                    <span class="relative z-10 font-heading tracking-wide">{text}</span>
+                                </a>
+                            ) : (
+                                <button
+                                    class:list={[
+                                        'font-medium hover:text-blue-600 dark:hover:text-blue-400 px-4 py-3 flex items-center transition-colors duration-300 rounded-xl',
+                                        'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2',
+                                        'relative overflow-hidden group',
+                                        'text-gray-600 dark:text-gray-300',
+                                    ]}
+                                    aria-expanded="false"
+                                    aria-haspopup="true"
+                                >
+                                    <!-- 移除背景装饰效果 -->
+                                    
+                                    <span class="relative z-10 font-heading tracking-wide">{text}</span>
+                                    <Icon name="tabler:chevron-down" class="w-4 h-4 ml-1 transition-transform duration-300 group-hover:rotate-180" />
+                                </button>
+                            )}
+                        </div>
                     ))
                 }
-            </ul>
-        </nav>
-        <div
-            class:list={[
-                {'ml-auto rtl:ml-0 rtl:mr-auto': position === 'left'},
-                'hidden md:self-center md:flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0 md:justify-self-end'
-            ]}>
-            <div class='items-center flex justify-between w-full md:w-auto'>
-                <div class='flex'>
-                    {showToggleTheme && <ToggleTheme iconClass='w-6 h-6 md:w-5 md:h-5 md:inline-block' />}
-                    {
-                        showRssFeed && (
-                            <a
-                                class='text-muted dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
-                                aria-label='RSS Feed'
-                                href={getAsset('/rss.xml')}>
-                                <Icon name='tabler:rss' class='w-5 h-5' />
-                            </a>
-                        )
-                    }
-                    {
-                        showEmail && (
-                            <a 
-                                class='text-muted dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
-                                aria-label='RSS Feed'
-                                href='https://quaily.com/northseacoder'
-                                >
-                                <Icon name='tabler:mail' class='w-5 h-5' />
-                            </a>
-                        )
-                    }
-                </div>
-                {
-                    actions?.length ? (
-                        <span class='ml-4 rtl:ml-0 rtl:mr-4'>
+            </nav>
+            
+            <!-- 右侧工具栏 -->
+            <div class="md:self-center flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0 md:justify-end bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none border-t border-gray-200/50 dark:border-gray-700/50 md:border-none">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <!-- RSS Feed -->
+                    {showRssFeed && (
+                        <a
+                            class="text-muted dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center transition-all duration-300 hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
+                            aria-label="RSS Feed"
+                            href={getAsset('/rss.xml')}
+                        >
+                            <Icon name="tabler:rss" class="w-5 h-5" />
+                        </a>
+                    )}
+                    
+                    <!-- Theme Toggle -->
+                    {showToggleTheme && (
+                        <div class="hover:scale-110 transition-transform duration-300">
+                            <ToggleTheme iconClass="w-5 h-5" />
+                        </div>
+                    )}
+                    
+                    <!-- Actions -->
+                    {actions?.length ? (
+                        <div class="ml-2 rtl:ml-0 rtl:mr-2">
                             {actions.map((btnProps) => (
                                 <Button
+                                    variant="primary"
+                                    size="sm"
+                                    class="ml-2 py-2.5 px-5 md:px-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-0.5"
                                     {...btnProps}
-                                    class='ml-2 py-2.5 px-5.5 md:px-6 font-semibold shadow-none text-sm w-auto'
                                 />
                             ))}
-                        </span>
-                    ) : (
-                        ''
-                    )
-                }
+                        </div>
+                    ) : null}
+                    
+                    <!-- Mobile Menu Toggle -->
+                    <div class="md:hidden ml-2">
+                        <ToggleMenu 
+                            iconClass="w-6 h-6" 
+                            class="hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-all duration-300 hover:scale-110"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    
+    <!-- 底部装饰线 -->
+    <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent opacity-60"></div>
 </header>
+
+<!-- 滚动效果脚本 -->
+<script>
+    function initHeaderEffects() {
+        const header = document.querySelector('header');
+        if (!header) return;
+        
+        let lastScrollY = window.scrollY;
+        let isScrolling = false;
+        
+        function updateHeader() {
+            const scrollY = window.scrollY;
+            const scrollDelta = scrollY - lastScrollY;
+            
+            // 添加滚动类
+            if (scrollY > 50) {
+                header.classList.add('scrolled');
+                header.style.setProperty('--scroll-opacity', Math.min(scrollY / 100, 1).toString());
+            } else {
+                header.classList.remove('scrolled');
+                header.style.setProperty('--scroll-opacity', '0');
+            }
+            
+            // 滚动方向检测 - 移除自动隐藏功能
+            // if (scrollDelta > 0 && scrollY > 100) {
+            //     header.classList.add('scroll-down');
+            //     header.classList.remove('scroll-up');
+            // } else if (scrollDelta < 0) {
+            //     header.classList.add('scroll-up');
+            //     header.classList.remove('scroll-down');
+            // }
+            
+            lastScrollY = scrollY;
+            isScrolling = false;
+        }
+        
+        function handleScroll() {
+            if (!isScrolling) {
+                requestAnimationFrame(updateHeader);
+                isScrolling = true;
+            }
+        }
+        
+        // 初始化
+        updateHeader();
+        
+        // 监听滚动
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        
+        // 清理函数
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }
+    
+    // 初始化
+    document.addEventListener('DOMContentLoaded', initHeaderEffects);
+    
+    // 页面导航时重新初始化
+    document.addEventListener('astro:after-swap', initHeaderEffects);
+</script>
+
+<style>
+    /* 自定义动画 */
+    @keyframes shimmer-slow {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+    
+    .animate-shimmer-slow {
+        animation: shimmer-slow 12s linear infinite;
+    }
+    
+    /* 滚动状态样式 */
+    header.scrolled {
+        @apply border-gray-200/20 dark:border-gray-700/20;
+        backdrop-filter: blur(20px) saturate(180%);
+    }
+    
+    /* 移除自动隐藏效果 */
+    /* header.scroll-down {
+        transform: translateY(-100%);
+    }
+    
+    header.scroll-up {
+        transform: translateY(0);
+    } */
+    
+    /* 玻璃态效果增强 */
+    header {
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+    }
+    
+    /* 导航链接悬停效果 */
+    nav a:hover,
+    nav button:hover {
+        backdrop-filter: blur(8px);
+    }
+    
+    /* 活跃状态增强 */
+    nav a[class*="text-primary"] {
+        position: relative;
+    }
+    
+    nav a[class*="text-primary"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-rgb), 0.05));
+        border-radius: 0.75rem;
+        z-index: -1;
+    }
+    
+    /* 下拉菜单样式 */
+    nav button[aria-expanded="true"] + div {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    
+    /* 工具栏图标悬停效果 */
+    .text-muted:hover {
+        color: rgb(37 99 235); /* blue-600 */
+    }
+    
+    .dark .text-muted:hover {
+        color: rgb(96 165 250); /* blue-400 */
+    }
+    
+    /* 移动端底部工具栏优化 */
+    @media (max-width: 768px) {
+        .fixed.bottom-0 {
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+        }
+    }
+    
+         /* 确保header固定定位 */
+     header.sticky,
+     header[class*="sticky"] {
+         position: sticky;
+         top: 0;
+     }
+     
+     /* 响应式优化 */
+     @media (min-width: 769px) {
+         header {
+             position: sticky;
+             top: 0;
+         }
+     }
+    
+    /* 高对比度模式 */
+    @media (prefers-contrast: high) {
+        header {
+            background: hsl(var(--background)) !important;
+            backdrop-filter: none !important;
+        }
+        
+        nav a:hover,
+        nav button:hover {
+            background: hsl(var(--primary)) !important;
+            color: hsl(var(--primary-foreground)) !important;
+        }
+    }
+    
+    /* 减少动画 */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+        
+        .animate-shimmer-slow {
+            animation: none !important;
+        }
+    }
+    
+    /* 暗色模式微光效果 */
+    .dark .animate-shimmer-slow {
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+    }
+    
+    /* 聚焦指示器 */
+    nav a:focus-visible,
+    nav button:focus-visible {
+        outline: 2px solid hsl(var(--primary));
+        outline-offset: 2px;
+    }
+    
+    /* 触摸设备优化 */
+    @media (hover: none) {
+        nav a:hover,
+        nav button:hover,
+        .hover\:scale-110:hover,
+        .hover\:scale-105:hover {
+            transform: none;
+        }
+    }
+    
+    /* Logo悬停效果 */
+    .group:hover .transition-transform {
+        transform: scale(1.05);
+    }
+    
+    /* 装饰性渐变线动画 */
+    .absolute.top-0.h-px {
+        background: linear-gradient(90deg, transparent, rgba(var(--primary-rgb), 0.3), transparent);
+    }
+    
+    .absolute.bottom-0.h-px {
+        background: linear-gradient(90deg, transparent, rgba(156, 163, 175, 0.6), transparent);
+    }
+    
+    .dark .absolute.bottom-0.h-px {
+        background: linear-gradient(90deg, transparent, rgba(75, 85, 99, 0.6), transparent);
+    }
+    
+    /* 按钮增强效果 */
+    .ml-2.rtl\:ml-0 button {
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
+        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+    }
+    
+    .ml-2.rtl\:ml-0 button:hover {
+        box-shadow: 0 8px 24px rgba(var(--primary-rgb), 0.4);
+        transform: translateY(-2px) scale(1.05);
+    }
+    
+    /* 菜单切换按钮 */
+    .md\:hidden button {
+        background: rgba(var(--primary-rgb), 0.1);
+        border: 1px solid rgba(var(--primary-rgb), 0.2);
+    }
+    
+    .md\:hidden button:hover {
+        background: rgba(var(--primary-rgb), 0.2);
+        border-color: rgba(var(--primary-rgb), 0.3);
+    }
+    
+    /* 性能优化 */
+    header,
+    nav a,
+    nav button {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+    }
+    
+    /* 大屏幕优化 */
+    @media (min-width: 1920px) {
+        .max-w-7xl {
+            max-width: 90rem;
+        }
+    }
+    
+    /* 可访问性增强 */
+    nav a[aria-current="page"] {
+        font-weight: 600;
+    }
+    
+    /* 键盘导航优化 */
+    nav a:focus,
+    nav button:focus {
+        z-index: 10;
+    }
+    
+    /* 文字渲染优化 */
+    .font-heading {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+</style>

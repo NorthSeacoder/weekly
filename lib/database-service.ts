@@ -48,6 +48,7 @@ export interface Content {
   view_count: number;
   source?: string;
   source_url?: string;
+  screenshot_api: 'ScreenshotLayer' | 'HCTI' | 'manual';
   sort_order: number;
   featured: boolean;
   created_at: Date;
@@ -105,7 +106,7 @@ export class CategoryService {
    * 获取所有分类
    */
   static async getAll(): Promise<Category[]> {
-    return await query<Category>(`
+    return await query<Category[]>(`
       SELECT * FROM categories 
       ORDER BY sort_order ASC, name ASC
     `);
@@ -115,7 +116,7 @@ export class CategoryService {
    * 根据slug获取分类
    */
   static async getBySlug(slug: string): Promise<Category | null> {
-    const results = await query<Category>(`
+    const results = await query<Category[]>(`
       SELECT * FROM categories 
       WHERE slug = ? LIMIT 1
     `, [slug]);
@@ -126,7 +127,7 @@ export class CategoryService {
    * 获取顶级分类
    */
   static async getTopLevel(): Promise<Category[]> {
-    return await query<Category>(`
+    return await query<Category[]>(`
       SELECT * FROM categories 
       WHERE parent_id IS NULL 
       ORDER BY sort_order ASC, name ASC
@@ -142,7 +143,7 @@ export class TagService {
    * 获取所有标签
    */
   static async getAll(): Promise<Tag[]> {
-    return await query<Tag>(`
+    return await query<Tag[]>(`
       SELECT * FROM tags 
       ORDER BY count DESC, name ASC
     `);
@@ -152,7 +153,7 @@ export class TagService {
    * 获取热门标签
    */
   static async getPopular(limit: number = 20): Promise<Tag[]> {
-    return await query<Tag>(`
+    return await query<Tag[]>(`
       SELECT * FROM tags 
       WHERE count > 0 
       ORDER BY count DESC 
@@ -194,7 +195,7 @@ export class ContentService {
       }
     }
 
-    return await query<Content>(sql, params);
+    return await query<Content[]>(sql, params);
   }
 
   /**

@@ -1,40 +1,313 @@
 ---
 import { Icon } from 'astro-icon/components';
 import { cn } from '~/utils/utils';
-import type { CallToAction as Props } from '~/types';
+import type { CallToAction } from '~/types';
+
+export interface Props {
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'destructive' | 'link';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  disabled?: boolean;
+  loading?: boolean;
+  href?: string;
+  target?: string;
+  rel?: string;
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+  icon?: string;
+  iconPosition?: 'left' | 'right';
+  fullWidth?: boolean;
+  children?: any;
+  [key: string]: any;
+}
 
 const {
-  variant = 'secondary',
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  loading = false,
+  href,
   target,
-  text = Astro.slots.render('default'),
-  icon = '',
-  class: className = '',
-  type,
+  rel,
+  type = 'button',
+  class: className,
+  icon,
+  iconPosition = 'left',
+  fullWidth = false,
+  children,
   ...rest
 } = Astro.props;
 
-const variants = {
-  primary: 'btn-primary',
-  secondary: 'btn-secondary',
-  tertiary: 'btn btn-tertiary',
-  link: 'cursor-pointer hover:text-primary',
+// 基础样式
+const baseClasses = cn(
+  'relative inline-flex items-center justify-center gap-2',
+  'font-semibold font-heading tracking-wide',
+  'rounded-xl border transition-all duration-300 ease-out',
+  'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary',
+  'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
+  'overflow-hidden group animate-gpu',
+  'transform-gpu backface-visibility-hidden',
+  {
+    'w-full': fullWidth,
+    'cursor-not-allowed opacity-50': disabled || loading,
+  }
+);
+
+// 尺寸变体
+const sizeVariants = {
+  sm: 'px-4 py-2.5 text-sm min-h-[2.5rem] gap-1.5',
+  md: 'px-6 py-3 text-base min-h-[2.75rem] gap-2',
+  lg: 'px-8 py-4 text-lg min-h-[3.25rem] gap-2.5',
+  xl: 'px-10 py-5 text-xl min-h-[3.75rem] gap-3',
 };
+
+// 样式变体
+const variants = {
+  primary: cn(
+    'bg-gradient-to-r from-primary via-primary-hover to-primary',
+    'text-white border-transparent shadow-lg shadow-primary/25',
+    'hover:shadow-xl hover:shadow-primary/35 hover:-translate-y-1 hover:scale-105',
+    'active:translate-y-0 active:scale-100 active:shadow-lg',
+    'dark:shadow-primary/30 dark:hover:shadow-primary/40',
+    'focus:ring-primary/50'
+  ),
+  secondary: cn(
+    'bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800',
+    'text-gray-900 dark:text-white border-gray-200 dark:border-gray-700',
+    'shadow-lg shadow-gray-500/15 dark:shadow-gray-900/25',
+    'hover:shadow-xl hover:shadow-gray-500/25 dark:hover:shadow-gray-900/35',
+    'hover:-translate-y-1 hover:scale-105',
+    'hover:from-gray-200 hover:via-gray-100 hover:to-gray-200',
+    'dark:hover:from-gray-700 dark:hover:via-gray-600 dark:hover:to-gray-700',
+    'active:translate-y-0 active:scale-100 active:shadow-lg',
+    'focus:ring-primary/50'
+  ),
+  tertiary: cn(
+    'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+    'border-gray-200 dark:border-gray-700',
+    'hover:bg-gray-200 dark:hover:bg-gray-700',
+    'hover:text-gray-900 dark:hover:text-white',
+    'hover:-translate-y-0.5 hover:shadow-sm',
+    'active:translate-y-0 active:bg-gray-300 dark:active:bg-gray-600',
+    'focus:ring-gray-500/50'
+  ),
+  ghost: cn(
+    'bg-transparent text-gray-700 dark:text-gray-300 border-transparent',
+    'hover:bg-gray-100 dark:hover:bg-gray-800',
+    'hover:text-gray-900 dark:hover:text-white',
+    'hover:-translate-y-0.5 hover:shadow-sm',
+    'active:translate-y-0 active:bg-gray-200 dark:active:bg-gray-700',
+    'focus:ring-gray-500/50'
+  ),
+  destructive: cn(
+    'bg-gradient-to-r from-red-500 to-red-600 text-white border-transparent',
+    'shadow-lg shadow-red-500/25',
+    'hover:shadow-xl hover:shadow-red-500/35 hover:-translate-y-1 hover:scale-105',
+    'active:translate-y-0 active:scale-100 active:shadow-lg',
+    'focus:ring-red-500/50'
+  ),
+  link: cn(
+    'bg-transparent text-primary border-transparent p-0 h-auto min-h-0',
+    'hover:text-primary-hover hover:underline',
+    'focus:ring-0 focus:ring-offset-0 focus:underline',
+    'active:text-primary-hover'
+  ),
+};
+
+const buttonClasses = cn(
+  baseClasses,
+  sizeVariants[size],
+  variants[variant],
+  className
+);
+
+// 图标尺寸映射
+const iconSizes = {
+  sm: 'w-4 h-4',
+  md: 'w-5 h-5',
+  lg: 'w-6 h-6',
+  xl: 'w-7 h-7',
+};
+
+const Element = href ? 'a' : 'button';
+const elementProps = href
+  ? { href, target, rel, ...rest }
+  : { type, disabled: disabled || loading, ...rest };
 ---
 
-{
-  type === 'button' || type === 'submit' || type === 'reset' ? (
-    <button type={type} class={cn(variants[variant], className)} {...rest}>
-      <Fragment set:html={text} />
-      {icon && <Icon name={icon} class={cn("w-5 h-5 ml-1 -mr-1.5 rtl:mr-1 rtl:-ml-1.5 inline-block")} />}
-    </button>
-  ) : (
-    <a
-      class={cn(variants[variant], className)}
-      {...(target ? { target: target, rel: 'noopener noreferrer' } : {})}
-      {...rest}
-    >
-      <Fragment set:html={text} />
-      {icon && <Icon name={icon} class={cn("w-5 h-5 ml-1 -mr-1.5 rtl:mr-1 rtl:-ml-1.5 inline-block")} />}
-    </a>
-  )
-}
+<Element class={buttonClasses} {...elementProps}>
+  <!-- 微光效果 -->
+  {(variant === 'primary' || variant === 'secondary' || variant === 'destructive') && (
+    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/25 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+    </div>
+  )}
+  
+  <!-- 渐变背景增强 -->
+  {variant === 'primary' && (
+    <div class="absolute inset-0 bg-gradient-to-r from-primary-soft/20 via-accent-warm/20 to-primary-soft/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+  )}
+  
+  <!-- Secondary 渐变背景增强 -->
+  {variant === 'secondary' && (
+    <div class="absolute inset-0 bg-gradient-to-r from-gray-200/30 via-gray-100/30 to-gray-200/30 dark:from-gray-600/30 dark:via-gray-700/30 dark:to-gray-600/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+  )}
+  
+  <!-- 加载状态 -->
+  {loading && (
+    <div class="absolute inset-0 flex items-center justify-center bg-inherit rounded-xl">
+      <svg class="animate-spin h-5 w-5 text-current" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+  )}
+  
+  <!-- 内容容器 -->
+  <div class={cn('relative z-10 flex items-center gap-2 transition-transform duration-300', {
+    'opacity-0': loading,
+    'flex-row-reverse': iconPosition === 'right',
+    'group-hover:scale-105': variant !== 'link'
+  })}>
+    <!-- 图标 -->
+    {icon && (
+      <Icon name={icon} class={cn(iconSizes[size], 'transition-transform duration-300', {
+        'group-hover:scale-110': variant !== 'link',
+        'group-hover:rotate-12': variant === 'primary',
+        'group-hover:-rotate-12': variant === 'destructive'
+      })} />
+    )}
+    
+    <!-- 文本内容 -->
+    <span class={cn('transition-transform duration-300', {
+      'group-hover:scale-105': variant !== 'link'
+    })}>
+      <slot>{children}</slot>
+    </span>
+  </div>
+  
+  <!-- 聚焦指示器 -->
+  <div class="absolute inset-0 rounded-xl ring-2 ring-primary ring-opacity-0 transition-all duration-300 focus-within:ring-opacity-100 pointer-events-none"></div>
+  
+  <!-- 按压效果 -->
+  {variant !== 'link' && (
+    <div class="absolute inset-0 bg-black/5 dark:bg-white/5 opacity-0 group-active:opacity-100 transition-opacity duration-75 rounded-xl"></div>
+  )}
+</Element>
+
+<style>
+  /* 增强按钮的可访问性 */
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+
+  /* 禁用状态下的链接样式 */
+  a[aria-disabled="true"] {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  /* 优化文字渲染 */
+  button,
+  a {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 按钮动画性能优化 */
+  button,
+  a {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  /* 减少动画对于喜欢减少动画的用户 */
+  @media (prefers-reduced-motion: reduce) {
+    button,
+    a {
+      transition: none !important;
+      transform: none !important;
+    }
+    
+    button *,
+    a * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* 触摸设备优化 */
+  @media (hover: none) {
+    button:hover,
+    a:hover {
+      transform: none;
+    }
+  }
+
+  /* 高对比度模式 */
+  @media (prefers-contrast: high) {
+    button,
+    a {
+      border-width: 2px;
+    }
+  }
+
+  /* 大屏幕优化 */
+  @media (min-width: 1024px) {
+    button,
+    a {
+      transition-duration: 200ms;
+    }
+  }
+
+  /* 暗色模式特殊处理 */
+  .dark button[class*="primary"],
+  .dark a[class*="primary"] {
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
+  }
+
+  .dark button[class*="primary"]:hover,
+  .dark a[class*="primary"]:hover {
+    box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.4);
+  }
+
+  /* 按钮组样式 */
+  .btn-group button:not(:first-child):not(:last-child),
+  .btn-group a:not(:first-child):not(:last-child) {
+    border-radius: 0;
+  }
+
+  .btn-group button:first-child,
+  .btn-group a:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .btn-group button:last-child,
+  .btn-group a:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  /* 加载状态优化 */
+  button[aria-busy="true"],
+  a[aria-busy="true"] {
+    cursor: wait;
+  }
+
+  /* 增强点击反馈 */
+  button:active,
+  a:active {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    button:active,
+    a:active {
+      transform: none;
+    }
+  }
+</style>
