@@ -360,6 +360,162 @@ export class ContentService {
       return 0;
     }
   }
+
+  /**
+   * 计算文本字数（支持中英文混合）
+   */
+  private static calculateWordCount(content: string): number {
+    if (!content) return 0;
+    
+    // 移除Markdown语法
+    const cleanContent = content
+      .replace(/!\[.*?\]\(.*?\)/g, '') // 移除图片
+      .replace(/\[.*?\]\(.*?\)/g, '') // 移除链接
+      .replace(/```[\s\S]*?```/g, '') // 移除代码块
+      .replace(/`.*?`/g, '') // 移除行内代码
+      .replace(/#{1,6}\s/g, '') // 移除标题标记
+      .replace(/[*_]{1,2}(.*?)[*_]{1,2}/g, '$1') // 移除粗体斜体标记
+      .replace(/^\s*[-*+]\s/gm, '') // 移除列表标记
+      .replace(/^\s*\d+\.\s/gm, ''); // 移除有序列表标记
+    
+    // 分别计算中文字符和英文单词
+    const chineseChars = (cleanContent.match(/[\u4e00-\u9fa5]/g) || []).length;
+    const englishWords = (cleanContent.replace(/[\u4e00-\u9fa5]/g, ' ').match(/\b\w+\b/g) || []).length;
+    
+    // 中文按字符计算，英文按单词计算
+    return chineseChars + englishWords;
+  }
+
+  /**
+   * 更新内容（管理员专用）
+   */
+  static async updateContent(id: number, updateData: {
+    title?: string;
+    description?: string;
+    content?: string;
+    category_id?: number;
+    source?: string;
+    source_url?: string;
+    meta_title?: string;
+    meta_description?: string;
+    content_format?: 'markdown' | 'mdx' | 'html' | 'plain';
+    status?: 'draft' | 'published' | 'archived' | 'hidden';
+    featured?: boolean;
+    sort_order?: number;
+    word_count?: number;
+    reading_time?: number;
+    published_at?: string;
+  }): Promise<boolean> {
+    try {
+      // 计算字数和阅读时间
+      if (updateData.content) {
+        const wordCount = this.calculateWordCount(updateData.content);
+        const readingTime = Math.ceil(wordCount / 300); // 假设每分钟300字
+        updateData.word_count = wordCount;
+        updateData.reading_time = readingTime;
+      }
+
+      // 如果是发布状态，设置发布时间
+      if (updateData.status === 'published') {
+        updateData.published_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      }
+
+      const keys = Object.keys(updateData);
+      const values = Object.values(updateData);
+      values.push(id);
+
+      const result = await execute(
+        `UPDATE contents SET ${keys.map(key => `${key} = ?`).join(', ')}, updated_at = NOW() WHERE id = ?`,
+        values
+      );
+
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error('Failed to update content:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 获取内容的标签
+   */
+  static async getContentTags(contentId: number): Promise<Pick<Tag, 'id' | 'name'>[]> {
+    return await query<Pick<Tag, 'id' | 'name'>[]>(`
+      SELECT t.id, t.name
+      FROM tags t
+      INNER JOIN content_tags ct ON t.id = ct.tag_id
+      WHERE ct.content_id = ?
+      ORDER BY t.name
+    `, [contentId]);
+  }
+
+  /**
+   * 更新内容标签关联
+   */
+  static async updateContentTags(contentId: number, tagNames: string[]): Promise<boolean> {
+    try {
+      // 开始事务
+      await execute('START TRANSACTION');
+
+      // 删除现有标签关联
+      await execute('DELETE FROM content_tags WHERE content_id = ?', [contentId]);
+
+      // 如果有新标签，则添加
+      if (tagNames.length > 0) {
+        // 获取或创建标签
+        const tagIds: number[] = [];
+        for (const tagName of tagNames) {
+          const trimmedName = tagName.trim();
+          if (!trimmedName) continue;
+
+          // 查找已存在的标签
+          let tagResults = await query<Pick<Tag, 'id'>[]>('SELECT id FROM tags WHERE name = ?', [trimmedName]);
+          let tagId;
+
+          if (tagResults.length > 0) {
+            tagId = tagResults[0].id;
+          } else {
+            // 创建新标签
+            const slug = trimmedName.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-');
+            const insertResult = await execute(
+              'INSERT INTO tags (name, slug, count) VALUES (?, ?, 1)',
+              [trimmedName, slug]
+            );
+            tagId = insertResult.insertId;
+          }
+
+          tagIds.push(tagId);
+        }
+
+        // 批量插入标签关联
+        if (tagIds.length > 0) {
+          const values = tagIds.map(tagId => [contentId, tagId]);
+          const placeholders = values.map(() => '(?, ?)').join(', ');
+          const flatValues = values.flat();
+          await execute(
+            `INSERT INTO content_tags (content_id, tag_id) VALUES ${placeholders}`,
+            flatValues
+          );
+
+          // 更新标签使用计数
+          await execute(`
+            UPDATE tags SET count = (
+              SELECT COUNT(*) FROM content_tags WHERE tag_id = tags.id
+            ) WHERE id IN (${tagIds.map(() => '?').join(',')})
+          `, tagIds);
+        }
+      }
+
+      // 提交事务
+      await execute('COMMIT');
+      return true;
+    } catch (error) {
+      // 回滚事务
+      await execute('ROLLBACK');
+      console.error('Failed to update content tags:', error);
+      return false;
+    }
+  }
 }
 
 /**
