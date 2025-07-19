@@ -328,18 +328,236 @@ const metadata = {
         <div class='bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] w-full mx-4 flex flex-col'>
             <div class='px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between'>
                 <h3 id='preview-title' class='text-lg font-semibold text-gray-900 dark:text-white'></h3>
-                <button data-action='close-preview' class='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'>
-                    <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12'
-                        ></path>
-                    </svg>
-                </button>
+                <div class='flex items-center space-x-2'>
+                    <button 
+                        id='toggle-edit-btn' 
+                        data-action='toggle-edit'
+                        class='px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors'>
+                        编辑
+                    </button>
+                    <button data-action='close-preview' class='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'>
+                        <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12'
+                            ></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div class='flex-1 overflow-y-auto'>
+                <!-- 预览模式 -->
                 <div
                     id='preview-content'
                     class='px-6 py-4 prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300'>
                     <!-- 预览内容将在这里显示 -->
+                </div>
+                
+                <!-- 编辑模式 -->
+                <div id='edit-content' class='px-6 py-4 hidden'>
+                    <form id='edit-form' class='space-y-4'>
+                        <!-- 标题 -->
+                        <div>
+                            <label for='edit-title' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                标题 *
+                            </label>
+                            <input
+                                type='text'
+                                id='edit-title'
+                                name='title'
+                                required
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                        </div>
+
+                        <!-- 描述 -->
+                        <div>
+                            <label for='edit-description' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                描述
+                            </label>
+                            <textarea
+                                id='edit-description'
+                                name='description'
+                                rows='2'
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'></textarea>
+                        </div>
+
+                        <!-- 分类和状态 -->
+                        <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                            <div>
+                                <label for='edit-category' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                    分类
+                                </label>
+                                <select
+                                    id='edit-category'
+                                    name='category_id'
+                                    class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                    <option value=''>请选择分类</option>
+                                    <!-- 分类选项将在此动态添加 -->
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for='edit-status' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                    状态
+                                </label>
+                                <select
+                                    id='edit-status'
+                                    name='status'
+                                    class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                    <option value='draft'>草稿</option>
+                                    <option value='published'>已发布</option>
+                                    <option value='hidden'>已隐藏</option>
+                                    <option value='archived'>已归档</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 日期和截图API -->
+                        <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                            <div>
+                                <label for='edit-published-at' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                    发布时间
+                                </label>
+                                <input
+                                    type='datetime-local'
+                                    id='edit-published-at'
+                                    name='published_at'
+                                    class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                            </div>
+                            
+                            <div>
+                                <label for='edit-screenshot-api' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                    截图API
+                                </label>
+                                <select
+                                    id='edit-screenshot-api'
+                                    name='screenshot_api'
+                                    class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                    <option value='manual'>手动</option>
+                                    <option value='ScreenshotLayer'>ScreenshotLayer</option>
+                                    <option value='HCTI'>HCTI</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 来源信息 -->
+                        <div>
+                            <label for='edit-source' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                来源
+                            </label>
+                            <input
+                                type='text'
+                                id='edit-source'
+                                name='source'
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                        </div>
+
+                        <!-- 标签 -->
+                        <div>
+                            <label for='edit-tags' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                标签（用逗号分隔）
+                            </label>
+                            <input
+                                type='text'
+                                id='edit-tags'
+                                name='tags'
+                                placeholder='例如：前端,React,JavaScript'
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                        </div>
+
+                        <!-- 高级设置（可折叠） -->
+                        <div class='border-t border-gray-200 dark:border-gray-700 pt-4'>
+                            <button 
+                                type='button' 
+                                id='toggle-advanced'
+                                class='flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white mb-4'>
+                                <span>高级设置</span>
+                                <svg class='w-4 h-4 ml-1 transform transition-transform' id='advanced-arrow' fill='none' viewBox='0 0 24 24'>
+                                    <path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 9l6 6 6-6'></path>
+                                </svg>
+                            </button>
+                            
+                            <div id='advanced-fields' class='hidden space-y-4'>
+                                <!-- SEO字段 -->
+                                <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                    <div>
+                                        <label for='edit-meta-title' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                            SEO标题
+                                        </label>
+                                        <input
+                                            type='text'
+                                            id='edit-meta-title'
+                                            name='meta_title'
+                                            class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for='edit-sort-order' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                            排序权重
+                                        </label>
+                                        <input
+                                            type='number'
+                                            id='edit-sort-order'
+                                            name='sort_order'
+                                            min='0'
+                                            class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                    </div>
+                                </div>
+
+                                <!-- SEO描述 -->
+                                <div>
+                                    <label for='edit-meta-description' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                        SEO描述
+                                    </label>
+                                    <textarea
+                                        id='edit-meta-description'
+                                        name='meta_description'
+                                        rows='2'
+                                        class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'></textarea>
+                                </div>
+
+                                <!-- 推荐标记 -->
+                                <div class='flex items-center'>
+                                    <input
+                                        type='checkbox'
+                                        id='edit-featured'
+                                        name='featured'
+                                        class='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'>
+                                    <label for='edit-featured' class='ml-2 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                        标记为推荐内容
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 内容 -->
+                        <div>
+                            <label for='edit-content-text' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                内容 *
+                            </label>
+                            <textarea
+                                id='edit-content-text'
+                                name='content'
+                                required
+                                rows='12'
+                                placeholder='支持Markdown格式'
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white font-mono text-sm'></textarea>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class='flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700'>
+                            <button
+                                type='button'
+                                data-action='cancel-edit'
+                                class='px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors'>
+                                取消
+                            </button>
+                            <button
+                                type='button'
+                                data-action='save-content'
+                                class='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors'>
+                                保存
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -354,6 +572,12 @@ const metadata = {
     </div>
 
     <script is:inline>
+        // 全局变量
+        let currentContentId = null;
+        let currentContentData = null;
+        let editOptions = null;
+        let isEditMode = false;
+
         // 通用的 Cookie 获取函数
         function getCookie(name) {
             const value = `; ${document.cookie}`;
@@ -393,6 +617,101 @@ const metadata = {
             if (overlay) overlay.classList.add('hidden');
         }
 
+        // 渲染预览内容
+        function renderPreviewContent(content, contentEl) {
+            if (!contentEl) return;
+
+            // 改进的 Markdown 转 HTML
+            let htmlContent = content.content
+                .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-white">$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">$1</h1>')
+                .replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1" class="max-w-full h-auto rounded-lg shadow-sm mb-4" />')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">$1</a>')
+                .replace(/`([^`]+)`/gim, '<code class="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm">$1</code>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-semibold">$1</strong>')
+                .replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>')
+                .replace(/^- (.*$)/gim, '<li class="mb-1">$1</li>')
+                .replace(/^\* (.*$)/gim, '<li class="mb-1">$1</li>');
+
+            // 处理段落
+            const paragraphs = htmlContent.split('\n\n').map(p => p.trim()).filter(p => p);
+            htmlContent = paragraphs.map(p => {
+                if (p.startsWith('<h') || p.startsWith('<img') || p.includes('<li')) {
+                    return p;
+                }
+                return `<p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">${p.replace(/\n/g, '<br>')}</p>`;
+            }).join('');
+
+            // 包装列表项
+            htmlContent = htmlContent.replace(/(<li[^>]*>.*?<\/li>)/gs, (match, group) => {
+                if (!match.includes('<ul') && !match.includes('<ol')) {
+                    return `<ul class="list-disc pl-6 mb-4">${group}</ul>`;
+                }
+                return group;
+            });
+
+            // 渲染主要内容
+            let finalContent = htmlContent;
+
+            // 添加标签显示
+            if (content.tags && content.tags.length > 0) {
+                const tagsHtml = content.tags.map(tag => 
+                    `<span class="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full mr-2 mb-2">${tag}</span>`
+                ).join('');
+                
+                finalContent = `
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">标签</h4>
+                        <div class="flex flex-wrap">${tagsHtml}</div>
+                    </div>
+                    ${finalContent}
+                `;
+            }
+
+            // 添加分类显示
+            if (content.category_name) {
+                finalContent = `
+                    <div class="mb-4">
+                        <span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-sm font-medium rounded-full">
+                            ${content.category_name}
+                        </span>
+                    </div>
+                    ${finalContent}
+                `;
+            }
+
+            contentEl.innerHTML = finalContent;
+        }
+
+        // 获取编辑选项（分类、标签等）
+        async function loadEditOptions() {
+            if (editOptions) return editOptions; // 缓存选项
+
+            try {
+                const adminKey = getCookie('admin_key');
+                const headerKey = adminKey || window.expectedAdminKey || '';
+
+                const response = await fetch('/api/admin/get-options', {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-admin-key': headerKey
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success && result.data) {
+                    editOptions = result.data;
+                    return editOptions;
+                }
+            } catch (error) {
+                console.error('Failed to load edit options:', error);
+            }
+            return null;
+        }
+
         // 显示预览
         async function showPreview(id) {
             const modal = document.getElementById('preview-modal');
@@ -403,6 +722,7 @@ const metadata = {
                 return;
             }
 
+            currentContentId = id;
             showLoading();
 
             try {
@@ -410,36 +730,31 @@ const metadata = {
                 const adminKey = getCookie('admin_key');
                 const headerKey = adminKey || window.expectedAdminKey || '';
 
-                const response = await fetch(`/api/admin/preview-content?id=${id}`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-admin-key': headerKey
-                    }
-                });
+                // 并行加载内容和编辑选项
+                const [contentResponse, options] = await Promise.all([
+                    fetch(`/api/admin/preview-content?id=${id}`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-admin-key': headerKey
+                        }
+                    }),
+                    loadEditOptions()
+                ]);
 
-                const result = await response.json();
+                const result = await contentResponse.json();
 
                 if (result.success && result.data) {
                     const content = result.data;
+                    currentContentData = content;
                     titleEl.textContent = content.title;
 
-                    // 简单的 Markdown 转 HTML（基础实现）
-                    const htmlContent = content.content
-                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                        .replace(/^\* (.*$)/gim, '<li>$1</li>')
-                        .replace(/^- (.*$)/gim, '<li>$1</li>')
-                        .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-                        .replace(/\*(.*)\*/gim, '<em>$1</em>')
-                        .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-                        .replace(/`([^`]+)`/gim, '<code>$1</code>')
-                        .replace(/\n\n/gim, '</p><p>')
-                        .replace(/\n/gim, '<br>');
-
-                    contentEl.innerHTML = '<p>' + htmlContent + '</p>';
+                    // 渲染预览内容
+                    renderPreviewContent(content, contentEl);
+                    
+                    // 确保在预览模式
+                    setPreviewMode();
                     modal.classList.remove('hidden');
                 } else {
                     alert('获取内容失败: ' + (result.error || '未知错误'));
@@ -451,10 +766,191 @@ const metadata = {
             }
         }
 
+        // 设置预览模式
+        function setPreviewMode() {
+            isEditMode = false;
+            const previewContent = document.getElementById('preview-content');
+            const editContent = document.getElementById('edit-content');
+            const toggleBtn = document.getElementById('toggle-edit-btn');
+
+            if (previewContent && editContent && toggleBtn) {
+                previewContent.classList.remove('hidden');
+                editContent.classList.add('hidden');
+                toggleBtn.textContent = '编辑';
+            }
+        }
+
+        // 设置编辑模式
+        function setEditMode() {
+            isEditMode = true;
+            const previewContent = document.getElementById('preview-content');
+            const editContent = document.getElementById('edit-content');
+            const toggleBtn = document.getElementById('toggle-edit-btn');
+
+            if (previewContent && editContent && toggleBtn) {
+                previewContent.classList.add('hidden');
+                editContent.classList.remove('hidden');
+                toggleBtn.textContent = '预览';
+                
+                // 填充编辑表单
+                populateEditForm();
+            }
+        }
+
+        // 填充编辑表单
+        async function populateEditForm() {
+            if (!currentContentData || !editOptions) return;
+
+            const form = document.getElementById('edit-form');
+            if (!form) return;
+
+            // 填充基本字段
+            const titleInput = document.getElementById('edit-title');
+            const descriptionInput = document.getElementById('edit-description');
+            const contentInput = document.getElementById('edit-content-text');
+            const sourceInput = document.getElementById('edit-source');
+            const statusSelect = document.getElementById('edit-status');
+            const categorySelect = document.getElementById('edit-category');
+            const publishedAtInput = document.getElementById('edit-published-at');
+            const screenshotApiSelect = document.getElementById('edit-screenshot-api');
+
+            if (titleInput) titleInput.value = currentContentData.title || '';
+            if (descriptionInput) descriptionInput.value = currentContentData.description || '';
+            if (contentInput) contentInput.value = currentContentData.content || '';
+            if (sourceInput) sourceInput.value = currentContentData.source || '';
+            if (statusSelect) statusSelect.value = currentContentData.status || 'draft';
+            if (screenshotApiSelect) screenshotApiSelect.value = currentContentData.screenshot_api || 'manual';
+
+            // 处理发布时间
+            if (publishedAtInput && currentContentData.published_at) {
+                // 转换数据库时间格式为 datetime-local 格式
+                const publishedDate = new Date(currentContentData.published_at);
+                const localDateTime = publishedDate.toISOString().slice(0, 16);
+                publishedAtInput.value = localDateTime;
+            }
+
+            // 填充分类选项
+            if (categorySelect && editOptions.categories) {
+                // 清空现有选项
+                categorySelect.innerHTML = '<option value="">请选择分类</option>';
+                
+                // 添加分类选项
+                editOptions.categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    if (category.id === currentContentData.category_id) {
+                        option.selected = true;
+                    }
+                    categorySelect.appendChild(option);
+                });
+            }
+
+            // 填充标签
+            const tagsInput = document.getElementById('edit-tags');
+            if (tagsInput && currentContentData.tags) {
+                tagsInput.value = currentContentData.tags.join(', ');
+            }
+
+            // 填充高级字段
+            const metaTitleInput = document.getElementById('edit-meta-title');
+            const metaDescriptionInput = document.getElementById('edit-meta-description');
+            const sortOrderInput = document.getElementById('edit-sort-order');
+            const featuredCheckbox = document.getElementById('edit-featured');
+
+            if (metaTitleInput) metaTitleInput.value = currentContentData.meta_title || '';
+            if (metaDescriptionInput) metaDescriptionInput.value = currentContentData.meta_description || '';
+            if (sortOrderInput) sortOrderInput.value = currentContentData.sort_order || 0;
+            if (featuredCheckbox) featuredCheckbox.checked = currentContentData.featured || false;
+        }
+
+        // 切换编辑/预览模式
+        function toggleEditMode() {
+            if (isEditMode) {
+                setPreviewMode();
+            } else {
+                setEditMode();
+            }
+        }
+
+        // 保存内容
+        async function saveContent() {
+            const form = document.getElementById('edit-form');
+            if (!form || !currentContentId) return;
+
+            // 获取表单数据
+            const formData = new FormData(form);
+            const contentData = {
+                title: formData.get('title'),
+                description: formData.get('description'),
+                content: formData.get('content'),
+                category_id: formData.get('category_id') ? parseInt(formData.get('category_id')) : null,
+                source: formData.get('source'),
+                status: formData.get('status'),
+                published_at: formData.get('published_at'),
+                screenshot_api: formData.get('screenshot_api'),
+                meta_title: formData.get('meta_title'),
+                meta_description: formData.get('meta_description'),
+                sort_order: formData.get('sort_order') ? parseInt(formData.get('sort_order')) : 0,
+                featured: formData.get('featured') === 'on'
+            };
+
+            // 处理标签
+            const tagsString = formData.get('tags');
+            const tags = tagsString ? tagsString.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+
+            // 验证必填字段
+            if (!contentData.title || !contentData.content) {
+                alert('标题和内容不能为空');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const adminKey = getCookie('admin_key');
+                const headerKey = adminKey || window.expectedAdminKey || '';
+
+                const response = await fetch('/api/admin/update-content', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-admin-key': headerKey
+                    },
+                    body: JSON.stringify({
+                        id: currentContentId,
+                        contentData: contentData,
+                        tags: tags
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('内容保存成功');
+                    // 重新加载内容并切换到预览模式
+                    await showPreview(currentContentId);
+                } else {
+                    alert('保存失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('保存失败，请稍后重试');
+            } finally {
+                hideLoading();
+            }
+        }
+
         // 关闭预览
         function closePreview() {
             const modal = document.getElementById('preview-modal');
-            if (modal) modal.classList.add('hidden');
+            if (modal) {
+                modal.classList.add('hidden');
+                // 重置状态
+                currentContentId = null;
+                currentContentData = null;
+                isEditMode = false;
+            }
         }
 
         // 更新单个内容状态
@@ -581,6 +1077,31 @@ const metadata = {
                 case 'close-preview':
                     closePreview();
                     break;
+                case 'toggle-edit':
+                    toggleEditMode();
+                    break;
+                case 'cancel-edit':
+                    setPreviewMode();
+                    break;
+                case 'save-content':
+                    saveContent();
+                    break;
+            }
+        }
+
+        // 切换高级设置显示
+        function toggleAdvancedSettings() {
+            const advancedFields = document.getElementById('advanced-fields');
+            const advancedArrow = document.getElementById('advanced-arrow');
+            
+            if (advancedFields && advancedArrow) {
+                if (advancedFields.classList.contains('hidden')) {
+                    advancedFields.classList.remove('hidden');
+                    advancedArrow.style.transform = 'rotate(180deg)';
+                } else {
+                    advancedFields.classList.add('hidden');
+                    advancedArrow.style.transform = 'rotate(0deg)';
+                }
             }
         }
 
@@ -588,6 +1109,12 @@ const metadata = {
         document.addEventListener('DOMContentLoaded', function() {
             // 使用事件委托处理所有按钮点击
             document.addEventListener('click', handleButtonClick);
+
+            // 高级设置折叠按钮
+            const toggleAdvancedBtn = document.getElementById('toggle-advanced');
+            if (toggleAdvancedBtn) {
+                toggleAdvancedBtn.addEventListener('click', toggleAdvancedSettings);
+            }
 
             // 全选/反选（表头复选框）
             const headerCheckbox = document.getElementById('select-all-header');
