@@ -1,0 +1,207 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import { verifyAdminAccess } from '~/utils/auth';
+
+// 静态模式下，使用客户端处理URL参数
+const adminKey = import.meta.env.ADMIN_ACCESS_KEY || 'admin_2025_weekly';
+
+// 如果已经有权限（通过Cookie），直接跳转
+if (verifyAdminAccess(Astro.request)) {
+    return Astro.redirect('/admin/review');
+}
+
+const metadata = {
+    title: '管理员登录',
+    description: '管理员访问验证',
+    robots: {
+        index: false,
+        follow: false
+    }
+};
+---
+
+<Layout metadata={metadata}>
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <div class="mx-auto h-20 w-20 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+                    <span class="text-3xl">🔐</span>
+                </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+                    管理员访问验证
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+                    请输入访问密钥以继续
+                </p>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label for="access-key" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            访问密钥
+                        </label>
+                        <div class="mt-1">
+                            <input 
+                                id="access-key" 
+                                name="access-key" 
+                                type="password" 
+                                required 
+                                class="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                placeholder="请输入访问密钥"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <button 
+                            type="submit" 
+                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            id="login-button"
+                        >
+                            <span id="login-text">验证访问</span>
+                            <div id="login-loading" class="hidden">
+                                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div id="error-message" class="hidden text-red-600 dark:text-red-400 text-sm text-center bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+                        <!-- 错误信息将在这里显示 -->
+                    </div>
+                </form>
+
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                        <p class="mb-2">💡 <strong>提示：</strong></p>
+                        <ul class="space-y-1 list-disc list-inside">
+                            <li>访问密钥在环境变量 ADMIN_ACCESS_KEY 中配置</li>
+                            <li>也可以通过URL参数 ?key=密钥 直接访问</li>
+                            <li>登录后将保持24小时有效期</li>
+                        </ul>
+                        
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="/" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium transition-colors">
+                    ← 返回首页
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script define:vars={{ adminKey }}>
+        // 获取URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlKey = urlParams.get('key');
+        const returnPath = urlParams.get('return') || '/admin/review';
+        const expectedKey = adminKey; // 从服务端环境变量传递
+        
+
+        
+        // 如果URL中有key参数，自动验证
+        if (urlKey) {
+            if (urlKey === expectedKey) {
+                // 设置Cookie并跳转
+                // 尝试多种Cookie设置方式
+                const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                let cookieString;
+                
+                if (isLocalhost) {
+                    // 本地开发环境，使用最简单的设置
+                    cookieString = `admin_key=${expectedKey}; Max-Age=${60 * 60 * 24}; Path=/`;
+                } else {
+                    // 生产环境或其他环境
+                    const domain = window.location.hostname;
+                    cookieString = `admin_key=${expectedKey}; Max-Age=${60 * 60 * 24}; Path=/; Domain=${domain}`;
+                }
+                document.cookie = cookieString;
+                
+                // 延迟一点确保Cookie设置成功
+                setTimeout(() => {
+                    window.location.href = returnPath;
+                }, 100);
+            } else {
+                // 显示错误信息
+                const errorDiv = document.getElementById('error-message');
+                if (errorDiv) {
+                    errorDiv.textContent = '访问密钥不正确，请重试';
+                    errorDiv.classList.remove('hidden');
+                }
+            }
+        }
+        
+        // 表单提交处理
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const button = document.getElementById('login-button');
+            const text = document.getElementById('login-text');
+            const loading = document.getElementById('login-loading');
+            const keyInput = document.getElementById('access-key');
+            
+            // 显示加载状态
+            if (button) button.disabled = true;
+            if (text) text.style.display = 'none';
+            if (loading) loading.classList.remove('hidden');
+            hideError();
+            
+            const key = keyInput ? keyInput.value.trim() : '';
+            
+            if (!key) {
+                showError('请输入访问密钥');
+                resetButton();
+                return;
+            }
+            
+            if (key === expectedKey) {
+                // 验证成功，设置Cookie并跳转
+                // 尝试多种Cookie设置方式
+                const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                let cookieString;
+                
+                if (isLocalhost) {
+                    // 本地开发环境，使用最简单的设置
+                    cookieString = `admin_key=${key}; Max-Age=${60 * 60 * 24}; Path=/`;
+                } else {
+                    // 生产环境或其他环境
+                    const domain = window.location.hostname;
+                    cookieString = `admin_key=${key}; Max-Age=${60 * 60 * 24}; Path=/; Domain=${domain}`;
+                }
+                document.cookie = cookieString;
+                
+                // 延迟一点确保Cookie设置成功
+                setTimeout(() => {
+                    window.location.href = returnPath;
+                }, 100);
+            } else {
+                showError('访问密钥不正确，请重试');
+                resetButton();
+            }
+            
+            function showError(message) {
+                const errorDiv = document.getElementById('error-message');
+                if (errorDiv) {
+                    errorDiv.textContent = message;
+                    errorDiv.classList.remove('hidden');
+                }
+            }
+            
+            function hideError() {
+                const errorDiv = document.getElementById('error-message');
+                if (errorDiv) {
+                    errorDiv.classList.add('hidden');
+                }
+            }
+            
+            function resetButton() {
+                if (button) button.disabled = false;
+                if (text) text.style.display = 'inline';
+                if (loading) loading.classList.add('hidden');
+            }
+        });
+    </script>
+</Layout> 
