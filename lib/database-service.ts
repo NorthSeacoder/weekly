@@ -1,4 +1,4 @@
-import { query, transaction, type RowDataPacket } from './database';
+import { query, transaction, execute, type RowDataPacket } from './database';
 
 // 基础接口定义
 export interface ContentType extends RowDataPacket {
@@ -30,7 +30,7 @@ export interface Tag extends RowDataPacket {
   updated_at: Date;
 }
 
-export interface Content {
+export interface Content extends RowDataPacket {
   id: number;
   content_type_id: number;
   category_id?: number;
@@ -53,6 +53,11 @@ export interface Content {
   featured: boolean;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface ContentWithRelations extends Content {
+  content_type_name?: string;
+  category_name?: string;
 }
 
 export interface WeeklyIssue {
@@ -199,6 +204,21 @@ export class ContentService {
   }
 
   /**
+   * 根据ID获取内容
+   */
+  static async getById(id: number): Promise<ContentWithRelations | null> {
+    const results = await query<ContentWithRelations[]>(`
+      SELECT c.*, ct.name as content_type_name, cat.name as category_name
+      FROM contents c
+      LEFT JOIN content_types ct ON c.content_type_id = ct.id
+      LEFT JOIN categories cat ON c.category_id = cat.id
+      WHERE c.id = ?
+      LIMIT 1
+    `, [id]);
+    return results[0] || null;
+  }
+
+  /**
    * 根据slug获取内容
    */
   static async getBySlug(slug: string): Promise<Content | null> {
@@ -237,6 +257,108 @@ export class ContentService {
       SET view_count = view_count + 1 
       WHERE id = ?
     `, [id]);
+  }
+
+  /**
+   * 获取待审核的内容（管理员专用）
+   */
+  static async getPendingReview(limit?: number, offset?: number): Promise<ContentWithRelations[]> {
+    let sql = `
+      SELECT c.*, ct.name as content_type_name, cat.name as category_name
+      FROM contents c
+      LEFT JOIN content_types ct ON c.content_type_id = ct.id
+      LEFT JOIN categories cat ON c.category_id = cat.id
+      WHERE c.status IN ('draft', 'hidden', 'archived')
+      ORDER BY c.created_at DESC
+    `;
+    const params: any[] = [];
+
+    if (limit) {
+      sql += ` LIMIT ?`;
+      params.push(limit);
+      if (offset) {
+        sql += ` OFFSET ?`;
+        params.push(offset);
+      }
+    }
+
+    return await query<ContentWithRelations[]>(sql, params);
+  }
+
+  /**
+   * 获取各状态内容统计（管理员专用）
+   */
+  static async getStatusStats(): Promise<{status: string, count: number}[]> {
+    return await query<{status: string, count: number}[]>(`
+      SELECT status, COUNT(*) as count
+      FROM contents 
+      GROUP BY status
+      ORDER BY 
+        CASE status 
+          WHEN 'draft' THEN 1 
+          WHEN 'published' THEN 2 
+          WHEN 'hidden' THEN 3 
+          WHEN 'archived' THEN 4 
+        END
+    `);
+  }
+
+  /**
+   * 更新内容状态（管理员专用）
+   */
+  static async updateStatus(id: number, status: 'draft' | 'published' | 'archived' | 'hidden'): Promise<boolean> {
+    try {
+      const updateData: any = { status };
+      
+      // 如果是发布状态，设置发布时间
+      if (status === 'published') {
+        updateData.published_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      }
+      
+      const keys = Object.keys(updateData);
+      const values = Object.values(updateData);
+      values.push(id);
+      
+      const result = await execute(
+        `UPDATE contents SET ${keys.map(key => `${key} = ?`).join(', ')}, updated_at = NOW() WHERE id = ?`,
+        values
+      );
+      
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error('Failed to update content status:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 批量更新内容状态（管理员专用）
+   */
+  static async batchUpdateStatus(ids: number[], status: 'draft' | 'published' | 'archived' | 'hidden'): Promise<number> {
+    if (ids.length === 0) return 0;
+    
+    try {
+      const updateData: any = { status };
+      
+      // 如果是发布状态，设置发布时间
+      if (status === 'published') {
+        updateData.published_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      }
+      
+      const keys = Object.keys(updateData);
+      const setClause = keys.map(key => `${key} = ?`).join(', ');
+      const placeholders = ids.map(() => '?').join(',');
+      
+      const result = await execute(
+        `UPDATE contents SET ${setClause}, updated_at = NOW() WHERE id IN (${placeholders})`,
+        [...Object.values(updateData), ...ids]
+      );
+      
+      return result.affectedRows;
+    } catch (error) {
+      console.error('Failed to batch update content status:', error);
+      return 0;
+    }
   }
 }
 

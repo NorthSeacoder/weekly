@@ -61,7 +61,7 @@ export async function query<T extends RowDataPacket[]>(
     params?: any[]
 ): Promise<T> {
     const db = getDatabase();
-    const [rows] = await db.query<T>(sql, params);
+    const [rows] = await db.execute<T>(sql, params);
     return rows;
 }
 
@@ -71,7 +71,7 @@ export async function execute(
     params?: any[]
 ): Promise<ResultSetHeader> {
     const db = getDatabase();
-    const [result] = await db.query<ResultSetHeader>(sql, params);
+    const [result] = await db.execute<ResultSetHeader>(sql, params);
     return result;
 }
 

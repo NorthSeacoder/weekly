@@ -1,0 +1,650 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import {ContentService, type ContentWithRelations} from '../../../lib/database-service';
+
+// 静态模式下，权限验证移到客户端
+// 获取待审核内容和统计信息
+const pendingContent: ContentWithRelations[] = await ContentService.getPendingReview(50);
+const statusStats = await ContentService.getStatusStats();
+
+// 从环境变量读取管理员密钥
+const expectedAdminKey = import.meta.env.ADMIN_ACCESS_KEY || 'admin_2025_weekly';
+
+const metadata = {
+    title: '内容审核管理',
+    description: '管理和审核周刊内容',
+    robots: {
+        index: false,
+        follow: false
+    }
+};
+---
+
+<Layout metadata={metadata}>
+    <!-- 客户端权限验证 -->
+    <script define:vars={{expectedAdminKey}}>
+        // 检查管理员Cookie
+        function getCookie(name) {
+            // 方法1: 原始方法
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) {
+                const result = parts.pop();
+                const finalValue = result ? result.split(';').shift() || null : null;
+                if (finalValue) return finalValue;
+            }
+            
+            // 方法2: 更健壮的解析
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const trimmed = cookie.trim();
+                if (trimmed.startsWith(`${name}=`)) {
+                    const cookieValue = trimmed.substring(name.length + 1);
+                    return cookieValue;
+                }
+            }
+            
+            return null;
+        }
+
+        const adminKey = getCookie('admin_key');
+        const expectedKey = expectedAdminKey;
+
+        // 设置为全局变量，供其他函数使用
+        window.expectedAdminKey = expectedAdminKey;
+
+        if (!adminKey || adminKey !== expectedKey) {
+            // 检查URL参数中是否有密钥
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlKey = urlParams.get('key');
+            
+            if (urlKey === window.expectedAdminKey) {
+                // 尝试设置Cookie
+                const cookieString = `admin_key=${window.expectedAdminKey}; Max-Age=${60 * 60 * 24}; Path=/`;
+                document.cookie = cookieString;
+                // 重新加载页面以应用Cookie
+                window.location.href = '/admin/review';
+                return;
+            }
+            
+            // 没有权限，跳转到登录页面
+            window.location.href = '/admin/login?return=' + encodeURIComponent('/admin/review');
+        }
+    </script>
+
+    <div class='min-h-screen bg-gray-50 dark:bg-gray-900 py-8'>
+        <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+            <!-- 页面标题 -->
+            <div class='mb-8'>
+                <div class='flex items-center justify-between'>
+                    <div>
+                        <h1 class='text-3xl font-bold text-gray-900 dark:text-white'>内容审核管理</h1>
+                        <p class='mt-2 text-gray-600 dark:text-gray-400'>管理和审核周刊内容的发布状态</p>
+                    </div>
+                    <div class='flex space-x-4'>
+                        <a
+                            href='/admin'
+                            class='px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors'>
+                            返回管理
+                        </a>
+                        <a
+                            href='/'
+                            class='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'>
+                            查看网站
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
+                {
+                    statusStats.map((stat) => {
+                        const statusConfig = {
+                            draft: {label: '草稿', color: 'yellow', icon: '📝'},
+                            published: {label: '已发布', color: 'green', icon: '✅'},
+                            hidden: {label: '已隐藏', color: 'gray', icon: '👁️'},
+                            archived: {label: '已归档', color: 'blue', icon: '📦'}
+                        };
+                        const config = statusConfig[stat.status as keyof typeof statusConfig] || {
+                            label: stat.status,
+                            color: 'gray',
+                            icon: '📄'
+                        };
+
+                        return (
+                            <div
+                                class={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border-l-4 border-${config.color}-500`}>
+                                <div class='flex items-center'>
+                                    <div class='text-2xl mr-3'>{config.icon}</div>
+                                    <div>
+                                        <p class='text-sm font-medium text-gray-600 dark:text-gray-400'>
+                                            {config.label}
+                                        </p>
+                                        <p class='text-2xl font-bold text-gray-900 dark:text-white'>{stat.count}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })
+                }
+            </div>
+
+            <!-- 批量操作工具栏 -->
+            <div
+                class='bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mb-6'
+                id='batch-toolbar'
+                style='display: none;'>
+                <div class='flex items-center justify-between'>
+                    <div class='flex items-center space-x-4'>
+                        <span class='text-sm text-gray-600 dark:text-gray-400' id='selected-count'>已选择 0 项</span>
+                        <button id='select-all' class='text-blue-600 hover:text-blue-700 text-sm font-medium'
+                            >全选</button
+                        >
+                        <button id='clear-selection' class='text-gray-600 hover:text-gray-700 text-sm font-medium'
+                            >清除选择</button
+                        >
+                    </div>
+                    <div class='flex space-x-2'>
+                        <button
+                            data-action='batch-update'
+                            data-status='published'
+                            class='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm'>
+                            批量发布
+                        </button>
+                        <button
+                            data-action='batch-update'
+                            data-status='hidden'
+                            class='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm'>
+                            批量隐藏
+                        </button>
+                        <button
+                            data-action='batch-update'
+                            data-status='archived'
+                            class='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm'>
+                            批量归档
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容表格 -->
+            <div class='bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden'>
+                <div class='px-6 py-4 border-b border-gray-200 dark:border-gray-700'>
+                    <h2 class='text-lg font-semibold text-gray-900 dark:text-white'>
+                        待审核内容 ({pendingContent.length})
+                    </h2>
+                </div>
+
+                {
+                    pendingContent.length === 0 ? (
+                        <div class='text-center py-12'>
+                            <div class='text-6xl mb-4'>🎉</div>
+                            <p class='text-xl text-gray-600 dark:text-gray-400'>没有待审核的内容</p>
+                            <p class='text-gray-500 dark:text-gray-500'>所有内容都已处理完毕</p>
+                        </div>
+                    ) : (
+                        <div class='overflow-x-auto'>
+                            <table class='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
+                                <thead class='bg-gray-50 dark:bg-gray-700'>
+                                    <tr>
+                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-8'>
+                                            <input
+                                                type='checkbox'
+                                                id='select-all-header'
+                                                class='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
+                                            />
+                                        </th>
+                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                            标题
+                                        </th>
+                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                            分类
+                                        </th>
+                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                            状态
+                                        </th>
+                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                            创建时间
+                                        </th>
+                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                            字数
+                                        </th>
+                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                            操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class='bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700'>
+                                    {pendingContent.map((content) => {
+                                        const statusConfig = {
+                                            draft: {
+                                                label: '草稿',
+                                                bgColor:
+                                                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                                            },
+                                            hidden: {
+                                                label: '已隐藏',
+                                                bgColor: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+                                            },
+                                            archived: {
+                                                label: '已归档',
+                                                bgColor: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                            }
+                                        };
+                                        const config = statusConfig[content.status as keyof typeof statusConfig] || {
+                                            label: content.status,
+                                            bgColor: 'bg-gray-100 text-gray-800'
+                                        };
+
+                                        return (
+                                            <tr class='hover:bg-gray-50 dark:hover:bg-gray-700'>
+                                                <td class='px-6 py-4 whitespace-nowrap'>
+                                                    <input
+                                                        type='checkbox'
+                                                        class='content-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
+                                                        data-content-id={content.id}
+                                                    />
+                                                </td>
+                                                <td class='px-6 py-4'>
+                                                    <div class='text-sm font-medium text-gray-900 dark:text-white line-clamp-2'>
+                                                        {content.title}
+                                                    </div>
+                                                    {content.description && (
+                                                        <div class='text-sm text-gray-500 dark:text-gray-400 line-clamp-1 mt-1'>
+                                                            {content.description}
+                                                        </div>
+                                                    )}
+                                                    <div class='text-xs text-gray-400 mt-1'>ID: {content.id}</div>
+                                                </td>
+                                                <td class='px-6 py-4 whitespace-nowrap'>
+                                                    {content.category_name && (
+                                                        <span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'>
+                                                            {content.category_name}
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td class='px-6 py-4 whitespace-nowrap'>
+                                                    <span
+                                                        class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bgColor}`}>
+                                                        {config.label}
+                                                    </span>
+                                                </td>
+                                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400'>
+                                                    {new Date(content.created_at).toLocaleDateString('zh-CN')}
+                                                </td>
+                                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400'>
+                                                    {content.word_count}
+                                                </td>
+                                                <td class='px-6 py-4 whitespace-nowrap text-sm font-medium'>
+                                                    <div class='flex space-x-2'>
+                                                        <button
+                                                            data-action='preview'
+                                                            data-content-id={content.id}
+                                                            class='text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300'
+                                                            title='预览'>
+                                                            👁️
+                                                        </button>
+                                                        <button
+                                                            data-action='update-status'
+                                                            data-content-id={content.id}
+                                                            data-status='published'
+                                                            class='text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300'
+                                                            title='发布'>
+                                                            ✅
+                                                        </button>
+                                                        <button
+                                                            data-action='update-status'
+                                                            data-content-id={content.id}
+                                                            data-status='hidden'
+                                                            class='text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'
+                                                            title='隐藏'>
+                                                            👁️‍🗨️
+                                                        </button>
+                                                        <button
+                                                            data-action='update-status'
+                                                            data-content-id={content.id}
+                                                            data-status='archived'
+                                                            class='text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300'
+                                                            title='归档'>
+                                                            📦
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    )
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 预览模态框 -->
+    <div id='preview-modal' class='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50'>
+        <div class='bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] w-full mx-4 flex flex-col'>
+            <div class='px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between'>
+                <h3 id='preview-title' class='text-lg font-semibold text-gray-900 dark:text-white'></h3>
+                <button data-action='close-preview' class='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'>
+                    <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12'
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+            <div class='flex-1 overflow-y-auto'>
+                <div
+                    id='preview-content'
+                    class='px-6 py-4 prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300'>
+                    <!-- 预览内容将在这里显示 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载提示 -->
+    <div id='loading-overlay' class='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50'>
+        <div class='bg-white dark:bg-gray-800 rounded-lg p-6 flex items-center space-x-3'>
+            <div class='animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600'></div>
+            <span class='text-gray-900 dark:text-white font-medium'>处理中...</span>
+        </div>
+    </div>
+
+    <script is:inline>
+        // 通用的 Cookie 获取函数
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) {
+                const result = parts.pop();
+                return result ? result.split(';').shift() || null : null;
+            }
+            return null;
+        }
+
+        // 更新批量操作工具栏
+        function updateBatchToolbar() {
+            const checkboxes = document.querySelectorAll('.content-checkbox:checked');
+            const toolbar = document.getElementById('batch-toolbar');
+            const counter = document.getElementById('selected-count');
+
+            if (toolbar && counter) {
+                if (checkboxes.length > 0) {
+                    toolbar.style.display = 'block';
+                    counter.textContent = `已选择 ${checkboxes.length} 项`;
+                } else {
+                    toolbar.style.display = 'none';
+                }
+            }
+        }
+
+        // 显示加载状态
+        function showLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) overlay.classList.remove('hidden');
+        }
+
+        // 隐藏加载状态
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) overlay.classList.add('hidden');
+        }
+
+        // 显示预览
+        async function showPreview(id) {
+            const modal = document.getElementById('preview-modal');
+            const titleEl = document.getElementById('preview-title');
+            const contentEl = document.getElementById('preview-content');
+
+            if (!modal || !titleEl || !contentEl) {
+                return;
+            }
+
+            showLoading();
+
+            try {
+                // 获取认证信息
+                const adminKey = getCookie('admin_key');
+                const headerKey = adminKey || window.expectedAdminKey || '';
+
+                const response = await fetch(`/api/admin/preview-content?id=${id}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-admin-key': headerKey
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const content = result.data;
+                    titleEl.textContent = content.title;
+
+                    // 简单的 Markdown 转 HTML（基础实现）
+                    const htmlContent = content.content
+                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                        .replace(/^\* (.*$)/gim, '<li>$1</li>')
+                        .replace(/^- (.*$)/gim, '<li>$1</li>')
+                        .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+                        .replace(/\*(.*)\*/gim, '<em>$1</em>')
+                        .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+                        .replace(/`([^`]+)`/gim, '<code>$1</code>')
+                        .replace(/\n\n/gim, '</p><p>')
+                        .replace(/\n/gim, '<br>');
+
+                    contentEl.innerHTML = '<p>' + htmlContent + '</p>';
+                    modal.classList.remove('hidden');
+                } else {
+                    alert('获取内容失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('获取内容失败，请稍后重试');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 关闭预览
+        function closePreview() {
+            const modal = document.getElementById('preview-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // 更新单个内容状态
+        async function updateContentStatus(id, status) {
+            if (!confirm(`确定要将内容状态更改为"${status}"吗？`)) {
+                return;
+            }
+
+            showLoading();
+
+            try {
+                // 获取认证信息
+                const adminKey = getCookie('admin_key');
+
+                // 如果没有认证信息，引导用户重新登录
+                if (!adminKey && !window.expectedAdminKey) {
+                    alert('登录状态已过期，请重新登录');
+                    window.location.href = '/admin/login?return=' + encodeURIComponent('/admin/review');
+                    return;
+                }
+
+                const response = await fetch('/api/admin/update-status', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-admin-key': adminKey || window.expectedAdminKey || ''
+                    },
+                    body: JSON.stringify({id, status})
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.reload();
+                } else {
+                    alert('操作失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('操作失败，请稍后重试');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 批量更新状态
+        async function batchUpdateStatus(status) {
+            const checkboxes = document.querySelectorAll('.content-checkbox:checked');
+            const ids = Array.from(checkboxes)
+                .map((cb) => parseInt(cb.getAttribute('data-content-id') || '0'))
+                .filter((id) => id > 0);
+
+            if (ids.length === 0) {
+                alert('请先选择要操作的内容');
+                return;
+            }
+
+            if (!confirm(`确定要将 ${ids.length} 项内容状态更改为"${status}"吗？`)) {
+                return;
+            }
+
+            showLoading();
+
+            try {
+                // 获取认证信息
+                const adminKey = getCookie('admin_key');
+
+                // 如果没有认证信息，引导用户重新登录
+                if (!adminKey && !window.expectedAdminKey) {
+                    alert('登录状态已过期，请重新登录');
+                    window.location.href = '/admin/login?return=' + encodeURIComponent('/admin/review');
+                    return;
+                }
+
+                const response = await fetch('/api/admin/batch-update-status', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-admin-key': adminKey || window.expectedAdminKey || ''
+                    },
+                    body: JSON.stringify({ids, status})
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.reload();
+                } else {
+                    alert('操作失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('操作失败，请稍后重试');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 事件委托处理所有按钮点击
+        function handleButtonClick(event) {
+            const button = event.target.closest('button[data-action]');
+            if (!button) return;
+
+            const action = button.getAttribute('data-action');
+            const contentId = button.getAttribute('data-content-id');
+            const status = button.getAttribute('data-status');
+
+            switch (action) {
+                case 'preview':
+                    if (contentId) {
+                        showPreview(parseInt(contentId));
+                    }
+                    break;
+                case 'update-status':
+                    if (contentId && status) {
+                        updateContentStatus(parseInt(contentId), status);
+                    }
+                    break;
+                case 'batch-update':
+                    if (status) {
+                        batchUpdateStatus(status);
+                    }
+                    break;
+                case 'close-preview':
+                    closePreview();
+                    break;
+            }
+        }
+
+        // DOM加载完成后初始化事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 使用事件委托处理所有按钮点击
+            document.addEventListener('click', handleButtonClick);
+
+            // 全选/反选（表头复选框）
+            const headerCheckbox = document.getElementById('select-all-header');
+            if (headerCheckbox) {
+                headerCheckbox.addEventListener('change', function () {
+                    const checkboxes = document.querySelectorAll('.content-checkbox');
+                    checkboxes.forEach((cb) => (cb.checked = this.checked));
+                    updateBatchToolbar();
+                });
+            }
+
+            // 全选按钮
+            const selectAllBtn = document.getElementById('select-all');
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', function () {
+                    const checkboxes = document.querySelectorAll('.content-checkbox');
+                    checkboxes.forEach((cb) => (cb.checked = true));
+                    if (headerCheckbox) headerCheckbox.checked = true;
+                    updateBatchToolbar();
+                });
+            }
+
+            // 清除选择按钮
+            const clearSelectionBtn = document.getElementById('clear-selection');
+            if (clearSelectionBtn) {
+                clearSelectionBtn.addEventListener('click', function () {
+                    const checkboxes = document.querySelectorAll('.content-checkbox');
+                    checkboxes.forEach((cb) => (cb.checked = false));
+                    if (headerCheckbox) headerCheckbox.checked = false;
+                    updateBatchToolbar();
+                });
+            }
+
+            // 为所有内容复选框添加事件监听
+            document.querySelectorAll('.content-checkbox').forEach((checkbox) => {
+                checkbox.addEventListener('change', updateBatchToolbar);
+            });
+
+            // 点击模态框外部关闭
+            const previewModal = document.getElementById('preview-modal');
+            if (previewModal) {
+                previewModal.addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        closePreview();
+                    }
+                });
+            }
+
+            // ESC键关闭预览
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closePreview();
+                }
+            });
+
+
+        });
+    </script>
+</Layout>
+
