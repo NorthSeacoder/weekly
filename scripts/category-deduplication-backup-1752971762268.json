@@ -1,0 +1,228 @@
+{
+  "timestamp": "2025-07-20T00:36:02.256Z",
+  "categories": [
+    {
+      "id": 41,
+      "name": "文章",
+      "slug": "articles",
+      "parent_id": null,
+      "sort_order": 2,
+      "description": "优质文章分享",
+      "created_at": "2025-06-29T06:29:45.000Z",
+      "updated_at": "2025-06-29T06:29:45.000Z"
+    },
+    {
+      "id": 52,
+      "name": "HTTP协议",
+      "slug": "http",
+      "parent_id": null,
+      "sort_order": 0,
+      "description": "HTTP协议深度解析",
+      "created_at": "2025-06-29T06:29:45.000Z",
+      "updated_at": "2025-06-29T06:29:45.000Z"
+    },
+    {
+      "id": 53,
+      "name": "Pixi.js",
+      "slug": "pixijs",
+      "parent_id": null,
+      "sort_order": 0,
+      "description": "Pixi.js游戏引擎技术",
+      "created_at": "2025-06-29T06:29:45.000Z",
+      "updated_at": "2025-06-29T06:29:45.000Z"
+    },
+    {
+      "id": 59,
+      "name": "前端工程化",
+      "slug": "frontend-engineering",
+      "parent_id": null,
+      "sort_order": 0,
+      "description": "前端工程化实践",
+      "created_at": "2025-06-29T06:29:45.000Z",
+      "updated_at": "2025-06-29T06:29:45.000Z"
+    },
+    {
+      "id": 60,
+      "name": "前端架构",
+      "slug": "frontend-architecture",
+      "parent_id": null,
+      "sort_order": 0,
+      "description": "前端架构设计",
+      "created_at": "2025-06-29T06:29:45.000Z",
+      "updated_at": "2025-06-29T06:29:45.000Z"
+    },
+    {
+      "id": 85,
+      "name": "HTTP",
+      "slug": "HTTP",
+      "parent_id": null,
+      "sort_order": 0,
+      "description": null,
+      "created_at": "2025-06-29T06:57:23.000Z",
+      "updated_at": "2025-06-29T06:57:23.000Z"
+    },
+    {
+      "id": 86,
+      "name": "pixi.js",
+      "slug": "pixi.js",
+      "parent_id": null,
+      "sort_order": 0,
+      "description": null,
+      "created_at": "2025-06-29T06:57:26.000Z",
+      "updated_at": "2025-06-29T06:57:26.000Z"
+    },
+    {
+      "id": 89,
+      "name": "前端工程化",
+      "slug": "frontend-engineering-2",
+      "parent_id": null,
+      "sort_order": 0,
+      "description": null,
+      "created_at": "2025-06-29T06:57:39.000Z",
+      "updated_at": "2025-07-20T00:03:08.000Z"
+    },
+    {
+      "id": 90,
+      "name": "前端架构",
+      "slug": "frontend-architecture-2",
+      "parent_id": null,
+      "sort_order": 0,
+      "description": null,
+      "created_at": "2025-06-29T06:57:41.000Z",
+      "updated_at": "2025-07-20T00:03:08.000Z"
+    },
+    {
+      "id": 97,
+      "name": "文章",
+      "slug": "articles-2",
+      "parent_id": null,
+      "sort_order": 0,
+      "description": null,
+      "created_at": "2025-06-29T07:03:01.000Z",
+      "updated_at": "2025-07-20T00:03:08.000Z"
+    }
+  ],
+  "affectedContents": [
+    {
+      "id": 1,
+      "title": "我不知道的 HTTP:网络分层与请求全流程解析",
+      "category_id": 85
+    },
+    {
+      "id": 2,
+      "title": "我不知道的 HTTP:Cookie 机制的深入探索",
+      "category_id": 85
+    },
+    {
+      "id": 3,
+      "title": "我不知道的 HTTP:缓存机制的深度解析",
+      "category_id": 85
+    },
+    {
+      "id": 4,
+      "title": "我不知道的 HTTP:HTTPS 深度解析与迁移实践",
+      "category_id": 85
+    },
+    {
+      "id": 5,
+      "title": "我不知道的 HTTP:HTTP/2 与 HTTP/3 的深度解析与优化实践",
+      "category_id": 85
+    },
+    {
+      "id": 12,
+      "title": "我不知道的 Pixi.js:渲染引擎的核心架构",
+      "category_id": 86
+    },
+    {
+      "id": 13,
+      "title": "我不知道的 Pixi.js:插件与扩展的生态",
+      "category_id": 86
+    },
+    {
+      "id": 14,
+      "title": "我不知道的 Pixi.js:纹理与 sprites 的管理机制",
+      "category_id": 86
+    },
+    {
+      "id": 15,
+      "title": "我不知道的 Pixi.js:交互事件的底层实现",
+      "category_id": 86
+    },
+    {
+      "id": 16,
+      "title": "我不知道的 Pixi.js:滤镜系统的设计原理",
+      "category_id": 86
+    },
+    {
+      "id": 17,
+      "title": "我不知道的 Pixi.js:动画系统的 ticker 解析",
+      "category_id": 86
+    },
+    {
+      "id": 18,
+      "title": "我不知道的 Pixi.js:图形与遮罩的艺术",
+      "category_id": 86
+    },
+    {
+      "id": 19,
+      "title": "我不知道的 Pixi.js:性能优化与调试之道",
+      "category_id": 86
+    },
+    {
+      "id": 20,
+      "title": "我不知道的 Pixi.js:多分辨率与自适应渲染",
+      "category_id": 86
+    },
+    {
+      "id": 21,
+      "title": "我不知道的 Pixi.js:物理引擎的集成艺术",
+      "category_id": 86
+    },
+    {
+      "id": 60,
+      "title": "我不知道的打包工具:tsup 的实现与优化之旅",
+      "category_id": 89
+    },
+    {
+      "id": 61,
+      "title": "我不知道的打包工具:Rollup 到 tsup 的实现原理对比",
+      "category_id": 89
+    },
+    {
+      "id": 62,
+      "title": "我不知道的打包工具：输出格式与 package.json 配置的秘密",
+      "category_id": 89
+    },
+    {
+      "id": 63,
+      "title": "我不知道的 Father:核心架构与打包原理",
+      "category_id": 89
+    },
+    {
+      "id": 64,
+      "title": "我不知道的 Father:样式处理与冲突解决方案",
+      "category_id": 89
+    },
+    {
+      "id": 65,
+      "title": "我不知道的 Father:与主流工具对比及选型指南",
+      "category_id": 89
+    },
+    {
+      "id": 66,
+      "title": "我不知道的 dumi：跨框架组件渲染的内核探秘",
+      "category_id": 90
+    },
+    {
+      "id": 67,
+      "title": "我不知道的 dumi：静态站点生成的工程奥秘",
+      "category_id": 90
+    },
+    {
+      "id": 68,
+      "title": "我不知道的 dumi：自动路由生成的原理解析",
+      "category_id": 90
+    }
+  ],
+  "operation": "category-deduplication"
+}
