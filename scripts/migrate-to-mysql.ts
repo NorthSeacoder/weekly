@@ -119,48 +119,39 @@ class ContentMigrator {
     }
 
     private async migrateBlogContents() {
-        console.log('📚 迁移博客内容...');
+        console.log('📚 迁移博客内容（支持更新已存在记录）...');
         
         const blogsDir = path.join(process.cwd(), 'blogs');
-        const blogFiles = this.getAllMdxFiles(blogsDir);
+        if (!fs.existsSync(blogsDir)) {
+            console.log('   📂 未找到 blogs 文件夹，跳过博客迁移');
+            return;
+        }
         
-        let migratedCount = 0;
+        const blogFiles = this.getAllMdxFiles(blogsDir);
+        console.log(`   📄 找到 ${blogFiles.length} 个博客文件`);
+        
+        let newCount = 0;
+        let updateCount = 0;
+        let errorCount = 0;
         
         for (const file of blogFiles) {
             try {
                 await this.migrateBlogFile(file);
-                migratedCount++;
-                console.log(`  ✅ 已迁移: ${file.path}`);
+                // 迁移成功的计数通过 migrateBlogFile 内部的 console.log 来区分新增和更新
             } catch (error) {
                 console.error(`  ❌ 迁移失败: ${file.path}`, error);
+                errorCount++;
             }
         }
         
-        console.log(`📚 博客内容迁移完成，共迁移 ${migratedCount} 篇文章`);
+        console.log(`📚 博客内容迁移完成`);
+        console.log(`   📊 总计: ${blogFiles.length} 个文件，错误: ${errorCount} 个`);
     }
 
     private async migrateWeeklyContents() {
-        console.log('📅 迁移周刊内容...');
-        
-        const sectionsDir = path.join(process.cwd(), 'sections');
-        const weeklyFiles = this.getAllMdxFiles(sectionsDir);
-        
-        // 按日期对周刊内容进行分组
-        const weeklyGroups = this.groupWeeklyByDate(weeklyFiles);
-        
-        let migratedCount = 0;
-        
-        for (const [weekRange, files] of Object.entries(weeklyGroups)) {
-            try {
-                await this.migrateWeeklyIssue(weekRange, files);
-                migratedCount++;
-                console.log(`  ✅ 已迁移周刊: ${weekRange}`);
-            } catch (error) {
-                console.error(`  ❌ 迁移周刊失败: ${weekRange}`, error);
-            }
-        }
-        
-        console.log(`📅 周刊内容迁移完成，共迁移 ${migratedCount} 期周刊`);
+        console.log('📅 跳过周刊内容迁移（数据已在数据库中）...');
+        console.log('   如需迁移周刊内容，请使用专门的周刊同步工具');
+        console.log('   周刊数据应该通过 weekly:add 或直接在数据库中管理');
     }
 
     private getAllMdxFiles(dir: string): FileContent[] {
@@ -206,11 +197,20 @@ class ContentMigrator {
             
             // 准备内容数据
             const readingTime = getReadingTime(content);
+            const title = frontmatter.title || '未命名文章';
+            const slug = frontmatter.slug || this.generateSlugFromTitle(title);
+            
+            // 检查是否已存在相同的记录（基于 title 和 slug）
+            const existingContent = await connection.execute(
+                'SELECT id FROM contents WHERE title = ? OR slug = ? LIMIT 1',
+                [title, slug]
+            );
+            
             const contentData = {
                 content_type_id: this.contentTypeMap['blog'],
                 category_id: categoryId,
-                title: frontmatter.title || '未命名文章',
-                slug: frontmatter.slug || this.generateSlugFromTitle(frontmatter.title || '未命名文章'),
+                title: title,
+                slug: slug,
                 description: frontmatter.desc || '',
                 content: content,
                 content_format: 'mdx',
@@ -218,20 +218,42 @@ class ContentMigrator {
                 published_at: frontmatter.date ? dayjs(frontmatter.date).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss'),
                 word_count: readingTime.words,
                 reading_time: Math.ceil(readingTime.minutes),
-                created_at: dayjs(file.stats.birthtime).format('YYYY-MM-DD HH:mm:ss'),
                 updated_at: dayjs(file.stats.mtime).format('YYYY-MM-DD HH:mm:ss')
             };
             
-            // 插入内容
-            const [result] = await connection.execute(
-                `INSERT INTO contents (${Object.keys(contentData).join(', ')}) 
-                 VALUES (${Object.keys(contentData).map(() => '?').join(', ')})`,
-                Object.values(contentData)
-            );
+            let contentId: number;
             
-            const contentId = (result as any).insertId;
+            if (existingContent[0] && Array.isArray(existingContent[0]) && existingContent[0].length > 0) {
+                // 更新已存在的记录
+                contentId = (existingContent[0] as any)[0].id;
+                
+                const updateFields = Object.keys(contentData).map(key => `${key} = ?`).join(', ');
+                await connection.execute(
+                    `UPDATE contents SET ${updateFields} WHERE id = ?`,
+                    [...Object.values(contentData), contentId]
+                );
+                
+                console.log(`  🔄 已更新: ${title}`);
+            } else {
+                // 插入新记录
+                const insertData = {
+                    ...contentData,
+                    created_at: dayjs(file.stats.birthtime).format('YYYY-MM-DD HH:mm:ss')
+                };
+                
+                const [result] = await connection.execute(
+                    `INSERT INTO contents (${Object.keys(insertData).join(', ')}) 
+                     VALUES (${Object.keys(insertData).map(() => '?').join(', ')})`,
+                    Object.values(insertData)
+                );
+                
+                contentId = (result as any).insertId;
+                console.log(`  ➕ 已新增: ${title}`);
+            }
             
-            // 关联标签
+            // 更新标签关联（先删除旧的，再插入新的）
+            await connection.execute('DELETE FROM content_tags WHERE content_id = ?', [contentId]);
+            
             if (tagIds.length > 0) {
                 const tagValues = tagIds.map(tagId => [contentId, tagId]);
                 await this.batchInsertContentTags(tagValues, connection);
@@ -241,113 +263,15 @@ class ContentMigrator {
         });
     }
 
-    private groupWeeklyByDate(files: FileContent[]): Record<string, FileContent[]> {
-        const groups: Record<string, FileContent[]> = {};
-        
-        for (const file of files) {
-            const date = dayjs(file.frontmatter.date);
-            const weekStart = date.startOf('week');
-            const weekEnd = date.endOf('week');
-            const weekKey = `${weekStart.format('YYYY-MM-DD')} to ${weekEnd.format('YYYY-MM-DD')}`;
-            
-            if (!groups[weekKey]) {
-                groups[weekKey] = [];
-            }
-            groups[weekKey].push(file);
-        }
-        
-        return groups;
-    }
 
-    private async migrateWeeklyIssue(weekRange: string, files: FileContent[]) {
-        return transaction(async (connection) => {
-            const [startDate, endDate] = weekRange.split(' to ');
-            const issueNumber = await this.getNextIssueNumber();
-            
-            // 创建周刊期号
-            const issueData = {
-                issue_number: issueNumber,
-                title: `我不知道的周刊第 ${issueNumber} 期`,
-                slug: `${issueNumber}`,
-                start_date: startDate,
-                end_date: endDate,
-                total_items: files.length,
-                status: 'published',
-                published_at: endDate + ' 23:59:59'
-            };
-            
-            const [issueResult] = await connection.execute(
-                `INSERT INTO weekly_issues (${Object.keys(issueData).join(', ')}) 
-                 VALUES (${Object.keys(issueData).map(() => '?').join(', ')})`,
-                Object.values(issueData)
-            );
-            
-            const weeklyIssueId = (issueResult as any).insertId;
-            
-            // 迁移每个条目
-            const contentIds: number[] = [];
-            for (const [index, file] of files.entries()) {
-                const contentId = await this.migrateWeeklyItem(file, connection);
-                contentIds.push(contentId);
-                
-                // 关联到周刊
-                await connection.execute(
-                    'INSERT INTO weekly_content_items (weekly_issue_id, content_id, sort_order) VALUES (?, ?, ?)',
-                    [weeklyIssueId, contentId, index]
-                );
-            }
-            
-            return weeklyIssueId;
-        });
-    }
 
-    private async migrateWeeklyItem(file: FileContent, connection: any) {
-        const { frontmatter, content } = file;
-        
-        // 确保分类存在
-        const categorySlug = this.mapWeeklyCategoryToSlug(frontmatter.category);
-        const categoryId = await this.ensureCategory(categorySlug, connection);
-        
-        // 确保标签存在
-        const tagIds = await this.ensureTags(frontmatter.tags || [], connection);
-        
-        // 准备内容数据
-        const readingTime = getReadingTime(content);
-        const contentData = {
-            content_type_id: this.contentTypeMap['weekly'],
-            category_id: categoryId,
-            title: frontmatter.title || '未命名周刊内容',
-            slug: this.generateSlugFromTitle(frontmatter.title || '未命名周刊内容'),
-            description: '',
-            content: content,
-            content_format: 'mdx',
-            status: 'published',
-            published_at: frontmatter.date ? dayjs(frontmatter.date).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss'),
-            source: frontmatter.source || '',
-            screenshot_api: 'manual',
-            word_count: readingTime.words,
-            reading_time: Math.ceil(readingTime.minutes),
-            created_at: frontmatter.date ? dayjs(frontmatter.date).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss'),
-            updated_at: frontmatter.date ? dayjs(frontmatter.date).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss')
-        };
-        
-        // 插入内容
-        const [result] = await connection.execute(
-            `INSERT INTO contents (${Object.keys(contentData).join(', ')}) 
-             VALUES (${Object.keys(contentData).map(() => '?').join(', ')})`,
-            Object.values(contentData)
-        );
-        
-        const contentId = (result as any).insertId;
-        
-        // 关联标签
-        if (tagIds.length > 0) {
-            const tagValues = tagIds.map(tagId => [contentId, tagId]);
-            await this.batchInsertContentTags(tagValues, connection);
-        }
-        
-        return contentId;
-    }
+
+
+
+
+
+
+
 
     private getCategorySlugFromPath(filePath: string, contentType: string): string {
         const parts = filePath.split(path.sep);
@@ -363,47 +287,7 @@ class ContentMigrator {
         return 'uncategorized';
     }
 
-    private mapWeeklyCategoryToSlug(category: string): string {
-        const mapping: Record<string, string> = {
-            '工具': 'tools',
-            '文章': 'articles',
-            '教程': 'tutorials',
-            '言论': 'quotes',
-            'bug': 'bugs',
-            '面试题': 'interviews',
-            'repos': 'repos',
-            'bigones': 'bigones',
-            '网站': 'websites',
-            'prompt': 'prompts',
-            'Prompt': 'prompts',
-            'demo': 'demos',
-            '开源': 'open-source',
-            '资源': 'resources',
-            '技巧': 'tips',
-            '经验': 'experience',
-            '技术': 'technology',
-            '博客': 'blogs',
-            'AI': 'ai',
-            '博主': 'bloggers',
-            '教育': 'education',
-            '开发工具': 'dev-tools',
-            '讨论': 'discussion',
-            '观点': 'opinions',
-            '读书': 'reading',
-            '访谈': 'interviews',
-            '设计': 'design',
-            '服务': 'services',
-            '思考': 'thoughts',
-            '应用': 'applications',
-            '平台': 'platforms',
-            '安全': 'security',
-            '健康': 'health',
-            '书籍': 'books',
-            '专栏': 'columns'
-        };
-        
-        return mapping[category] || 'tools';
-    }
+
 
     private async ensureCategory(slug: string, connection: any): Promise<number> {
         if (this.categoryMap[slug]) {
@@ -492,10 +376,7 @@ class ContentMigrator {
         );
     }
 
-    private async getNextIssueNumber(): Promise<number> {
-        const result = await query('SELECT MAX(issue_number) as max_issue FROM weekly_issues');
-        return (result[0]?.max_issue || 0) + 1;
-    }
+
 
     private generateSlugFromTitle(title: string): string {
         return title

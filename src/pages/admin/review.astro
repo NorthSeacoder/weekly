@@ -33,7 +33,7 @@ const metadata = {
                 const finalValue = result ? result.split(';').shift() || null : null;
                 if (finalValue) return finalValue;
             }
-            
+
             // 方法2: 更健壮的解析
             const cookies = document.cookie.split(';');
             for (let cookie of cookies) {
@@ -43,7 +43,7 @@ const metadata = {
                     return cookieValue;
                 }
             }
-            
+
             return null;
         }
 
@@ -57,7 +57,7 @@ const metadata = {
             // 检查URL参数中是否有密钥
             const urlParams = new URLSearchParams(window.location.search);
             const urlKey = urlParams.get('key');
-            
+
             if (urlKey === window.expectedAdminKey) {
                 // 尝试设置Cookie
                 const cookieString = `admin_key=${window.expectedAdminKey}; Max-Age=${60 * 60 * 24}; Path=/`;
@@ -66,13 +66,13 @@ const metadata = {
                 window.location.href = '/admin/review';
                 return;
             }
-            
+
             // 没有权限，跳转到登录页面
             window.location.href = '/admin/login?return=' + encodeURIComponent('/admin/review');
         }
     </script>
 
-    <div class='min-h-screen bg-gray-50 dark:bg-gray-900 py-8'>
+    <div class='bg-gray-50 dark:bg-gray-900 py-8'>
         <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
             <!-- 页面标题 -->
             <div class='mb-8'>
@@ -96,229 +96,438 @@ const metadata = {
                 </div>
             </div>
 
-            <!-- 统计卡片 -->
-            <div class='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
-                {
-                    statusStats.map((stat) => {
-                        const statusConfig = {
-                            draft: {label: '草稿', color: 'yellow', icon: '📝'},
-                            published: {label: '已发布', color: 'green', icon: '✅'},
-                            hidden: {label: '已隐藏', color: 'gray', icon: '👁️'},
-                            archived: {label: '已归档', color: 'blue', icon: '📦'}
-                        };
-                        const config = statusConfig[stat.status as keyof typeof statusConfig] || {
-                            label: stat.status,
-                            color: 'gray',
-                            icon: '📄'
-                        };
+            <!-- 导航标签 -->
+            <div class='mb-8'>
+                <div class='border-b border-gray-200 dark:border-gray-700'>
+                    <nav class='-mb-px flex space-x-8'>
+                        <button
+                            id='content-tab'
+                            class='tab-button py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600 dark:text-blue-400'>
+                            内容审核
+                        </button>
+                        <button
+                            id='weekly-tab'
+                            class='tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'>
+                            周刊管理
+                        </button>
+                    </nav>
+                </div>
+            </div>
 
-                        return (
-                            <div
-                                class={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border-l-4 border-${config.color}-500`}>
-                                <div class='flex items-center'>
-                                    <div class='text-2xl mr-3'>{config.icon}</div>
-                                    <div>
-                                        <p class='text-sm font-medium text-gray-600 dark:text-gray-400'>
-                                            {config.label}
-                                        </p>
-                                        <p class='text-2xl font-bold text-gray-900 dark:text-white'>{stat.count}</p>
+            <!-- 内容审核面板 -->
+            <div id='content-panel'>
+                <!-- 统计卡片 -->
+                <div class='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
+                    {
+                        statusStats.map((stat) => {
+                            const statusConfig = {
+                                draft: {label: '草稿', color: 'yellow', icon: '📝'},
+                                published: {label: '已发布', color: 'green', icon: '✅'},
+                                hidden: {label: '已隐藏', color: 'gray', icon: '👁️'},
+                                archived: {label: '已归档', color: 'blue', icon: '📦'}
+                            };
+                            const config = statusConfig[stat.status as keyof typeof statusConfig] || {
+                                label: stat.status,
+                                color: 'gray',
+                                icon: '📄'
+                            };
+
+                            return (
+                                <div
+                                    class={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border-l-4 border-${config.color}-500`}>
+                                    <div class='flex items-center'>
+                                        <div class='text-2xl mr-3'>{config.icon}</div>
+                                        <div>
+                                            <p class='text-sm font-medium text-gray-600 dark:text-gray-400'>
+                                                {config.label}
+                                            </p>
+                                            <p class='text-2xl font-bold text-gray-900 dark:text-white'>{stat.count}</p>
+                                        </div>
                                     </div>
                                 </div>
+                            );
+                        })
+                    }
+                </div>
+
+                <!-- 批量操作工具栏 -->
+                <div
+                    class='bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mb-6'
+                    id='batch-toolbar'
+                    style='display: none;'>
+                    <div class='flex items-center justify-between'>
+                        <div class='flex items-center space-x-4'>
+                            <span class='text-sm text-gray-600 dark:text-gray-400' id='selected-count'>已选择 0 项</span
+                            >
+                            <button id='select-all' class='text-blue-600 hover:text-blue-700 text-sm font-medium'
+                                >全选</button
+                            >
+                            <button id='clear-selection' class='text-gray-600 hover:text-gray-700 text-sm font-medium'
+                                >清除选择</button
+                            >
+                        </div>
+                        <div class='flex space-x-2'>
+                            <button
+                                data-action='batch-update'
+                                data-status='published'
+                                class='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm'>
+                                批量发布
+                            </button>
+                            <button
+                                data-action='batch-update'
+                                data-status='hidden'
+                                class='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm'>
+                                批量隐藏
+                            </button>
+                            <button
+                                data-action='batch-update'
+                                data-status='archived'
+                                class='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm'>
+                                批量归档
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 内容表格 -->
+                <div class='bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden'>
+                    <div class='px-6 py-4 border-b border-gray-200 dark:border-gray-700'>
+                        <h2 class='text-lg font-semibold text-gray-900 dark:text-white'>
+                            待审核内容 ({pendingContent.length})
+                        </h2>
+                    </div>
+
+                    {
+                        pendingContent.length === 0 ? (
+                            <div class='text-center py-12'>
+                                <div class='text-6xl mb-4'>🎉</div>
+                                <p class='text-xl text-gray-600 dark:text-gray-400'>没有待审核的内容</p>
+                                <p class='text-gray-500 dark:text-gray-500'>所有内容都已处理完毕</p>
                             </div>
-                        );
-                    })
-                }
-            </div>
+                        ) : (
+                            <div class='overflow-x-auto'>
+                                <table class='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
+                                    <thead class='bg-gray-50 dark:bg-gray-700'>
+                                        <tr>
+                                            <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-8'>
+                                                <input
+                                                    type='checkbox'
+                                                    id='select-all-header'
+                                                    class='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
+                                                />
+                                            </th>
+                                            <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                                标题
+                                            </th>
+                                            <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                                分类
+                                            </th>
+                                            <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                                状态
+                                            </th>
+                                            <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                                创建时间
+                                            </th>
+                                            <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                                字数
+                                            </th>
+                                            <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                                操作
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class='bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700'>
+                                        {pendingContent.map((content) => {
+                                            const statusConfig = {
+                                                draft: {
+                                                    label: '草稿',
+                                                    bgColor:
+                                                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                                                },
+                                                hidden: {
+                                                    label: '已隐藏',
+                                                    bgColor:
+                                                        'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+                                                },
+                                                archived: {
+                                                    label: '已归档',
+                                                    bgColor:
+                                                        'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                                }
+                                            };
+                                            const config = statusConfig[
+                                                content.status as keyof typeof statusConfig
+                                            ] || {
+                                                label: content.status,
+                                                bgColor: 'bg-gray-100 text-gray-800'
+                                            };
 
-            <!-- 批量操作工具栏 -->
-            <div
-                class='bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mb-6'
-                id='batch-toolbar'
-                style='display: none;'>
-                <div class='flex items-center justify-between'>
-                    <div class='flex items-center space-x-4'>
-                        <span class='text-sm text-gray-600 dark:text-gray-400' id='selected-count'>已选择 0 项</span>
-                        <button id='select-all' class='text-blue-600 hover:text-blue-700 text-sm font-medium'
-                            >全选</button
-                        >
-                        <button id='clear-selection' class='text-gray-600 hover:text-gray-700 text-sm font-medium'
-                            >清除选择</button
-                        >
-                    </div>
-                    <div class='flex space-x-2'>
-                        <button
-                            data-action='batch-update'
-                            data-status='published'
-                            class='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm'>
-                            批量发布
-                        </button>
-                        <button
-                            data-action='batch-update'
-                            data-status='hidden'
-                            class='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm'>
-                            批量隐藏
-                        </button>
-                        <button
-                            data-action='batch-update'
-                            data-status='archived'
-                            class='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm'>
-                            批量归档
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 内容表格 -->
-            <div class='bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden'>
-                <div class='px-6 py-4 border-b border-gray-200 dark:border-gray-700'>
-                    <h2 class='text-lg font-semibold text-gray-900 dark:text-white'>
-                        待审核内容 ({pendingContent.length})
-                    </h2>
-                </div>
-
-                {
-                    pendingContent.length === 0 ? (
-                        <div class='text-center py-12'>
-                            <div class='text-6xl mb-4'>🎉</div>
-                            <p class='text-xl text-gray-600 dark:text-gray-400'>没有待审核的内容</p>
-                            <p class='text-gray-500 dark:text-gray-500'>所有内容都已处理完毕</p>
-                        </div>
-                    ) : (
-                        <div class='overflow-x-auto'>
-                            <table class='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
-                                <thead class='bg-gray-50 dark:bg-gray-700'>
-                                    <tr>
-                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-8'>
-                                            <input
-                                                type='checkbox'
-                                                id='select-all-header'
-                                                class='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
-                                            />
-                                        </th>
-                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
-                                            标题
-                                        </th>
-                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
-                                            分类
-                                        </th>
-                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
-                                            状态
-                                        </th>
-                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
-                                            创建时间
-                                        </th>
-                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
-                                            字数
-                                        </th>
-                                        <th class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
-                                            操作
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class='bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700'>
-                                    {pendingContent.map((content) => {
-                                        const statusConfig = {
-                                            draft: {
-                                                label: '草稿',
-                                                bgColor:
-                                                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                                            },
-                                            hidden: {
-                                                label: '已隐藏',
-                                                bgColor: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-                                            },
-                                            archived: {
-                                                label: '已归档',
-                                                bgColor: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                                            }
-                                        };
-                                        const config = statusConfig[content.status as keyof typeof statusConfig] || {
-                                            label: content.status,
-                                            bgColor: 'bg-gray-100 text-gray-800'
-                                        };
-
-                                        return (
-                                            <tr class='hover:bg-gray-50 dark:hover:bg-gray-700'>
-                                                <td class='px-6 py-4 whitespace-nowrap'>
-                                                    <input
-                                                        type='checkbox'
-                                                        class='content-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
-                                                        data-content-id={content.id}
-                                                    />
-                                                </td>
-                                                <td class='px-6 py-4'>
-                                                    <div class='text-sm font-medium text-gray-900 dark:text-white line-clamp-2'>
-                                                        {content.title}
-                                                    </div>
-                                                    {content.description && (
-                                                        <div class='text-sm text-gray-500 dark:text-gray-400 line-clamp-1 mt-1'>
-                                                            {content.description}
+                                            return (
+                                                <tr class='hover:bg-gray-50 dark:hover:bg-gray-700'>
+                                                    <td class='px-6 py-4 whitespace-nowrap'>
+                                                        <input
+                                                            type='checkbox'
+                                                            class='content-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
+                                                            data-content-id={content.id}
+                                                        />
+                                                    </td>
+                                                    <td class='px-6 py-4'>
+                                                        <div class='text-sm font-medium text-gray-900 dark:text-white line-clamp-2'>
+                                                            {content.title}
                                                         </div>
-                                                    )}
-                                                    <div class='text-xs text-gray-400 mt-1'>ID: {content.id}</div>
-                                                </td>
-                                                <td class='px-6 py-4 whitespace-nowrap'>
-                                                    {content.category_name && (
-                                                        <span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'>
-                                                            {content.category_name}
+                                                        {content.description && (
+                                                            <div class='text-sm text-gray-500 dark:text-gray-400 line-clamp-1 mt-1'>
+                                                                {content.description}
+                                                            </div>
+                                                        )}
+                                                        <div class='text-xs text-gray-400 mt-1'>ID: {content.id}</div>
+                                                    </td>
+                                                    <td class='px-6 py-4 whitespace-nowrap'>
+                                                        {content.category_name && (
+                                                            <span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'>
+                                                                {content.category_name}
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    <td class='px-6 py-4 whitespace-nowrap'>
+                                                        <span
+                                                            class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bgColor}`}>
+                                                            {config.label}
                                                         </span>
-                                                    )}
-                                                </td>
-                                                <td class='px-6 py-4 whitespace-nowrap'>
-                                                    <span
-                                                        class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bgColor}`}>
-                                                        {config.label}
-                                                    </span>
-                                                </td>
-                                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400'>
-                                                    {new Date(content.created_at).toLocaleDateString('zh-CN')}
-                                                </td>
-                                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400'>
-                                                    {content.word_count}
-                                                </td>
-                                                <td class='px-6 py-4 whitespace-nowrap text-sm font-medium'>
-                                                    <div class='flex space-x-2'>
-                                                        <button
-                                                            data-action='preview'
-                                                            data-content-id={content.id}
-                                                            class='text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300'
-                                                            title='预览'>
-                                                            👁️
-                                                        </button>
-                                                        <button
-                                                            data-action='update-status'
-                                                            data-content-id={content.id}
-                                                            data-status='published'
-                                                            class='text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300'
-                                                            title='发布'>
-                                                            ✅
-                                                        </button>
-                                                        <button
-                                                            data-action='update-status'
-                                                            data-content-id={content.id}
-                                                            data-status='hidden'
-                                                            class='text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'
-                                                            title='隐藏'>
-                                                            👁️‍🗨️
-                                                        </button>
-                                                        <button
-                                                            data-action='update-status'
-                                                            data-content-id={content.id}
-                                                            data-status='archived'
-                                                            class='text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300'
-                                                            title='归档'>
-                                                            📦
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                                                    </td>
+                                                    <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400'>
+                                                        {new Date(content.created_at).toLocaleDateString('zh-CN')}
+                                                    </td>
+                                                    <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400'>
+                                                        {content.word_count}
+                                                    </td>
+                                                    <td class='px-6 py-4 whitespace-nowrap text-sm font-medium'>
+                                                        <div class='flex space-x-2'>
+                                                            <button
+                                                                data-action='preview'
+                                                                data-content-id={content.id}
+                                                                class='text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300'
+                                                                title='预览'>
+                                                                👁️
+                                                            </button>
+                                                            <button
+                                                                data-action='update-status'
+                                                                data-content-id={content.id}
+                                                                data-status='published'
+                                                                class='text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300'
+                                                                title='发布'>
+                                                                ✅
+                                                            </button>
+                                                            <button
+                                                                data-action='update-status'
+                                                                data-content-id={content.id}
+                                                                data-status='hidden'
+                                                                class='text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'
+                                                                title='隐藏'>
+                                                                👁️‍🗨️
+                                                            </button>
+                                                            <button
+                                                                data-action='update-status'
+                                                                data-content-id={content.id}
+                                                                data-status='archived'
+                                                                class='text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300'
+                                                                title='归档'>
+                                                                📦
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )
+                    }
+                </div>
+            </div>
+            <!-- 周刊管理面板 -->
+            <div id='weekly-panel' class='hidden'>
+                <!-- 周刊期号管理 -->
+                <div class='grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8'>
+                    <!-- 创建新期号 -->
+                    <div class='bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6'>
+                        <h3 class='text-lg font-semibold text-gray-900 dark:text-white mb-4'>📅 创建新期号</h3>
+                        <div class='space-y-4'>
+                            <div>
+                                <label class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
+                                    >期号标题</label
+                                >
+                                <input
+                                    type='text'
+                                    id='new-issue-title'
+                                    placeholder='留空自动生成'
+                                    class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                                />
+                            </div>
+                            <div class='grid grid-cols-2 gap-2'>
+                                <div>
+                                    <label class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
+                                        >开始日期</label
+                                    >
+                                    <input
+                                        type='date'
+                                        id='new-issue-start'
+                                        class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                                    />
+                                </div>
+                                <div>
+                                    <label class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
+                                        >结束日期</label
+                                    >
+                                    <input
+                                        type='date'
+                                        id='new-issue-end'
+                                        class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                                    />
+                                </div>
+                            </div>
+                            <button
+                                id='create-issue-btn'
+                                class='w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors'>
+                                创建期号
+                            </button>
                         </div>
-                    )
-                }
+                    </div>
+
+                    <!-- 最新期号状态 -->
+                    <div class='bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6'>
+                        <h3 class='text-lg font-semibold text-gray-900 dark:text-white mb-4'>📊 期号状态</h3>
+                        <div id='issue-stats' class='space-y-3 min-h-[120px]'>
+                            <!-- 初始占位内容 -->
+                            <div class='flex items-center justify-center py-8'>
+                                <div class='text-gray-500 dark:text-gray-400 text-sm text-center'>
+                                    <div class='animate-pulse flex space-x-2 justify-center mb-3'>
+                                        <div class='h-2 w-2 bg-gray-400 rounded-full'></div>
+                                        <div class='h-2 w-2 bg-gray-400 rounded-full'></div>
+                                        <div class='h-2 w-2 bg-gray-400 rounded-full'></div>
+                                    </div>
+                                    <div>点击"周刊管理"标签时自动加载数据</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button
+                            id='refresh-issues'
+                            class='w-full mt-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'>
+                            刷新数据
+                        </button>
+                    </div>
+
+                    <!-- 快速操作 -->
+                    <div class='bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6'>
+                        <h3 class='text-lg font-semibold text-gray-900 dark:text-white mb-4'>⚡ 快速操作</h3>
+                        <div class='space-y-3'>
+                            <button
+                                id='auto-suggest-btn'
+                                class='w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors'>
+                                🎯 智能建议内容
+                            </button>
+                            <button
+                                id='view-unassociated-btn'
+                                class='w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors'>
+                                📝 查看待组织内容
+                            </button>
+                            <div
+                                class='text-sm text-gray-600 dark:text-gray-400 text-center pt-2'
+                                id='unassociated-count'>
+                                加载中...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 周刊期号列表 -->
+                <div class='bg-white dark:bg-gray-800 rounded-xl shadow-sm'>
+                    <div class='px-6 py-4 border-b border-gray-200 dark:border-gray-700'>
+                        <div class='flex items-center justify-between'>
+                            <h3 class='text-lg font-semibold text-gray-900 dark:text-white'>📚 周刊期号管理</h3>
+                            <div class='flex space-x-2'>
+                                <select
+                                    id='status-filter'
+                                    class='px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm dark:bg-gray-700 dark:text-white'>
+                                    <option value=''>全部状态</option>
+                                    <option value='draft'>草稿</option>
+                                    <option value='published'>已发布</option>
+                                    <option value='archived'>已归档</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='overflow-x-auto'>
+                        <table class='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
+                            <thead class='bg-gray-50 dark:bg-gray-700'>
+                                <tr>
+                                    <th
+                                        class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                        期号
+                                    </th>
+                                    <th
+                                        class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                        标题
+                                    </th>
+                                    <th
+                                        class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                        时间范围
+                                    </th>
+                                    <th
+                                        class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                        内容数量
+                                    </th>
+                                    <th
+                                        class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                        状态
+                                    </th>
+                                    <th
+                                        class='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider'>
+                                        操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody
+                                id='issues-table-body'
+                                class='bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700'>
+                                <!-- 初始加载提示 -->
+                                <tr>
+                                    <td colspan='6' class='px-6 py-8 text-center'>
+                                        <div class='flex flex-col items-center'>
+                                            <div
+                                                class='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4'>
+                                            </div>
+                                            <div class='text-gray-500 dark:text-gray-400'>加载周刊期号中...</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class='px-6 py-4 border-t border-gray-200 dark:border-gray-700'>
+                        <div class='flex items-center justify-between'>
+                            <div class='text-sm text-gray-500 dark:text-gray-400' id='issues-pagination-info'>
+                                加载中...
+                            </div>
+                            <div class='flex space-x-2'>
+                                <button
+                                    id='issues-prev-page'
+                                    class='px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50'
+                                    disabled>
+                                    上一页
+                                </button>
+                                <button
+                                    id='issues-next-page'
+                                    class='px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50'>
+                                    下一页
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -329,16 +538,21 @@ const metadata = {
             <div class='px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between'>
                 <h3 id='preview-title' class='text-lg font-semibold text-gray-900 dark:text-white'></h3>
                 <div class='flex items-center space-x-2'>
-                    <button 
-                        id='toggle-edit-btn' 
+                    <button
+                        id='toggle-edit-btn'
                         data-action='toggle-edit'
                         class='px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors'>
                         编辑
                     </button>
-                    <button data-action='close-preview' class='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'>
+                    <button
+                        data-action='close-preview'
+                        class='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'>
                         <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12'
-                            ></path>
+                            <path
+                                stroke-linecap='round'
+                                stroke-linejoin='round'
+                                stroke-width='2'
+                                d='M6 18L18 6M6 6l12 12'></path>
                         </svg>
                     </button>
                 </div>
@@ -350,13 +564,15 @@ const metadata = {
                     class='px-6 py-4 prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300'>
                     <!-- 预览内容将在这里显示 -->
                 </div>
-                
+
                 <!-- 编辑模式 -->
                 <div id='edit-content' class='px-6 py-4 hidden'>
                     <form id='edit-form' class='space-y-4'>
                         <!-- 标题 -->
                         <div>
-                            <label for='edit-title' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                            <label
+                                for='edit-title'
+                                class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                 标题 *
                             </label>
                             <input
@@ -364,25 +580,31 @@ const metadata = {
                                 id='edit-title'
                                 name='title'
                                 required
-                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                            />
                         </div>
 
                         <!-- 描述 -->
                         <div>
-                            <label for='edit-description' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                            <label
+                                for='edit-description'
+                                class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                 描述
                             </label>
                             <textarea
                                 id='edit-description'
                                 name='description'
                                 rows='2'
-                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'></textarea>
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                            ></textarea>
                         </div>
 
                         <!-- 分类和状态 -->
                         <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             <div>
-                                <label for='edit-category' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                <label
+                                    for='edit-category'
+                                    class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                     分类
                                 </label>
                                 <select
@@ -393,9 +615,11 @@ const metadata = {
                                     <!-- 分类选项将在此动态添加 -->
                                 </select>
                             </div>
-                            
+
                             <div>
-                                <label for='edit-status' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                <label
+                                    for='edit-status'
+                                    class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                     状态
                                 </label>
                                 <select
@@ -413,18 +637,23 @@ const metadata = {
                         <!-- 日期和截图API -->
                         <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             <div>
-                                <label for='edit-published-at' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                <label
+                                    for='edit-published-at'
+                                    class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                     发布时间
                                 </label>
                                 <input
                                     type='datetime-local'
                                     id='edit-published-at'
                                     name='published_at'
-                                    class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                    class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                                />
                             </div>
-                            
+
                             <div>
-                                <label for='edit-screenshot-api' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                <label
+                                    for='edit-screenshot-api'
+                                    class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                     截图API
                                 </label>
                                 <select
@@ -440,19 +669,24 @@ const metadata = {
 
                         <!-- 来源信息 -->
                         <div>
-                            <label for='edit-source' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                            <label
+                                for='edit-source'
+                                class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                 来源
                             </label>
                             <input
                                 type='text'
                                 id='edit-source'
                                 name='source'
-                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                            />
                         </div>
 
                         <!-- 标签 -->
                         <div>
-                            <label for='edit-tags' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                            <label
+                                for='edit-tags'
+                                class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                 标签（用逗号分隔）
                             </label>
                             <input
@@ -460,37 +694,52 @@ const metadata = {
                                 id='edit-tags'
                                 name='tags'
                                 placeholder='例如：前端,React,JavaScript'
-                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                            />
                         </div>
 
                         <!-- 高级设置（可折叠） -->
                         <div class='border-t border-gray-200 dark:border-gray-700 pt-4'>
-                            <button 
-                                type='button' 
+                            <button
+                                type='button'
                                 id='toggle-advanced'
                                 class='flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white mb-4'>
                                 <span>高级设置</span>
-                                <svg class='w-4 h-4 ml-1 transform transition-transform' id='advanced-arrow' fill='none' viewBox='0 0 24 24'>
-                                    <path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 9l6 6 6-6'></path>
+                                <svg
+                                    class='w-4 h-4 ml-1 transform transition-transform'
+                                    id='advanced-arrow'
+                                    fill='none'
+                                    viewBox='0 0 24 24'>
+                                    <path
+                                        stroke='currentColor'
+                                        stroke-linecap='round'
+                                        stroke-linejoin='round'
+                                        stroke-width='2'
+                                        d='M6 9l6 6 6-6'></path>
                                 </svg>
                             </button>
-                            
+
                             <div id='advanced-fields' class='hidden space-y-4'>
                                 <!-- SEO字段 -->
                                 <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                     <div>
-                                        <label for='edit-meta-title' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                        <label
+                                            for='edit-meta-title'
+                                            class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                             SEO标题
                                         </label>
                                         <input
                                             type='text'
                                             id='edit-meta-title'
                                             name='meta_title'
-                                            class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                            class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                                        />
                                     </div>
-                                    
+
                                     <div>
-                                        <label for='edit-sort-order' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                        <label
+                                            for='edit-sort-order'
+                                            class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                             排序权重
                                         </label>
                                         <input
@@ -498,20 +747,24 @@ const metadata = {
                                             id='edit-sort-order'
                                             name='sort_order'
                                             min='0'
-                                            class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'>
+                                            class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                                        />
                                     </div>
                                 </div>
 
                                 <!-- SEO描述 -->
                                 <div>
-                                    <label for='edit-meta-description' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                                    <label
+                                        for='edit-meta-description'
+                                        class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                         SEO描述
                                     </label>
                                     <textarea
                                         id='edit-meta-description'
                                         name='meta_description'
                                         rows='2'
-                                        class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'></textarea>
+                                        class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
+                                    ></textarea>
                                 </div>
 
                                 <!-- 推荐标记 -->
@@ -520,8 +773,11 @@ const metadata = {
                                         type='checkbox'
                                         id='edit-featured'
                                         name='featured'
-                                        class='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'>
-                                    <label for='edit-featured' class='ml-2 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                        class='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
+                                    />
+                                    <label
+                                        for='edit-featured'
+                                        class='ml-2 text-sm font-medium text-gray-700 dark:text-gray-300'>
                                         标记为推荐内容
                                     </label>
                                 </div>
@@ -530,7 +786,9 @@ const metadata = {
 
                         <!-- 内容 -->
                         <div>
-                            <label for='edit-content-text' class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                            <label
+                                for='edit-content-text'
+                                class='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                                 内容 *
                             </label>
                             <textarea
@@ -539,7 +797,8 @@ const metadata = {
                                 required
                                 rows='12'
                                 placeholder='支持Markdown格式'
-                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white font-mono text-sm'></textarea>
+                                class='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white font-mono text-sm'
+                            ></textarea>
                         </div>
 
                         <!-- 操作按钮 -->
@@ -623,25 +882,42 @@ const metadata = {
 
             // 改进的 Markdown 转 HTML
             let htmlContent = content.content
-                .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-white">$1</h3>')
+                .replace(
+                    /^### (.*$)/gim,
+                    '<h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-white">$1</h3>'
+                )
                 .replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">$1</h2>')
                 .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">$1</h1>')
-                .replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1" class="max-w-full h-auto rounded-lg shadow-sm mb-4" />')
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">$1</a>')
-                .replace(/`([^`]+)`/gim, '<code class="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm">$1</code>')
+                .replace(
+                    /!\[([^\]]*)\]\(([^)]+)\)/gim,
+                    '<img src="$2" alt="$1" class="max-w-full h-auto rounded-lg shadow-sm mb-4" />'
+                )
+                .replace(
+                    /\[([^\]]+)\]\(([^)]+)\)/gim,
+                    '<a href="$2" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">$1</a>'
+                )
+                .replace(
+                    /`([^`]+)`/gim,
+                    '<code class="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm">$1</code>'
+                )
                 .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-semibold">$1</strong>')
                 .replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>')
                 .replace(/^- (.*$)/gim, '<li class="mb-1">$1</li>')
                 .replace(/^\* (.*$)/gim, '<li class="mb-1">$1</li>');
 
             // 处理段落
-            const paragraphs = htmlContent.split('\n\n').map(p => p.trim()).filter(p => p);
-            htmlContent = paragraphs.map(p => {
-                if (p.startsWith('<h') || p.startsWith('<img') || p.includes('<li')) {
-                    return p;
-                }
-                return `<p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">${p.replace(/\n/g, '<br>')}</p>`;
-            }).join('');
+            const paragraphs = htmlContent
+                .split('\n\n')
+                .map((p) => p.trim())
+                .filter((p) => p);
+            htmlContent = paragraphs
+                .map((p) => {
+                    if (p.startsWith('<h') || p.startsWith('<img') || p.includes('<li')) {
+                        return p;
+                    }
+                    return `<p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">${p.replace(/\n/g, '<br>')}</p>`;
+                })
+                .join('');
 
             // 包装列表项
             htmlContent = htmlContent.replace(/(<li[^>]*>.*?<\/li>)/gs, (match, group) => {
@@ -656,10 +932,13 @@ const metadata = {
 
             // 添加标签显示
             if (content.tags && content.tags.length > 0) {
-                const tagsHtml = content.tags.map(tag => 
-                    `<span class="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full mr-2 mb-2">${tag}</span>`
-                ).join('');
-                
+                const tagsHtml = content.tags
+                    .map(
+                        (tag) =>
+                            `<span class="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full mr-2 mb-2">${tag}</span>`
+                    )
+                    .join('');
+
                 finalContent = `
                     <div class="mb-6">
                         <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">标签</h4>
@@ -752,7 +1031,7 @@ const metadata = {
 
                     // 渲染预览内容
                     renderPreviewContent(content, contentEl);
-                    
+
                     // 确保在预览模式
                     setPreviewMode();
                     modal.classList.remove('hidden');
@@ -791,7 +1070,7 @@ const metadata = {
                 previewContent.classList.add('hidden');
                 editContent.classList.remove('hidden');
                 toggleBtn.textContent = '预览';
-                
+
                 // 填充编辑表单
                 populateEditForm();
             }
@@ -833,9 +1112,9 @@ const metadata = {
             if (categorySelect && editOptions.categories) {
                 // 清空现有选项
                 categorySelect.innerHTML = '<option value="">请选择分类</option>';
-                
+
                 // 添加分类选项
-                editOptions.categories.forEach(category => {
+                editOptions.categories.forEach((category) => {
                     const option = document.createElement('option');
                     option.value = category.id;
                     option.textContent = category.name;
@@ -897,7 +1176,12 @@ const metadata = {
 
             // 处理标签
             const tagsString = formData.get('tags');
-            const tags = tagsString ? tagsString.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+            const tags = tagsString
+                ? tagsString
+                      .split(',')
+                      .map((tag) => tag.trim())
+                      .filter((tag) => tag)
+                : [];
 
             // 验证必填字段
             if (!contentData.title || !contentData.content) {
@@ -1093,7 +1377,7 @@ const metadata = {
         function toggleAdvancedSettings() {
             const advancedFields = document.getElementById('advanced-fields');
             const advancedArrow = document.getElementById('advanced-arrow');
-            
+
             if (advancedFields && advancedArrow) {
                 if (advancedFields.classList.contains('hidden')) {
                     advancedFields.classList.remove('hidden');
@@ -1106,7 +1390,531 @@ const metadata = {
         }
 
         // DOM加载完成后初始化事件
-        document.addEventListener('DOMContentLoaded', function() {
+        // 周刊管理功能
+        let currentIssuesPage = 0;
+        let currentUnassociatedPage = 0;
+        const issuesPerPage = 20;
+        const unassociatedPerPage = 50;
+
+        // 标签切换功能
+        function initTabs() {
+            const contentTab = document.getElementById('content-tab');
+            const weeklyTab = document.getElementById('weekly-tab');
+            const contentPanel = document.getElementById('content-panel');
+            const weeklyPanel = document.getElementById('weekly-panel');
+
+            contentTab.addEventListener('click', () => {
+                setActiveTab('content');
+            });
+
+            weeklyTab.addEventListener('click', () => {
+                setActiveTab('weekly');
+                // 检查是否是第一次点击，如果是则加载数据
+                if (!weeklyTab.dataset.loaded) {
+                    weeklyTab.dataset.loaded = 'true';
+                    loadWeeklyDashboard();
+                }
+            });
+        }
+
+        function setActiveTab(tab) {
+            const contentTab = document.getElementById('content-tab');
+            const weeklyTab = document.getElementById('weekly-tab');
+            const contentPanel = document.getElementById('content-panel');
+            const weeklyPanel = document.getElementById('weekly-panel');
+
+            if (tab === 'content') {
+                contentTab.className =
+                    'tab-button py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600 dark:text-blue-400';
+                weeklyTab.className =
+                    'tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300';
+                contentPanel.classList.remove('hidden');
+                weeklyPanel.classList.add('hidden');
+            } else {
+                weeklyTab.className =
+                    'tab-button py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600 dark:text-blue-400';
+                contentTab.className =
+                    'tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300';
+                weeklyPanel.classList.remove('hidden');
+                contentPanel.classList.add('hidden');
+            }
+        }
+
+        // 周刊管理面板初始化
+        async function loadWeeklyDashboard() {
+            try {
+                await Promise.all([loadIssueStats(), loadIssuesList(), loadUnassociatedCount()]);
+            } catch (error) {
+                console.error('加载周刊管理面板失败:', error);
+                // 尝试使用模拟数据
+                console.log('API不可用，使用模拟数据展示界面');
+                loadMockData();
+                showErrorMessage('API服务不可用，当前显示模拟数据。请确保服务器正常运行。');
+            }
+        }
+
+        // 显示错误消息
+        function showErrorMessage(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            alertDiv.textContent = message;
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // 开发模式：使用模拟数据
+        function loadMockData() {
+            console.log('加载模拟数据...');
+
+            // 模拟期号统计
+            const statsContainer = document.getElementById('issue-stats');
+            statsContainer.innerHTML = `
+                <div class="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                        <span class="text-lg mr-2">📝</span>
+                        <span class="text-sm text-gray-700 dark:text-gray-300">草稿</span>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-900 dark:text-white">2</span>
+                </div>
+                <div class="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                        <span class="text-lg mr-2">✅</span>
+                        <span class="text-sm text-gray-700 dark:text-gray-300">已发布</span>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-900 dark:text-white">45</span>
+                </div>
+            `;
+
+            // 模拟待组织内容数量
+            const countDiv = document.getElementById('unassociated-count');
+            countDiv.textContent = '待组织内容: 12 条';
+            countDiv.className = 'text-sm text-gray-600 dark:text-gray-400 text-center pt-2';
+
+            // 模拟期号列表
+            const tbody = document.getElementById('issues-table-body');
+            tbody.innerHTML = `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                        第 46 期
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        我不知道的周刊第 46 期
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        2025-01-20 ~ 2025-01-26
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        0 条 / 0 字
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
+                            草稿
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <div class="flex space-x-2">
+                            <button onclick="alert('模拟数据：关联内容功能')" class="text-blue-600 hover:text-blue-900 dark:text-blue-400" title="关联内容">
+                                🔗
+                            </button>
+                            <button onclick="alert('模拟数据：发布功能')" class="text-green-600 hover:text-green-900 dark:text-green-400" title="发布">
+                                📤
+                            </button>
+                            <button onclick="alert('模拟数据：查看详情')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400" title="查看详情">
+                                👁️
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                        第 45 期
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        我不知道的周刊第 45 期
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        2025-01-13 ~ 2025-01-19
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        12 条 / 8500 字
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                            已发布
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <div class="flex space-x-2">
+                            <button onclick="alert('模拟数据：查看详情')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400" title="查看详情">
+                                👁️
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+
+            // 更新分页信息
+            document.getElementById('issues-pagination-info').textContent = '显示 1-2 项，共 47 项 (模拟数据)';
+
+            // 添加模拟数据提示
+            const refreshBtn = document.getElementById('refresh-issues');
+            refreshBtn.textContent = '🔄 点击重试连接API';
+            refreshBtn.className =
+                'w-full mt-4 bg-orange-500 dark:bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-600 dark:hover:bg-orange-700 transition-colors';
+        }
+
+        // 加载期号统计
+        async function loadIssueStats() {
+            const statsContainer = document.getElementById('issue-stats');
+
+            try {
+                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
+                const response = await fetch('/api/admin/weekly/issues?admin_key=' + encodeURIComponent(adminKey));
+                const result = await response.json();
+
+                if (result.success && result.data.status_stats && result.data.status_stats.length > 0) {
+                    statsContainer.innerHTML = '';
+
+                    result.data.status_stats.forEach((stat) => {
+                        const statusConfig = {
+                            draft: {label: '草稿', color: 'yellow', icon: '📝'},
+                            published: {label: '已发布', color: 'green', icon: '✅'},
+                            archived: {label: '已归档', color: 'blue', icon: '📦'}
+                        };
+
+                        const config = statusConfig[stat.status] || {label: stat.status, color: 'gray', icon: '📄'};
+
+                        const statDiv = document.createElement('div');
+                        statDiv.className =
+                            'flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-700 rounded-lg';
+                        statDiv.innerHTML = `
+                            <div class="flex items-center">
+                                <span class="text-lg mr-2">${config.icon}</span>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">${config.label}</span>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-900 dark:text-white">${stat.count}</span>
+                        `;
+                        statsContainer.appendChild(statDiv);
+                    });
+                } else {
+                    // 显示空状态
+                    statsContainer.innerHTML = `
+                        <div class="text-center py-4">
+                            <div class="text-gray-500 dark:text-gray-400 text-sm">
+                                📄 暂无期号数据
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载期号统计失败:', error);
+                // 显示错误状态
+                statsContainer.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="text-red-500 dark:text-red-400 text-sm">
+                            ❌ 加载失败，请重试
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 加载期号列表
+        async function loadIssuesList() {
+            const tbody = document.getElementById('issues-table-body');
+
+            try {
+                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
+                const statusFilter = document.getElementById('status-filter').value;
+                const params = new URLSearchParams({
+                    admin_key: adminKey,
+                    limit: issuesPerPage.toString(),
+                    offset: (currentIssuesPage * issuesPerPage).toString()
+                });
+
+                if (statusFilter) {
+                    params.append('status', statusFilter);
+                }
+
+                const response = await fetch('/api/admin/weekly/issues?' + params.toString());
+                const result = await response.json();
+
+                if (result.success) {
+                    renderIssuesList(result.data.issues);
+                    updateIssuesPagination(result.data.pagination);
+                } else {
+                    throw new Error(result.error || '加载失败');
+                }
+            } catch (error) {
+                console.error('加载期号列表失败:', error);
+                // 显示错误状态
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center">
+                            <div class="text-red-500 dark:text-red-400">
+                                ❌ 加载失败: ${error.message}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                // 重置分页信息
+                document.getElementById('issues-pagination-info').textContent = '加载失败';
+            }
+        }
+
+        // 渲染期号列表
+        function renderIssuesList(issues) {
+            const tbody = document.getElementById('issues-table-body');
+            tbody.innerHTML = '';
+
+            if (!issues || issues.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center">
+                            <div class="text-gray-500 dark:text-gray-400">
+                                📄 暂无期号数据
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            issues.forEach((issue) => {
+                const statusConfig = {
+                    draft: {label: '草稿', color: 'yellow'},
+                    published: {label: '已发布', color: 'green'},
+                    archived: {label: '已归档', color: 'blue'}
+                };
+
+                const config = statusConfig[issue.status] || {label: issue.status, color: 'gray'};
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                        第 ${issue.issue_number} 期
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        ${issue.title}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        ${issue.start_date} ~ ${issue.end_date}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        ${issue.total_items} 条 / ${issue.total_word_count || 0} 字
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-${config.color}-100 text-${config.color}-800 dark:bg-${config.color}-800 dark:text-${config.color}-100">
+                            ${config.label}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <div class="flex space-x-2">
+                            ${
+                                issue.status === 'draft'
+                                    ? `
+                                <button onclick="associateContent(${issue.id})" class="text-blue-600 hover:text-blue-900 dark:text-blue-400" title="关联内容">
+                                    🔗
+                                </button>
+                                <button onclick="publishIssue(${issue.id})" class="text-green-600 hover:text-green-900 dark:text-green-400" title="发布">
+                                    📤
+                                </button>
+                            `
+                                    : ''
+                            }
+                            <button onclick="viewIssueDetails(${issue.id})" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400" title="查看详情">
+                                👁️
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 更新分页信息
+        function updateIssuesPagination(pagination) {
+            const info = document.getElementById('issues-pagination-info');
+            const prevBtn = document.getElementById('issues-prev-page');
+            const nextBtn = document.getElementById('issues-next-page');
+
+            const start = pagination.offset + 1;
+            const end = Math.min(pagination.offset + pagination.limit, pagination.total);
+
+            info.textContent = `显示 ${start}-${end} 项，共 ${pagination.total} 项`;
+
+            prevBtn.disabled = pagination.offset === 0;
+            nextBtn.disabled = !pagination.has_more;
+        }
+
+        // 加载待组织内容数量
+        async function loadUnassociatedCount() {
+            const countDiv = document.getElementById('unassociated-count');
+
+            try {
+                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
+                const response = await fetch(
+                    '/api/admin/weekly/unassociated-content?admin_key=' + encodeURIComponent(adminKey) + '&limit=1'
+                );
+                const result = await response.json();
+
+                if (result.success) {
+                    countDiv.textContent = `待组织内容: ${result.data.pagination.total} 条`;
+                } else {
+                    countDiv.textContent = '无法获取数据';
+                    countDiv.className = 'text-sm text-red-500 dark:text-red-400 text-center pt-2';
+                }
+            } catch (error) {
+                console.error('加载待组织内容数量失败:', error);
+                countDiv.textContent = '加载失败';
+                countDiv.className = 'text-sm text-red-500 dark:text-red-400 text-center pt-2';
+            }
+        }
+
+        // 创建新期号
+        async function createNewIssue() {
+            const title = document.getElementById('new-issue-title').value.trim();
+            const startDate = document.getElementById('new-issue-start').value;
+            const endDate = document.getElementById('new-issue-end').value;
+
+            if (!startDate || !endDate) {
+                alert('请选择开始日期和结束日期');
+                return;
+            }
+
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('开始日期不能晚于结束日期');
+                return;
+            }
+
+            try {
+                showLoading();
+
+                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
+                const response = await fetch('/api/admin/weekly/create-issue', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-admin-key': adminKey
+                    },
+                    body: JSON.stringify({
+                        title: title || undefined,
+                        start_date: startDate,
+                        end_date: endDate
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`期号创建成功！期号: ${result.data.issue_number}`);
+
+                    // 清空表单
+                    document.getElementById('new-issue-title').value = '';
+                    document.getElementById('new-issue-start').value = '';
+                    document.getElementById('new-issue-end').value = '';
+
+                    // 刷新数据
+                    await loadWeeklyDashboard();
+                } else {
+                    alert('创建失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                console.error('创建期号失败:', error);
+                alert('创建失败，请稍后重试');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 全局函数定义 - 供HTML onclick事件使用
+        window.associateContent = async function (issueId) {
+            // 这里应该打开一个模态框来选择内容
+            alert('关联内容功能待实现 - 期号ID: ' + issueId);
+        };
+
+        window.publishIssue = async function (issueId) {
+            if (!confirm('确定要发布这期周刊吗？发布后将无法修改。')) {
+                return;
+            }
+
+            try {
+                showLoading();
+
+                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
+                const response = await fetch('/api/admin/weekly/publish', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-admin-key': adminKey
+                    },
+                    body: JSON.stringify({weekly_issue_id: issueId})
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message || '发布成功！');
+                    await loadWeeklyDashboard();
+                } else {
+                    alert('发布失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                console.error('发布期号失败:', error);
+                alert('发布失败，请稍后重试');
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.viewIssueDetails = async function (issueId) {
+            alert('查看期号详情功能待实现 - 期号ID: ' + issueId);
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // 初始化标签功能
+            initTabs();
+
+            // 初始化周刊管理事件监听器
+            document.getElementById('create-issue-btn').addEventListener('click', createNewIssue);
+            document.getElementById('refresh-issues').addEventListener('click', () => {
+                // 重置加载状态，强制重新加载
+                const weeklyTab = document.getElementById('weekly-tab');
+                weeklyTab.dataset.loaded = 'false';
+                loadWeeklyDashboard();
+            });
+            document.getElementById('status-filter').addEventListener('change', () => {
+                currentIssuesPage = 0;
+                loadIssuesList();
+            });
+
+            // 分页按钮事件
+            document.getElementById('issues-prev-page').addEventListener('click', () => {
+                if (currentIssuesPage > 0) {
+                    currentIssuesPage--;
+                    loadIssuesList();
+                }
+            });
+
+            document.getElementById('issues-next-page').addEventListener('click', () => {
+                currentIssuesPage++;
+                loadIssuesList();
+            });
+
+            // 设置默认日期
+            const today = new Date();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay());
+            const endOfWeek = new Date(today);
+            endOfWeek.setDate(today.getDate() + (6 - today.getDay()));
+
+            document.getElementById('new-issue-start').value = startOfWeek.toISOString().split('T')[0];
+            document.getElementById('new-issue-end').value = endOfWeek.toISOString().split('T')[0];
+
             // 使用事件委托处理所有按钮点击
             document.addEventListener('click', handleButtonClick);
 
@@ -1169,9 +1977,6 @@ const metadata = {
                     closePreview();
                 }
             });
-
-
         });
     </script>
 </Layout>
-

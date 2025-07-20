@@ -209,9 +209,205 @@ import { getWeeklyPosts } from '@/src/utils/contents/unified-content';
 // 这些接口会自动根据 DATA_SOURCE 环境变量选择数据源
 ```
 
+## 可用脚本命令
+
+以下是项目中保留的核心脚本命令及其功能说明：
+
+### 基础开发命令
+```bash
+# 启动开发服务器
+npm run dev
+
+# 使用文件系统数据源启动开发
+npm run dev:file
+
+# 使用数据库数据源启动开发  
+npm run dev:db
+
+# 构建生产版本
+npm run build
+
+# 预览构建结果
+npm run preview
+
+# Astro CLI 命令（原生 Astro 功能）
+npm run astro
+```
+
+### 内容管理命令
+```bash
+# 生成 RSS 订阅文件
+npm run generate:rss
+
+# 创建新的博客文章（使用 bin 脚本）
+npm run generate:blog
+
+# 发布内容到 Quail 平台
+npm run publish:quail
+
+# 构建后自动执行（自动生成RSS）
+npm run postbuild
+```
+
+### 工具命令
+```bash
+# 上传图片到图床服务
+npm run upload
+
+# 转换并上传图片，更新 MDX 文件中的图片链接
+npm run convertImages
+
+# 同步文件系统的新文件到数据库
+npm run sync:files
+```
+
+### Blog 迁移命令
+```bash
+# 将 blogs 文件夹中的内容迁移到 MySQL 数据库（支持更新已存在记录）
+npm run migrate:mysql
+
+# 清空数据库后重新迁移
+npm run migrate:clean
+
+# 模拟迁移（不实际执行）
+npm run migrate:check
+```
+
+### 数据源管理命令
+```bash
+# 显示当前数据源状态
+npm run dev:status
+
+# 对比文件系统和数据库两个数据源的差异
+npm run dev:compare
+
+# 显示数据库连接状态
+npm run db:status
+
+# 检查数据库表结构
+npm run db:check
+```
+
+### Git 提交规范命令
+```bash
+# 生成 CHANGELOG
+npm run cl
+
+# 使用 commitizen 进行规范化提交
+npm run cz
+```
+
+### 命令使用说明
+
+1. **astro**: 提供 Astro 框架的原生 CLI 功能，如 `npm run astro add tailwind` 添加集成
+2. **postbuild**: 构建完成后自动执行的钩子命令，当前配置为自动生成 RSS 订阅文件
+3. **convertImages**: 扫描 `sections` 文件夹中的 MDX 文件，查找本地图片引用（如 `![alt](/images/xxx.png)`），上传到图床并替换为远程链接
+4. **sync:files**: 扫描文件系统中新增的 MDX 文件并同步到数据库，支持增量同步
+5. **migrate:xxx**: Blog 迁移相关命令，专门用于将 `blogs/` 文件夹中的 MDX 文件迁移到数据库
+   - 支持 UPSERT 操作：已存在的记录会被更新，新文件会被插入
+   - 自动跳过周刊内容迁移（周刊数据应直接在数据库中管理）
+   - 根据文件的 title 或 slug 检测重复记录
+6. **dev:file/dev:db**: 分别使用文件系统和数据库作为数据源启动开发环境，便于测试和对比
+
+## 缓存配置
+
+### 当前缓存架构
+
+项目使用 **NodeCache** 作为内存缓存系统：
+
+```typescript
+// lib/cache.ts 当前配置
+const cache = new NodeCache({
+    stdTTL: 0,        // 永不过期
+    checkperiod: 0,   // 禁用清理检查  
+    useClones: false  // 禁用克隆以提高性能
+});
+```
+
+### 缓存策略配置建议
+
+#### 开发环境
+```env
+# .env 文件配置
+NODE_ENV=development
+CACHE_TTL=0              # 开发环境不过期，便于调试
+CACHE_CHECK_PERIOD=0     # 禁用定期清理
+```
+
+#### 生产环境
+```env
+# .env 文件配置  
+NODE_ENV=production
+CACHE_TTL=3600           # 1小时过期时间
+CACHE_CHECK_PERIOD=600   # 10分钟检查一次过期缓存
+
+# 可选：Redis 配置（推荐生产环境）
+REDIS_URL=redis://localhost:6379
+REDIS_PASSWORD=your_password
+REDIS_DB=0
+```
+
+### 不同内容的缓存时间建议
+
+```typescript
+// 推荐的缓存配置
+const cacheConfig = {
+  'blog-posts': 3600,      // 博客文章：1小时
+  'weekly-posts': 1800,    // 周刊内容：30分钟  
+  'tag-data': 7200,        // 标签数据：2小时
+  'static-content': 86400  // 静态内容：24小时
+};
+```
+
+### Redis 集成方案（可选）
+
+如需要分布式缓存或更好的持久化，可以集成 Redis：
+
+```typescript
+// 示例：Redis 缓存适配器
+import Redis from 'ioredis';
+
+const redis = new Redis({
+  host: process.env.REDIS_HOST || 'localhost',
+  port: parseInt(process.env.REDIS_PORT || '6379'),
+  password: process.env.REDIS_PASSWORD,
+  db: parseInt(process.env.REDIS_DB || '0')
+});
+
+export async function getCachedDataRedis<T>(
+  key: string,
+  fetchData: () => Promise<T>,
+  ttl: number = 3600
+): Promise<T> {
+  const cached = await redis.get(key);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+  
+  const fresh = await fetchData();
+  await redis.setex(key, ttl, JSON.stringify(fresh));
+  return fresh;
+}
+```
+
+### 缓存清理与监控
+
+```bash
+# 手动清理缓存的脚本示例
+npm run cache:clear
+
+# 缓存统计监控
+npm run cache:stats
+```
+
 ## 生产环境建议
 
 1. **使用数据库模式**：生产环境建议使用数据库以获得更好的性能
 2. **定期备份**：设置数据库定期备份
 3. **监控数据源**：监控数据库连接状态
-4. **缓存策略**：合理配置缓存时间 
+4. **缓存策略**：
+   - **开发环境**：使用 NodeCache，永不过期便于调试
+   - **生产环境**：设置合理的 TTL（1-2小时），或集成 Redis 分布式缓存
+   - **缓存键命名**：使用有意义的前缀，如 `blog:posts:*`、`weekly:*`
+   - **缓存监控**：监控缓存命中率和性能指标
+   - **缓存预热**：在应用启动时预加载常用数据 
