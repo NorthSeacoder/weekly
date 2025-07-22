@@ -1,23 +1,11 @@
 import type { APIRoute } from 'astro';
-import { verifyAdminAccess } from '../../../utils/auth';
 import { CategoryService } from '../../../../lib/database-service';
 import { query } from '../../../../lib/database';
 
-// 禁用预渲染以访问request.headers
-export const prerender = false;
+// 生产环境预渲染，开发环境服务端渲染
+export const prerender = import.meta.env.MODE === 'production';
 
 export const GET: APIRoute = async ({ request }) => {
-  // 权限验证
-  if (!verifyAdminAccess(request)) {
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: 'Unauthorized' 
-    }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
   try {
     // 获取所有分类
     const categories = await CategoryService.getAll();

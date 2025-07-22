@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 import { initDatabase, query, execute, transaction } from '../../../../../lib/database';
-import { verifyAdminAccess } from '../../../../utils/auth';
 
-export const prerender = false;
+// 生产环境预渲染，开发环境服务端渲染
+export const prerender = import.meta.env.MODE === 'production';
 
 interface CreateIssueRequest {
   title?: string;
@@ -13,19 +13,6 @@ interface CreateIssueRequest {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    // 简化权限验证，从环境变量读取密钥
-    const adminKey = request.headers.get('x-admin-key');
-    const expectedKey = import.meta.env.ADMIN_ACCESS_KEY || 'admin_2025_weekly';
-    
-    if (!adminKey || adminKey !== expectedKey) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Unauthorized' 
-      }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
 
     const data: CreateIssueRequest = await request.json();
     

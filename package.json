@@ -12,7 +12,7 @@
         "dev": "astro dev",
         "dev:file": "cross-env DATA_SOURCE=filesystem tsx scripts/dev-datasource-info.ts && cross-env DATA_SOURCE=filesystem astro dev",
         "dev:db": "cross-env DATA_SOURCE=database tsx scripts/dev-datasource-info.ts && cross-env DATA_SOURCE=database astro dev",
-        "build": "astro build",
+        "build": "cross-env DATA_SOURCE=database astro build",
         "preview": "astro preview",
         "astro": "astro",
         "generate:rss": "tsx generateRSS.ts",

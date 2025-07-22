@@ -2,13 +2,21 @@
 import Layout from '~/layouts/PageLayout.astro';
 import {ContentService, type ContentWithRelations} from '../../../lib/database-service';
 
-// 静态模式下，权限验证移到客户端
-// 获取待审核内容和统计信息
-const pendingContent: ContentWithRelations[] = await ContentService.getPendingReview(50);
-const statusStats = await ContentService.getStatusStats();
+// 检查是否为生产环境 - 使用 MODE 来判断
+const isProduction = import.meta.env.MODE === 'production';
+// 只在开发环境获取数据，生产环境返回空数据
+let pendingContent: ContentWithRelations[] = [];
+let statusStats: any = {};
 
-// 从环境变量读取管理员密钥
-const expectedAdminKey = import.meta.env.ADMIN_ACCESS_KEY || 'admin_2025_weekly';
+if (!isProduction) {
+    try {
+        pendingContent = await ContentService.getPendingReview(50);
+        statusStats = await ContentService.getStatusStats();
+    } catch (error) {
+        console.error('Failed to load admin data:', error);
+        // 如果数据库连接失败，仍然可以渲染页面
+    }
+}
 
 const metadata = {
     title: '内容审核管理',
@@ -21,56 +29,6 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-    <!-- 客户端权限验证 -->
-    <script define:vars={{expectedAdminKey}}>
-        // 检查管理员Cookie
-        function getCookie(name) {
-            // 方法1: 原始方法
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) {
-                const result = parts.pop();
-                const finalValue = result ? result.split(';').shift() || null : null;
-                if (finalValue) return finalValue;
-            }
-
-            // 方法2: 更健壮的解析
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                const trimmed = cookie.trim();
-                if (trimmed.startsWith(`${name}=`)) {
-                    const cookieValue = trimmed.substring(name.length + 1);
-                    return cookieValue;
-                }
-            }
-
-            return null;
-        }
-
-        const adminKey = getCookie('admin_key');
-        const expectedKey = expectedAdminKey;
-
-        // 设置为全局变量，供其他函数使用
-        window.expectedAdminKey = expectedAdminKey;
-
-        if (!adminKey || adminKey !== expectedKey) {
-            // 检查URL参数中是否有密钥
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlKey = urlParams.get('key');
-
-            if (urlKey === window.expectedAdminKey) {
-                // 尝试设置Cookie
-                const cookieString = `admin_key=${window.expectedAdminKey}; Max-Age=${60 * 60 * 24}; Path=/`;
-                document.cookie = cookieString;
-                // 重新加载页面以应用Cookie
-                window.location.href = '/admin/review';
-                return;
-            }
-
-            // 没有权限，跳转到登录页面
-            window.location.href = '/admin/login?return=' + encodeURIComponent('/admin/review');
-        }
-    </script>
 
     <div class='bg-gray-50 dark:bg-gray-900 py-8'>
         <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -119,7 +77,7 @@ const metadata = {
                 <!-- 统计卡片 -->
                 <div class='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
                     {
-                        statusStats.map((stat) => {
+                        statusStats.map?.((stat) => {
                             const statusConfig = {
                                 draft: {label: '草稿', color: 'yellow', icon: '📝'},
                                 published: {label: '已发布', color: 'green', icon: '✅'},
@@ -968,15 +926,11 @@ const metadata = {
             if (editOptions) return editOptions; // 缓存选项
 
             try {
-                const adminKey = getCookie('admin_key');
-                const headerKey = adminKey || window.expectedAdminKey || '';
-
                 const response = await fetch('/api/admin/get-options', {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-admin-key': headerKey
                     }
                 });
 
@@ -1005,10 +959,6 @@ const metadata = {
             showLoading();
 
             try {
-                // 获取认证信息
-                const adminKey = getCookie('admin_key');
-                const headerKey = adminKey || window.expectedAdminKey || '';
-
                 // 并行加载内容和编辑选项
                 const [contentResponse, options] = await Promise.all([
                     fetch(`/api/admin/preview-content?id=${id}`, {
@@ -1016,7 +966,6 @@ const metadata = {
                         credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
-                            'x-admin-key': headerKey
                         }
                     }),
                     loadEditOptions()
@@ -1192,15 +1141,12 @@ const metadata = {
             showLoading();
 
             try {
-                const adminKey = getCookie('admin_key');
-                const headerKey = adminKey || window.expectedAdminKey || '';
 
                 const response = await fetch('/api/admin/update-content', {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-admin-key': headerKey
                     },
                     body: JSON.stringify({
                         id: currentContentId,
@@ -1259,15 +1205,12 @@ const metadata = {
             showLoading();
 
             try {
-                const adminKey = getCookie('admin_key') || window.expectedAdminKey || '';
-                
                 // 调用真实API获取期号详情
-                const response = await fetch(`/api/admin/weekly/issue-detail?id=${issueId}&admin_key=${encodeURIComponent(adminKey)}`, {
+                const response = await fetch(`/api/admin/weekly/issue-detail?id=${issueId}`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-admin-key': adminKey
                     }
                 });
 
@@ -1410,22 +1353,12 @@ const metadata = {
             showLoading();
 
             try {
-                // 获取认证信息
-                const adminKey = getCookie('admin_key');
-
-                // 如果没有认证信息，引导用户重新登录
-                if (!adminKey && !window.expectedAdminKey) {
-                    alert('登录状态已过期，请重新登录');
-                    window.location.href = '/admin/login?return=' + encodeURIComponent('/admin/review');
-                    return;
-                }
 
                 const response = await fetch('/api/admin/update-status', {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-admin-key': adminKey || window.expectedAdminKey || ''
                     },
                     body: JSON.stringify({id, status})
                 });
@@ -1463,22 +1396,12 @@ const metadata = {
             showLoading();
 
             try {
-                // 获取认证信息
-                const adminKey = getCookie('admin_key');
-
-                // 如果没有认证信息，引导用户重新登录
-                if (!adminKey && !window.expectedAdminKey) {
-                    alert('登录状态已过期，请重新登录');
-                    window.location.href = '/admin/login?return=' + encodeURIComponent('/admin/review');
-                    return;
-                }
 
                 const response = await fetch('/api/admin/batch-update-status', {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-admin-key': adminKey || window.expectedAdminKey || ''
                     },
                     body: JSON.stringify({ids, status})
                 });
@@ -1741,8 +1664,7 @@ const metadata = {
             const statsContainer = document.getElementById('issue-stats');
 
             try {
-                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
-                const response = await fetch('/api/admin/weekly/issues?admin_key=' + encodeURIComponent(adminKey));
+                const response = await fetch('/api/admin/weekly/issues');
                 const result = await response.json();
 
                 if (result.success && result.data.status_stats && result.data.status_stats.length > 0) {
@@ -1797,10 +1719,8 @@ const metadata = {
             const tbody = document.getElementById('issues-table-body');
 
             try {
-                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
                 const statusFilter = document.getElementById('status-filter').value;
                 const params = new URLSearchParams({
-                    admin_key: adminKey,
                     limit: issuesPerPage.toString(),
                     offset: (currentIssuesPage * issuesPerPage).toString()
                 });
@@ -2081,10 +2001,7 @@ const metadata = {
             const countDiv = document.getElementById('unassociated-count');
 
             try {
-                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
-                const response = await fetch(
-                    '/api/admin/weekly/unassociated-content?admin_key=' + encodeURIComponent(adminKey) + '&limit=1'
-                );
+                const response = await fetch('/api/admin/weekly/unassociated-content?limit=1');
                 const result = await response.json();
 
                 if (result.success) {
@@ -2119,12 +2036,10 @@ const metadata = {
             try {
                 showLoading();
 
-                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
                 const response = await fetch('/api/admin/weekly/create-issue', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-admin-key': adminKey
                     },
                     body: JSON.stringify({
                         title: title || undefined,
@@ -2170,12 +2085,10 @@ const metadata = {
             try {
                 showLoading();
 
-                const adminKey = getCookie('admin_key') || window.expectedAdminKey;
                 const response = await fetch('/api/admin/weekly/publish', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-admin-key': adminKey
                     },
                     body: JSON.stringify({weekly_issue_id: issueId})
                 });

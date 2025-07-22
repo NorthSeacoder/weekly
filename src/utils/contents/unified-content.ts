@@ -63,6 +63,7 @@ export const getStaticPathsBlogPost = async () => {
  * 统一的周刊静态路径生成
  */
 export const getStaticPathsWeeklyPost = async () => {
+    console.log('useDatabase',useDatabase());
     if (useDatabase()) {
         const { getStaticPathsWeeklyPost: getStaticPathsFromDB } = await import('./weekly-db');
         return getStaticPathsFromDB();

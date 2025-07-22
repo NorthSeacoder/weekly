@@ -1,3 +1,4 @@
+/* ===== IMPORTS ===== */
 @import './scrollbar.css';
 @import url('https://cdn.bootcdn.net/ajax/libs/lxgw-wenkai-webfont/1.6.0/style.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -5,31 +6,421 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== PERFORMANCE & ACCESSIBILITY FOUNDATION ===== */
 html {
   scroll-behavior: smooth !important;
+  font-size: 16px; /* Consistent base font size for accessibility */
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "rlig" 1, "calt" 1, "kern" 1, "liga" 1;
+  font-optical-sizing: auto;
+  font-variant-ligatures: common-ligatures;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+/* Enhanced Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
+  
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --primary-500: 214 100% 45%;
+    --neutral-800: 214 15% 25%;
+    --neutral-200: 214 25% 85%;
+  }
+  
+  .dark {
+    --primary-500: 214 100% 75%;
+    --neutral-200: 214 15% 25%;
+    --neutral-800: 214 25% 85%;
+  }
+}
+
+/* ===== ENHANCED KEYFRAME ANIMATIONS ===== */
+
+/* Core Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Gradient & Background Animations */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradient-rotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes mesh-flow {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(10px, -10px) rotate(1deg);
+  }
+  66% {
+    transform: translate(-5px, 5px) rotate(-0.5deg);
+  }
+}
+
+/* Interactive Effects */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes shimmer-slow {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(var(--primary-500) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px hsl(var(--primary-500) / 0.5), 0 0 40px hsl(var(--primary-500) / 0.2);
+  }
+}
+
+@keyframes glow-breathe {
+  0%, 100% {
+    box-shadow: 0 0 15px hsl(var(--primary-500) / 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px hsl(var(--primary-500) / 0.4);
+  }
+}
+
+/* Floating & Movement */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Glass & Blur Effects */
+@keyframes glass-shimmer {
+  0% {
+    background-position: -200% 0;
+    backdrop-filter: blur(16px) saturate(180%);
+  }
+  50% {
+    backdrop-filter: blur(20px) saturate(200%);
+  }
+  100% {
+    background-position: 200% 0;
+    backdrop-filter: blur(16px) saturate(180%);
+  }
+}
+
+@keyframes blur-focus {
+  from {
+    backdrop-filter: blur(0px);
+  }
+  to {
+    backdrop-filter: blur(16px) saturate(180%);
+  }
+}
+
+/* Micro Interactions */
+@keyframes press-down {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.98);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
 }
  
+/* ===== ENHANCED CSS VARIABLES SYSTEM ===== */
 @layer base {
   :root {
-    /* Primary Brand Colors - 更精致的蓝色调 */
-    --main: 214, 88%, 62%;
+    /* ===== REFINED PRIMARY BRAND COLORS - 精细化蓝色层级系统 ===== */
+    /* Enhanced primary scale with improved contrast ratios */
+    --primary-50: 214 100% 98.5%;
+    --primary-100: 214 98% 96%;
+    --primary-200: 214 96% 92%;
+    --primary-300: 214 94% 87%;
+    --primary-400: 214 92% 78%;
+    --primary-500: 214 88% 65%; /* Base color - 优化主色调 */
+    --primary-600: 214 85% 55%;
+    --primary-700: 214 82% 48%;
+    --primary-800: 214 78% 40%;
+    --primary-900: 214 75% 32%;
+    --primary-950: 214 72% 22%;
+    
+    /* Enhanced Primary Semantic Variants - 增强语义化变体 */
+    --primary-ultra-light: 214 100% 99.2%;
+    --primary-extra-light: 214 99% 97%;
+    --primary-light: 214 94% 87%;
+    --primary-lighter: 214 98% 96%;
+    --primary-medium: 214 88% 65%;
+    --primary-dark: 214 82% 48%;
+    --primary-darker: 214 75% 32%;
+    --primary-extra-dark: 214 70% 25%;
+    --primary-ultra-dark: 214 68% 18%;
+
+    /* Legacy Support - 向后兼容性保持 */
+    --main: 214, 88%, 65%;
     --main-foreground: 214, 100%, 98%;
-    --main-soft: 214, 88%, 72%;
-    --main-muted: 214, 45%, 82%;
+    --main-soft: 214, 92%, 78%;
+    --main-muted: 214, 50%, 85%;
 
-    /* Secondary Accent Colors - 温暖的黄色调 */
-    --mainHover: 42, 92%, 65%;
-    --mainHover-foreground: 42, 100%, 12%;
-    --accent-warm: 38, 95%, 68%;
-    --accent-cool: 198, 82%, 68%;
+    /* ===== ENHANCED ACCENT COLOR SCALES - 精细化温暖与冷色调层级 ===== */
+    /* Refined Warm Accent Colors - 优化温暖强调色 */
+    --accent-warm-50: 38 100% 97%;
+    --accent-warm-100: 38 100% 93%;
+    --accent-warm-200: 38 98% 86%;
+    --accent-warm-300: 38 96% 78%;
+    --accent-warm-400: 38 94% 72%; /* Base warm accent - 优化基础色 */
+    --accent-warm-500: 38 92% 65%;
+    --accent-warm-600: 38 88% 58%;
+    --accent-warm-700: 38 84% 52%;
+    --accent-warm-800: 38 78% 45%;
+    --accent-warm-900: 38 72% 38%;
+    --accent-warm-950: 38 68% 32%;
 
-    /* Enhanced Neutral Palette - 更丰富的灰色层次 */
+    /* Refined Cool Accent Colors - 优化冷色强调色 */
+    --accent-cool-50: 198 100% 97%;
+    --accent-cool-100: 198 96% 93%;
+    --accent-cool-200: 198 92% 86%;
+    --accent-cool-300: 198 88% 78%;
+    --accent-cool-400: 198 84% 72%; /* Base cool accent - 优化基础色 */
+    --accent-cool-500: 198 80% 65%;
+    --accent-cool-600: 198 76% 58%;
+    --accent-cool-700: 198 70% 52%;
+    --accent-cool-800: 198 64% 45%;
+    --accent-cool-900: 198 58% 38%;
+    --accent-cool-950: 198 54% 32%;
+
+    /* Enhanced Accent Semantic Variants - 增强语义化强调色 */
+    --accent-warm-ultra-light: 38 100% 98%;
+    --accent-warm-extra-light: 38 100% 95%;
+    --accent-warm-light: 38 96% 78%;
+    --accent-warm-medium: 38 94% 72%;
+    --accent-warm-dark: 38 84% 52%;
+    --accent-warm-extra-dark: 38 72% 38%;
+    
+    --accent-cool-ultra-light: 198 100% 98%;
+    --accent-cool-extra-light: 198 96% 95%;
+    --accent-cool-light: 198 88% 78%;
+    --accent-cool-medium: 198 84% 72%;
+    --accent-cool-dark: 198 70% 52%;
+    --accent-cool-extra-dark: 198 58% 38%;
+
+    /* Legacy Accent Support - 向后兼容性保持 */
+    --mainHover: 42, 94%, 72%;
+    --mainHover-foreground: 42, 100%, 10%;
+    --accent-warm: 38, 94%, 72%;
+    --accent-cool: 198, 84%, 72%;
+
+    /* ===== REFINED NEUTRAL PALETTE - 精细化灰色层次系统 ===== */
+    /* Enhanced neutral scale with improved readability */
+    --neutral-50: 214 35% 98.5%;
+    --neutral-100: 214 32% 97%;
+    --neutral-200: 214 28% 95%;
+    --neutral-300: 214 25% 90%;
+    --neutral-400: 214 22% 84%;
+    --neutral-500: 214 20% 76%;
+    --neutral-600: 214 18% 66%;
+    --neutral-700: 214 16% 56%;
+    --neutral-800: 214 15% 42%;
+    --neutral-900: 214 15% 28%;
+    --neutral-950: 214 15% 18%;
+    
+    /* Enhanced Neutral Semantic Variants - 增强语义化中性色 */
+    --neutral-ultra-light: 214 38% 99.2%;
+    --neutral-extra-light: 214 35% 98%;
+    --neutral-surface-light: 214 32% 97%;
+    --neutral-surface: 214 28% 95%;
+    --neutral-surface-dark: 214 25% 90%;
+    --neutral-border-ultra-light: 214 28% 95%;
+    --neutral-border-light: 214 25% 90%;
+    --neutral-border: 214 22% 84%;
+    --neutral-border-medium: 214 20% 76%;
+    --neutral-text-ultra-light: 214 20% 76%;
+    --neutral-text-light: 214 18% 66%;
+    --neutral-text: 214 16% 56%;
+    --neutral-text-medium: 214 15% 42%;
+    --neutral-text-dark: 214 15% 28%;
+    --neutral-fill-ultra-light: 214 32% 97%;
+    --neutral-fill-light: 214 28% 95%;
+    --neutral-fill: 214 25% 90%;
+    --neutral-fill-medium: 214 22% 84%;
+    --neutral-extra-dark: 214 15% 22%;
+    --neutral-ultra-dark: 214 15% 12%;
+
+    /* ===== ENHANCED SURFACE & LAYOUT COLORS ===== */
     --background: 0 0% 100%;
-    --foreground: 220 15% 8%;
-    --surface: 214 25% 98%;
-    --surface-elevated: 214 30% 96%;
-    --surface-hover: 214 35% 94%;
+    --background-secondary: 214 35% 99%;
+    --background-tertiary: 214 32% 98%;
+    --foreground: 214 15% 12%;
+    --foreground-secondary: 214 16% 28%;
+    --foreground-tertiary: 214 18% 42%;
+    --surface: 214 28% 98%;
+    --surface-elevated: 214 32% 97%;
+    --surface-elevated-high: 214 35% 96%;
+    --surface-hover: 214 25% 94%;
+    --surface-pressed: 214 22% 92%;
+    --surface-overlay: 214 28% 98%;
+    --surface-glass: 214 28% 98% / 0.8;
+    --surface-glass-elevated: 214 32% 97% / 0.9;
 
+    /* ===== COMPONENT COLORS ===== */
     --card: 0 0% 100%;
     --card-foreground: 220 15% 8%;
     --card-border: 214 18% 88%;
@@ -57,20 +448,36 @@ html {
     --destructive: 0 82% 58%;
     --destructive-foreground: 214 100% 98%;
 
+    /* ===== INTERACTIVE ELEMENTS ===== */
     --border: 214 18% 88%;
+    --border-hover: 214 22% 82%;
+    --border-focus: 214 88% 62%;
     --input: 214 18% 88%;
+    --input-hover: 214 22% 82%;
+    --input-focus: 214 25% 94%;
     --ring: 214 88% 62%;
     --ring-offset: 0 0% 100%;
 
-    /* Success, Warning, Error Colors */
+    /* ===== STATUS COLORS - 状态色彩系统 ===== */
     --success: 142 76% 36%;
     --success-foreground: 142 76% 98%;
+    --success-light: 142 76% 92%;
+    --success-border: 142 76% 82%;
+    
     --warning: 38 92% 50%;
     --warning-foreground: 38 92% 8%;
+    --warning-light: 38 92% 92%;
+    --warning-border: 38 92% 82%;
+    
     --error: 0 84% 60%;
     --error-foreground: 0 84% 98%;
+    --error-light: 0 84% 92%;
+    --error-border: 0 84% 82%;
+    
     --info: 214 88% 62%;
     --info-foreground: 214 100% 98%;
+    --info-light: 214 88% 92%;
+    --info-border: 214 88% 82%;
 
     /* Enhanced Typography Scale */
     --text-xs: 0.75rem;
@@ -85,16 +492,88 @@ html {
     --text-6xl: 3.75rem;
     --text-7xl: 4.5rem;
 
-    /* Refined Spacing System */
-    --space-xs: 0.25rem;
-    --space-sm: 0.5rem;
-    --space-md: 1rem;
-    --space-lg: 1.5rem;
-    --space-xl: 2rem;
-    --space-2xl: 3rem;
-    --space-3xl: 4rem;
-    --space-4xl: 6rem;
-    --space-5xl: 8rem;
+    /* ===== ENHANCED SPACING SYSTEM - 基于4px网格系统的精细间距控制 ===== */
+    /* Base spacing units with enhanced precision */
+    --space-0: 0;
+    --space-px: 1px;
+    --space-0-5: 0.125rem; /* 2px */
+    --space-1: 0.25rem;    /* 4px */
+    --space-1-5: 0.375rem; /* 6px */
+    --space-2: 0.5rem;     /* 8px */
+    --space-2-5: 0.625rem; /* 10px */
+    --space-3: 0.75rem;    /* 12px */
+    --space-3-5: 0.875rem; /* 14px */
+    --space-4: 1rem;       /* 16px */
+    --space-4-5: 1.125rem; /* 18px */
+    --space-5: 1.25rem;    /* 20px */
+    --space-5-5: 1.375rem; /* 22px */
+    --space-6: 1.5rem;     /* 24px */
+    --space-6-5: 1.625rem; /* 26px */
+    --space-7: 1.75rem;    /* 28px */
+    --space-7-5: 1.875rem; /* 30px */
+    --space-8: 2rem;       /* 32px */
+    --space-9: 2.25rem;    /* 36px */
+    --space-10: 2.5rem;    /* 40px */
+    --space-11: 2.75rem;   /* 44px */
+    --space-12: 3rem;      /* 48px */
+    --space-14: 3.5rem;    /* 56px */
+    --space-16: 4rem;      /* 64px */
+    --space-18: 4.5rem;    /* 72px */
+    --space-20: 5rem;      /* 80px */
+    --space-22: 5.5rem;    /* 88px */
+    --space-24: 6rem;      /* 96px */
+    --space-28: 7rem;      /* 112px */
+    --space-32: 8rem;      /* 128px */
+    --space-36: 9rem;      /* 144px */
+    --space-40: 10rem;     /* 160px */
+    --space-44: 11rem;     /* 176px */
+    --space-48: 12rem;     /* 192px */
+    --space-52: 13rem;     /* 208px */
+    --space-56: 14rem;     /* 224px */
+    --space-60: 15rem;     /* 240px */
+    --space-64: 16rem;     /* 256px */
+    --space-72: 18rem;     /* 288px */
+    --space-80: 20rem;     /* 320px */
+    --space-96: 24rem;     /* 384px */
+    
+    /* Enhanced legacy spacing aliases for backward compatibility */
+    --space-xs: var(--space-1);
+    --space-sm: var(--space-2);
+    --space-md: var(--space-4);
+    --space-lg: var(--space-6);
+    --space-xl: var(--space-8);
+    --space-2xl: var(--space-12);
+    --space-3xl: var(--space-16);
+    --space-4xl: var(--space-24);
+    --space-5xl: var(--space-32);
+    --space-6xl: var(--space-40);
+    --space-7xl: var(--space-48);
+    
+    /* Enhanced semantic spacing for specific use cases - 更精细的语义化间距 */
+    --space-section-xl: var(--space-24);    /* 96px - 超大区块间距 */
+    --space-section: var(--space-20);       /* 80px - 大区块间距 */
+    --space-section-md: var(--space-16);    /* 64px - 中等区块间距 */
+    --space-section-sm: var(--space-12);    /* 48px - 小区块间距 */
+    --space-component-xl: var(--space-16);  /* 64px - 超大组件间距 */
+    --space-component: var(--space-12);     /* 48px - 组件间距 */
+    --space-component-md: var(--space-10);  /* 40px - 中等组件间距 */
+    --space-component-sm: var(--space-8);   /* 32px - 小组件间距 */
+    --space-element-xl: var(--space-10);    /* 40px - 超大元素间距 */
+    --space-element: var(--space-6);        /* 24px - 元素间距 */
+    --space-element-md: var(--space-5);     /* 20px - 中等元素间距 */
+    --space-element-sm: var(--space-4);     /* 16px - 小元素间距 */
+    --space-content-xl: var(--space-6);     /* 24px - 超大内容间距 */
+    --space-content: var(--space-4);        /* 16px - 内容间距 */
+    --space-content-md: var(--space-3);     /* 12px - 中等内容间距 */
+    --space-content-sm: var(--space-2);     /* 8px - 小内容间距 */
+    --space-tight-xl: var(--space-3);       /* 12px - 超大紧密间距 */
+    --space-tight: var(--space-2);          /* 8px - 紧密间距 */
+    --space-tight-md: var(--space-1-5);     /* 6px - 中等紧密间距 */
+    --space-tight-sm: var(--space-1);       /* 4px - 超紧密间距 */
+    --space-loose-xl: var(--space-16);      /* 64px - 超大宽松间距 */
+    --space-loose: var(--space-12);         /* 48px - 大宽松间距 */
+    --space-loose-md: var(--space-10);      /* 40px - 中等宽松间距 */
+    --space-loose-sm: var(--space-8);       /* 32px - 小宽松间距 */
 
     /* Modern Border Radius */
     --radius-sm: 0.375rem;
@@ -104,14 +583,192 @@ html {
     --radius-2xl: 1.5rem;
     --radius-3xl: 2rem;
 
-    /* Enhanced Shadow System */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    --shadow-3xl: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+    /* ===== ENHANCED SHADOW SYSTEM - 更精细的阴影层次与视觉深度 ===== */
+    /* Base shadow scale with improved depth perception */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+    --shadow-3xl: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+    --shadow-4xl: 0 45px 80px -15px rgba(0, 0, 0, 0.3);
+    --shadow-5xl: 0 55px 100px -20px rgba(0, 0, 0, 0.35);
+    
+    /* Enhanced inner shadows */
+    --shadow-inner-xs: inset 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    --shadow-inner-sm: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
     --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    --shadow-inner-lg: inset 0 4px 8px 0 rgba(0, 0, 0, 0.08);
+    --shadow-inner-xl: inset 0 6px 12px 0 rgba(0, 0, 0, 0.1);
+    
+    /* Enhanced colored shadow variants with refined opacity */
+    --shadow-primary-xs: 0 2px 8px -2px hsl(var(--primary-500) / 0.15);
+    --shadow-primary-sm: 0 4px 12px -2px hsl(var(--primary-500) / 0.18);
+    --shadow-primary: 0 8px 20px -4px hsl(var(--primary-500) / 0.22);
+    --shadow-primary-lg: 0 16px 32px -8px hsl(var(--primary-500) / 0.25);
+    --shadow-primary-xl: 0 24px 48px -12px hsl(var(--primary-500) / 0.28);
+    
+    --shadow-warm-xs: 0 2px 8px -2px hsl(var(--accent-warm-400) / 0.15);
+    --shadow-warm-sm: 0 4px 12px -2px hsl(var(--accent-warm-400) / 0.18);
+    --shadow-warm: 0 8px 20px -4px hsl(var(--accent-warm-400) / 0.22);
+    --shadow-warm-lg: 0 16px 32px -8px hsl(var(--accent-warm-400) / 0.25);
+    --shadow-warm-xl: 0 24px 48px -12px hsl(var(--accent-warm-400) / 0.28);
+    
+    --shadow-cool-xs: 0 2px 8px -2px hsl(var(--accent-cool-400) / 0.15);
+    --shadow-cool-sm: 0 4px 12px -2px hsl(var(--accent-cool-400) / 0.18);
+    --shadow-cool: 0 8px 20px -4px hsl(var(--accent-cool-400) / 0.22);
+    --shadow-cool-lg: 0 16px 32px -8px hsl(var(--accent-cool-400) / 0.25);
+    --shadow-cool-xl: 0 24px 48px -12px hsl(var(--accent-cool-400) / 0.28);
+    
+    /* Glow effects for interactive elements */
+    --shadow-glow-primary: 0 0 20px hsl(var(--primary-500) / 0.3);
+    --shadow-glow-primary-lg: 0 0 30px hsl(var(--primary-500) / 0.4);
+    --shadow-glow-warm: 0 0 20px hsl(var(--accent-warm-400) / 0.3);
+    --shadow-glow-warm-lg: 0 0 30px hsl(var(--accent-warm-400) / 0.4);
+    --shadow-glow-cool: 0 0 20px hsl(var(--accent-cool-400) / 0.3);
+    --shadow-glow-cool-lg: 0 0 30px hsl(var(--accent-cool-400) / 0.4);
+
+    /* Enhanced Gradient Variables - 更丰富的渐变系统 */
+    /* Primary Gradients - 主色调渐变 */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary-500)), hsl(var(--primary-600)));
+    --gradient-primary-soft: linear-gradient(135deg, hsl(var(--primary-400)), hsl(var(--primary-500)));
+    --gradient-primary-vibrant: linear-gradient(135deg, hsl(var(--primary-500)), hsl(var(--accent-warm-400)));
+    --gradient-primary-intense: linear-gradient(135deg, hsl(var(--primary-600)), hsl(var(--primary-800)));
+    --gradient-primary-light: linear-gradient(135deg, hsl(var(--primary-200)), hsl(var(--primary-300)));
+    --gradient-primary-hero: linear-gradient(135deg, hsl(var(--primary-500)) 0%, hsl(var(--accent-warm-400)) 50%, hsl(var(--accent-cool-400)) 100%);
+    --gradient-primary-glow: linear-gradient(135deg, hsl(var(--primary-400) / 0.8), hsl(var(--primary-600) / 0.9));
+    --gradient-primary-aurora: linear-gradient(135deg, hsl(var(--primary-300)) 0%, hsl(var(--primary-500)) 25%, hsl(var(--accent-warm-300)) 50%, hsl(var(--accent-cool-300)) 75%, hsl(var(--primary-400)) 100%);
+    --gradient-primary-sunset: linear-gradient(135deg, hsl(var(--primary-400)) 0%, hsl(var(--accent-warm-400)) 40%, hsl(var(--accent-warm-500)) 100%);
+    --gradient-primary-ocean: linear-gradient(135deg, hsl(var(--primary-500)) 0%, hsl(var(--accent-cool-400)) 50%, hsl(var(--primary-600)) 100%);
+    
+    --gradient-warm: linear-gradient(135deg, hsl(var(--accent-warm-400)), hsl(var(--accent-warm-500)));
+    --gradient-warm-soft: linear-gradient(135deg, hsl(var(--accent-warm-300)), hsl(var(--accent-warm-400)));
+    --gradient-warm-intense: linear-gradient(135deg, hsl(var(--accent-warm-500)), hsl(var(--accent-warm-700)));
+    --gradient-warm-glow: linear-gradient(135deg, hsl(var(--accent-warm-300) / 0.8), hsl(var(--accent-warm-500) / 0.9));
+    
+    --gradient-cool: linear-gradient(135deg, hsl(var(--accent-cool-400)), hsl(var(--accent-cool-500)));
+    --gradient-cool-soft: linear-gradient(135deg, hsl(var(--accent-cool-300)), hsl(var(--accent-cool-400)));
+    --gradient-cool-intense: linear-gradient(135deg, hsl(var(--accent-cool-500)), hsl(var(--accent-cool-700)));
+    --gradient-cool-glow: linear-gradient(135deg, hsl(var(--accent-cool-300) / 0.8), hsl(var(--accent-cool-500) / 0.9));
+    
+    --gradient-rainbow: linear-gradient(135deg, hsl(var(--primary-500)), hsl(var(--accent-warm-400)), hsl(var(--accent-cool-400)));
+    --gradient-rainbow-soft: linear-gradient(135deg, hsl(var(--primary-300)), hsl(var(--accent-warm-300)), hsl(var(--accent-cool-300)));
+    --gradient-rainbow-vibrant: linear-gradient(135deg, hsl(var(--primary-600)), hsl(var(--accent-warm-500)), hsl(var(--accent-cool-500)));
+    
+    --gradient-subtle: linear-gradient(135deg, hsl(var(--neutral-100)), hsl(var(--neutral-200)));
+    --gradient-surface: linear-gradient(135deg, hsl(var(--surface)), hsl(var(--surface-elevated)));
+    --gradient-surface-elevated: linear-gradient(135deg, hsl(var(--surface-elevated)), hsl(var(--surface-hover)));
+    --gradient-surface-glass: linear-gradient(135deg, hsl(var(--surface) / 0.8), hsl(var(--surface-elevated) / 0.9));
+    
+    /* Radial Gradients for Enhanced Visual Effects */
+    --gradient-radial-primary: radial-gradient(circle at center, hsl(var(--primary-400)), hsl(var(--primary-600)));
+    --gradient-radial-primary-soft: radial-gradient(circle at center, hsl(var(--primary-300) / 0.6), hsl(var(--primary-500) / 0.8));
+    --gradient-radial-warm: radial-gradient(circle at center, hsl(var(--accent-warm-300)), hsl(var(--accent-warm-500)));
+    --gradient-radial-warm-soft: radial-gradient(circle at center, hsl(var(--accent-warm-200) / 0.6), hsl(var(--accent-warm-400) / 0.8));
+    --gradient-radial-cool: radial-gradient(circle at center, hsl(var(--accent-cool-300)), hsl(var(--accent-cool-500)));
+    --gradient-radial-cool-soft: radial-gradient(circle at center, hsl(var(--accent-cool-200) / 0.6), hsl(var(--accent-cool-400) / 0.8));
+    --gradient-radial-subtle: radial-gradient(circle at center, hsl(var(--neutral-50)), hsl(var(--neutral-200)));
+    --gradient-radial-glow: radial-gradient(circle at center, hsl(var(--primary-400) / 0.3), transparent 70%);
+    
+    /* Conic Gradients for Modern Effects */
+    --gradient-conic-primary: conic-gradient(from 0deg, hsl(var(--primary-500)), hsl(var(--accent-warm-400)), hsl(var(--accent-cool-400)), hsl(var(--primary-500)));
+    --gradient-conic-rainbow: conic-gradient(from 0deg, hsl(var(--primary-400)), hsl(var(--accent-warm-400)), hsl(var(--accent-cool-400)), hsl(var(--primary-600)), hsl(var(--primary-400)));
+    --gradient-conic-subtle: conic-gradient(from 45deg, hsl(var(--neutral-200)), hsl(var(--neutral-300)), hsl(var(--neutral-200)));
+    
+    /* Mesh Gradients for Complex Backgrounds */
+    --gradient-mesh-primary: radial-gradient(at 40% 20%, hsl(var(--primary-400) / 0.5) 0px, transparent 50%),
+                            radial-gradient(at 80% 0%, hsl(var(--accent-warm-400) / 0.4) 0px, transparent 50%),
+                            radial-gradient(at 0% 50%, hsl(var(--accent-cool-400) / 0.3) 0px, transparent 50%),
+                            radial-gradient(at 80% 50%, hsl(var(--primary-300) / 0.4) 0px, transparent 50%),
+                            radial-gradient(at 0% 100%, hsl(var(--accent-warm-300) / 0.3) 0px, transparent 50%),
+                            radial-gradient(at 80% 100%, hsl(var(--accent-cool-300) / 0.4) 0px, transparent 50%),
+                            radial-gradient(at 0% 0%, hsl(var(--primary-200) / 0.3) 0px, transparent 50%);
+    
+    --gradient-mesh-warm: radial-gradient(at 27% 37%, hsl(var(--accent-warm-300) / 0.4) 0px, transparent 50%),
+                         radial-gradient(at 97% 21%, hsl(var(--accent-warm-500) / 0.3) 0px, transparent 50%),
+                         radial-gradient(at 52% 99%, hsl(var(--accent-warm-400) / 0.4) 0px, transparent 50%),
+                         radial-gradient(at 10% 29%, hsl(var(--accent-warm-200) / 0.3) 0px, transparent 50%),
+                         radial-gradient(at 97% 96%, hsl(var(--accent-warm-600) / 0.3) 0px, transparent 50%),
+                         radial-gradient(at 33% 50%, hsl(var(--accent-warm-300) / 0.4) 0px, transparent 50%),
+                         radial-gradient(at 79% 53%, hsl(var(--accent-warm-400) / 0.3) 0px, transparent 50%);
+    
+    --gradient-mesh-cool: radial-gradient(at 15% 25%, hsl(var(--accent-cool-300) / 0.4) 0px, transparent 50%),
+                         radial-gradient(at 85% 15%, hsl(var(--accent-cool-500) / 0.3) 0px, transparent 50%),
+                         radial-gradient(at 45% 95%, hsl(var(--accent-cool-400) / 0.4) 0px, transparent 50%),
+                         radial-gradient(at 5% 35%, hsl(var(--accent-cool-200) / 0.3) 0px, transparent 50%),
+                         radial-gradient(at 95% 85%, hsl(var(--accent-cool-600) / 0.3) 0px, transparent 50%),
+                         radial-gradient(at 25% 55%, hsl(var(--accent-cool-300) / 0.4) 0px, transparent 50%),
+                         radial-gradient(at 75% 45%, hsl(var(--accent-cool-400) / 0.3) 0px, transparent 50%);
+    
+    --gradient-mesh-subtle: radial-gradient(at 30% 30%, hsl(var(--neutral-200) / 0.3) 0px, transparent 50%),
+                           radial-gradient(at 70% 20%, hsl(var(--neutral-300) / 0.2) 0px, transparent 50%),
+                           radial-gradient(at 20% 70%, hsl(var(--neutral-100) / 0.4) 0px, transparent 50%),
+                           radial-gradient(at 80% 80%, hsl(var(--neutral-200) / 0.3) 0px, transparent 50%);
+
+    /* Enhanced Glass Effect Variables - 玻璃态效果系统 */
+    /* Glass Background Layers */
+    --glass-bg-ultra-light: rgba(255, 255, 255, 0.03);
+    --glass-bg-light: rgba(255, 255, 255, 0.05);
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-bg-medium: rgba(255, 255, 255, 0.12);
+    --glass-bg-strong: rgba(255, 255, 255, 0.15);
+    --glass-bg-intense: rgba(255, 255, 255, 0.18);
+    --glass-bg-ultra-intense: rgba(255, 255, 255, 0.22);
+    
+    /* Glass Border Layers */
+    --glass-border-ultra-light: rgba(255, 255, 255, 0.08);
+    --glass-border-light: rgba(255, 255, 255, 0.12);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-border-medium: rgba(255, 255, 255, 0.22);
+    --glass-border-strong: rgba(255, 255, 255, 0.25);
+    --glass-border-intense: rgba(255, 255, 255, 0.30);
+    --glass-border-ultra-intense: rgba(255, 255, 255, 0.35);
+    
+    /* Glass Shadow Layers */
+    --glass-shadow-ultra-light: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --glass-shadow-light: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --glass-shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+    --glass-shadow-strong: 0 16px 48px rgba(0, 0, 0, 0.18);
+    --glass-shadow-intense: 0 20px 56px rgba(0, 0, 0, 0.22);
+    --glass-shadow-ultra-intense: 0 24px 64px rgba(0, 0, 0, 0.25);
+    
+    /* Glass Blur Levels with Enhanced Saturation */
+    --glass-blur-xs: blur(4px) saturate(120%);
+    --glass-blur-sm: blur(8px) saturate(150%);
+    --glass-blur-md: blur(16px) saturate(180%);
+    --glass-blur-lg: blur(24px) saturate(200%);
+    --glass-blur-xl: blur(32px) saturate(220%);
+    --glass-blur-2xl: blur(40px) saturate(240%);
+    --glass-blur-3xl: blur(48px) saturate(260%);
+    
+    /* Glass Tint Colors with Refined Opacity */
+    --glass-tint-primary-light: hsl(var(--primary-400) / 0.06);
+    --glass-tint-primary: hsl(var(--primary-500) / 0.08);
+    --glass-tint-primary-medium: hsl(var(--primary-500) / 0.12);
+    --glass-tint-primary-strong: hsl(var(--primary-600) / 0.15);
+    
+    --glass-tint-warm-light: hsl(var(--accent-warm-300) / 0.05);
+    --glass-tint-warm: hsl(var(--accent-warm-400) / 0.08);
+    --glass-tint-warm-medium: hsl(var(--accent-warm-400) / 0.12);
+    --glass-tint-warm-strong: hsl(var(--accent-warm-500) / 0.15);
+    
+    --glass-tint-cool-light: hsl(var(--accent-cool-300) / 0.05);
+    --glass-tint-cool: hsl(var(--accent-cool-400) / 0.08);
+    --glass-tint-cool-medium: hsl(var(--accent-cool-400) / 0.12);
+    --glass-tint-cool-strong: hsl(var(--accent-cool-500) / 0.15);
+    
+    --glass-tint-neutral-light: hsl(var(--neutral-400) / 0.03);
+    --glass-tint-neutral: hsl(var(--neutral-500) / 0.05);
+    --glass-tint-neutral-medium: hsl(var(--neutral-500) / 0.08);
+    --glass-tint-neutral-strong: hsl(var(--neutral-600) / 0.12);
+    
+    /* Glass Composite Effects */
+    --glass-frosted: blur(20px) saturate(180%) brightness(1.1);
+    --glass-crystal: blur(12px) saturate(200%) contrast(1.1);
+    --glass-ethereal: blur(28px) saturate(160%) brightness(1.05);
+    --glass-vivid: blur(16px) saturate(220%) contrast(1.05);
 
     /* Animation Durations */
     --duration-fast: 150ms;
@@ -121,19 +778,88 @@ html {
   }
  
   .dark {
-    /* Dark Mode Primary Colors */
+    /* Dark Mode Primary Colors - 优化对比度和视觉层次 */
+    --primary-50: 214 75% 22%;
+    --primary-100: 214 78% 28%;
+    --primary-200: 214 82% 35%;
+    --primary-300: 214 85% 45%;
+    --primary-400: 214 88% 55%;
+    --primary-500: 214 90% 65%; /* base - 优化对比度 */
+    --primary-600: 214 92% 72%;
+    --primary-700: 214 94% 78%;
+    --primary-800: 214 96% 84%;
+    --primary-900: 214 98% 90%;
+    --primary-950: 214 100% 96%;
+    
+    /* Enhanced Primary Variants for Dark Mode */
+    --primary-ultra-light: 214 100% 98%;
+    --primary-extra-light: 214 98% 94%;
+    --primary-extra-dark: 214 72% 18%;
+    --primary-ultra-dark: 214 70% 15%;
+    
+    /* Primary Color Semantic Variants for Dark Mode */
+    --primary-light: 214 92% 80%;
+    --primary-lighter: 214 96% 90%;
+    --primary-dark: 214 85% 48%;
+    --primary-darker: 214 78% 32%;
+
+    /* Legacy support - 保持向后兼容 */
     --main: 214, 88%, 72%;
     --main-foreground: 214, 100%, 3%;
     --main-soft: 214, 88%, 65%;
     --main-muted: 214, 45%, 28%;
 
-    /* Dark Mode Accent Colors */
+    /* Dark Mode Accent Colors - 增强可读性 */
+    --accent-warm-50: 38 68% 35%;
+    --accent-warm-100: 38 75% 42%;
+    --accent-warm-200: 38 82% 48%;
+    --accent-warm-300: 38 88% 55%;
+    --accent-warm-400: 38 92% 62%;
+    --accent-warm-500: 38 95% 68%; /* base */
+    --accent-warm-600: 38 96% 74%;
+    --accent-warm-700: 38 98% 80%;
+    --accent-warm-800: 38 100% 85%;
+    --accent-warm-900: 38 100% 91%;
+
+    --accent-cool-50: 198 52% 35%;
+    --accent-cool-100: 198 58% 42%;
+    --accent-cool-200: 198 65% 48%;
+    --accent-cool-300: 198 72% 55%;
+    --accent-cool-400: 198 78% 62%;
+    --accent-cool-500: 198 82% 68%; /* base */
+    --accent-cool-600: 198 85% 75%;
+    --accent-cool-700: 198 90% 80%;
+    --accent-cool-800: 198 95% 85%;
+    --accent-cool-900: 198 100% 91%;
+
+    /* Legacy accent support */
     --mainHover: 42, 92%, 75%;
     --mainHover-foreground: 42, 100%, 8%;
     --accent-warm: 38, 95%, 75%;
     --accent-cool: 198, 82%, 75%;
 
-    /* Dark Mode Neutrals */
+    /* Dark Mode Enhanced Neutrals - 改善对比度和可读性 */
+    --neutral-50: 214 15% 12%;
+    --neutral-100: 214 15% 16%;
+    --neutral-200: 214 15% 20%;
+    --neutral-300: 214 16% 26%;
+    --neutral-400: 214 18% 35%;
+    --neutral-500: 214 20% 48%;
+    --neutral-600: 214 22% 60%;
+    --neutral-700: 214 25% 70%;
+    --neutral-800: 214 28% 78%;
+    --neutral-900: 214 32% 86%;
+    --neutral-950: 214 35% 94%;
+    
+    /* Neutral Color Semantic Variants for Dark Mode */
+    --neutral-text: 214 32% 86%;
+    --neutral-text-light: 214 25% 70%;
+    --neutral-text-lighter: 214 20% 48%;
+    --neutral-border: 214 16% 26%;
+    --neutral-border-light: 214 15% 20%;
+    --neutral-fill: 214 15% 16%;
+    --neutral-fill-light: 214 15% 12%;
+
     --background: 220 15% 6%;
     --foreground: 214 35% 98%;
     --surface: 220 15% 8%;
@@ -182,6 +908,80 @@ html {
     --info: 214 88% 72%;
     --info-foreground: 214 100% 3%;
 
+    /* Dark Mode Enhanced Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary-600)), hsl(var(--primary-700)));
+    --gradient-primary-soft: linear-gradient(135deg, hsl(var(--primary-500)), hsl(var(--primary-600)));
+    --gradient-primary-vibrant: linear-gradient(135deg, hsl(var(--primary-600)), hsl(var(--accent-warm-500)));
+    --gradient-warm: linear-gradient(135deg, hsl(var(--accent-warm-500)), hsl(var(--accent-warm-600)));
+    --gradient-cool: linear-gradient(135deg, hsl(var(--accent-cool-500)), hsl(var(--accent-cool-600)));
+    --gradient-rainbow: linear-gradient(135deg, hsl(var(--primary-600)), hsl(var(--accent-warm-500)), hsl(var(--accent-cool-500)));
+    --gradient-subtle: linear-gradient(135deg, hsl(var(--neutral-200)), hsl(var(--neutral-300)));
+    --gradient-surface: linear-gradient(135deg, hsl(var(--surface)), hsl(var(--surface-elevated)));
+
+    /* Dark Mode Enhanced Glass Effect Variables */
+    /* Glass Background Layers for Dark Mode */
+    --glass-bg-ultra-light: rgba(255, 255, 255, 0.02);
+    --glass-bg-light: rgba(255, 255, 255, 0.04);
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-bg-medium: rgba(255, 255, 255, 0.08);
+    --glass-bg-strong: rgba(255, 255, 255, 0.10);
+    --glass-bg-intense: rgba(255, 255, 255, 0.12);
+    --glass-bg-ultra-intense: rgba(255, 255, 255, 0.15);
+    
+    /* Glass Border Layers for Dark Mode */
+    --glass-border-ultra-light: rgba(255, 255, 255, 0.06);
+    --glass-border-light: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-medium: rgba(255, 255, 255, 0.15);
+    --glass-border-strong: rgba(255, 255, 255, 0.18);
+    --glass-border-intense: rgba(255, 255, 255, 0.22);
+    --glass-border-ultra-intense: rgba(255, 255, 255, 0.25);
+    
+    /* Glass Shadow Layers for Dark Mode */
+    --glass-shadow-ultra-light: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --glass-shadow-light: 0 4px 16px rgba(0, 0, 0, 0.20);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.30);
+    --glass-shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.35);
+    --glass-shadow-strong: 0 16px 48px rgba(0, 0, 0, 0.40);
+    --glass-shadow-intense: 0 20px 56px rgba(0, 0, 0, 0.45);
+    --glass-shadow-ultra-intense: 0 24px 64px rgba(0, 0, 0, 0.50);
+    
+    /* Dark Mode Glass Blur Levels with Adjusted Saturation */
+    --glass-blur-xs: blur(4px) saturate(110%);
+    --glass-blur-sm: blur(8px) saturate(130%);
+    --glass-blur-md: blur(16px) saturate(150%);
+    --glass-blur-lg: blur(24px) saturate(170%);
+    --glass-blur-xl: blur(32px) saturate(190%);
+    --glass-blur-2xl: blur(40px) saturate(210%);
+    --glass-blur-3xl: blur(48px) saturate(230%);
+    
+    /* Dark Mode Glass Tint Colors with Enhanced Visibility */
+    --glass-tint-primary-light: hsl(var(--primary-400) / 0.08);
+    --glass-tint-primary: hsl(var(--primary-500) / 0.12);
+    --glass-tint-primary-medium: hsl(var(--primary-500) / 0.16);
+    --glass-tint-primary-strong: hsl(var(--primary-600) / 0.20);
+    
+    --glass-tint-warm-light: hsl(var(--accent-warm-300) / 0.06);
+    --glass-tint-warm: hsl(var(--accent-warm-400) / 0.10);
+    --glass-tint-warm-medium: hsl(var(--accent-warm-400) / 0.14);
+    --glass-tint-warm-strong: hsl(var(--accent-warm-500) / 0.18);
+    
+    --glass-tint-cool-light: hsl(var(--accent-cool-300) / 0.06);
+    --glass-tint-cool: hsl(var(--accent-cool-400) / 0.10);
+    --glass-tint-cool-medium: hsl(var(--accent-cool-400) / 0.14);
+    --glass-tint-cool-strong: hsl(var(--accent-cool-500) / 0.18);
+    
+    --glass-tint-neutral-light: hsl(var(--neutral-400) / 0.04);
+    --glass-tint-neutral: hsl(var(--neutral-500) / 0.06);
+    --glass-tint-neutral-medium: hsl(var(--neutral-500) / 0.10);
+    --glass-tint-neutral-strong: hsl(var(--neutral-600) / 0.14);
+    
+    /* Dark Mode Glass Composite Effects */
+    --glass-frosted: blur(20px) saturate(160%) brightness(1.05);
+    --glass-crystal: blur(12px) saturate(180%) contrast(1.05);
+    --glass-ethereal: blur(28px) saturate(140%) brightness(1.02);
+    --glass-vivid: blur(16px) saturate(200%) contrast(1.08);
+
     /* Dark Mode Enhanced Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
@@ -201,7 +1001,663 @@ html {
   
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'LXGW WenKai', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+  
+  /* Enhanced focus styles for accessibility */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--primary-500));
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+  
+  /* Improved selection styles */
+  ::selection {
+    background-color: hsl(var(--primary-500) / 0.2);
+    color: hsl(var(--foreground));
+  }
+  
+  ::-moz-selection {
+    background-color: hsl(var(--primary-500) / 0.2);
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Enhanced Utility Classes */
+@layer utilities {
+  /* Glass Effect Utilities - 玻璃态效果工具类 */
+  .glass-ultra-light {
+    background: var(--glass-bg-ultra-light);
+    backdrop-filter: var(--glass-blur-xs);
+    border: 1px solid var(--glass-border-ultra-light);
+    box-shadow: var(--glass-shadow-ultra-light);
+  }
+  
+  .glass-light {
+    background: var(--glass-bg-light);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-light);
+    box-shadow: var(--glass-shadow-light);
+  }
+  
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-medium {
+    background: var(--glass-bg-medium);
+    backdrop-filter: var(--glass-blur-lg);
+    border: 1px solid var(--glass-border-medium);
+    box-shadow: var(--glass-shadow-medium);
+  }
+  
+  .glass-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur-xl);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--glass-shadow-strong);
+  }
+  
+  .glass-intense {
+    background: var(--glass-bg-intense);
+    backdrop-filter: var(--glass-blur-2xl);
+    border: 1px solid var(--glass-border-intense);
+    box-shadow: var(--glass-shadow-intense);
+  }
+  
+  .glass-ultra-intense {
+    background: var(--glass-bg-ultra-intense);
+    backdrop-filter: var(--glass-blur-3xl);
+    border: 1px solid var(--glass-border-ultra-intense);
+    box-shadow: var(--glass-shadow-ultra-intense);
+  }
+  
+  /* Glass Tinted Variants */
+  .glass-primary {
+    background: var(--glass-tint-primary);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-warm {
+    background: var(--glass-tint-warm);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-cool {
+    background: var(--glass-tint-cool);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-neutral {
+    background: var(--glass-tint-neutral);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  /* Glass Composite Effects */
+  .glass-frosted {
+    backdrop-filter: var(--glass-frosted);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-crystal {
+    backdrop-filter: var(--glass-crystal);
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border-light);
+    box-shadow: var(--glass-shadow-light);
+  }
+  
+  .glass-ethereal {
+    backdrop-filter: var(--glass-ethereal);
+    background: var(--glass-bg-ultra-light);
+    border: 1px solid var(--glass-border-ultra-light);
+    box-shadow: var(--glass-shadow-ultra-light);
+  }
+  
+  .glass-vivid {
+    backdrop-filter: var(--glass-vivid);
+    background: var(--glass-bg-medium);
+    border: 1px solid var(--glass-border-medium);
+    box-shadow: var(--glass-shadow-medium);
+  }
+  
+  /* Enhanced Gradient Utilities - 渐变工具类 */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-primary-soft {
+    background: var(--gradient-primary-soft);
+  }
+  
+  .bg-gradient-primary-vibrant {
+    background: var(--gradient-primary-vibrant);
+  }
+  
+  .bg-gradient-primary-intense {
+    background: var(--gradient-primary-intense);
+  }
+  
+  .bg-gradient-primary-light {
+    background: var(--gradient-primary-light);
+  }
+  
+  .bg-gradient-primary-hero {
+    background: var(--gradient-primary-hero);
+  }
+  
+  .bg-gradient-primary-glow {
+    background: var(--gradient-primary-glow);
+  }
+  
+  .bg-gradient-primary-aurora {
+    background: var(--gradient-primary-aurora);
+  }
+  
+  .bg-gradient-primary-sunset {
+    background: var(--gradient-primary-sunset);
+  }
+  
+  .bg-gradient-primary-ocean {
+    background: var(--gradient-primary-ocean);
+  }
+  
+  .bg-gradient-warm {
+    background: var(--gradient-warm);
+  }
+  
+  .bg-gradient-warm-soft {
+    background: var(--gradient-warm-soft);
+  }
+  
+  .bg-gradient-warm-intense {
+    background: var(--gradient-warm-intense);
+  }
+  
+  .bg-gradient-warm-glow {
+    background: var(--gradient-warm-glow);
+  }
+  
+  .bg-gradient-cool {
+    background: var(--gradient-cool);
+  }
+  
+  .bg-gradient-cool-soft {
+    background: var(--gradient-cool-soft);
+  }
+  
+  .bg-gradient-cool-intense {
+    background: var(--gradient-cool-intense);
+  }
+  
+  .bg-gradient-cool-glow {
+    background: var(--gradient-cool-glow);
+  }
+  
+  .bg-gradient-rainbow {
+    background: var(--gradient-rainbow);
+  }
+  
+  .bg-gradient-rainbow-soft {
+    background: var(--gradient-rainbow-soft);
+  }
+  
+  .bg-gradient-rainbow-vibrant {
+    background: var(--gradient-rainbow-vibrant);
+  }
+  
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  .bg-gradient-surface {
+    background: var(--gradient-surface);
+  }
+  
+  .bg-gradient-surface-elevated {
+    background: var(--gradient-surface-elevated);
+  }
+  
+  .bg-gradient-surface-glass {
+    background: var(--gradient-surface-glass);
+  }
+  
+  /* Radial Gradient Utilities */
+  .bg-gradient-radial-primary {
+    background: var(--gradient-radial-primary);
+  }
+  
+  .bg-gradient-radial-primary-soft {
+    background: var(--gradient-radial-primary-soft);
+  }
+  
+  .bg-gradient-radial-warm {
+    background: var(--gradient-radial-warm);
+  }
+  
+  .bg-gradient-radial-warm-soft {
+    background: var(--gradient-radial-warm-soft);
+  }
+  
+  .bg-gradient-radial-cool {
+    background: var(--gradient-radial-cool);
+  }
+  
+  .bg-gradient-radial-cool-soft {
+    background: var(--gradient-radial-cool-soft);
+  }
+  
+  .bg-gradient-radial-subtle {
+    background: var(--gradient-radial-subtle);
+  }
+  
+  .bg-gradient-radial-glow {
+    background: var(--gradient-radial-glow);
+  }
+  
+  /* Conic Gradient Utilities */
+  .bg-gradient-conic-primary {
+    background: var(--gradient-conic-primary);
+  }
+  
+  .bg-gradient-conic-rainbow {
+    background: var(--gradient-conic-rainbow);
+  }
+  
+  .bg-gradient-conic-subtle {
+    background: var(--gradient-conic-subtle);
+  }
+  
+  /* Mesh Gradient Utilities */
+  .bg-gradient-mesh-primary {
+    background: var(--gradient-mesh-primary);
+  }
+  
+  .bg-gradient-mesh-warm {
+    background: var(--gradient-mesh-warm);
+  }
+  
+  .bg-gradient-mesh-cool {
+    background: var(--gradient-mesh-cool);
+  }
+  
+  .bg-gradient-mesh-subtle {
+    background: var(--gradient-mesh-subtle);
+  }
+  
+  /* Enhanced Shadow Utilities - 阴影工具类 */
+  .shadow-primary {
+    box-shadow: var(--shadow-primary);
+  }
+  
+  .shadow-primary-lg {
+    box-shadow: var(--shadow-primary-lg);
+  }
+  
+  .shadow-warm {
+    box-shadow: var(--shadow-warm);
+  }
+  
+  .shadow-warm-lg {
+    box-shadow: var(--shadow-warm-lg);
+  }
+  
+  .shadow-cool {
+    box-shadow: var(--shadow-cool);
+  }
+  
+  .shadow-cool-lg {
+    box-shadow: var(--shadow-cool-lg);
+  }
+  
+  .shadow-xs {
+    box-shadow: var(--shadow-xs);
+  }
+  
+  .shadow-3xl {
+    box-shadow: var(--shadow-3xl);
+  }
+  
+  .shadow-4xl {
+    box-shadow: var(--shadow-4xl);
+  }
+  
+  .shadow-inner-lg {
+    box-shadow: var(--shadow-inner-lg);
+  }
+  
+  /* Enhanced Animation Utilities - 动画工具类 */
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  
+  .animate-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .animate-shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 4s ease infinite;
+  }
+  
+  /* Spacing Utilities - 语义化间距工具类 */
+  .space-section {
+    margin-top: var(--space-section);
+    margin-bottom: var(--space-section);
+  }
+  
+  .space-section-sm {
+    margin-top: var(--space-section-sm);
+    margin-bottom: var(--space-section-sm);
+  }
+  
+  .space-component {
+    margin-top: var(--space-component);
+    margin-bottom: var(--space-component);
+  }
+  
+  .space-component-sm {
+    margin-top: var(--space-component-sm);
+    margin-bottom: var(--space-component-sm);
+  }
+  
+  .space-element {
+    margin-top: var(--space-element);
+    margin-bottom: var(--space-element);
+  }
+  
+  .space-element-sm {
+    margin-top: var(--space-element-sm);
+    margin-bottom: var(--space-element-sm);
+  }
+  
+  .space-content {
+    margin-top: var(--space-content);
+    margin-bottom: var(--space-content);
+  }
+  
+  .space-content-sm {
+    margin-top: var(--space-content-sm);
+    margin-bottom: var(--space-content-sm);
+  }
+  
+  .space-tight {
+    margin-top: var(--space-tight);
+    margin-bottom: var(--space-tight);
+  }
+  
+  .space-tight-sm {
+    margin-top: var(--space-tight-sm);
+    margin-bottom: var(--space-tight-sm);
+  }
+  
+  .space-loose {
+    margin-top: var(--space-loose);
+    margin-bottom: var(--space-loose);
+  }
+  
+  .space-loose-lg {
+    margin-top: var(--space-loose-lg);
+    margin-bottom: var(--space-loose-lg);
+  }
+  
+  /* Padding variants */
+  .p-section {
+    padding: var(--space-section);
+  }
+  
+  .p-section-sm {
+    padding: var(--space-section-sm);
+  }
+  
+  .p-component {
+    padding: var(--space-component);
+  }
+  
+  .p-component-sm {
+    padding: var(--space-component-sm);
+  }
+  
+  .p-element {
+    padding: var(--space-element);
+  }
+  
+  .p-element-sm {
+    padding: var(--space-element-sm);
+  }
+  
+  .p-content {
+    padding: var(--space-content);
+  }
+  
+  .p-content-sm {
+    padding: var(--space-content-sm);
+  }
+  
+  .p-tight {
+    padding: var(--space-tight);
+  }
+  
+  .p-tight-sm {
+    padding: var(--space-tight-sm);
+  }
+  
+  .p-loose {
+    padding: var(--space-loose);
+  }
+  
+  .p-loose-lg {
+    padding: var(--space-loose-lg);
+  }
+  
+  /* Enhanced Typography Utilities - 排版工具类 */
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  
+  .font-display {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  
+  .font-heading {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  
+  .font-body {
+    font-family: 'LXGW WenKai', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+  
+  /* Enhanced Interaction States - 交互状态工具类 */
+  .hover-lift {
+    transition: transform var(--duration-normal) ease, box-shadow var(--duration-normal) ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .hover-glow {
+    transition: box-shadow var(--duration-normal) ease;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 20px hsl(var(--primary-500) / 0.3);
+  }
+  
+  .hover-scale {
+    transition: transform var(--duration-normal) ease;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+  
+  .hover-brightness {
+    transition: filter var(--duration-normal) ease;
+  }
+  
+  .hover-brightness:hover {
+    filter: brightness(1.1);
+  }
+  
+  /* Focus States for Better Accessibility */
+  .focus-ring {
+    transition: box-shadow var(--duration-fast) ease;
+  }
+  
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary-500));
+  }
+  
+  /* Enhanced Button States */
+  .btn-enhanced {
+    position: relative;
+    overflow: hidden;
+    transition: all var(--duration-normal) ease;
+  }
+  
+  .btn-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left var(--duration-slow) ease;
+  }
+  
+  .btn-enhanced:hover::before {
+    left: 100%;
+  }
+  
+  /* Responsive Utilities */
+  .container-responsive {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  @media (min-width: 640px) {
+    .container-responsive {
+      padding-left: var(--space-6);
+      padding-right: var(--space-6);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-responsive {
+      padding-left: var(--space-8);
+      padding-right: var(--space-8);
+    }
+  }
+  
+  /* High Contrast Mode Support */
+  @media (prefers-contrast: high) {
+    .glass,
+    .glass-light,
+    .glass-medium,
+    .glass-strong {
+      background: hsl(var(--background));
+      border: 2px solid hsl(var(--foreground));
+      backdrop-filter: none;
+    }
+    
+    .bg-gradient-primary,
+    .bg-gradient-warm,
+    .bg-gradient-cool,
+    .bg-gradient-rainbow {
+      background: hsl(var(--primary));
+    }
+  }
+  
+  /* Print Styles */
+  @media print {
+    .glass,
+    .glass-light,
+    .glass-medium,
+    .glass-strong {
+      background: white;
+      border: 1px solid black;
+      backdrop-filter: none;
+      box-shadow: none;
+    }
+    
+    .bg-gradient-primary,
+    .bg-gradient-warm,
+    .bg-gradient-cool,
+    .bg-gradient-rainbow {
+      background: white;
+      color: black;
+    }
+    
+    .animate-glow-pulse,
+    .animate-shimmer,
+    .animate-float,
+    .animate-gradient-shift {
+      animation: none;
+    }
+  }t-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -245,30 +1701,348 @@ html {
     background: hsl(var(--primary) / 0.3);
     color: hsl(var(--primary-foreground));
   }
-}
+
 
 /* Enhanced Utility Classes */
 @layer utilities {
-  /* Gradient Text Effects */
+  /* Enhanced Gradient Text Effects */
   .text-gradient {
-    @apply bg-gradient-to-r from-primary via-primary-hover to-primary bg-clip-text text-transparent;
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease-in-out infinite;
   }
 
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-primary via-accent-warm to-accent-cool bg-clip-text text-transparent;
+    background: var(--gradient-primary-vibrant);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .text-gradient-warm {
-    @apply bg-gradient-to-r from-accent-warm via-primary to-accent-cool bg-clip-text text-transparent;
+    background: var(--gradient-warm);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
-  /* Glass Effect */
+  .text-gradient-cool {
+    background: var(--gradient-cool);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-rainbow {
+    background: var(--gradient-rainbow);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradient-shift 4s ease-in-out infinite;
+  }
+
+  /* Enhanced Glass Effects with Multiple Variants */
+  .glass-effect-ultra-light {
+    background: var(--glass-bg-ultra-light);
+    backdrop-filter: var(--glass-blur-xs);
+    -webkit-backdrop-filter: var(--glass-blur-xs);
+    border: 1px solid var(--glass-border-ultra-light);
+    box-shadow: var(--glass-shadow-ultra-light);
+  }
+
+  .glass-effect-light {
+    background: var(--glass-bg-light);
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-light);
+    box-shadow: var(--glass-shadow-light);
+  }
+
   .glass-effect {
-    @apply backdrop-blur-xl backdrop-saturate-150 bg-white/80 dark:bg-gray-900/80 border border-white/20 dark:border-gray-700/30;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-effect-medium {
+    background: var(--glass-bg-medium);
+    backdrop-filter: var(--glass-blur-lg);
+    -webkit-backdrop-filter: var(--glass-blur-lg);
+    border: 1px solid var(--glass-border-medium);
+    box-shadow: var(--glass-shadow-medium);
   }
 
   .glass-effect-strong {
-    @apply backdrop-blur-2xl backdrop-saturate-200 bg-white/90 dark:bg-gray-900/90 border border-white/30 dark:border-gray-700/40;
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur-xl);
+    -webkit-backdrop-filter: var(--glass-blur-xl);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--glass-shadow-strong);
+  }
+
+  .glass-effect-intense {
+    background: var(--glass-bg-intense);
+    backdrop-filter: var(--glass-blur-2xl);
+    -webkit-backdrop-filter: var(--glass-blur-2xl);
+    border: 1px solid var(--glass-border-intense);
+    box-shadow: var(--glass-shadow-intense);
+  }
+
+  .glass-effect-ultra-intense {
+    background: var(--glass-bg-ultra-intense);
+    backdrop-filter: var(--glass-blur-3xl);
+    -webkit-backdrop-filter: var(--glass-blur-3xl);
+    border: 1px solid var(--glass-border-ultra-intense);
+    box-shadow: var(--glass-shadow-ultra-intense);
+  }
+
+  /* Glass Effect Composite Styles */
+  .glass-frosted {
+    background: var(--glass-bg-medium);
+    backdrop-filter: var(--glass-frosted);
+    -webkit-backdrop-filter: var(--glass-frosted);
+    border: 1px solid var(--glass-border-medium);
+    box-shadow: var(--glass-shadow-medium);
+  }
+
+  .glass-crystal {
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-crystal);
+    -webkit-backdrop-filter: var(--glass-crystal);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--glass-shadow-strong);
+  }
+
+  .glass-ethereal {
+    background: var(--glass-bg-light);
+    backdrop-filter: var(--glass-ethereal);
+    -webkit-backdrop-filter: var(--glass-ethereal);
+    border: 1px solid var(--glass-border-light);
+    box-shadow: var(--glass-shadow-light);
+  }
+
+  .glass-vivid {
+    background: var(--glass-bg-intense);
+    backdrop-filter: var(--glass-vivid);
+    -webkit-backdrop-filter: var(--glass-vivid);
+    border: 1px solid var(--glass-border-intense);
+    box-shadow: var(--glass-shadow-intense);
+  }
+
+  /* Glass Effect with Enhanced Tints */
+  .glass-tint-primary-light {
+    background: linear-gradient(135deg, var(--glass-bg-light), var(--glass-tint-primary-light));
+  }
+
+  .glass-tint-primary {
+    background: linear-gradient(135deg, var(--glass-bg), var(--glass-tint-primary));
+  }
+
+  .glass-tint-primary-medium {
+    background: linear-gradient(135deg, var(--glass-bg-medium), var(--glass-tint-primary-medium));
+  }
+
+  .glass-tint-primary-strong {
+    background: linear-gradient(135deg, var(--glass-bg-strong), var(--glass-tint-primary-strong));
+  }
+
+  .glass-tint-warm-light {
+    background: linear-gradient(135deg, var(--glass-bg-light), var(--glass-tint-warm-light));
+  }
+
+  .glass-tint-warm {
+    background: linear-gradient(135deg, var(--glass-bg), var(--glass-tint-warm));
+  }
+
+  .glass-tint-warm-medium {
+    background: linear-gradient(135deg, var(--glass-bg-medium), var(--glass-tint-warm-medium));
+  }
+
+  .glass-tint-warm-strong {
+    background: linear-gradient(135deg, var(--glass-bg-strong), var(--glass-tint-warm-strong));
+  }
+
+  .glass-tint-cool-light {
+    background: linear-gradient(135deg, var(--glass-bg-light), var(--glass-tint-cool-light));
+  }
+
+  .glass-tint-cool {
+    background: linear-gradient(135deg, var(--glass-bg), var(--glass-tint-cool));
+  }
+
+  .glass-tint-cool-medium {
+    background: linear-gradient(135deg, var(--glass-bg-medium), var(--glass-tint-cool-medium));
+  }
+
+  .glass-tint-cool-strong {
+    background: linear-gradient(135deg, var(--glass-bg-strong), var(--glass-tint-cool-strong));
+  }
+
+  .glass-tint-neutral-light {
+    background: linear-gradient(135deg, var(--glass-bg-light), var(--glass-tint-neutral-light));
+  }
+
+  .glass-tint-neutral {
+    background: linear-gradient(135deg, var(--glass-bg), var(--glass-tint-neutral));
+  }
+
+  .glass-tint-neutral-medium {
+    background: linear-gradient(135deg, var(--glass-bg-medium), var(--glass-tint-neutral-medium));
+  }
+
+  .glass-tint-neutral-strong {
+    background: linear-gradient(135deg, var(--glass-bg-strong), var(--glass-tint-neutral-strong));
+  }
+
+  /* Background Gradient Utilities */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-primary-soft {
+    background: var(--gradient-primary-soft);
+  }
+
+  .bg-gradient-primary-vibrant {
+    background: var(--gradient-primary-vibrant);
+  }
+
+  .bg-gradient-warm {
+    background: var(--gradient-warm);
+  }
+
+  .bg-gradient-cool {
+    background: var(--gradient-cool);
+  }
+
+  .bg-gradient-rainbow {
+    background: var(--gradient-rainbow);
+  }
+
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+
+  .bg-gradient-surface {
+    background: var(--gradient-surface);
+  }
+
+  .bg-gradient-surface-elevated {
+    background: var(--gradient-surface-elevated);
+  }
+
+  .bg-gradient-surface-glass {
+    background: var(--gradient-surface-glass);
+  }
+
+  /* Radial Gradient Utilities */
+  .bg-gradient-radial-primary {
+    background: var(--gradient-radial-primary);
+  }
+
+  .bg-gradient-radial-primary-soft {
+    background: var(--gradient-radial-primary-soft);
+  }
+
+  .bg-gradient-radial-warm {
+    background: var(--gradient-radial-warm);
+  }
+
+  .bg-gradient-radial-warm-soft {
+    background: var(--gradient-radial-warm-soft);
+  }
+
+  .bg-gradient-radial-cool {
+    background: var(--gradient-radial-cool);
+  }
+
+  .bg-gradient-radial-cool-soft {
+    background: var(--gradient-radial-cool-soft);
+  }
+
+  .bg-gradient-radial-subtle {
+    background: var(--gradient-radial-subtle);
+  }
+
+  .bg-gradient-radial-glow {
+    background: var(--gradient-radial-glow);
+  }
+
+  /* Conic Gradient Utilities */
+  .bg-gradient-conic-primary {
+    background: var(--gradient-conic-primary);
+  }
+
+  .bg-gradient-conic-rainbow {
+    background: var(--gradient-conic-rainbow);
+  }
+
+  .bg-gradient-conic-subtle {
+    background: var(--gradient-conic-subtle);
+  }
+
+  /* Mesh Gradient Utilities */
+  .bg-gradient-mesh-primary {
+    background: var(--gradient-mesh-primary);
+  }
+
+  .bg-gradient-mesh-warm {
+    background: var(--gradient-mesh-warm);
+  }
+
+  /* Enhanced Gradient Variants */
+  .bg-gradient-primary-light {
+    background: var(--gradient-primary-light);
+  }
+
+  .bg-gradient-primary-intense {
+    background: var(--gradient-primary-intense);
+  }
+
+  .bg-gradient-primary-hero {
+    background: var(--gradient-primary-hero);
+  }
+
+  .bg-gradient-primary-glow {
+    background: var(--gradient-primary-glow);
+  }
+
+  .bg-gradient-warm-soft {
+    background: var(--gradient-warm-soft);
+  }
+
+  .bg-gradient-warm-intense {
+    background: var(--gradient-warm-intense);
+  }
+
+  .bg-gradient-warm-glow {
+    background: var(--gradient-warm-glow);
+  }
+
+  .bg-gradient-cool-soft {
+    background: var(--gradient-cool-soft);
+  }
+
+  .bg-gradient-cool-intense {
+    background: var(--gradient-cool-intense);
+  }
+
+  .bg-gradient-cool-glow {
+    background: var(--gradient-cool-glow);
+  }
+
+  .bg-gradient-rainbow-soft {
+    background: var(--gradient-rainbow-soft);
+  }
+
+  .bg-gradient-rainbow-vibrant {
+    background: var(--gradient-rainbow-vibrant);
   }
 
   /* Enhanced Shadow Utilities */
