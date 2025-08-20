@@ -20,14 +20,25 @@ const {
 ---
 
 <section class="relative md:-mt-[76px] not-prose overflow-hidden min-h-screen flex items-center" {...id ? { id } : {}}>
-  <!-- 增强背景装饰 -->
+  <!-- 高级背景装饰 - 亮色暗色主题适配 -->
   <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-    <!-- 主渐变背景 -->
-    <div class="absolute inset-0 bg-gradient-to-br from-primary/4 via-accent-warm/2 to-accent-cool/4"></div>
+    <!-- 主渐变背景 - 更柔和的渐变，亮色主题优化 -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/8 via-accent-warm/5 to-accent-cool/8 dark:from-primary/5 dark:via-accent-warm/3 dark:to-accent-cool/5 opacity-60 dark:opacity-80"></div>
     
-    <!-- 简洁装饰元素 -->
-    <div class="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-primary/8 to-accent-warm/8 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-accent-cool/8 to-primary/8 rounded-full blur-3xl"></div>
+    <!-- 动态光晕装饰元素 - 亮色主题优化 -->
+    <div class="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-primary/15 to-accent-warm/15 dark:from-primary/10 dark:to-accent-warm/10 rounded-full blur-3xl opacity-50 dark:opacity-70 animate-pulse" style="animation-duration: 8s;"></div>
+    <div class="absolute bottom-20 right-10 w-48 h-48 bg-gradient-to-br from-accent-cool/15 to-primary/15 dark:from-accent-cool/10 dark:to-primary/10 rounded-full blur-3xl opacity-50 dark:opacity-70 animate-pulse" style="animation-duration: 12s; animation-delay: 2s;"></div>
+    
+    <!-- 微妙的网格背景 - 亮色主题优化 -->
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMxLjIgMCAyLjEuOSAyLjEgMi4xdjE5LjhjMCAxLjItLjkgMi4xLTIuMSAyLjFIMTguMWMtMS4yIDAtMi4xLS45LTIuMS0yLjFWMjAuMWMwLTEuMi45LTIuMSAyLjEtMi4xaDE3Ljh6TTYwIDBIMHY2MGg2MFYweiIgZmlsbD0iIzAwMDAwMCIgZmlsbC1vcGFjaXR5PSIuMDMiLz48cGF0aCBkPSJNMzAgMEgwdjYwaDMwVjB6IiBmaWxsPSIjMDAwMDAwIiBmaWxsLW9wYWNpdHk9Ii4wMiIvPjwvZz48L3N2Zz4=')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMxLjIgMCAyLjEuOSAyLjEgMi4xdjE5LjhjMCAxLjItLjkgMi4xLTIuMSAyLjFIMTguMWMtMS4yIDAtMi4xLS45LTIuMS0yLjFWMjAuMWMwLTEuMi45LTIuMSAyLjEtMi4xaDE3Ljh6TTYwIDBIMHY2MGg2MFYweiIgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIuMDIiLz48cGF0aCBkPSJNMzAgMEgwdjYwaDMwVjB6IiBmaWxsPSIjZmZmZmZmIiBmaWxsLW9wYWNpdHk9Ii4wMSIvPjwvZz48L3N2Zz4=')]"></div>
+    
+    <!-- 微妙的光束效果 - 亮色主题优化 -->
+    <div class="absolute -top-40 -left-20 w-96 h-96 bg-gradient-radial-primary-soft opacity-15 dark:opacity-20 rotate-12"></div>
+    <div class="absolute -bottom-40 -right-20 w-96 h-96 bg-gradient-radial-warm-soft opacity-15 dark:opacity-20 -rotate-12"></div>
+    
+    <!-- 动态装饰元素 - 亮色主题优化 -->
+    <div class="absolute top-1/4 right-1/4 w-32 h-32 border border-primary/15 dark:border-primary/10 rounded-full opacity-30 dark:opacity-40"></div>
+    <div class="absolute bottom-1/4 left-1/4 w-24 h-24 border border-accent-warm/15 dark:border-accent-warm/10 rounded-full opacity-30 dark:opacity-40"></div>
     
     <slot name="bg">
       {bg ? <Fragment set:html={bg} /> : null}
@@ -38,41 +49,45 @@ const {
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 w-full">
     <div class="pt-0 md:pt-[76px] pointer-events-none"></div>
     <div class="py-8 md:py-12 lg:py-16">
-              <div class="text-center pb-6 md:pb-8 max-w-5xl mx-auto">
+      <div class="text-center pb-6 md:pb-8 max-w-5xl mx-auto">
         
-        <!-- 标语 -->
+        <!-- 标语 - 更现代的设计 -->
         {tagline && (
-          <div class="mb-6 animate-fade-in-down">
-            <span class="inline-flex items-center px-6 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-primary/12 via-accent-warm/10 to-accent-cool/12 text-gray-700 dark:text-gray-200 border border-primary/25 backdrop-blur-lg shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 group cursor-default">
-              <svg class="w-5 h-5 mr-3 text-gray-600 dark:text-gray-300 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="mb-8 animate-fade-in-down">
+            <span class="inline-flex items-center px-6 py-3 rounded-full text-sm font-medium bg-gradient-to-r from-primary/15 via-accent-warm/12 to-accent-cool/15 text-gray-700 dark:text-gray-200 border border-white/20 dark:border-gray-800/40 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 group cursor-default relative overflow-hidden">
+              <!-- 微妙的光效 -->
+              <span class="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent-warm/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></span>
+              
+              <svg class="w-5 h-5 mr-3 text-primary dark:text-primary-light transition-transform duration-300 group-hover:rotate-12 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              <Fragment set:html={tagline} />
-              <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/3 to-accent-warm/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <span class="relative z-10"><Fragment set:html={tagline} /></span>
             </span>
           </div>
         )}
         
-        <!-- 主标题 -->
+        <!-- 主标题 - 更具视觉冲击力 -->
         {title && (
-          <h1 class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black leading-[0.9] tracking-tight mb-6 font-heading animate-fade-in-up" style="animation-delay: 0.2s;">
-            <span class="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent drop-shadow-sm">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-[0.9] tracking-tight mb-8 font-heading animate-fade-in-up" style="animation-delay: 0.2s;">
+            <span class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white bg-clip-text text-transparent drop-shadow-sm relative">
+              <!-- 微妙的装饰线 -->
+              <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-primary/40 to-accent-warm/40 rounded-full blur-sm"></span>
               <Fragment set:html={title} />
             </span>
           </h1>
         )}
         
-        <!-- 副标题 -->
+        <!-- 副标题 - 更优雅的排版 -->
         <div class="max-w-4xl mx-auto animate-fade-in-up" style="animation-delay: 0.4s;">
           {subtitle && (
-            <p class="text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed font-light tracking-wide">
+            <p class="text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 mb-10 leading-relaxed font-light tracking-wide">
               <Fragment set:html={subtitle} />
             </p>
           )}
           
-          <!-- 行动按钮 -->
+          <!-- 行动按钮 - 更现代的设计 -->
           {actions && (
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-10">
               {Array.isArray(actions) ? (
                 actions.map((action, index) => (
                   <div class="animate-fade-in-up" style={`animation-delay: ${0.6 + index * 0.1}s;`}>
@@ -83,11 +98,14 @@ const {
                       target={action?.target || undefined}
                       rel={action?.rel || undefined}
                       class={cn(
-                        "px-8 py-4 text-lg font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-105",
+                        "px-6 py-3 text-base font-medium rounded-lg transition-colors duration-200",
+                        action?.variant === 'primary' 
+                          ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                          : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white",
                         action?.class
                       )}
                     >
-                      {action?.text || action?.title}
+                      <span class="relative z-10">{action?.text || action?.title}</span>
                     </Button>
                   </div>
                 ))
@@ -105,13 +123,17 @@ const {
         )}
       </div>
       
-      <!-- 图片/内容展示 -->
+      <!-- 图片/内容展示 - 更具高级感 -->
       <div class="animate-fade-in-up" style="animation-delay: 1s;">
         {image && (
           <div class="relative m-auto max-w-7xl">
-            <!-- 增强图片装饰背景 -->
-            <div class="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent-warm/20 to-accent-cool/20 rounded-3xl blur-3xl transform scale-110 opacity-30 animate-pulse"></div>
+            <!-- 高级图片装饰背景 -->
+            <div class="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent-warm/20 to-accent-cool/20 rounded-3xl blur-3xl transform scale-110 opacity-30"></div>
             <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent-warm/10 rounded-3xl blur-2xl transform scale-105 opacity-40"></div>
+            
+            <!-- 微妙的光束效果 -->
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-gradient-radial-primary-soft opacity-30 rotate-12"></div>
+            <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-gradient-radial-warm-soft opacity-30 -rotate-12"></div>
             
             <!-- 图片容器 -->
             <div class="relative">
@@ -119,7 +141,7 @@ const {
                 <Fragment set:html={image} />
               ) : (
                 <Image
-                  class="mx-auto rounded-3xl shadow-3xl shadow-gray-500/25 dark:shadow-gray-900/50 border border-gray-200/40 dark:border-gray-700/40 w-full hover:shadow-[0_60px_120px_-12px_rgba(0,0,0,0.25)] dark:hover:shadow-[0_60px_120px_-12px_rgba(0,0,0,0.4)] transition-all duration-700 hover:scale-[1.02] hover:-translate-y-4"
+                  class="mx-auto rounded-3xl shadow-xl shadow-gray-500/20 dark:shadow-gray-900/40 border border-gray-200/30 dark:border-gray-700/30 w-full hover:shadow-2xl transition-all duration-700 hover:scale-[1.02] hover:-translate-y-4 relative"
                   widths={[400, 768, 1024, 2040]}
                   sizes="(max-width: 767px) 400px, (max-width: 1023px) 768px, (max-width: 2039px) 1024px, 2040px"
                   loading="eager"
@@ -128,6 +150,10 @@ const {
                   {...image}
                 />
               )}
+              
+              <!-- 微妙的装饰元素 -->
+              <div class="absolute -bottom-4 -right-4 w-24 h-24 border border-primary/20 rounded-full opacity-60"></div>
+              <div class="absolute -top-4 -left-4 w-16 h-16 border border-accent-warm/20 rounded-full opacity-60"></div>
             </div>
           </div>
         )}
@@ -135,19 +161,19 @@ const {
     </div>
   </div>
   
-  <!-- 底部装饰渐变 -->
+  <!-- 底部装饰渐变 - 更精致的边界 -->
   <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent opacity-60"></div>
   
-  <!-- 底部装饰图案 -->
-  <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background/90 to-transparent pointer-events-none"></div>
+  <!-- 底部装饰图案 - 更柔和的过渡 -->
+  <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background/95 to-transparent pointer-events-none"></div>
 </section>
 
 <style>
-  /* 简洁动画 */
+  /* 增强动画效果 - 更流畅的过渡 */
   @keyframes fade-in-down {
     0% {
       opacity: 0;
-      transform: translateY(-20px);
+      transform: translateY(-30px);
     }
     100% {
       opacity: 1;
@@ -158,7 +184,7 @@ const {
   @keyframes fade-in-up {
     0% {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(30px);
     }
     100% {
       opacity: 1;
@@ -167,55 +193,77 @@ const {
   }
   
   .animate-fade-in-down {
-    animation: fade-in-down 0.8s ease-out both;
+    animation: fade-in-down 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
   
   .animate-fade-in-up {
-    animation: fade-in-up 0.8s ease-out both;
+    animation: fade-in-up 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  /* 优化文字渲染 */
+  /* 优化文字渲染 - 更精细的字体处理 */
   h1 {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
 
-  /* 响应式字体优化 */
+  /* 响应式字体优化 - 更精确的尺寸控制 */
   @media (max-width: 640px) {
     h1 {
-      font-size: 2rem;
+      font-size: 2.5rem;
       line-height: 1.1;
       letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.75rem;
     }
     
     p {
       font-size: 1rem;
-      margin-bottom: 2rem;
+      line-height: 1.6;
+      margin-bottom: 2.25rem;
     }
   }
 
   @media (min-width: 641px) and (max-width: 768px) {
     h1 {
-      font-size: 2.5rem;
+      font-size: 3rem;
       line-height: 1.05;
       letter-spacing: -0.025em;
-      margin-bottom: 1.75rem;
+      margin-bottom: 2rem;
     }
     
     p {
       font-size: 1.125rem;
-      margin-bottom: 2.5rem;
+      line-height: 1.6;
+      margin-bottom: 2.75rem;
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    h1 {
+      font-size: 3.5rem;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+  }
+  
+  @media (min-width: 1025px) {
+    h1 {
+      font-size: 4.5rem;
+      line-height: 0.95;
+      letter-spacing: -0.035em;
     }
   }
 
-  /* 提升可读性 */
+  /* 提升可读性 - 更精细的文本处理 */
   p {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: 0.01em;
+    line-height: 1.7;
   }
 
   /* 减少动画对于喜欢减少动画的用户 */
@@ -227,14 +275,9 @@ const {
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
-    
-    .animate-float,
-    .animate-shimmer {
-      animation: none !important;
-    }
   }
 
-  /* 高对比度模式 */
+  /* 高对比度模式 - 更好的可访问性 */
   @media (prefers-contrast: high) {
     .bg-gradient-to-r {
       background: hsl(var(--primary)) !important;
@@ -246,90 +289,50 @@ const {
       -webkit-background-clip: unset !important;
       background-clip: unset !important;
     }
-  }
-
-  /* 暗色模式特殊处理 */
-  .dark .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.02), transparent);
-  }
-
-  /* 动画性能优化 */
-  .animate-fade-in-down,
-  .animate-fade-in-up,
-  .animate-float {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-  }
-
-  /* 标语悬停效果 */
-  span[class*="group"]:hover {
-    backdrop-filter: blur(20px) saturate(180%);
-  }
-
-  /* 标题字体权重调整 */
-  h1 {
-    font-variation-settings: "wght" 900;
-  }
-
-  /* 副标题字体优化 */
-  p {
-    font-variation-settings: "wght" 300;
-    letter-spacing: 0.01em;
-  }
-
-  /* 按钮字体优化 */
-  button,
-  a[class*="btn"] {
-    font-variation-settings: "wght" 600;
-    letter-spacing: 0.025em;
-  }
-
-  /* 装饰性元素优化 */
-  .blur-3xl {
-    filter: blur(64px);
-  }
-
-  .blur-2xl {
-    filter: blur(40px);
-  }
-
-  /* 阴影层次优化 */
-  .shadow-3xl {
-    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
-  }
-
-  /* 图片加载优化 */
-  img {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-  }
-
-  /* 触摸设备优化 */
-  @media (hover: none) {
-    .hover\:scale-105:hover,
-    .hover\:scale-\[1\.02\]:hover,
-    .hover\:-translate-y-2:hover,
-    .hover\:-translate-y-4:hover {
-      transform: none;
+    
+    .border {
+      border-width: 2px !important;
     }
   }
 
-  /* 大屏幕优化 */
+  /* 暗色模式特殊处理 - 更精细的暗色模式适配 */
+  .dark .shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  }
+  
+  .dark .bg-gradient-to-r {
+    --tw-gradient-stops: var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%;
+  }
+
+  /* 大屏幕优化 - 更好的大屏适配 */
   @media (min-width: 1920px) {
     .max-w-7xl {
       max-width: 90rem;
     }
-  }
-
-  /* 超大屏幕优化 */
-  @media (min-width: 2560px) {
+    
     h1 {
-      font-size: 12rem;
+      font-size: 5.5rem;
     }
     
     p {
-      font-size: 3rem;
+      font-size: 1.5rem;
+    }
+  }
+
+  /* 超大屏幕优化 - 更精确的超大屏适配 */
+  @media (min-width: 2560px) {
+    h1 {
+      font-size: 7rem;
+      letter-spacing: -0.04em;
+    }
+    
+    p {
+      font-size: 1.75rem;
+      line-height: 1.6;
+    }
+    
+    .max-w-7xl {
+      max-width: 100rem;
     }
   }
 </style>

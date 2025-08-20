@@ -63,47 +63,46 @@ const sizeVariants = {
 // 样式变体
 const variants = {
   primary: cn(
-    'bg-gradient-to-r from-primary via-primary-hover to-primary',
-    'text-white border-transparent shadow-lg shadow-primary/25',
-    'hover:shadow-xl hover:shadow-primary/35 hover:-translate-y-1 hover:scale-105',
-    'active:translate-y-0 active:scale-100 active:shadow-lg',
-    'dark:shadow-primary/30 dark:hover:shadow-primary/40',
-    'focus:ring-primary/50'
+    'bg-primary hover:bg-primary/90 text-white',
+    'border border-primary/20 dark:border-primary/30',
+    'shadow-sm hover:shadow-md',
+    'hover:-translate-y-0.5 active:translate-y-0',
+    'transition-all duration-200 ease-out',
+    'focus:ring-2 focus:ring-primary/50 focus:ring-offset-2'
   ),
   secondary: cn(
-    'bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800',
-    'text-gray-900 dark:text-white border-gray-200 dark:border-gray-700',
-    'shadow-lg shadow-gray-500/15 dark:shadow-gray-900/25',
-    'hover:shadow-xl hover:shadow-gray-500/25 dark:hover:shadow-gray-900/35',
-    'hover:-translate-y-1 hover:scale-105',
-    'hover:from-gray-200 hover:via-gray-100 hover:to-gray-200',
-    'dark:hover:from-gray-700 dark:hover:via-gray-600 dark:hover:to-gray-700',
-    'active:translate-y-0 active:scale-100 active:shadow-lg',
-    'focus:ring-primary/50'
+    'bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800',
+    'text-gray-900 dark:text-white',
+    'border border-gray-200/60 dark:border-gray-700/60',
+    'shadow-sm hover:shadow-md backdrop-blur-sm',
+    'hover:-translate-y-0.5 active:translate-y-0',
+    'transition-all duration-200 ease-out',
+    'focus:ring-2 focus:ring-primary/50 focus:ring-offset-2'
   ),
   tertiary: cn(
-    'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
-    'border-gray-200 dark:border-gray-700',
-    'hover:bg-gray-200 dark:hover:bg-gray-700',
-    'hover:text-gray-900 dark:hover:text-white',
-    'hover:-translate-y-0.5 hover:shadow-sm',
-    'active:translate-y-0 active:bg-gray-300 dark:active:bg-gray-600',
-    'focus:ring-gray-500/50'
+    'bg-gray-100/80 hover:bg-gray-200/80 dark:bg-gray-800/80 dark:hover:bg-gray-700/80',
+    'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white',
+    'border border-gray-200/60 dark:border-gray-700/60',
+    'shadow-sm hover:shadow-md backdrop-blur-sm',
+    'hover:-translate-y-0.5 active:translate-y-0',
+    'transition-all duration-200 ease-out',
+    'focus:ring-2 focus:ring-gray-500/50 focus:ring-offset-2'
   ),
   ghost: cn(
-    'bg-transparent text-gray-700 dark:text-gray-300 border-transparent',
-    'hover:bg-gray-100 dark:hover:bg-gray-800',
-    'hover:text-gray-900 dark:hover:text-white',
-    'hover:-translate-y-0.5 hover:shadow-sm',
-    'active:translate-y-0 active:bg-gray-200 dark:active:bg-gray-700',
-    'focus:ring-gray-500/50'
+    'bg-transparent hover:bg-gray-100/60 dark:hover:bg-gray-800/60',
+    'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white',
+    'border border-transparent hover:border-gray-200/60 dark:hover:border-gray-700/60',
+    'backdrop-blur-sm hover:-translate-y-0.5 active:translate-y-0',
+    'transition-all duration-200 ease-out',
+    'focus:ring-2 focus:ring-gray-500/50 focus:ring-offset-2'
   ),
   destructive: cn(
-    'bg-gradient-to-r from-red-500 to-red-600 text-white border-transparent',
-    'shadow-lg shadow-red-500/25',
-    'hover:shadow-xl hover:shadow-red-500/35 hover:-translate-y-1 hover:scale-105',
-    'active:translate-y-0 active:scale-100 active:shadow-lg',
-    'focus:ring-red-500/50'
+    'bg-red-500 hover:bg-red-600 text-white',
+    'border border-red-500/20 dark:border-red-500/30',
+    'shadow-sm hover:shadow-md',
+    'hover:-translate-y-0.5 active:translate-y-0',
+    'transition-all duration-200 ease-out',
+    'focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2'
   ),
   link: cn(
     'bg-transparent text-primary border-transparent p-0 h-auto min-h-0',
