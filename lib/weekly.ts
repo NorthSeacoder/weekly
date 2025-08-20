@@ -3,7 +3,7 @@ import {handleDir} from '@/lib/file';
 import type {PostsByMonth, WeeklyPost} from '@/types/weekly';
 import dayjs from 'dayjs';
 import path from 'path';
-import {getPermalink} from '@/src/utils/permalinks';
+// import {getPermalink} from '@/src/utils/permalinks'; // 注释掉，避免在Node.js环境中导入Astro虚拟模块
 
 // ============================================================================
 // Config
@@ -155,7 +155,7 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
             tags: Array.from(tags),
             source: Array.from(sources),
             content: contentParts.join(''),
-            permalink: getPermalink(String(issueNo), 'weekly'),
+            permalink: `/weekly/${issueNo}`, // 简化permalink生成，避免依赖Astro配置
             sections: sections.sort((a, b) => {
                 // 按照 categoryOrder 的顺序排序 sections
                 return categoryOrder.indexOf(a.category || '') - categoryOrder.indexOf(b.category || '');
