@@ -20,14 +20,14 @@ const {
 ---
 
 <section class="relative md:-mt-[76px] not-prose overflow-hidden min-h-screen flex items-center" {...id ? { id } : {}}>
-  <!-- 增强背景装饰 -->
+  <!-- 极简背景 -->
   <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-    <!-- 主渐变背景 -->
-    <div class="absolute inset-0 bg-gradient-to-br from-primary/4 via-accent-warm/2 to-accent-cool/4"></div>
+    <!-- 纯净背景 -->
+    <div class="absolute inset-0 bg-white dark:bg-gray-900"></div>
     
-    <!-- 简洁装饰元素 -->
-    <div class="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-primary/8 to-accent-warm/8 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-accent-cool/8 to-primary/8 rounded-full blur-3xl"></div>
+    <!-- 极简装饰点 -->
+    <div class="absolute top-1/4 right-1/4 w-2 h-2 bg-blue-500/20 rounded-full"></div>
+    <div class="absolute bottom-1/3 left-1/5 w-1 h-1 bg-purple-500/20 rounded-full"></div>
     
     <slot name="bg">
       {bg ? <Fragment set:html={bg} /> : null}
@@ -35,55 +35,49 @@ const {
   </div>
 
   <!-- 主要内容 -->
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 w-full">
+  <div class="relative max-w-7xl mx-auto px-6 sm:px-8 w-full">
     <div class="pt-0 md:pt-[76px] pointer-events-none"></div>
-    <div class="py-8 md:py-12 lg:py-16">
-              <div class="text-center pb-6 md:pb-8 max-w-5xl mx-auto">
+    <div class="py-16 md:py-24 lg:py-32">
+      <div class="text-center pb-12 md:pb-16 max-w-6xl mx-auto">
         
         <!-- 标语 -->
         {tagline && (
-          <div class="mb-6 animate-fade-in-down">
-            <span class="inline-flex items-center px-6 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-primary/12 via-accent-warm/10 to-accent-cool/12 text-gray-700 dark:text-gray-200 border border-primary/25 backdrop-blur-lg shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 group cursor-default">
-              <svg class="w-5 h-5 mr-3 text-gray-600 dark:text-gray-300 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+          <div class="mb-16 animate-fade-in-down">
+            <span class="inline-block px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 tracking-wide cursor-default">
               <Fragment set:html={tagline} />
-              <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/3 to-accent-warm/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </span>
           </div>
         )}
         
         <!-- 主标题 -->
         {title && (
-          <h1 class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black leading-[0.9] tracking-tight mb-6 font-heading animate-fade-in-up" style="animation-delay: 0.2s;">
-            <span class="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent drop-shadow-sm">
-              <Fragment set:html={title} />
-            </span>
+          <h1 class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light leading-[0.9] tracking-tight mb-12 font-heading animate-fade-in-up text-gray-900 dark:text-white" style="animation-delay: 0.2s;">
+            <Fragment set:html={title} />
           </h1>
         )}
         
         <!-- 副标题 -->
-        <div class="max-w-4xl mx-auto animate-fade-in-up" style="animation-delay: 0.4s;">
+        <div class="max-w-5xl mx-auto animate-fade-in-up" style="animation-delay: 0.4s;">
           {subtitle && (
-            <p class="text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed font-light tracking-wide">
+            <div class="mb-16 leading-relaxed">
               <Fragment set:html={subtitle} />
-            </p>
+            </div>
           )}
           
           <!-- 行动按钮 -->
           {actions && (
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <div class="flex flex-wrap sm:flex-row gap-6 justify-center items-center mb-20">
               {Array.isArray(actions) ? (
                 actions.map((action, index) => (
                   <div class="animate-fade-in-up" style={`animation-delay: ${0.6 + index * 0.1}s;`}>
                     <Button 
                       variant={action?.variant || 'primary'}
-                      size="lg"
+                      size="md"
                       href={action?.href?.toString() || undefined}
                       target={action?.target || undefined}
                       rel={action?.rel || undefined}
                       class={cn(
-                        "px-8 py-4 text-lg font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-105",
+                        "px-6 py-3 text-base font-medium rounded-lg transition-all duration-300 border-0 shadow-none hover:shadow-sm",
                         action?.class
                       )}
                     >
@@ -108,10 +102,9 @@ const {
       <!-- 图片/内容展示 -->
       <div class="animate-fade-in-up" style="animation-delay: 1s;">
         {image && (
-          <div class="relative m-auto max-w-7xl">
-            <!-- 增强图片装饰背景 -->
-            <div class="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent-warm/20 to-accent-cool/20 rounded-3xl blur-3xl transform scale-110 opacity-30 animate-pulse"></div>
-            <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent-warm/10 rounded-3xl blur-2xl transform scale-105 opacity-40"></div>
+          <div class="relative m-auto max-w-6xl">
+            <!-- 图片装饰背景 -->
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl blur-3xl transform scale-110 opacity-50"></div>
             
             <!-- 图片容器 -->
             <div class="relative">
@@ -119,7 +112,7 @@ const {
                 <Fragment set:html={image} />
               ) : (
                 <Image
-                  class="mx-auto rounded-3xl shadow-3xl shadow-gray-500/25 dark:shadow-gray-900/50 border border-gray-200/40 dark:border-gray-700/40 w-full hover:shadow-[0_60px_120px_-12px_rgba(0,0,0,0.25)] dark:hover:shadow-[0_60px_120px_-12px_rgba(0,0,0,0.4)] transition-all duration-700 hover:scale-[1.02] hover:-translate-y-4"
+                  class="mx-auto rounded-3xl shadow-2xl shadow-gray-500/20 dark:shadow-black/40 border border-gray-200/50 dark:border-gray-700/50 w-full hover:shadow-3xl hover:shadow-gray-500/30 dark:hover:shadow-black/50 transition-all duration-700 hover:scale-[1.02] hover:-translate-y-2"
                   widths={[400, 768, 1024, 2040]}
                   sizes="(max-width: 767px) 400px, (max-width: 1023px) 768px, (max-width: 2039px) 1024px, 2040px"
                   loading="eager"
@@ -135,15 +128,10 @@ const {
     </div>
   </div>
   
-  <!-- 底部装饰渐变 -->
-  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent opacity-60"></div>
-  
-  <!-- 底部装饰图案 -->
-  <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background/90 to-transparent pointer-events-none"></div>
 </section>
 
 <style>
-  /* 简洁动画 */
+  /* 动画定义 */
   @keyframes fade-in-down {
     0% {
       opacity: 0;
@@ -179,30 +167,15 @@ const {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   }
 
-  /* 响应式字体优化 */
+  /* 响应式优化 */
   @media (max-width: 640px) {
     h1 {
-      font-size: 2rem;
+      font-size: 2.25rem;
       line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
-    }
-    
-    p {
-      font-size: 1rem;
       margin-bottom: 2rem;
-    }
-  }
-
-  @media (min-width: 641px) and (max-width: 768px) {
-    h1 {
-      font-size: 2.5rem;
-      line-height: 1.05;
-      letter-spacing: -0.025em;
-      margin-bottom: 1.75rem;
     }
     
     p {
@@ -211,14 +184,7 @@ const {
     }
   }
 
-  /* 提升可读性 */
-  p {
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  /* 减少动画对于喜欢减少动画的用户 */
+  /* 减少动画 */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -226,11 +192,6 @@ const {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
-    }
-    
-    .animate-float,
-    .animate-shimmer {
-      animation: none !important;
     }
   }
 
@@ -248,88 +209,21 @@ const {
     }
   }
 
-  /* 暗色模式特殊处理 */
-  .dark .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.02), transparent);
-  }
-
   /* 动画性能优化 */
   .animate-fade-in-down,
-  .animate-fade-in-up,
-  .animate-float {
+  .animate-fade-in-up {
     transform: translateZ(0);
     backface-visibility: hidden;
     perspective: 1000px;
-  }
-
-  /* 标语悬停效果 */
-  span[class*="group"]:hover {
-    backdrop-filter: blur(20px) saturate(180%);
-  }
-
-  /* 标题字体权重调整 */
-  h1 {
-    font-variation-settings: "wght" 900;
-  }
-
-  /* 副标题字体优化 */
-  p {
-    font-variation-settings: "wght" 300;
-    letter-spacing: 0.01em;
-  }
-
-  /* 按钮字体优化 */
-  button,
-  a[class*="btn"] {
-    font-variation-settings: "wght" 600;
-    letter-spacing: 0.025em;
-  }
-
-  /* 装饰性元素优化 */
-  .blur-3xl {
-    filter: blur(64px);
-  }
-
-  .blur-2xl {
-    filter: blur(40px);
-  }
-
-  /* 阴影层次优化 */
-  .shadow-3xl {
-    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
-  }
-
-  /* 图片加载优化 */
-  img {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
   }
 
   /* 触摸设备优化 */
   @media (hover: none) {
     .hover\:scale-105:hover,
     .hover\:scale-\[1\.02\]:hover,
-    .hover\:-translate-y-2:hover,
-    .hover\:-translate-y-4:hover {
+    .hover\:-translate-y-1:hover,
+    .hover\:-translate-y-2:hover {
       transform: none;
-    }
-  }
-
-  /* 大屏幕优化 */
-  @media (min-width: 1920px) {
-    .max-w-7xl {
-      max-width: 90rem;
-    }
-  }
-
-  /* 超大屏幕优化 */
-  @media (min-width: 2560px) {
-    h1 {
-      font-size: 12rem;
-    }
-    
-    p {
-      font-size: 3rem;
     }
   }
 </style>

@@ -5,15 +5,15 @@ interface TagProps {
     tags?: string[];
     maxVisible?: number;
     compact?: boolean;
-    variant?: 'default' | 'colored' | 'outlined' | 'minimal';
-    size?: 'sm' | 'md' | 'lg';
+    variant?: 'default' | 'colored' | 'outlined' | 'minimal' | 'modern' | 'glass';
+    size?: 'xs' | 'sm' | 'md' | 'lg';
 }
 
 const { 
     tags = [], 
     maxVisible = 3,
     compact = false,
-    variant = 'default',
+    variant = 'modern',
     size = 'sm'
 } = Astro.props as TagProps;
 
@@ -21,71 +21,105 @@ const {
 const visibleTags = tags.slice(0, maxVisible);
 const remainingTags = tags.slice(maxVisible);
 
-// 精致的色彩主题配置
-const colorThemes = [
+// 现代化色彩主题配置
+const modernColorThemes = [
     {
-        bg: 'bg-gradient-to-br from-blue-50 to-blue-100/60 dark:from-blue-950/50 dark:to-blue-900/40',
+        bg: 'bg-gradient-to-r from-blue-50 to-blue-100/80 dark:from-blue-950/40 dark:to-blue-900/60',
         text: 'text-blue-700 dark:text-blue-300',
-        border: 'border-blue-200/70 dark:border-blue-800/50',
-        hover: 'hover:from-blue-100 hover:to-blue-200/70 dark:hover:from-blue-900/60 dark:hover:to-blue-800/50',
-        shadow: 'shadow-blue-500/15 hover:shadow-blue-500/25'
+        border: 'border-blue-200/60 dark:border-blue-800/40',
+        hover: 'hover:from-blue-100 hover:to-blue-200/90 dark:hover:from-blue-900/60 dark:hover:to-blue-800/80',
+        glow: 'hover:shadow-blue-500/20',
     },
     {
-        bg: 'bg-gradient-to-br from-emerald-50 to-emerald-100/60 dark:from-emerald-950/50 dark:to-emerald-900/40',
+        bg: 'bg-gradient-to-r from-emerald-50 to-emerald-100/80 dark:from-emerald-950/40 dark:to-emerald-900/60',
         text: 'text-emerald-700 dark:text-emerald-300',
-        border: 'border-emerald-200/70 dark:border-emerald-800/50',
-        hover: 'hover:from-emerald-100 hover:to-emerald-200/70 dark:hover:from-emerald-900/60 dark:hover:to-emerald-800/50',
-        shadow: 'shadow-emerald-500/15 hover:shadow-emerald-500/25'
+        border: 'border-emerald-200/60 dark:border-emerald-800/40',
+        hover: 'hover:from-emerald-100 hover:to-emerald-200/90 dark:hover:from-emerald-900/60 dark:hover:to-emerald-800/80',
+        glow: 'hover:shadow-emerald-500/20',
     },
     {
-        bg: 'bg-gradient-to-br from-purple-50 to-purple-100/60 dark:from-purple-950/50 dark:to-purple-900/40',
+        bg: 'bg-gradient-to-r from-purple-50 to-purple-100/80 dark:from-purple-950/40 dark:to-purple-900/60',
         text: 'text-purple-700 dark:text-purple-300',
-        border: 'border-purple-200/70 dark:border-purple-800/50',
-        hover: 'hover:from-purple-100 hover:to-purple-200/70 dark:hover:from-purple-900/60 dark:hover:to-purple-800/50',
-        shadow: 'shadow-purple-500/15 hover:shadow-purple-500/25'
+        border: 'border-purple-200/60 dark:border-purple-800/40',
+        hover: 'hover:from-purple-100 hover:to-purple-200/90 dark:hover:from-purple-900/60 dark:hover:to-purple-800/80',
+        glow: 'hover:shadow-purple-500/20',
     },
     {
-        bg: 'bg-gradient-to-br from-amber-50 to-amber-100/60 dark:from-amber-950/50 dark:to-amber-900/40',
+        bg: 'bg-gradient-to-r from-amber-50 to-amber-100/80 dark:from-amber-950/40 dark:to-amber-900/60',
         text: 'text-amber-700 dark:text-amber-300',
-        border: 'border-amber-200/70 dark:border-amber-800/50',
-        hover: 'hover:from-amber-100 hover:to-amber-200/70 dark:hover:from-amber-900/60 dark:hover:to-amber-800/50',
-        shadow: 'shadow-amber-500/15 hover:shadow-amber-500/25'
+        border: 'border-amber-200/60 dark:border-amber-800/40',
+        hover: 'hover:from-amber-100 hover:to-amber-200/90 dark:hover:from-amber-900/60 dark:hover:to-amber-800/80',
+        glow: 'hover:shadow-amber-500/20',
     },
     {
-        bg: 'bg-gradient-to-br from-rose-50 to-rose-100/60 dark:from-rose-950/50 dark:to-rose-900/40',
+        bg: 'bg-gradient-to-r from-rose-50 to-rose-100/80 dark:from-rose-950/40 dark:to-rose-900/60',
         text: 'text-rose-700 dark:text-rose-300',
-        border: 'border-rose-200/70 dark:border-rose-800/50',
-        hover: 'hover:from-rose-100 hover:to-rose-200/70 dark:hover:from-rose-900/60 dark:hover:to-rose-800/50',
-        shadow: 'shadow-rose-500/15 hover:shadow-rose-500/25'
+        border: 'border-rose-200/60 dark:border-rose-800/40',
+        hover: 'hover:from-rose-100 hover:to-rose-200/90 dark:hover:from-rose-900/60 dark:hover:to-rose-800/80',
+        glow: 'hover:shadow-rose-500/20',
     },
     {
-        bg: 'bg-gradient-to-br from-indigo-50 to-indigo-100/60 dark:from-indigo-950/50 dark:to-indigo-900/40',
+        bg: 'bg-gradient-to-r from-indigo-50 to-indigo-100/80 dark:from-indigo-950/40 dark:to-indigo-900/60',
         text: 'text-indigo-700 dark:text-indigo-300',
-        border: 'border-indigo-200/70 dark:border-indigo-800/50',
-        hover: 'hover:from-indigo-100 hover:to-indigo-200/70 dark:hover:from-indigo-900/60 dark:hover:to-indigo-800/50',
-        shadow: 'shadow-indigo-500/15 hover:shadow-indigo-500/25'
-    }
+        border: 'border-indigo-200/60 dark:border-indigo-800/40',
+        hover: 'hover:from-indigo-100 hover:to-indigo-200/90 dark:hover:from-indigo-900/60 dark:hover:to-indigo-800/80',
+        glow: 'hover:shadow-indigo-500/20',
+    },
+    {
+        bg: 'bg-gradient-to-r from-teal-50 to-teal-100/80 dark:from-teal-950/40 dark:to-teal-900/60',
+        text: 'text-teal-700 dark:text-teal-300',
+        border: 'border-teal-200/60 dark:border-teal-800/40',
+        hover: 'hover:from-teal-100 hover:to-teal-200/90 dark:hover:from-teal-900/60 dark:hover:to-teal-800/80',
+        glow: 'hover:shadow-teal-500/20',
+    },
+    {
+        bg: 'bg-gradient-to-r from-pink-50 to-pink-100/80 dark:from-pink-950/40 dark:to-pink-900/60',
+        text: 'text-pink-700 dark:text-pink-300',
+        border: 'border-pink-200/60 dark:border-pink-800/40',
+        hover: 'hover:from-pink-100 hover:to-pink-200/90 dark:hover:from-pink-900/60 dark:hover:to-pink-800/80',
+        glow: 'hover:shadow-pink-500/20',
+    },
 ];
 
 // 尺寸配置
 const sizeClasses = {
-    sm: compact ? 'text-[10px] px-2 py-0.5 min-h-[1.25rem]' : 'text-xs px-2.5 py-1 min-h-[1.5rem]',
-    md: compact ? 'text-xs px-2.5 py-1 min-h-[1.5rem]' : 'text-sm px-3 py-1.5 min-h-[2rem]',
-    lg: compact ? 'text-sm px-3 py-1.5 min-h-[2rem]' : 'text-base px-4 py-2 min-h-[2.5rem]',
+    xs: compact ? 'text-[10px] px-2 py-0.5 h-5' : 'text-xs px-2.5 py-1 h-6',
+    sm: compact ? 'text-xs px-2.5 py-1 h-6' : 'text-sm px-3 py-1.5 h-7',
+    md: compact ? 'text-sm px-3 py-1.5 h-7' : 'text-base px-4 py-2 h-8',
+    lg: compact ? 'text-base px-4 py-2 h-8' : 'text-lg px-5 py-2.5 h-10',
 };
 
 // 变体样式
 const getVariantClasses = (themeIndex: number) => {
-    const theme = colorThemes[themeIndex % colorThemes.length];
+    const theme = modernColorThemes[themeIndex % modernColorThemes.length];
     
     switch (variant) {
+        case 'modern':
+            return cn(
+                'bg-gray-100 dark:bg-gray-800',
+                'text-gray-600 dark:text-gray-400',
+                'border-0',
+                'transition-colors duration-200',
+                'hover:bg-gray-200 dark:hover:bg-gray-700'
+            );
+        case 'glass':
+            return cn(
+                'bg-white/20 dark:bg-gray-800/20',
+                theme.text,
+                'border border-white/30 dark:border-gray-700/30',
+                'backdrop-blur-md backdrop-saturate-150',
+                'hover:bg-white/30 dark:hover:bg-gray-800/30',
+                'hover:border-white/50 dark:hover:border-gray-600/50',
+                'shadow-lg hover:shadow-xl',
+                'transition-all duration-300 ease-out',
+                'hover:scale-105'
+            );
         case 'colored':
             return cn(
                 theme.bg,
                 theme.text,
                 theme.border,
                 theme.hover,
-                theme.shadow,
                 'border backdrop-blur-sm'
             );
         case 'outlined':
@@ -94,24 +128,22 @@ const getVariantClasses = (themeIndex: number) => {
                 theme.text,
                 theme.border,
                 'border-2',
-                'hover:bg-gray-50/90 dark:hover:bg-gray-800/60',
-                'hover:shadow-sm'
+                'hover:bg-gray-50/80 dark:hover:bg-gray-800/50'
             );
         case 'minimal':
             return cn(
-                'bg-gray-100/90 dark:bg-gray-800/90',
-                'text-gray-700 dark:text-gray-300',
+                'bg-gray-100/60 dark:bg-gray-800/40',
+                'text-gray-600 dark:text-gray-400',
                 'border-transparent backdrop-blur-sm',
-                'hover:bg-gray-200/90 dark:hover:bg-gray-700/90',
-                'hover:shadow-sm'
+                'hover:bg-gray-200/60 dark:hover:bg-gray-700/50'
             );
         default:
             return cn(
                 theme.bg,
                 theme.text,
-                'border border-gray-200/60 dark:border-gray-700/60',
+                'border border-gray-200/40 dark:border-gray-700/40',
                 theme.hover,
-                'backdrop-blur-sm shadow-sm hover:shadow-md'
+                'backdrop-blur-sm'
             );
     }
 };
@@ -121,29 +153,22 @@ const baseTagClasses = cn(
     'relative inline-flex items-center justify-center',
     'font-medium rounded-full',
     'transition-all duration-300 ease-out',
-    'hover:scale-105 hover:-translate-y-0.5',
     'cursor-default select-none',
     'overflow-hidden group',
-    'focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1'
+    'transform-gpu'
 );
 
 const remainingTagClasses = cn(
     sizeClasses[size],
     'relative inline-flex items-center justify-center',
-    'font-medium rounded-full',
-    'bg-gradient-to-br from-gray-100/95 to-gray-50/90',
-    'dark:from-gray-800/95 dark:to-gray-700/90',
-    'text-gray-600 dark:text-gray-400',
-    'border border-gray-200/70 dark:border-gray-600/70',
-    'backdrop-blur-sm shadow-sm',
-    'transition-all duration-300 ease-out',
-    'hover:from-gray-200/95 hover:to-gray-100/90',
-    'dark:hover:from-gray-700/95 dark:hover:to-gray-600/90',
-    'hover:text-gray-700 dark:hover:text-gray-300',
-    'hover:scale-105 hover:-translate-y-0.5 hover:shadow-md',
+    'font-semibold rounded-full',
+    'bg-gray-200 dark:bg-gray-700',
+    'text-gray-500 dark:text-gray-400',
+    'border-0',
+    'transition-colors duration-200',
+    'hover:bg-gray-300 dark:hover:bg-gray-600',
     'cursor-default select-none',
-    'overflow-hidden group',
-    'focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:ring-offset-1'
+    'overflow-hidden'
 );
 ---
 
@@ -156,22 +181,13 @@ const remainingTagClasses = cn(
             <span
                 class={cn(baseTagClasses, getVariantClasses(index))}
                 title={tag}
-                role="button"
-                tabindex="0"
-                aria-label={`标签: ${tag}`}
+                data-tag={tag}
             >
-                <!-- 微光效果 -->
-                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent dark:via-white/25 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-                </div>
+                <!-- 背景装饰效果 -->
                 
-                <!-- 文本内容 -->
-                <span class="relative z-10 truncate max-w-20 sm:max-w-24 md:max-w-none transition-transform duration-300 group-hover:scale-105">
+                <span class="relative z-10 truncate max-w-20 sm:max-w-24 font-medium tracking-wide">
                     {tag}
                 </span>
-                
-                <!-- 装饰性小点 -->
-                <div class="absolute top-1 right-1 w-1 h-1 bg-current opacity-20 rounded-full group-hover:opacity-40 transition-opacity duration-300"></div>
             </span>
         ))}
 
@@ -179,158 +195,131 @@ const remainingTagClasses = cn(
             <span
                 class={remainingTagClasses}
                 title={`还有 ${remainingTags.length} 个标签: ${remainingTags.join(', ')}`}
-                role="button"
-                tabindex="0"
-                aria-label={`还有 ${remainingTags.length} 个标签`}
+                data-remaining-count={remainingTags.length}
             >
-                <!-- 微光效果 -->
-                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent dark:via-white/25 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-                </div>
+                <!-- 背景装饰效果 -->
                 
-                <!-- 内容 -->
-                <div class="relative z-10 flex items-center gap-1 transition-transform duration-300 group-hover:scale-105">
-                    <svg class="w-3 h-3 transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <div class="relative z-10 flex items-center gap-1">
+                    <!-- 加号图标 -->
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    <span class="font-semibold">{remainingTags.length}</span>
+                    <span class="font-bold text-xs">{remainingTags.length}</span>
                 </div>
-                
-                <!-- 装饰性边框 -->
-                <div class="absolute inset-0 rounded-full border border-gray-300/50 dark:border-gray-600/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </span>
         )}
     </div>
 )}
 
 <style>
-    /* 增强可访问性 */
-    [role="button"]:focus-visible {
-        outline: 2px solid hsl(var(--primary));
-        outline-offset: 2px;
-    }
-
-    /* 键盘导航 */
-    [role="button"]:focus {
-        z-index: 10;
-    }
-
     /* 优化文字渲染 */
-    [role="button"] {
+    span {
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
 
-    /* 触摸设备优化 */
-    @media (hover: none) {
-        [role="button"]:hover {
-            transform: none;
+    /* 响应式文本截断 */
+    @media (max-width: 640px) {
+        .max-w-20 {
+            max-width: 4rem;
+        }
+        
+        .max-w-24 {
+            max-width: 5rem;
         }
     }
 
     /* 减少动画 */
     @media (prefers-reduced-motion: reduce) {
-        [role="button"],
-        [role="button"] * {
+        span {
+            transition: none !important;
+        }
+        
+        span * {
             animation: none !important;
             transition: none !important;
         }
     }
 
+    /* 触摸设备优化 */
+    @media (hover: none) {
+        .hover\:scale-105:hover,
+        .hover\:-translate-y-0\.5:hover {
+            transform: none;
+        }
+        
+        .group-hover\:opacity-100 {
+            opacity: 0.7;
+        }
+    }
+
     /* 高对比度模式 */
     @media (prefers-contrast: high) {
-        [role="button"] {
+        span {
             border-width: 2px;
-            font-weight: 600;
+            font-weight: 700;
+            background: hsl(var(--background)) !important;
+            color: hsl(var(--foreground)) !important;
+        }
+        
+        span::before,
+        span::after {
+            display: none;
         }
     }
-
-    /* 响应式文本截断 */
-    @media (max-width: 640px) {
-        .truncate {
-            max-width: 4rem;
-        }
-    }
-
-    @media (min-width: 641px) and (max-width: 768px) {
-        .truncate {
-            max-width: 5rem;
-        }
-    }
-
-    /* 暗色模式下的特殊效果 */
-    .dark [role="button"] {
-        backdrop-filter: blur(8px) saturate(150%);
-    }
-
-    /* 标签动画性能优化 */
-    [role="button"] {
+    
+    /* 性能优化 */
+    .transform-gpu {
         transform: translateZ(0);
         backface-visibility: hidden;
         perspective: 1000px;
     }
-
-    /* 悬停时的特殊效果 */
-    [role="button"]:hover {
-        filter: brightness(1.05);
+    
+    /* 焦点状态 */
+    span:focus-visible {
+        outline: 2px solid hsl(var(--primary));
+        outline-offset: 2px;
     }
-
-    .dark [role="button"]:hover {
-        filter: brightness(1.1);
+    
+    /* 暗色模式特殊处理 */
+    .dark span {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
-
-    /* 活跃状态 */
-    [role="button"]:active {
-        transform: translateY(1px) scale(0.98);
+    
+    /* 标签悬停工具提示 */
+    span[title]:hover::after {
+        content: attr(title);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.5rem 0.75rem;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        font-size: 0.75rem;
+        border-radius: 0.375rem;
+        white-space: nowrap;
+        z-index: 50;
+        pointer-events: none;
+        opacity: 0;
+        animation: fadeInTooltip 0.2s ease-out 0.5s forwards;
     }
-
+    
+    @keyframes fadeInTooltip {
+        to {
+            opacity: 1;
+        }
+    }
+    
+    /* 标签点击效果 */
+    span:active {
+        transform: scale(0.95);
+    }
+    
     @media (prefers-reduced-motion: reduce) {
-        [role="button"]:active {
+        span:active {
             transform: none;
         }
     }
-
-    /* 标签组布局优化 */
-    .tags-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    /* 提升可读性 */
-    [role="button"] span {
-        line-height: 1.2;
-        letter-spacing: 0.025em;
-    }
-
-    /* 工具提示样式增强 */
-    [role="button"][title] {
-        position: relative;
-    }
-
-    /* 标签边框渐变效果 */
-    [role="button"]::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        padding: 1px;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
-        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        mask-composite: exclude;
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    [role="button"]:hover::before {
-        opacity: 1;
-    }
-
-    .dark [role="button"]::before {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
-    }
-</style> 
+</style>

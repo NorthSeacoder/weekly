@@ -2,32 +2,252 @@
 import { getWeeklyPosts } from '~/utils/contents/unified-content'
 import StatCard from '~/components/ui/StatCard.astro'
 import Button from '~/components/ui/Button.astro'
-import StarBorder from '~/components/ui/StarBorder.astro'
+import { cn } from '~/utils/utils'
 
 const weekly = await getWeeklyPosts()
 const latestWeeklyList = weekly.slice(0, 12);
 ---
 
-<section class="py-6 lg:py-8 dark:bg-dark">
-    <div class="container mx-auto px-4">
-        <h2 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6">最新周刊</h2>
-        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {latestWeeklyList.map((weekly) => (
-                <li>
-                    <a href={weekly.permalink} class="block">
-                        <StatCard
-                            title={weekly.title}
-                            date={weekly.date}
-                            tags={weekly.tags}
-                        />
-                    </a>
-                </li>
-            ))}
-        </ul>
-        <div class="mt-4 lg:mt-6 text-center">
-            <Button href="/weekly">
-                更多内容
+<section class="py-20 lg:py-24 bg-gray-50 dark:bg-gray-900 relative">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <!-- 标题区域 -->
+        <div class="text-center mb-20">
+            
+            <!-- 主标题 -->
+            <h2 class="text-4xl lg:text-5xl font-light leading-tight tracking-tight mb-8 font-heading text-gray-900 dark:text-white">
+                精选周刊
+            </h2>
+            
+            <!-- 副标题 -->
+            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                每周精心筛选的前端技术内容，助你保持技术敏锐度
+            </p>
+        </div>
+
+        <!-- 卡片网格 -->
+        {latestWeeklyList.length > 0 ? (
+            <div class={cn(
+                "grid gap-6 md:gap-8",
+                "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+                "2xl:grid-cols-4 auto-cols-fr",
+                "mb-16 lg:mb-20 max-w-8xl mx-auto weekly-grid"
+            )}>
+                {latestWeeklyList.map((weekly, index) => (
+                    <div 
+                        class="animate-fade-in-up group" 
+                        style={`animation-delay: ${index * 0.08}s;`}
+                        data-weekly-card
+                    >
+                        <a href={weekly.permalink} class="block h-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-4 rounded-2xl">
+                            <StatCard
+                                title={weekly.title}
+                                date={weekly.date}
+                                tags={weekly.tags}
+                            />
+                        </a>
+                    </div>
+                ))}
+            </div>
+        ) : (
+            <div class="text-center py-12">
+                <p class="text-gray-500 dark:text-gray-400 text-lg">暂无周刊数据</p>
+            </div>
+        )}
+
+        <!-- 查看更多按钮区域 -->
+        <div class="text-center">
+            <Button 
+                href="/weekly"
+                variant="secondary"
+                size="md"
+                class="px-6 py-3 text-base font-medium"
+            >
+                查看全部周刊
             </Button>
         </div>
     </div>
-</section> 
+</section>
+
+<style>
+    /* 动画定义 */
+    @keyframes fade-in-up {
+        0% {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .animate-fade-in-up {
+        animation: fade-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+
+    /* 网格布局优化 */
+    .grid {
+        display: grid;
+        align-items: stretch;
+    }
+
+    /* 确保卡片高度一致 */
+    .grid > div {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .grid > div > a {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 智能响应式网格 */
+    .weekly-grid {
+        /* 使用 CSS Grid 的 auto-fit 和 minmax 来实现智能响应式 */
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    
+    /* 响应式优化 */
+    @media (max-width: 480px) {
+        .weekly-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        h2 {
+            font-size: 2.25rem;
+            line-height: 1.1;
+        }
+        
+        .text-xl {
+            font-size: 1.125rem;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 640px) {
+        .weekly-grid {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+    }
+
+    @media (min-width: 641px) and (max-width: 768px) {
+        .weekly-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .weekly-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1280px) {
+        .weekly-grid {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+    }
+
+    @media (min-width: 1281px) and (max-width: 1536px) {
+        .weekly-grid {
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2.5rem;
+        }
+    }
+
+    @media (min-width: 1537px) {
+        .weekly-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2.5rem;
+        }
+    }
+
+    /* 减少动画 */
+    @media (prefers-reduced-motion: reduce) {
+        .animate-fade-in-up {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+        
+        .animate-pulse {
+            animation: none;
+        }
+    }
+
+    /* 触摸设备优化 */
+    @media (hover: none) {
+        .hover\:scale-105:hover,
+        .hover\:-translate-y-1:hover {
+            transform: none;
+        }
+    }
+    
+    /* 文字渲染优化 */
+    h2 {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    }
+    
+    /* 高对比度模式 */
+    @media (prefers-contrast: high) {
+        .bg-gradient-to-r,
+        .bg-gradient-to-br {
+            background: hsl(var(--background)) !important;
+        }
+        
+        .text-transparent {
+            color: hsl(var(--foreground)) !important;
+            background: none !important;
+            -webkit-background-clip: unset !important;
+            background-clip: unset !important;
+        }
+    }
+    
+    /* 性能优化 */
+    .grid > div {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+    }
+    
+    /* 卡片悬停效果增强 */
+    [data-weekly-card]:hover {
+        z-index: 10;
+    }
+    
+    /* 焦点状态增强 */
+    a:focus-visible {
+        outline: 2px solid hsl(var(--primary));
+        outline-offset: 4px;
+        border-radius: 1rem;
+    }
+    
+    /* 按钮增强效果 */
+    .group:hover .relative {
+        transform: translateY(-2px) scale(1.05);
+    }
+    
+    /* 暗色模式特殊处理 */
+    .dark .grid > div {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 打印样式 */
+    @media print {
+        .animate-fade-in-up {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+    }
+</style>

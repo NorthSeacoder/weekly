@@ -1,5 +1,5 @@
 ---
-import {cn} from '~/utils/utils';
+import { cn } from '~/utils/utils';
 import Tags from './Tags.astro';
 import dayjs from 'dayjs';
 
@@ -10,7 +10,7 @@ interface StatCardProps {
     desc?: string;
 }
 
-const {title, date, desc, tags = []} = Astro.props as StatCardProps;
+const { title, date, desc, tags = [] } = Astro.props as StatCardProps;
 
 // 格式化日期
 const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
@@ -19,153 +19,69 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
     year: 'numeric'
 });
 
+const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
+
 const cardClasses = cn(
     'group relative overflow-hidden h-full',
-    'p-6 lg:p-8 rounded-2xl border transition-all duration-500 ease-out',
-    'bg-gradient-to-br from-white/95 via-white/90 to-white/85',
-    'dark:from-gray-900/95 dark:via-gray-900/90 dark:to-gray-800/85',
-    'backdrop-blur-xl backdrop-saturate-150',
-    'border-gray-200/50 dark:border-gray-700/30',
-    'hover:border-primary/30 dark:hover:border-primary/40',
-    'hover:shadow-2xl hover:shadow-primary/10',
-    'dark:hover:shadow-primary/20',
-    'hover:-translate-y-3 hover:scale-[1.02]',
-    'cursor-pointer animate-gpu',
-    'before:absolute before:inset-0 before:rounded-2xl before:pointer-events-none',
-    'before:bg-gradient-to-br before:from-primary/5 before:via-accent-warm/3 before:to-accent-cool/5',
-    'before:opacity-0 before:transition-all before:duration-700',
-    'hover:before:opacity-100',
-    'focus-within:ring-2 focus-within:ring-primary/50 focus-within:ring-offset-2'
+    'p-8 lg:p-10 rounded-xl transition-all duration-500 ease-out',
+    'bg-white dark:bg-gray-900',
+    'border border-gray-100 dark:border-gray-800',
+    'hover:border-gray-200 dark:hover:border-gray-700',
+    'hover:shadow-lg hover:shadow-gray-500/5 dark:hover:shadow-black/20',
+    'hover:-translate-y-1',
+    'cursor-pointer transform-gpu',
+    'focus-within:ring-1 focus-within:ring-gray-300 dark:focus-within:ring-gray-700'
 );
-
-const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
 ---
 
 <div class={cardClasses}>
-    <!-- 装饰性渐变背景 -->
-    <div class="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-accent-warm/[0.01] to-accent-cool/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl"></div>
-    
-    <!-- 顶部装饰条 -->
-    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/70 via-accent-warm/70 to-accent-cool/70 opacity-0 group-hover:opacity-100 transition-all duration-700 rounded-t-2xl scale-x-0 group-hover:scale-x-100 transform origin-left"></div>
-    
-    <!-- New Badge -->
+    <!-- New Badge - 重新设计 -->
     {isNew && (
-        <div class="absolute -top-3 -right-3 z-20">
-            <div class="relative">
-                <!-- 外层发光效果 -->
-                <div class="absolute inset-0 bg-emerald-400/70 rounded-full blur-xl opacity-90 animate-pulse"></div>
-                <!-- 中层发光效果 -->
-                <div class="absolute inset-0 bg-emerald-400/50 rounded-full blur-lg opacity-95 animate-pulse" style="animation-delay: 0.5s;"></div>
-                <!-- 核心指示器 -->
-                <div class="relative w-6 h-6 bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 rounded-full border-3 border-white dark:border-gray-900 shadow-xl animate-glow">
-                    <div class="absolute inset-1 bg-white/50 rounded-full animate-ping"></div>
-                    <div class="absolute inset-1.5 bg-emerald-200/70 rounded-full"></div>
-                </div>
-            </div>
+        <div class="absolute top-4 right-4 z-20">
+            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
         </div>
     )}
 
     <!-- 内容区域 -->
-    <div class="relative z-10 h-full flex flex-col stat-card-container">
+    <div class="relative z-10 h-full flex flex-col">
         <!-- 主标题 -->
-        <h3 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-4 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 font-heading">
+        <h3 class="responsive-title font-medium text-gray-900 dark:text-white mb-6 transition-colors duration-300 font-heading leading-tight">
             {title}
         </h3>
-        
-        <!-- 描述 -->
-        {desc && (
-            <p class="text-gray-600 dark:text-gray-300 mb-6 line-clamp-3 text-sm lg:text-base leading-relaxed flex-grow">
-                {desc}
-            </p>
-        )}
         
         <!-- 底部信息区域 -->
         <div class="mt-auto space-y-4">
             <!-- 标签 -->
             {tags.length > 0 && (
-                <div class="flex flex-wrap gap-2">
-                    <Tags tags={tags} maxVisible={3} variant="colored" size="sm" compact />
+                <div class="flex flex-wrap gap-1.5">
+                    <Tags tags={tags} maxVisible={4} variant="modern" size="sm" compact />
                 </div>
             )}
             
             <!-- 日期和装饰 -->
-            <div class="flex items-center justify-between pt-4 border-t border-gray-200/60 dark:border-gray-700/40">
-                <div class="flex items-center text-gray-500 dark:text-gray-400 text-sm">
-                    <svg class="w-4 h-4 mr-2 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <time datetime={date.toString()}>{formattedDate}</time>
+            <div class="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-gray-800">
+                <div class="flex items-center text-gray-400 dark:text-gray-500 text-sm">
+                    <time datetime={date.toString()} class="font-medium tracking-wide">{formattedDate}</time>
                 </div>
                 
-                <!-- 装饰性箭头 -->
-                <div class="flex items-center text-blue-500/60 group-hover:text-blue-600 dark:text-blue-400/60 dark:group-hover:text-blue-400 transition-all duration-300 transform group-hover:translate-x-1">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- 简约箭头 -->
+                <div class="flex items-center justify-center w-6 h-6 transition-transform duration-300 group-hover:translate-x-1">
+                    <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- 微光效果 -->
-    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none overflow-hidden rounded-2xl">
-        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-white/15 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1200 ease-out"></div>
-    </div>
-
-    <!-- 底部装饰渐变 -->
-    <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-    
-    <!-- 边角装饰 -->
-    <div class="absolute top-4 right-4 w-2 h-2 bg-gradient-to-br from-primary/30 to-accent-warm/30 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 scale-0 group-hover:scale-100"></div>
-    <div class="absolute bottom-4 left-4 w-1.5 h-1.5 bg-gradient-to-br from-accent-cool/30 to-primary/30 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 scale-0 group-hover:scale-100"></div>
 </div>
 
 <style>
-    /* 确保卡片高度一致 */
-    .stat-card-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
-
-    /* 优化文字渲染 */
-    .stat-card-container h3 {
+    /* 文字渲染优化 */
+    h3 {
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* 增强焦点可访问性 */
-    .stat-card-container:focus-visible {
-        outline: 2px solid hsl(var(--primary));
-        outline-offset: 2px;
-    }
-
-    /* 响应式调整 */
-    @media (max-width: 640px) {
-        .stat-card-container {
-            padding: 1.25rem;
-        }
-        
-        .stat-card-container h3 {
-            font-size: 1.125rem;
-            line-height: 1.4;
-        }
-    }
-
-    /* 暗色模式下的特殊效果 */
-    .dark .stat-card-container {
-        background-image: 
-            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.08) 0%, transparent 50%);
-    }
-
-    /* 动画性能优化 */
-    .stat-card-container {
-        transform: translateZ(0);
-        backface-visibility: hidden;
-        perspective: 1000px;
+        font-feature-settings: "kern" 1, "liga" 1;
     }
 
     /* 文本截断 */
@@ -175,7 +91,7 @@ const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-
+    
     .line-clamp-3 {
         display: -webkit-box;
         -webkit-line-clamp: 3;
@@ -183,32 +99,175 @@ const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
         overflow: hidden;
     }
 
-    /* 增强的发光动画 */
-    @keyframes glow {
-        0% { 
-            box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
+    /* 动画性能优化 */
+    .transform-gpu {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+
+    /* 智能响应式标题 */
+    .responsive-title {
+        /* 基础字体大小 */
+        font-size: clamp(1.125rem, 4vw, 1.5rem);
+        line-height: 1.3;
+        
+        /* 单行显示，超出省略 */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+        /* 最小高度确保布局一致性 */
+        min-height: 1.8em;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* 容器查询支持 - 现代浏览器优化 */
+    @supports (container-type: inline-size) {
+        .group {
+            container-type: inline-size;
         }
-        50% { 
-            box-shadow: 0 0 25px rgba(52, 211, 153, 0.6), 0 0 35px rgba(52, 211, 153, 0.3);
+        
+        @container (max-width: 280px) {
+            .responsive-title {
+                font-size: 1rem;
+                line-height: 1.2;
+            }
         }
-        100% { 
-            box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
+        
+        @container (min-width: 281px) and (max-width: 320px) {
+            .responsive-title {
+                font-size: 1.125rem;
+                line-height: 1.25;
+            }
+        }
+        
+        @container (min-width: 321px) and (max-width: 360px) {
+            .responsive-title {
+                font-size: 1.25rem;
+                line-height: 1.3;
+            }
+        }
+        
+        @container (min-width: 361px) {
+            .responsive-title {
+                font-size: 1.5rem;
+                line-height: 1.3;
+            }
         }
     }
 
-    .animate-glow {
-        animation: glow 2s ease-in-out infinite;
+    /* 回退方案 - 基于视口宽度的响应式调整 */
+    @media (max-width: 480px) {
+        .group {
+            padding: 1.25rem;
+        }
+        
+        .responsive-title {
+            font-size: 1rem;
+            line-height: 1.2;
+        }
+    }
+    
+    @media (min-width: 481px) and (max-width: 640px) {
+        .responsive-title {
+            font-size: 1.125rem;
+            line-height: 1.25;
+        }
+    }
+    
+    @media (min-width: 641px) and (max-width: 768px) {
+        .responsive-title {
+            font-size: 1.25rem;
+            line-height: 1.3;
+        }
+    }
+    
+    @media (min-width: 769px) {
+        .responsive-title {
+            font-size: 1.5rem;
+            line-height: 1.3;
+        }
     }
 
     /* 减少动画对于喜欢减少动画的用户 */
     @media (prefers-reduced-motion: reduce) {
-        .stat-card-container {
+        .group {
             transition: none !important;
         }
         
-        .stat-card-container * {
+        .group *,
+        .group::before,
+        .group::after {
             animation: none !important;
             transition: none !important;
         }
+    }
+
+    /* 触摸设备优化 */
+    @media (hover: none) {
+        .group:hover {
+            transform: none;
+        }
+        
+        .group:hover::before {
+            opacity: 0.3;
+        }
+    }
+
+    /* 高对比度模式 */
+    @media (prefers-contrast: high) {
+        .group {
+            border-width: 2px;
+            background: hsl(var(--card));
+            color: hsl(var(--card-foreground));
+        }
+        
+        .group::before {
+            display: none;
+        }
+    }
+    
+    /* 暗色模式特殊处理 */
+    .dark .group {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .dark .group:hover {
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+    }
+    
+    /* 性能优化 */
+    .group,
+    .group::before,
+    .group::after {
+        will-change: transform, opacity;
+    }
+    
+    /* 焦点状态增强 */
+    .group:focus-within {
+        outline: none;
+        transform: translateY(-1px) scale(1.01);
+    }
+    
+    /* 加载状态 */
+    .group[data-loading="true"] {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+    
+    .group[data-loading="true"]::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        animation: shimmer 1.5s linear infinite;
+        border-radius: inherit;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
     }
 </style>

@@ -47,189 +47,296 @@ const links: Array<Link> = [
         text: '周刊',
         href: getPermalink('/weekly')
     },
-    // {
-    //     text: '标签',
-    //     href: getPermalink('/tags')
-    // },
-    // {
-    //     text: '博客',
-    //     href: getPermalink('/blog')
-    // }
 ];
 const actions: Array<CallToAction> = [];
 ---
 
 <header
     class:list={[
-        'top-0 z-40 flex-none mx-auto w-full border-b border-gray-50/0 transition-all duration-300 ease-in-out',
-        'bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl backdrop-saturate-150',
-        'supports-[backdrop-filter]:bg-white/60 supports-[backdrop-filter]:dark:bg-gray-900/60',
-        {
-            'sticky': isSticky,
-            'relative': !isSticky,
-        }
+        'fixed top-0 z-50 w-full transition-all duration-500 ease-out',
+        'bg-white/90 dark:bg-gray-900/90',
+        'backdrop-blur-md',
+        'border-b border-gray-100 dark:border-gray-800',
     ]}
-    {...id ? { id } : {}}>
+    {...id ? { id } : {}}
+    data-header>
     
-    <!-- 装饰性顶部渐变线 -->
-    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-    
-    <!-- 微光效果 -->
-    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer-slow pointer-events-none"></div>
-    
-    <div class:list={['relative text-default py-3 px-3 md:px-6 mx-auto w-full', { 'max-w-7xl': !isFullWidth }]}>
-        <div class="flex justify-between items-center">
-            <!-- Logo部分 -->
-            <div class="flex items-center">
-                <a class="flex items-center group" href={getHomePermalink()}>
-                    <Logo class="transition-transform duration-300 group-hover:scale-105" />
+    <div class:list={['relative mx-auto w-full px-4 sm:px-6 lg:px-8', { 'max-w-7xl': !isFullWidth }]}>
+        <div class="flex justify-between items-center h-16">
+            
+            <!-- Logo 区域 -->
+            <div class="flex items-center group">
+                <a 
+                    class="flex items-center space-x-3 transition-all duration-200 focus:outline-none rounded-lg px-2 py-1" 
+                    href={getHomePermalink()}
+                    aria-label="回到首页"
+                >
+                    <!-- Logo 图标容器 -->
+                    <div class="relative">
+                        <div class="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center transition-all duration-200">
+                            <Icon name="tabler:rocket" class="w-5 h-5 text-white dark:text-gray-900" />
+                        </div>
+                    </div>
+                    
+                    <!-- 站点名称 -->
+                    <div class="hidden sm:block">
+                        <h1 class="text-lg font-medium text-gray-900 dark:text-white">
+                            我不知道的周刊
+                        </h1>
+                    </div>
                 </a>
             </div>
             
             <!-- 桌面导航 -->
-            <nav
-                class="items-center w-full md:w-auto hidden md:flex text-default overflow-y-auto overflow-x-hidden md:overflow-y-visible md:overflow-x-auto md:mx-5"
-                aria-label="Main navigation">
-                {
-                    links.map(({ text, href, links }) => (
-                        <div class="relative group">
-                            {!links || links.length === 0 ? (
-                                <a
-                                    class:list={[
-                                        'font-medium hover:text-blue-600 dark:hover:text-blue-400 px-4 py-3 flex items-center transition-colors duration-300 rounded-xl',
-                                        'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2',
-                                        'relative overflow-hidden',
-                                        {
-                                            'text-blue-600 dark:text-blue-400': href === currentPath,
-                                            'text-gray-600 dark:text-gray-300': href !== currentPath,
-                                        },
-                                    ]}
-                                    href={href}
-                                >
-                                    <!-- 移除背景装饰效果 -->
-                                    
-                                    <span class="relative z-10 font-heading tracking-wide">{text}</span>
-                                </a>
-                            ) : (
-                                <button
-                                    class:list={[
-                                        'font-medium hover:text-blue-600 dark:hover:text-blue-400 px-4 py-3 flex items-center transition-colors duration-300 rounded-xl',
-                                        'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2',
-                                        'relative overflow-hidden group',
-                                        'text-gray-600 dark:text-gray-300',
-                                    ]}
-                                    aria-expanded="false"
-                                    aria-haspopup="true"
-                                >
-                                    <!-- 移除背景装饰效果 -->
-                                    
-                                    <span class="relative z-10 font-heading tracking-wide">{text}</span>
-                                    <Icon name="tabler:chevron-down" class="w-4 h-4 ml-1 transition-transform duration-300 group-hover:rotate-180" />
-                                </button>
-                            )}
-                        </div>
-                    ))
-                }
+            <nav class="hidden md:flex items-center space-x-1" aria-label="主导航">
+                {links.map(({ text, href }) => (
+                    <a
+                        class:list={[
+                            'relative px-3 py-2 rounded-lg font-medium text-sm transition-colors duration-200',
+                            'hover:bg-gray-100 dark:hover:bg-gray-800',
+                            'focus:outline-none',
+                            {
+                                'text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800': href === currentPath,
+                                'text-gray-700 dark:text-gray-300': href !== currentPath,
+                            },
+                        ]}
+                        href={href}
+                    >
+                        <span class="tracking-wide">{text}</span>
+                    </a>
+                ))}
             </nav>
             
             <!-- 右侧工具栏 -->
-            <div class="md:self-center flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0 md:justify-end bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none border-t border-gray-200/50 dark:border-gray-700/50 md:border-none">
-                <div class="flex items-center gap-2 md:gap-3">
-                    <!-- RSS Feed -->
-                    {showRssFeed && (
-                        <a
-                            class="text-muted dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center transition-all duration-300 hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
-                            aria-label="RSS Feed"
-                            href={getAsset('/rss.xml')}
-                        >
-                            <Icon name="tabler:rss" class="w-5 h-5" />
-                        </a>
-                    )}
-                    
-                    <!-- Theme Toggle -->
-                    {showToggleTheme && (
-                        <div class="hover:scale-110 transition-transform duration-300">
-                            <ToggleTheme iconClass="w-5 h-5" />
-                        </div>
-                    )}
-                    
-                    <!-- Actions -->
-                    {actions?.length ? (
-                        <div class="ml-2 rtl:ml-0 rtl:mr-2">
-                            {actions.map((btnProps) => (
-                                <Button
-                                    variant="primary"
-                                    size="sm"
-                                    class="ml-2 py-2.5 px-5 md:px-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-0.5"
-                                    {...btnProps}
-                                />
-                            ))}
-                        </div>
-                    ) : null}
-                    
-                    <!-- Mobile Menu Toggle -->
-                    <div class="md:hidden ml-2">
-                        <ToggleMenu 
-                            iconClass="w-6 h-6" 
-                            class="hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-all duration-300 hover:scale-110"
+            <div class="flex items-center space-x-2 lg:space-x-3">
+                
+                <!-- RSS 订阅 -->
+                {showRssFeed && (
+                    <a
+                        class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none"
+                        aria-label="RSS 订阅"
+                        href={getAsset('/rss.xml')}
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        <Icon name="tabler:rss" class="w-5 h-5" />
+                    </a>
+                )}
+                
+                <!-- 主题切换 -->
+                {showToggleTheme && (
+                    <div class="relative">
+                        <ToggleTheme 
+                            iconClass="w-5 h-5" 
+                            class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none"
                         />
                     </div>
+                )}
+                
+                <!-- CTA 按钮 -->
+                {actions?.length ? (
+                    <div class="hidden sm:flex items-center space-x-2">
+                        {actions.map((btnProps) => (
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                class="px-4 py-2 text-sm font-medium transition-colors duration-200"
+                                {...btnProps}
+                            />
+                        ))}
+                    </div>
+                ) : null}
+                
+                <!-- 移动端菜单按钮 -->
+                <div class="md:hidden">
+                    <ToggleMenu 
+                        class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none"
+                    />
                 </div>
             </div>
         </div>
+        
+        <!-- 移动端导航菜单 -->
+        <nav class="md:hidden hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shadow-sm" data-mobile-menu>
+            <div class="px-4 py-4 space-y-2">
+                {links.map(({ text, href }) => (
+                    <a
+                        class:list={[
+                            'block px-4 py-3 rounded-lg font-medium text-base transition-colors duration-200',
+                            'hover:bg-gray-100 dark:hover:bg-gray-800',
+                            'focus:outline-none',
+                            {
+                                'text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800': href === currentPath,
+                                'text-gray-700 dark:text-gray-300': href !== currentPath,
+                            },
+                        ]}
+                        href={href}
+                    >
+                        {text}
+                    </a>
+                ))}
+                
+                <!-- 移动端 CTA -->
+                {actions?.length ? (
+                    <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
+                        {actions.map((btnProps) => (
+                            <Button
+                                variant="primary"
+                                size="md"
+                                class="w-full justify-center"
+                                {...btnProps}
+                            />
+                        ))}
+                    </div>
+                ) : null}
+            </div>
+        </nav>
     </div>
-    
-    <!-- 底部装饰线 -->
-    <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent opacity-60"></div>
 </header>
 
-<!-- 滚动效果脚本 -->
+<!-- 滚动效果和交互脚本 -->
 <script>
-    function initHeaderEffects() {
-        const header = document.querySelector('header');
+    function initAdvancedHeader() {
+        const header = document.querySelector('[data-header]') as HTMLElement;
+        const scrollIndicator = document.querySelector('[data-scroll-indicator]') as HTMLElement;
+        const bgEffect = document.querySelector('[data-bg-effect]') as HTMLElement;
+        const shimmer = document.querySelector('[data-shimmer]') as HTMLElement;
+        const mobileMenu = document.querySelector('[data-mobile-menu]') as HTMLElement;
+        const toggleButton = document.querySelector('[data-aw-toggle-menu]') as HTMLElement;
+        
         if (!header) return;
         
         let lastScrollY = window.scrollY;
         let isScrolling = false;
+        let ticking = false;
         
-        function updateHeader() {
+        // 滚动效果处理
+        function updateHeaderOnScroll() {
             const scrollY = window.scrollY;
-            const scrollDelta = scrollY - lastScrollY;
+            const scrollProgress = Math.min(scrollY / 200, 1);
             
-            // 添加滚动类
-            if (scrollY > 50) {
-                header.classList.add('scrolled');
-                header.style.setProperty('--scroll-opacity', Math.min(scrollY / 100, 1).toString());
+            // 更新背景透明度和模糊效果
+            if (scrollY > 10) {
+                header.style.setProperty('--tw-bg-opacity', '0.9');
+                header.style.backdropFilter = 'blur(20px) saturate(180%)';
+                
+                // 显示顶部指示器
+                if (scrollIndicator) {
+                    scrollIndicator.style.opacity = scrollProgress.toString();
+                }
+                
+                // 显示背景效果
+                if (bgEffect) {
+                    bgEffect.style.opacity = (scrollProgress * 0.5).toString();
+                }
+                
+                // 添加阴影
+                header.style.boxShadow = `0 4px 20px rgba(0, 0, 0, ${scrollProgress * 0.1})`;
+                
             } else {
-                header.classList.remove('scrolled');
-                header.style.setProperty('--scroll-opacity', '0');
+                header.style.setProperty('--tw-bg-opacity', '0.7');
+                header.style.backdropFilter = 'blur(16px) saturate(150%)';
+                header.style.boxShadow = 'none';
+                
+                if (scrollIndicator) scrollIndicator.style.opacity = '0';
+                if (bgEffect) bgEffect.style.opacity = '0';
             }
             
-            // 滚动方向检测 - 移除自动隐藏功能
-            // if (scrollDelta > 0 && scrollY > 100) {
-            //     header.classList.add('scroll-down');
-            //     header.classList.remove('scroll-up');
-            // } else if (scrollDelta < 0) {
-            //     header.classList.add('scroll-up');
-            //     header.classList.remove('scroll-down');
-            // }
+            // 滚动方向检测（可选：自动隐藏功能）
+            const scrollDelta = scrollY - lastScrollY;
+            if (Math.abs(scrollDelta) > 5) {
+                if (scrollDelta > 0 && scrollY > 100) {
+                    // 向下滚动 - 可以添加隐藏逻辑
+                    header.style.transform = 'translateY(-2px)';
+                } else {
+                    // 向上滚动
+                    header.style.transform = 'translateY(0)';
+                }
+            }
             
             lastScrollY = scrollY;
-            isScrolling = false;
+            ticking = false;
         }
         
+        // 节流滚动事件
         function handleScroll() {
-            if (!isScrolling) {
-                requestAnimationFrame(updateHeader);
-                isScrolling = true;
+            if (!ticking) {
+                requestAnimationFrame(updateHeaderOnScroll);
+                ticking = true;
             }
         }
         
-        // 初始化
-        updateHeader();
+        // 微光扫描效果
+        function triggerShimmer() {
+            if (shimmer) {
+                shimmer.style.transform = 'translateX(-100%) skewX(-12deg)';
+                setTimeout(() => {
+                    shimmer.style.transition = 'transform 1s ease-out';
+                    shimmer.style.transform = 'translateX(100%) skewX(-12deg)';
+                }, 100);
+                
+                setTimeout(() => {
+                    shimmer.style.transition = 'none';
+                    shimmer.style.transform = 'translateX(-100%) skewX(-12deg)';
+                }, 1100);
+            }
+        }
         
-        // 监听滚动
+        // 移动端菜单切换
+        function toggleMobileMenu() {
+            if (mobileMenu && toggleButton) {
+                const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+                const newState = !isExpanded;
+                
+                toggleButton.setAttribute('aria-expanded', newState.toString());
+                
+                if (newState) {
+                    mobileMenu.classList.remove('hidden');
+                    mobileMenu.style.opacity = '0';
+                    mobileMenu.style.transform = 'translateY(-10px)';
+                    
+                    requestAnimationFrame(() => {
+                        mobileMenu.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                        mobileMenu.style.opacity = '1';
+                        mobileMenu.style.transform = 'translateY(0)';
+                    });
+                } else {
+                    mobileMenu.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                    mobileMenu.style.opacity = '0';
+                    mobileMenu.style.transform = 'translateY(-10px)';
+                    
+                    setTimeout(() => {
+                        mobileMenu.classList.add('hidden');
+                    }, 300);
+                }
+            }
+        }
+        
+        // 事件监听
         window.addEventListener('scroll', handleScroll, { passive: true });
+        
+        // 移动端菜单事件
+        if (toggleButton) {
+            toggleButton.addEventListener('click', toggleMobileMenu);
+        }
+        
+        // 点击外部关闭移动端菜单
+        document.addEventListener('click', (e) => {
+            if (mobileMenu && !mobileMenu.contains(e.target as Node) && !toggleButton?.contains(e.target as Node)) {
+                if (!mobileMenu.classList.contains('hidden')) {
+                    toggleMobileMenu();
+                }
+            }
+        });
+        
+        // 定期触发微光效果
+        setInterval(triggerShimmer, 8000);
+        
+        // 初始化
+        updateHeaderOnScroll();
+        
+        // 页面加载完成后触发一次微光效果
+        setTimeout(triggerShimmer, 1000);
         
         // 清理函数
         return () => {
@@ -238,119 +345,84 @@ const actions: Array<CallToAction> = [];
     }
     
     // 初始化
-    document.addEventListener('DOMContentLoaded', initHeaderEffects);
+    document.addEventListener('DOMContentLoaded', initAdvancedHeader);
     
     // 页面导航时重新初始化
-    document.addEventListener('astro:after-swap', initHeaderEffects);
+    document.addEventListener('astro:after-swap', initAdvancedHeader);
 </script>
 
 <style>
-    /* 自定义动画 */
-    @keyframes shimmer-slow {
-        0% {
-            transform: translateX(-100%);
-        }
-        100% {
-            transform: translateX(100%);
-        }
-    }
-    
-    .animate-shimmer-slow {
-        animation: shimmer-slow 12s linear infinite;
-    }
-    
-    /* 滚动状态样式 */
-    header.scrolled {
-        @apply border-gray-200/20 dark:border-gray-700/20;
-        backdrop-filter: blur(20px) saturate(180%);
-    }
-    
-    /* 移除自动隐藏效果 */
-    /* header.scroll-down {
-        transform: translateY(-100%);
-    }
-    
-    header.scroll-up {
-        transform: translateY(0);
-    } */
-    
-    /* 玻璃态效果增强 */
-    header {
-        backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-    }
-    
-    /* 导航链接悬停效果 */
-    nav a:hover,
-    nav button:hover {
-        backdrop-filter: blur(8px);
-    }
-    
-    /* 活跃状态增强 */
-    nav a[class*="text-primary"] {
-        position: relative;
-    }
-    
-    nav a[class*="text-primary"]::before {
-        content: '';
-        position: absolute;
+    /* 确保 header 始终固定在顶部 */
+    header[data-header] {
+        position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-rgb), 0.05));
-        border-radius: 0.75rem;
-        z-index: -1;
+        z-index: 50;
     }
     
-    /* 下拉菜单样式 */
-    nav button[aria-expanded="true"] + div {
+    /* 平滑过渡效果 */
+    header[data-header] {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Logo 悬停效果增强 */
+    .group:hover .animate-ping {
+        animation-duration: 1s;
+    }
+    
+    /* 导航链接悬停效果 */
+    nav a {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    nav a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    nav a:hover::before {
+        left: 100%;
+    }
+    
+    /* 工具提示样式 */
+    .group:hover [class*="tooltip"] {
         opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
     }
     
-    /* 工具栏图标悬停效果 */
-    .text-muted:hover {
-        color: rgb(37 99 235); /* blue-600 */
+    /* 移动端菜单动画 */
+    [data-mobile-menu] {
+        transform-origin: top;
     }
     
-    .dark .text-muted:hover {
-        color: rgb(96 165 250); /* blue-400 */
-    }
-    
-    /* 移动端底部工具栏优化 */
+    /* 响应式优化 */
     @media (max-width: 768px) {
-        .fixed.bottom-0 {
+        header[data-header] {
             backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+        }
+        
+        .group h1 {
+            font-size: 1.25rem;
         }
     }
-    
-         /* 确保header固定定位 */
-     header.sticky,
-     header[class*="sticky"] {
-         position: sticky;
-         top: 0;
-     }
-     
-     /* 响应式优化 */
-     @media (min-width: 769px) {
-         header {
-             position: sticky;
-             top: 0;
-         }
-     }
     
     /* 高对比度模式 */
     @media (prefers-contrast: high) {
-        header {
+        header[data-header] {
             background: hsl(var(--background)) !important;
             backdrop-filter: none !important;
+            border-bottom: 2px solid hsl(var(--border));
         }
         
-        nav a:hover,
-        nav button:hover {
+        nav a:hover {
             background: hsl(var(--primary)) !important;
             color: hsl(var(--primary-foreground)) !important;
         }
@@ -364,103 +436,35 @@ const actions: Array<CallToAction> = [];
             transition-duration: 0.01ms !important;
         }
         
-        .animate-shimmer-slow {
-            animation: none !important;
+        [data-shimmer] {
+            display: none;
         }
     }
     
-    /* 暗色模式微光效果 */
-    .dark .animate-shimmer-slow {
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+    /* 暗色模式特殊处理 */
+    .dark header[data-header] {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
     
-    /* 聚焦指示器 */
-    nav a:focus-visible,
-    nav button:focus-visible {
-        outline: 2px solid hsl(var(--primary));
-        outline-offset: 2px;
+    /* 性能优化 */
+    header[data-header],
+    nav a,
+    [data-shimmer] {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        perspective: 1000px;
     }
     
     /* 触摸设备优化 */
     @media (hover: none) {
-        nav a:hover,
-        nav button:hover,
         .hover\:scale-110:hover,
-        .hover\:scale-105:hover {
+        .hover\:scale-105:hover,
+        .hover\:-translate-y-0\.5:hover {
             transform: none;
         }
-    }
-    
-    /* Logo悬停效果 */
-    .group:hover .transition-transform {
-        transform: scale(1.05);
-    }
-    
-    /* 装饰性渐变线动画 */
-    .absolute.top-0.h-px {
-        background: linear-gradient(90deg, transparent, rgba(var(--primary-rgb), 0.3), transparent);
-    }
-    
-    .absolute.bottom-0.h-px {
-        background: linear-gradient(90deg, transparent, rgba(156, 163, 175, 0.6), transparent);
-    }
-    
-    .dark .absolute.bottom-0.h-px {
-        background: linear-gradient(90deg, transparent, rgba(75, 85, 99, 0.6), transparent);
-    }
-    
-    /* 按钮增强效果 */
-    .ml-2.rtl\:ml-0 button {
-        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
-        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
-    }
-    
-    .ml-2.rtl\:ml-0 button:hover {
-        box-shadow: 0 8px 24px rgba(var(--primary-rgb), 0.4);
-        transform: translateY(-2px) scale(1.05);
-    }
-    
-    /* 菜单切换按钮 */
-    .md\:hidden button {
-        background: rgba(var(--primary-rgb), 0.1);
-        border: 1px solid rgba(var(--primary-rgb), 0.2);
-    }
-    
-    .md\:hidden button:hover {
-        background: rgba(var(--primary-rgb), 0.2);
-        border-color: rgba(var(--primary-rgb), 0.3);
-    }
-    
-    /* 性能优化 */
-    header,
-    nav a,
-    nav button {
-        transform: translateZ(0);
-        backface-visibility: hidden;
-    }
-    
-    /* 大屏幕优化 */
-    @media (min-width: 1920px) {
-        .max-w-7xl {
-            max-width: 90rem;
+        
+        nav a::before {
+            display: none;
         }
-    }
-    
-    /* 可访问性增强 */
-    nav a[aria-current="page"] {
-        font-weight: 600;
-    }
-    
-    /* 键盘导航优化 */
-    nav a:focus,
-    nav button:focus {
-        z-index: 10;
-    }
-    
-    /* 文字渲染优化 */
-    .font-heading {
-        text-rendering: optimizeLegibility;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
     }
 </style>

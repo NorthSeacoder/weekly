@@ -15,6 +15,20 @@ export default {
                     soft: 'hsl(var(--primary-soft))',
                     muted: 'hsl(var(--primary-muted))',
                 },
+                // Linear-inspired color palette
+                'linear-gray': {
+                    50: '#fafafa',
+                    100: '#f5f5f5',
+                    200: '#e5e5e5',
+                    300: '#d4d4d4',
+                    400: '#a3a3a3',
+                    500: '#737373',
+                    600: '#525252',
+                    700: '#404040',
+                    800: '#262626',
+                    900: '#171717',
+                    950: '#0a0a0a',
+                },
                 secondary: {
                     DEFAULT: 'hsl(var(--secondary))',
                     foreground: 'hsl(var(--secondary-foreground))',
@@ -150,6 +164,13 @@ export default {
                 'glow': '0 0 20px hsl(var(--primary) / 0.3)',
                 'glow-lg': '0 0 30px hsl(var(--primary) / 0.4)',
                 'glow-xl': '0 0 40px hsl(var(--primary) / 0.5)',
+                // Linear-inspired shadows
+                'linear-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                'linear': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                'linear-md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                'linear-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                'linear-xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                'linear-2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             },
             transitionDuration: {
                 'fast': 'var(--duration-fast)',
@@ -171,6 +192,11 @@ export default {
                 'pulse-soft': 'pulseSoft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'spin-slow': 'spin 3s linear infinite',
                 'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                // Linear-inspired animations
+                'slide-up': 'slideUp 0.5s ease-out',
+                'slide-down': 'slideDown 0.5s ease-out',
+                'scale-up': 'scaleUp 0.3s ease-out',
+                'fade-in-scale': 'fadeInScale 0.4s ease-out',
             },
             keyframes: {
                 fadeIn: {
@@ -218,6 +244,22 @@ export default {
                 pulseSoft: {
                     '0%, 100%': { opacity: '1' },
                     '50%': { opacity: '0.8' },
+                },
+                slideUp: {
+                    '0%': { opacity: '0', transform: 'translateY(20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                slideDown: {
+                    '0%': { opacity: '0', transform: 'translateY(-20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                scaleUp: {
+                    '0%': { opacity: '0', transform: 'scale(0.95)' },
+                    '100%': { opacity: '1', transform: 'scale(1)' },
+                },
+                fadeInScale: {
+                    '0%': { opacity: '0', transform: 'scale(0.9)' },
+                    '100%': { opacity: '1', transform: 'scale(1)' },
                 },
             },
             backdropBlur: {
@@ -476,6 +518,27 @@ export default {
                     '.dark &': {
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
                         border: '1px solid rgba(255, 255, 255, 0.125)',
+                    },
+                },
+                // Linear-inspired components
+                '.linear-card': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: theme('borderRadius.2xl'),
+                    boxShadow: theme('boxShadow.linear-lg'),
+                    '.dark &': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                    },
+                },
+                '.linear-surface': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                    backdropFilter: 'blur(12px) saturate(150%)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    '.dark &': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
                     },
                 },
             });

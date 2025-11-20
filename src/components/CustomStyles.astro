@@ -25,42 +25,186 @@ import 'highlight.js/styles/nnfx-dark.min.css';
     --aw-font-serif: 'Inter Variable';
     --aw-font-heading: 'Inter Variable';
 
-    --aw-color-primary: rgb(1 97 239);
-    --aw-color-secondary: rgb(1 84 207);
-    --aw-color-accent: rgb(109 40 217);
+    /* Linear-inspired color system */
+    --primary: 214 100% 47%;
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 214 100% 42%;
+    --primary-soft: 214 100% 95%;
+    --primary-muted: 214 50% 85%;
+    
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 222 84% 5%;
+    --secondary-hover: 210 40% 94%;
+    
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 84% 5%;
+    --accent-warm: 25 95% 53%;
+    --accent-cool: 221 83% 53%;
+    
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    
+    --background: 0 0% 100%;
+    --foreground: 222 84% 5%;
+    
+    --surface: 210 40% 98%;
+    --surface-elevated: 0 0% 100%;
+    --surface-hover: 210 40% 94%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222 84% 5%;
+    --card-border: 214 32% 91%;
+    --card-shadow: 220 13% 91%;
+    
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 214 100% 47%;
+    
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+    
+    --error: 0 84% 60%;
+    --error-foreground: 0 0% 98%;
+    
+    --info: 214 100% 47%;
+    --info-foreground: 0 0% 98%;
 
-    --aw-color-text-heading: rgb(0 0 0);
-    --aw-color-text-default: rgb(16 16 16);
-    --aw-color-text-muted: rgb(16 16 16 / 66%);
-    --aw-color-bg-page: rgb(255 255 255);
+    /* Legacy color mappings */
+    --aw-color-primary: hsl(var(--primary));
+    --aw-color-secondary: hsl(var(--secondary));
+    --aw-color-accent: hsl(var(--accent));
+    --aw-color-text-heading: hsl(var(--foreground));
+    --aw-color-text-default: hsl(var(--foreground));
+    --aw-color-text-muted: hsl(var(--muted-foreground));
+    --aw-color-bg-page: hsl(var(--background));
 
-    --aw-color-bg-page-dark: #272A34;
-    --aw-color-bg-page-dark-lighter: #30333E;
+    /* Spacing system */
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+    --space-4xl: 6rem;
+    --space-5xl: 8rem;
+    
+    /* Typography scale */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
+    --text-6xl: 3.75rem;
+    --text-7xl: 4.5rem;
+    
+    /* Border radius */
+    --radius-sm: 0.375rem;
+    --radius: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    --radius-3xl: 2rem;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-3xl: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    
+    /* Animation durations */
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+    --duration-slower: 700ms;
 
     ::selection {
-      background-color: lavender;
+      background-color: hsl(var(--primary) / 0.2);
+      color: hsl(var(--foreground));
     }
   }
 
   .dark {
-    --aw-font-sans: 'Inter Variable';
-    --aw-font-serif: 'Inter Variable';
-    --aw-font-heading: 'Inter Variable';
+    /* Dark mode color system */
+    --primary: 214 100% 60%;
+    --primary-foreground: 222 84% 5%;
+    --primary-hover: 214 100% 65%;
+    --primary-soft: 214 100% 8%;
+    --primary-muted: 214 50% 15%;
+    
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --secondary-hover: 217 33% 21%;
+    
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --accent-warm: 25 95% 53%;
+    --accent-cool: 221 83% 53%;
+    
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    
+    --background: 222 84% 5%;
+    --foreground: 210 40% 98%;
+    
+    --surface: 217 33% 17%;
+    --surface-elevated: 217 33% 21%;
+    --surface-hover: 217 33% 25%;
+    
+    --card: 222 84% 5%;
+    --card-foreground: 210 40% 98%;
+    --card-border: 217 33% 17%;
+    --card-shadow: 222 84% 3%;
+    
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 214 100% 60%;
+    
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+    
+    --error: 0 84% 60%;
+    --error-foreground: 0 0% 98%;
+    
+    --info: 214 100% 60%;
+    --info-foreground: 0 0% 98%;
 
-    --aw-color-primary: rgb(1 97 239);
-    --aw-color-secondary: rgb(1 84 207);
-    --aw-color-accent: rgb(109 40 217);
+    /* Legacy color mappings for dark mode */
+    --aw-color-primary: hsl(var(--primary));
+    --aw-color-secondary: hsl(var(--secondary));
+    --aw-color-accent: hsl(var(--accent));
+    --aw-color-text-heading: hsl(var(--foreground));
+    --aw-color-text-default: hsl(var(--foreground));
+    --aw-color-text-muted: hsl(var(--muted-foreground));
+    --aw-color-bg-page: hsl(var(--background));
 
-    --aw-color-text-heading: rgb(247, 248, 248);
-    --aw-color-text-default: rgb(229 236 246);
-    --aw-color-text-muted: rgb(229 236 246 / 66%);
-    --aw-color-bg-page: #272A34;
+    /* Dark mode shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    --shadow-3xl: 0 35px 60px -12px rgba(0, 0, 0, 0.5);
 
     ::selection {
-      background-color: black;
-      color: snow;
+      background-color: hsl(var(--primary) / 0.3);
+      color: hsl(var(--foreground));
     }
   }
+  
   /* 去掉 code 中多余的` */
 .prose :where(code)::before,
 .prose :where(code)::after {
