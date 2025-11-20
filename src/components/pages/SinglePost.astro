@@ -130,18 +130,18 @@ const getCategoryStyle = (category) => {
                             <section
                                 class={cn(
                                     'p-8 rounded-xl',
-                                    'border border-border',
+                                    'border border-white/5',
                                     'transition-all duration-300',
                                     'bg-card',
-                                    'hover:border-gray-600',
-                                    'hover:shadow-lg hover:shadow-black/20',
+                                    'hover:border-white/10',
+                                    'hover:shadow-[inset_0_0_60px_-15px_rgba(255,255,255,0.1)]',
                                     'backdrop-blur-sm'
                                 )}>
                                 {/* 分类与来源 */}
                                 <div class="flex justify-between items-center mb-5 text-sm">
                                     {section.category && (
                                         <span class={cn(
-                                            "px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5",
+                                            "px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 border border-black/5 dark:border-white/10",
                                             categoryStyle.bg,
                                             categoryStyle.text
                                         )}>
@@ -160,7 +160,7 @@ const getCategoryStyle = (category) => {
                                 
                                 {/* 标签 */}
                                 <div class='mb-6'>
-                                    <Tags tags={section.tags} maxVisible={5} compact={true} />
+                                    <Tags tags={section.tags} maxVisible={5} compact={true} variant="minimal" />
                                 </div>
                                 
                                 {/* 内容 */}
