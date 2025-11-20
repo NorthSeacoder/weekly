@@ -2,118 +2,156 @@
 import {Icon} from 'astro-icon/components';
 import {cn} from '~/utils/utils';
 import Tags from '~/components/ui/Tags.astro';
-
+import TableOfContents from '~/components/common/TableOfContents.astro';
 import type {BlogPost} from '@/types/blog';
+import slugify from 'limax';
 
 export interface Props {
     post: BlogPost;
 }
 
 const {post} = Astro.props;
+
+// 为标题生成锚点并构建目录数据
+const headingRegex = /<h([2-3])([^>]*)>([\s\S]*?)<\/h\1>/gi;
+const stripHtml = (html: string) => html.replace(/<[^>]*>/g, '').trim();
+
+let contentWithAnchors = post.content;
+const headings: Array<{depth: number; text: string; slug: string}> = [];
+
+contentWithAnchors = contentWithAnchors.replace(headingRegex, (match, level, attrs, inner) => {
+    const depth = Number(level);
+    const text = stripHtml(inner);
+    if (!text) return match;
+
+    const idMatch = attrs.match(/id="([^"]+)"/);
+    let slug = idMatch ? idMatch[1] : slugify(text);
+
+    // 确保 slug 唯一
+    let slugCandidate = slug;
+    let duplicateCount = 1;
+    while (headings.some((heading) => heading.slug === slugCandidate)) {
+        slugCandidate = `${slug}-${duplicateCount++}`;
+    }
+    slug = slugCandidate;
+
+    if (!idMatch) {
+        attrs = `${attrs} id="${slug}"`;
+    }
+
+    headings.push({depth, text, slug});
+
+    return `<h${level}${attrs}>${inner}</h${level}>`;
+});
 ---
 
 <section class='py-8 sm:py-16 lg:py-20 mx-auto'>
-    <article class="bg-white/80 dark:bg-gray-900/50 py-6 sm:py-8 md:py-12 rounded-2xl shadow-sm border border-gray-200/40 dark:border-gray-700/30 backdrop-blur-sm">
-        <header
-            class='space-y-6 sm:space-y-8 mb-8 sm:mb-12 max-w-4xl mx-auto px-4 sm:px-6 md:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
-            <div class="mb-6">
-                <h1
-                    class='text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-gray-900 dark:text-white mb-3'>
-                    {post.title}
-                </h1>
-                <div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
-            </div>
-            
-            {/* 顶部信息栏，包含日期、阅读时间和标签 */}
-            <div class="flex flex-col gap-4 border-b border-gray-200/60 dark:border-gray-700/40 pb-6 sm:pb-8">
-                <div class='flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400'>
-                    <span class='flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 dark:bg-gray-800/50 rounded-full transition-colors hover:bg-gray-200/80 dark:hover:bg-gray-700/50'>
-                        <Icon name='tabler:calendar' class='w-4 h-4' />
-                        <time datetime={String(post.date)} class='font-medium'>{post.date}</time>
-                    </span>
-                    {
-                        post.wordCount && (
+    <div class="relative container mx-auto px-4">
+        <!-- 主内容 + 侧边栏布局 -->
+        <div class="flex flex-col xl:flex-row gap-8">
+            <!-- 主文章内容 -->
+            <article class="flex-1 bg-white/80 dark:bg-gray-900/50 py-6 sm:py-8 md:py-12 rounded-2xl shadow-sm border border-gray-200/40 dark:border-gray-700/30 backdrop-blur-sm">
+                <header
+                    class='space-y-6 sm:space-y-8 mb-8 sm:mb-12 max-w-4xl mx-auto px-4 sm:px-6 md:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
+                    <div class="mb-6">
+                        <h1
+                            class='text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-gray-900 dark:text-white mb-3'>
+                            {post.title}
+                        </h1>
+                        <div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+                    </div>
+                    
+                    {/* 顶部信息栏，包含日期、阅读时间和标签 */}
+                    <div class="flex flex-col gap-4 border-b border-gray-200/60 dark:border-gray-700/40 pb-6 sm:pb-8">
+                        <div class='flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400'>
                             <span class='flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 dark:bg-gray-800/50 rounded-full transition-colors hover:bg-gray-200/80 dark:hover:bg-gray-700/50'>
-                                <Icon name='tabler:file-word' class='w-4 h-4' />
-                                <span class='font-medium'>{post.wordCount.toLocaleString()} 字</span>
+                                <Icon name='tabler:calendar' class='w-4 h-4' />
+                                <time datetime={String(post.date)} class='font-medium'>{post.date}</time>
                             </span>
-                        )
-                    }
-                    {
-                        post.readingTime && (
-                            <span class='flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 dark:bg-gray-800/50 rounded-full transition-colors hover:bg-gray-200/80 dark:hover:bg-gray-700/50'>
-                                <Icon name='tabler:clock' class='w-4 h-4' />
-                                <span class='font-medium'>{post.readingTime}</span>
-                            </span>
-                        )
-                    }
+                            {
+                                post.wordCount && (
+                                    <span class='flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 dark:bg-gray-800/50 rounded-full transition-colors hover:bg-gray-200/80 dark:hover:bg-gray-700/50'>
+                                        <Icon name='tabler:file-word' class='w-4 h-4' />
+                                        <span class='font-medium'>{post.wordCount.toLocaleString()} 字</span>
+                                    </span>
+                                )
+                            }
+                            {
+                                post.readingTime && (
+                                    <span class='flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 dark:bg-gray-800/50 rounded-full transition-colors hover:bg-gray-200/80 dark:hover:bg-gray-700/50'>
+                                        <Icon name='tabler:clock' class='w-4 h-4' />
+                                        <span class='font-medium'>{post.readingTime}</span>
+                                    </span>
+                                )
+                            }
+                        </div>
+                        
+                        {/* 标签 */}
+                        <div class=''>
+                            <Tags tags={post.tags} maxVisible={99} compact={true} />
+                        </div>
+                    </div>
+                </header>
+                
+                {/* 文章内容 */}
+                <div class='mx-auto max-w-4xl px-4 sm:px-6 md:px-8'>
+                    <div
+                        class={cn(
+                            'prose prose-base md:prose-lg lg:prose-xl mx-auto',
+                            'dark:prose-invert prose-headings:scroll-mt-[80px]',
+                            // 标题样式优化
+                            'prose-headings:font-semibold prose-headings:tracking-tight prose-headings:leading-snug',
+                            'prose-h1:text-3xl md:prose-h1:text-4xl prose-h1:text-gray-900 dark:prose-h1:text-white prose-h1:mb-6 prose-h1:mt-8',
+                            'prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:text-gray-800 dark:prose-h2:text-gray-100 prose-h2:mb-4 prose-h2:mt-8 prose-h2:border-b prose-h2:border-gray-200/60 dark:prose-h2:border-gray-700/40 prose-h2:pb-2',
+                            'prose-h3:text-xl md:prose-h3:text-2xl prose-h3:text-gray-800 dark:prose-h3:text-gray-100 prose-h3:mb-3 prose-h3:mt-6',
+                            'prose-h4:text-lg md:prose-h4:text-xl prose-h4:text-gray-700 dark:prose-h4:text-gray-200 prose-h4:mb-3 prose-h4:mt-5',
+                            // 段落和文本样式优化
+                            'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4 prose-p:text-[15px] md:prose-p:text-base',
+                            'prose-p:font-normal prose-p:tracking-wide',
+                            // 链接样式优化
+                            'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:underline-offset-4 prose-a:decoration-blue-600/30 dark:prose-a:decoration-blue-400/30',
+                            'prose-a:transition-all prose-a:duration-200 hover:prose-a:decoration-blue-600/60 dark:hover:prose-a:decoration-blue-400/60',
+                            // 列表样式优化
+                            'prose-li:my-1.5 prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:text-[15px] md:prose-li:text-base',
+                            'prose-ul:my-4 prose-ol:my-4 prose-ul:space-y-1 prose-ol:space-y-1',
+                            'prose-li:leading-relaxed prose-li:tracking-wide',
+                            // 图片样式优化
+                            'prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8 prose-img:border prose-img:border-gray-200/50 dark:prose-img:border-gray-700/30',
+                            'prose-img:transition-all prose-img:duration-300 hover:prose-img:shadow-xl hover:prose-img:scale-[1.02]',
+                            // 代码样式优化
+                            'prose-pre:bg-gray-50 dark:prose-pre:bg-gray-900/80 prose-pre:border prose-pre:border-gray-200/60 dark:prose-pre:border-gray-700/40 prose-pre:rounded-xl prose-pre:shadow-sm',
+                            'prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-code:bg-gray-100/80 dark:prose-code:bg-gray-800/60',
+                            'prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-medium',
+                            'prose-code:before:content-none prose-code:after:content-none prose-code:border prose-code:border-gray-200/40 dark:prose-code:border-gray-700/30',
+                            // 引用样式优化
+                            'prose-blockquote:border-l-4 prose-blockquote:border-blue-500/40 prose-blockquote:bg-blue-50/30 dark:prose-blockquote:bg-blue-900/10',
+                            'prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300 prose-blockquote:italic prose-blockquote:font-normal',
+                            // 表格样式优化
+                            'prose-table:border-collapse-separate prose-table:border-spacing-0 prose-table:rounded-xl prose-table:overflow-hidden prose-table:shadow-sm prose-table:border prose-table:border-gray-200/60 dark:prose-table:border-gray-700/40',
+                            'prose-th:bg-gray-50/80 dark:prose-th:bg-gray-800/40 prose-th:font-semibold prose-th:text-gray-900 dark:prose-th:text-gray-100',
+                            'prose-td:border-t prose-td:border-gray-200/40 dark:prose-td:border-gray-700/30'
+                        )}>
+                        <Fragment set:html={contentWithAnchors} />
+                    </div>
                 </div>
                 
-                {/* 标签 */}
-                <div class=''>
-                    <Tags tags={post.tags} maxVisible={99} compact={true} />
-                </div>
-            </div>
-        </header>
-        
-        {/* 文章内容 */}
-        <div class='mx-auto max-w-4xl px-4 sm:px-6 md:px-8'>
-            <div
-                class={cn(
-                    'prose prose-base md:prose-lg lg:prose-xl mx-auto',
-                    'dark:prose-invert prose-headings:scroll-mt-[80px]',
-                    // 标题样式优化
-                    'prose-headings:font-semibold prose-headings:tracking-tight prose-headings:leading-snug',
-                    'prose-h1:text-3xl md:prose-h1:text-4xl prose-h1:text-gray-900 dark:prose-h1:text-white prose-h1:mb-6 prose-h1:mt-8',
-                    'prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:text-gray-800 dark:prose-h2:text-gray-100 prose-h2:mb-4 prose-h2:mt-8 prose-h2:border-b prose-h2:border-gray-200/60 dark:prose-h2:border-gray-700/40 prose-h2:pb-2',
-                    'prose-h3:text-xl md:prose-h3:text-2xl prose-h3:text-gray-800 dark:prose-h3:text-gray-100 prose-h3:mb-3 prose-h3:mt-6',
-                    'prose-h4:text-lg md:prose-h4:text-xl prose-h4:text-gray-700 dark:prose-h4:text-gray-200 prose-h4:mb-3 prose-h4:mt-5',
-                    // 段落和文本样式优化
-                    'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4 prose-p:text-[15px] md:prose-p:text-base',
-                    'prose-p:font-normal prose-p:tracking-wide',
-                    // 链接样式优化
-                    'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:underline-offset-4 prose-a:decoration-blue-600/30 dark:prose-a:decoration-blue-400/30',
-                    'prose-a:transition-all prose-a:duration-200 hover:prose-a:decoration-blue-600/60 dark:hover:prose-a:decoration-blue-400/60',
-                    // 列表样式优化
-                    'prose-li:my-1.5 prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:text-[15px] md:prose-li:text-base',
-                    'prose-ul:my-4 prose-ol:my-4 prose-ul:space-y-1 prose-ol:space-y-1',
-                    'prose-li:leading-relaxed prose-li:tracking-wide',
-                    // 图片样式优化
-                    'prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8 prose-img:border prose-img:border-gray-200/50 dark:prose-img:border-gray-700/30',
-                    'prose-img:transition-all prose-img:duration-300 hover:prose-img:shadow-xl hover:prose-img:scale-[1.02]',
-                    // 代码样式优化
-                    'prose-pre:bg-gray-50 dark:prose-pre:bg-gray-900/80 prose-pre:border prose-pre:border-gray-200/60 dark:prose-pre:border-gray-700/40 prose-pre:rounded-xl prose-pre:shadow-sm',
-                    'prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-code:bg-gray-100/80 dark:prose-code:bg-gray-800/60',
-                    'prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-medium',
-                    'prose-code:before:content-none prose-code:after:content-none prose-code:border prose-code:border-gray-200/40 dark:prose-code:border-gray-700/30',
-                    // 引用样式优化
-                    'prose-blockquote:border-l-4 prose-blockquote:border-blue-500/40 prose-blockquote:bg-blue-50/30 dark:prose-blockquote:bg-blue-900/10',
-                    'prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300 prose-blockquote:italic prose-blockquote:font-normal',
-                    // 表格样式优化
-                    'prose-table:border-collapse-separate prose-table:border-spacing-0 prose-table:rounded-xl prose-table:overflow-hidden prose-table:shadow-sm prose-table:border prose-table:border-gray-200/60 dark:prose-table:border-gray-700/40',
-                    'prose-th:bg-gray-50/80 dark:prose-th:bg-gray-800/40 prose-th:font-semibold prose-th:text-gray-900 dark:prose-th:text-gray-100',
-                    'prose-td:border-t prose-td:border-gray-200/40 dark:prose-td:border-gray-700/30'
-                )}>
-                <Fragment set:html={post.content} />
+                {/* 文章页脚 */}
+                <footer class="max-w-4xl mx-auto mt-12 sm:mt-20 px-4 sm:px-6 md:px-8 border-t border-gray-200/60 dark:border-gray-700/40 pt-6 sm:pt-8">
+                    <div class="flex justify-between items-center">
+                        <a href="/blog" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100/50 dark:hover:bg-gray-800/30 rounded-lg transition-all duration-200 group">
+                            <Icon name="tabler:chevron-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                            <span class="font-medium">返回文章列表</span>
+                        </a>
+                    </div>
+                </footer>
+            </article>
+            
+            <!-- 侧边栏 - 目录 -->
+            <div class="w-64 flex-shrink-0">
+                <TableOfContents headings={headings} />
             </div>
         </div>
-        
-        {/* 文章页脚 */}
-        <footer class="max-w-4xl mx-auto mt-12 sm:mt-20 px-4 sm:px-6 md:px-8 border-t border-gray-200/60 dark:border-gray-700/40 pt-6 sm:pt-8">
-            <div class="flex justify-between items-center">
-                <a href="/blog" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100/50 dark:hover:bg-gray-800/30 rounded-lg transition-all duration-200 group">
-                    <Icon name="tabler:chevron-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                    <span class="font-medium">返回文章列表</span>
-                </a>
-                <div class="flex items-center gap-3">
-                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100/50 dark:hover:bg-gray-800/30 rounded-lg transition-all duration-200 group">
-                        <Icon name="tabler:arrow-up" class="w-4 h-4 transition-transform group-hover:-translate-y-1" />
-                        <span class="font-medium">回到顶部</span>
-                    </button>
-                </div>
-            </div>
-        </footer>
-    </article>
+    </div>
 </section>
 
 <style>

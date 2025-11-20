@@ -1,0 +1,177 @@
+---
+/**
+ * 文章目录组件
+ * 自动提取文章中的标题生成目录
+ */
+export interface Props {
+  headings?: Array<{ depth: number; text: string; slug: string }>;
+}
+
+const { headings = [] } = Astro.props;
+
+// 只显示 h2 和 h3 级别的标题
+const tocHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
+---
+
+<aside
+  class="hidden xl:block sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto"
+  data-toc
+>
+  <nav aria-label="文章目录" class="space-y-2">
+    <h2 class="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 6h18M3 12h18M3 18h18"></path>
+      </svg>
+      <span>目录</span>
+    </h2>
+    
+    <ul class="space-y-1 text-sm" data-toc-list>
+      {tocHeadings.map((heading) => (
+        <li 
+          class={heading.depth === 3 ? 'ml-4' : ''}
+          style="list-style: none;"
+        >
+          <a
+            href={`#${heading.slug}`}
+            class="block py-1.5 px-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors duration-200 toc-link"
+            data-toc-link
+            data-target={heading.slug}
+          >
+            <span class="line-clamp-2">{heading.text}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</aside>
+
+<script>
+  class TableOfContents {
+    private links: NodeListOf<Element> | null = null;
+    private headings: Element[] = [];
+    private observer: IntersectionObserver | null = null;
+
+    constructor() {
+      this.links = document.querySelectorAll('[data-toc-link]');
+      if (!this.links || this.links.length === 0) return;
+
+      this.headings = Array.from(this.links)
+        .map(link => {
+          const target = link.getAttribute('data-target');
+          return target ? document.getElementById(target) : null;
+        })
+        .filter((el): el is Element => el !== null);
+
+      if (this.headings.length > 0) {
+        this.init();
+      }
+    }
+
+    private init() {
+      this.setupIntersectionObserver();
+      this.setupClickHandlers();
+    }
+
+    private setupIntersectionObserver() {
+      const options = {
+        rootMargin: '-80px 0px -80% 0px',
+        threshold: 0
+      };
+
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const id = entry.target.getAttribute('id');
+          const link = document.querySelector(`[data-target="${id}"]`);
+
+          if (entry.isIntersecting) {
+            // 移除所有活动状态
+            this.links?.forEach(l => {
+              l.classList.remove('text-primary', 'bg-primary/10', 'font-medium');
+              l.classList.add('text-muted-foreground');
+            });
+
+            // 添加活动状态
+            link?.classList.remove('text-muted-foreground');
+            link?.classList.add('text-primary', 'bg-primary/10', 'font-medium');
+          }
+        });
+      }, options);
+
+      this.headings.forEach(heading => {
+        this.observer?.observe(heading);
+      });
+    }
+
+    private setupClickHandlers() {
+      this.links?.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = link.getAttribute('data-target');
+          const element = target ? document.getElementById(target) : null;
+
+          if (element) {
+            const yOffset = -100; // 偏移量，避免被固定头部遮挡
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            
+            window.scrollTo({ top: y, behavior: 'smooth' });
+
+            // 更新 URL hash 但不触发滚动
+            if (history.replaceState) {
+              history.replaceState(null, '', `#${target}`);
+            }
+          }
+        });
+      });
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    const initTOC = () => new TableOfContents();
+
+    document.addEventListener('DOMContentLoaded', initTOC);
+    document.addEventListener('astro:page-load', initTOC);
+  }
+</script>
+
+<style>
+  /* 滚动条样式 */
+  [data-toc]::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  [data-toc]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  [data-toc]::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.3);
+    border-radius: 2px;
+  }
+
+  [data-toc]::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.5);
+  }
+
+  .dark [data-toc]::-webkit-scrollbar-thumb {
+    background: rgba(75, 85, 99, 0.3);
+  }
+
+  .dark [data-toc]::-webkit-scrollbar-thumb:hover {
+    background: rgba(75, 85, 99, 0.5);
+  }
+
+  /* 文本截断 */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 减少动画 */
+  @media (prefers-reduced-motion: reduce) {
+    .toc-link {
+      transition: none !important;
+    }
+  }
+</style>
