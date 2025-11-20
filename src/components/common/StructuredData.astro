@@ -1,0 +1,100 @@
+---
+/**
+ * 结构化数据组件
+ * 生成 Schema.org JSON-LD 格式的结构化数据
+ */
+
+export interface Props {
+  type: 'article' | 'website' | 'breadcrumb';
+  data?: any;
+}
+
+const { type, data = {} } = Astro.props;
+
+// 获取站点配置
+const siteUrl = Astro.site?.toString() || 'https://weekly.mengpeng.tech';
+const siteName = "'What I Don't Know' Weekly";
+
+// 生成结构化数据
+const generateSchema = () => {
+  switch (type) {
+    case 'article':
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: data.title || '',
+        description: data.description || data.desc || '',
+        author: {
+          '@type': 'Person',
+          name: data.author || 'Weekly Team',
+          url: siteUrl
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: siteName,
+          logo: {
+            '@type': 'ImageObject',
+            url: `${siteUrl}/og.jpg`
+          }
+        },
+        datePublished: data.datePublished || data.date || new Date().toISOString(),
+        dateModified: data.dateModified || data.lastUpdated || data.date || new Date().toISOString(),
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': data.url || Astro.url.toString()
+        },
+        keywords: data.tags?.join(', ') || '',
+        articleSection: data.category || '技术',
+        wordCount: data.wordCount || 0,
+        ...(data.image && {
+          image: {
+            '@type': 'ImageObject',
+            url: data.image,
+            width: 1200,
+            height: 630
+          }
+        })
+      };
+
+    case 'website':
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: siteName,
+        url: siteUrl,
+        description: '每周记录在各个地方遇到的我不知道的知识',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${siteUrl}/search?q={search_term_string}`
+          },
+          'query-input': 'required name=search_term_string'
+        }
+      };
+
+    case 'breadcrumb':
+      if (!data.items || data.items.length === 0) return null;
+      
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: data.items.map((item: any, index: number) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: item.name,
+          item: item.url ? `${siteUrl}${item.url}` : undefined
+        }))
+      };
+
+    default:
+      return null;
+  }
+};
+
+const schema = generateSchema();
+---
+
+{schema && (
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+)}

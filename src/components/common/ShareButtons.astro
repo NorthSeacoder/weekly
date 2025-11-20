@@ -1,0 +1,186 @@
+---
+/**
+ * 社交分享按钮组件
+ */
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+  url?: string;
+  title?: string;
+  description?: string;
+  className?: string;
+}
+
+const { 
+  url = Astro.url.toString(),
+  title = '分享这篇文章',
+  description = '',
+  className = ''
+} = Astro.props;
+
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+const encodedDesc = encodeURIComponent(description);
+---
+
+<div class={`flex items-center gap-2 ${className}`} data-share-buttons>
+  <!-- Twitter/X -->
+  <a
+    href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors duration-200"
+    aria-label="分享到 Twitter"
+    data-share-twitter
+  >
+    <Icon name="tabler:brand-twitter" class="w-5 h-5" />
+  </a>
+
+  <!-- 微博 -->
+  <a
+    href={`https://service.weibo.com/share/share.php?url=${encodedUrl}&title=${encodedTitle}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors duration-200"
+    aria-label="分享到微博"
+    data-share-weibo
+  >
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M9.31 19.68c-3.31.28-6.17-1.18-6.38-3.27-.21-2.09 2.3-4.03 5.61-4.31 3.31-.28 6.17 1.18 6.38 3.27.21 2.09-2.3 4.03-5.61 4.31zm10.25-5.38c-.28-.09-.47-.15-.33-.55.31-.87.34-1.62.01-2.16-.62-1.01-2.31-0.96-4.25-.03 0 0-.61.31-.45-.25.29-1.14.25-2.09-.21-2.64-1.05-1.26-3.83-.06-6.22 2.67-1.78 2.03-2.81 4.18-2.81 6.05 0 3.57 4.58 5.74 9.05 5.74 5.87 0 9.77-3.41 9.77-6.12 0-1.64-1.38-2.57-4.56-2.71zm.84-7.7c-1.08-.29-2.29-.23-3.35.18-.24.09-.39.34-.35.6.04.26.27.42.51.38 1.01-.41 2.15-.47 3.16-.16.25.08.52-.07.59-.33.07-.26-.06-.54-.31-.62l-.25-.05zm1.08 2.07c.12-.04.19-.16.17-.28-.02-.12-.13-.19-.25-.17-2.08.69-4.37.29-5.85-1.02-.11-.09-.28-.08-.36.03-.08.11-.07.27.04.35 1.62 1.43 4.12 1.87 6.25 1.09z"/>
+    </svg>
+  </a>
+
+  <!-- 复制链接 -->
+  <button
+    type="button"
+    class="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors duration-200"
+    aria-label="复制链接"
+    data-share-copy
+    data-url={url}
+  >
+    <Icon name="tabler:link" class="w-5 h-5" />
+  </button>
+
+  <!-- Web Share API (移动端) -->
+  <button
+    type="button"
+    class="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors duration-200 hidden"
+    aria-label="更多分享选项"
+    data-share-native
+    data-share-title={title}
+    data-share-text={description}
+    data-share-url={url}
+  >
+    <Icon name="tabler:share-2" class="w-5 h-5" />
+  </button>
+</div>
+
+<script>
+  class ShareButtons {
+    private copyButton: HTMLButtonElement | null = null;
+    private nativeButton: HTMLButtonElement | null = null;
+
+    constructor(container: Element) {
+      this.copyButton = container.querySelector('[data-share-copy]');
+      this.nativeButton = container.querySelector('[data-share-native]');
+
+      this.init();
+    }
+
+    private init() {
+      // 复制链接功能
+      this.copyButton?.addEventListener('click', () => this.copyLink());
+
+      // Web Share API 检测
+      if (navigator.share && this.nativeButton) {
+        this.nativeButton.classList.remove('hidden');
+        this.nativeButton.addEventListener('click', () => this.shareNative());
+      }
+    }
+
+    private async copyLink() {
+      if (!this.copyButton) return;
+
+      const url = this.copyButton.getAttribute('data-url') || '';
+
+      try {
+        await navigator.clipboard.writeText(url);
+        this.showToast('链接已复制到剪贴板');
+        
+        // 临时改变图标
+        const icon = this.copyButton.querySelector('svg');
+        if (icon) {
+          const originalHTML = icon.innerHTML;
+          icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />';
+          
+          setTimeout(() => {
+            icon.innerHTML = originalHTML;
+          }, 2000);
+        }
+      } catch (error) {
+        console.error('复制失败:', error);
+        this.showToast('复制失败，请手动复制');
+      }
+    }
+
+    private async shareNative() {
+      if (!this.nativeButton) return;
+
+      const title = this.nativeButton.getAttribute('data-share-title') || '';
+      const text = this.nativeButton.getAttribute('data-share-text') || '';
+      const url = this.nativeButton.getAttribute('data-share-url') || '';
+
+      try {
+        await navigator.share({ title, text, url });
+      } catch (error) {
+        // 用户取消分享，不显示错误
+        if ((error as Error).name !== 'AbortError') {
+          console.error('分享失败:', error);
+        }
+      }
+    }
+
+    private showToast(message: string) {
+      // 创建简单的提示消息
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 bg-foreground text-background rounded-lg text-sm shadow-lg z-50 animate-fade-in-up';
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+  }
+
+  // 初始化所有分享按钮
+  const initShareButtons = () => {
+    document.querySelectorAll('[data-share-buttons]').forEach((container) => {
+      new ShareButtons(container);
+    });
+  };
+
+  if (typeof window !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', initShareButtons);
+    document.addEventListener('astro:page-load', initShareButtons);
+  }
+</script>
+
+<style>
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.3s ease-out;
+  }
+</style>

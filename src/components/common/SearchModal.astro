@@ -1,0 +1,567 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<!-- 搜索弹窗 -->
+<div
+  id="search-modal"
+  class="fixed inset-0 z-[100] hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="search-title"
+  data-search-modal
+>
+  <!-- 遮罩层 -->
+  <div
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+    data-search-overlay
+    aria-hidden="true"
+  ></div>
+
+  <!-- 弹窗内容 -->
+  <div class="fixed inset-0 overflow-y-auto">
+    <div class="flex min-h-full items-start justify-center p-4 pt-[10vh]">
+      <div
+        class="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-2xl transition-all border border-gray-200 dark:border-gray-700"
+        data-search-container
+      >
+        <!-- 搜索头部 -->
+        <div class="border-b border-gray-200 dark:border-gray-700 p-4">
+          <div class="flex items-center gap-3">
+            <Icon name="tabler:search" class="w-5 h-5 text-gray-400 flex-shrink-0" />
+            <input
+              type="search"
+              id="search-input"
+              class="flex-1 bg-transparent border-0 outline-none text-base text-gray-900 dark:text-white placeholder:text-gray-400"
+              placeholder="搜索文章和周刊..."
+              aria-label="搜索内容"
+              aria-describedby="search-description"
+              autocomplete="off"
+              data-search-input
+            />
+            <button
+              type="button"
+              class="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              aria-label="关闭搜索"
+              data-search-close
+            >
+              <Icon name="tabler:x" class="w-5 h-5" />
+            </button>
+          </div>
+          <p id="search-description" class="sr-only">
+            输入关键词搜索文章标题、标签和内容描述
+          </p>
+        </div>
+
+        <!-- 搜索结果区域 -->
+        <div
+          class="max-h-[60vh] overflow-y-auto p-2"
+          data-search-results
+          role="listbox"
+          aria-label="搜索结果"
+        >
+          <!-- 初始状态 -->
+          <div class="py-12 text-center text-gray-500 dark:text-gray-400" data-search-empty>
+            <Icon name="tabler:search" class="w-12 h-12 mx-auto mb-3 opacity-40" />
+            <p class="text-sm">输入关键词开始搜索</p>
+            <p class="text-xs mt-2 text-gray-400 dark:text-gray-500">
+              支持搜索标题、标签和内容描述
+            </p>
+          </div>
+
+          <!-- 加载状态 -->
+          <div class="py-12 text-center hidden" data-search-loading>
+            <div class="inline-block w-8 h-8 border-4 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">搜索中...</p>
+          </div>
+
+          <!-- 无结果状态 -->
+          <div class="py-12 text-center hidden" data-search-no-results>
+            <Icon name="tabler:file-search" class="w-12 h-12 mx-auto mb-3 opacity-40 text-gray-400" />
+            <p class="text-sm text-gray-500 dark:text-gray-400">未找到相关内容</p>
+            <p class="text-xs mt-2 text-gray-400 dark:text-gray-500">
+              尝试使用其他关键词
+            </p>
+          </div>
+
+          <!-- 错误状态 -->
+          <div class="py-12 text-center hidden" data-search-error>
+            <Icon name="tabler:alert-circle" class="w-12 h-12 mx-auto mb-3 opacity-40 text-red-400" />
+            <p class="text-sm text-gray-500 dark:text-gray-400">搜索服务暂时不可用</p>
+            <p class="text-xs mt-2 text-gray-400 dark:text-gray-500">
+              请稍后再试或刷新页面
+            </p>
+          </div>
+
+          <!-- 结果列表 -->
+          <div class="space-y-1 hidden" data-search-list>
+            <!-- 动态插入搜索结果 -->
+          </div>
+        </div>
+
+        <!-- 底部提示 -->
+        <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-3 text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center gap-1">
+              <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">↑↓</kbd>
+              <span>导航</span>
+            </span>
+            <span class="flex items-center gap-1">
+              <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">Enter</kbd>
+              <span>打开</span>
+            </span>
+            <span class="flex items-center gap-1">
+              <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">Esc</kbd>
+              <span>关闭</span>
+            </span>
+          </div>
+          <span class="hidden sm:flex items-center gap-1 text-gray-400 dark:text-gray-500">
+            <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">⌘</kbd>
+            <span>/</span>
+            <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">Ctrl</kbd>
+            <span>+</span>
+            <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">K</kbd>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" lang="ts">
+  import Fuse from 'fuse.js';
+
+  interface SearchItem {
+    type: 'blog' | 'weekly';
+    title: string;
+    description: string;
+    tags: string[];
+    date: string;
+    permalink: string;
+    category: string;
+  }
+
+  type SearchState = 'empty' | 'loading' | 'no-results' | 'results' | 'error';
+
+  class SearchModal {
+    private modal: HTMLElement | null = null;
+    private overlay: HTMLElement | null = null;
+    private input: HTMLInputElement | null = null;
+    private resultsContainer: HTMLElement | null = null;
+    private emptyState: HTMLElement | null = null;
+    private loadingState: HTMLElement | null = null;
+    private noResultsState: HTMLElement | null = null;
+    private errorState: HTMLElement | null = null;
+    private resultsList: HTMLElement | null = null;
+    private closeBtn: HTMLElement | null = null;
+
+    private fuse: Fuse<SearchItem> | null = null;
+    private searchData: SearchItem[] = [];
+    private currentIndex = -1;
+    private debounceTimer: number | null = null;
+    private controller: AbortController = new AbortController();
+
+    constructor() {
+      this.bindElements();
+      this.registerGlobalShortcuts();
+    }
+
+    refresh() {
+      this.controller.abort();
+      this.controller = new AbortController();
+      this.bindElements();
+    }
+
+    private bindElements() {
+      this.modal = document.querySelector('[data-search-modal]');
+      this.overlay = document.querySelector('[data-search-overlay]');
+      this.input = document.querySelector('[data-search-input]');
+      this.resultsContainer = document.querySelector('[data-search-results]');
+      this.emptyState = document.querySelector('[data-search-empty]');
+      this.loadingState = document.querySelector('[data-search-loading]');
+      this.noResultsState = document.querySelector('[data-search-no-results]');
+      this.errorState = document.querySelector('[data-search-error]');
+      this.resultsList = document.querySelector('[data-search-list]');
+      this.closeBtn = document.querySelector('[data-search-close]');
+
+      if (!this.modal || !this.overlay || !this.input || !this.resultsContainer) {
+        return;
+      }
+
+      // 绑定触发器
+      document
+        .querySelectorAll<HTMLElement>('[data-search-trigger]')
+        .forEach((trigger) => {
+          trigger.setAttribute('aria-controls', 'search-modal');
+          trigger.addEventListener(
+            'click',
+            (event) => {
+              event.preventDefault();
+              this.open();
+            },
+            { signal: this.controller.signal }
+          );
+        });
+
+      // 覆盖层 & 关闭按钮
+      this.overlay.addEventListener('click', () => this.close(), { signal: this.controller.signal });
+      this.closeBtn?.addEventListener('click', () => this.close(), { signal: this.controller.signal });
+
+      // 输入与键盘事件
+      this.input.addEventListener(
+        'input',
+        (event) => {
+          const query = (event.target as HTMLInputElement).value;
+          this.handleSearch(query);
+        },
+        { signal: this.controller.signal }
+      );
+
+      this.input.addEventListener('keydown', (event) => this.handleKeyboard(event), {
+        signal: this.controller.signal
+      });
+
+      // ESC 关闭
+      document.addEventListener(
+        'keydown',
+        (event) => {
+          if (event.key === 'Escape' && !this.modal?.classList.contains('hidden')) {
+            this.close();
+          }
+        },
+        { signal: this.controller.signal }
+      );
+    }
+
+    private registerGlobalShortcuts() {
+      document.addEventListener(
+        'open-search',
+        () => this.open(),
+        { signal: this.controller.signal }
+      );
+
+      document.addEventListener(
+        'keydown',
+        (event) => {
+          if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+            event.preventDefault();
+            this.open();
+          }
+        },
+        { signal: this.controller.signal }
+      );
+    }
+
+    async open() {
+      if (!this.modal) return;
+
+      this.modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+
+      requestAnimationFrame(() => this.input?.focus());
+
+      if (!this.fuse && this.searchData.length === 0) {
+        await this.loadSearchData();
+      } else {
+        this.showState('empty');
+      }
+    }
+
+    close() {
+      if (!this.modal) return;
+
+      this.modal.classList.add('hidden');
+      document.body.style.overflow = '';
+      this.currentIndex = -1;
+      if (this.input) this.input.value = '';
+      this.showState('empty');
+    }
+
+    private async loadSearchData() {
+      this.showState('loading');
+
+      try {
+        const response = await fetch('/search.json', { headers: { 'Cache-Control': 'no-cache' } });
+        if (!response.ok) throw new Error('加载搜索数据失败');
+
+        const payload = (await response.json()) as SearchItem[];
+        this.searchData = payload.map((item) => ({
+          ...item,
+          description: item.description || '',
+          tags: item.tags || []
+        }));
+
+        this.fuse = new Fuse(this.searchData, {
+          keys: ['title', 'description', 'tags'],
+          threshold: 0.35,
+          includeScore: true,
+          minMatchCharLength: 2
+        });
+
+        this.showState('empty');
+      } catch (error) {
+        console.error('加载搜索数据失败:', error);
+        this.showState('error');
+      }
+    }
+
+    private handleSearch(query: string) {
+      if (this.debounceTimer) {
+        clearTimeout(this.debounceTimer);
+      }
+
+      this.debounceTimer = window.setTimeout(() => {
+        this.performSearch(query);
+      }, 200);
+    }
+
+    private performSearch(query: string) {
+      if (!query.trim()) {
+        this.showState('empty');
+        return;
+      }
+
+      if (!this.fuse) {
+        this.showState('loading');
+        return;
+      }
+
+      const results = this.fuse.search(query.trim());
+
+      if (results.length === 0) {
+        this.showState('no-results');
+        return;
+      }
+
+      this.renderResults(results);
+      this.currentIndex = -1;
+    }
+
+    private renderResults(results: Fuse.FuseResult<SearchItem>[]) {
+      if (!this.resultsList) return;
+
+      const markup = results
+        .slice(0, 20)
+        .map((result, index) => this.renderResultItem(result.item, index))
+        .join('');
+
+      this.resultsList.innerHTML = markup;
+
+      // 结果项聚焦逻辑
+      this.resultsList
+        .querySelectorAll('[data-result-item]')
+        .forEach((item) => {
+          item.addEventListener(
+            'mouseenter',
+            () => this.setActiveItem(Number(item.getAttribute('data-index'))),
+            { signal: this.controller.signal }
+          );
+        });
+
+      this.showState('results');
+    }
+
+    private renderResultItem(item: SearchItem, index: number) {
+      const typeLabel = item.type === 'blog' ? '博客' : '周刊';
+      const typeColor =
+        item.type === 'blog'
+          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+          : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300';
+      const date = new Date(item.date).toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+
+      const tags = (item.tags || []).slice(0, 3);
+
+      return `
+        <a
+          href="${item.permalink}"
+          class="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group focus:outline-none focus:ring-2 focus:ring-primary"
+          data-result-item
+          data-index="${index}"
+          role="option"
+          aria-selected="false"
+        >
+          <div class="flex items-start gap-3">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 text-xs font-medium rounded ${typeColor}">${typeLabel}</span>
+                ${item.category ? `<span class="text-xs text-gray-500 dark:text-gray-400">${item.category}</span>` : ''}
+              </div>
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-primary transition-colors">
+                ${item.title}
+              </h4>
+              ${item.description ? `<p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">${item.description}</p>` : ''}
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-xs text-gray-400">${date}</span>
+                ${tags.map((tag) => `<span class="text-xs text-gray-400 dark:text-gray-500">#${tag}</span>`).join('')}
+              </div>
+            </div>
+            <div class="flex-shrink-0 text-gray-400 group-hover:text-primary transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </a>
+      `;
+    }
+
+    private handleKeyboard(event: KeyboardEvent) {
+      const items = this.resultsList?.querySelectorAll('[data-result-item]') || [];
+      if (items.length === 0) return;
+
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          this.currentIndex = Math.min(this.currentIndex + 1, items.length - 1);
+          this.updateActiveItem(items);
+          break;
+        case 'ArrowUp':
+          event.preventDefault();
+          this.currentIndex = Math.max(this.currentIndex - 1, -1);
+          if (this.currentIndex === -1) {
+            this.input?.focus();
+          } else {
+            this.updateActiveItem(items);
+          }
+          break;
+        case 'Enter':
+          if (this.currentIndex >= 0 && this.currentIndex < items.length) {
+            event.preventDefault();
+            (items[this.currentIndex] as HTMLAnchorElement).click();
+          }
+          break;
+      }
+    }
+
+    private setActiveItem(index: number) {
+      this.currentIndex = index;
+      const items = this.resultsList?.querySelectorAll('[data-result-item]') || [];
+      this.updateActiveItem(items);
+    }
+
+    private updateActiveItem(items: NodeListOf<Element>) {
+      items.forEach((item, index) => {
+        if (index === this.currentIndex) {
+          item.classList.add('bg-gray-50', 'dark:bg-gray-800');
+          item.setAttribute('aria-selected', 'true');
+          (item as HTMLElement).focus();
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('bg-gray-50', 'dark:bg-gray-800');
+          item.setAttribute('aria-selected', 'false');
+        }
+      });
+    }
+
+    private showState(state: SearchState) {
+      this.emptyState?.classList.add('hidden');
+      this.loadingState?.classList.add('hidden');
+      this.noResultsState?.classList.add('hidden');
+      this.errorState?.classList.add('hidden');
+      this.resultsList?.classList.add('hidden');
+
+      switch (state) {
+        case 'empty':
+          this.emptyState?.classList.remove('hidden');
+          break;
+        case 'loading':
+          this.loadingState?.classList.remove('hidden');
+          break;
+        case 'no-results':
+          this.noResultsState?.classList.remove('hidden');
+          break;
+        case 'results':
+          this.resultsList?.classList.remove('hidden');
+          break;
+        case 'error':
+          this.errorState?.classList.remove('hidden');
+          break;
+      }
+    }
+  }
+
+  const SEARCH_MODAL_KEY = '__search_modal_instance__';
+
+  const initSearchModal = () => {
+    const globalThis = window as typeof window & { [SEARCH_MODAL_KEY]?: SearchModal };
+    if (globalThis[SEARCH_MODAL_KEY]) {
+      globalThis[SEARCH_MODAL_KEY]?.refresh();
+      return;
+    }
+
+    const instance = new SearchModal();
+    globalThis[SEARCH_MODAL_KEY] = instance;
+  };
+
+  if (typeof window !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', initSearchModal);
+    document.addEventListener('astro:page-load', initSearchModal);
+  }
+</script>
+
+<style>
+  #search-modal {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  #search-input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  [data-search-results]::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  [data-search-results]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  [data-search-results]::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.3);
+    border-radius: 3px;
+  }
+
+  [data-search-results]::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.5);
+  }
+
+  .dark [data-search-results]::-webkit-scrollbar-thumb {
+    background: rgba(75, 85, 99, 0.3);
+  }
+
+  .dark [data-search-results]::-webkit-scrollbar-thumb:hover {
+    background: rgba(75, 85, 99, 0.5);
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  kbd {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+    line-height: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #search-modal {
+      animation: none;
+    }
+  }
+</style>

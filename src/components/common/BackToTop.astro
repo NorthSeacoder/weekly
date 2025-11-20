@@ -1,0 +1,63 @@
+---
+/**
+ * 返回顶部按钮组件
+ */
+---
+
+<button
+  type="button"
+  class="fixed bottom-20 right-6 z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 ease-out flex items-center justify-center opacity-0 pointer-events-none"
+  aria-label="返回顶部"
+  data-back-to-top
+>
+  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 15l-6-6-6 6"></path>
+  </svg>
+</button>
+
+<script>
+  class BackToTopButton {
+    private button: HTMLButtonElement | null = null;
+    private scrollThreshold = 300;
+
+    constructor() {
+      this.button = document.querySelector('[data-back-to-top]');
+      if (!this.button) return;
+
+      this.init();
+    }
+
+    private init() {
+      window.addEventListener('scroll', () => this.handleScroll(), { passive: true });
+      this.button?.addEventListener('click', () => this.scrollToTop());
+      this.updateVisibility();
+    }
+
+    private handleScroll() {
+      this.updateVisibility();
+    }
+
+    private updateVisibility() {
+      if (!this.button) return;
+
+      if (window.scrollY > this.scrollThreshold) {
+        this.button.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+        this.button.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-6');
+      } else {
+        this.button.classList.add('opacity-0', 'pointer-events-none', 'translate-y-6');
+        this.button.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+      }
+    }
+
+    private scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    const initBackToTop = () => new BackToTopButton();
+
+    document.addEventListener('DOMContentLoaded', initBackToTop);
+    document.addEventListener('astro:after-swap', initBackToTop);
+  }
+</script>

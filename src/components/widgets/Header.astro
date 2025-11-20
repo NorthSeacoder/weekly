@@ -110,6 +110,16 @@ const actions: Array<CallToAction> = [];
             <!-- 右侧工具栏 -->
             <div class="flex items-center space-x-2 lg:space-x-3">
                 
+                <!-- 搜索按钮 -->
+                <button
+                    type="button"
+                    class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none group"
+                    aria-label="搜索"
+                    data-search-trigger
+                >
+                    <Icon name="tabler:search" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+                </button>
+                
                 <!-- RSS 订阅 -->
                 {showRssFeed && (
                     <a
@@ -175,6 +185,15 @@ const actions: Array<CallToAction> = [];
                         {text}
                     </a>
                 ))}
+
+                <button
+                    type="button"
+                    class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none"
+                    data-search-trigger
+                >
+                    <span>搜索内容</span>
+                    <Icon name="tabler:search" class="w-5 h-5 text-gray-400" />
+                </button>
                 
                 <!-- 移动端 CTA -->
                 {actions?.length ? (
