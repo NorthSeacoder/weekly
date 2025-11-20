@@ -20,14 +20,19 @@ const {
 ---
 
 <section class="relative md:-mt-[76px] not-prose overflow-hidden min-h-screen flex items-center" {...id ? { id } : {}}>
-  <!-- 极简背景 -->
-  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-    <!-- 纯净背景 -->
-    <div class="absolute inset-0 bg-white dark:bg-gray-900"></div>
+  <!-- 动态星空背景 -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <!-- 基础背景 -->
+    <div class="absolute inset-0 bg-page"></div>
     
-    <!-- 极简装饰点 -->
-    <div class="absolute top-1/4 right-1/4 w-2 h-2 bg-blue-500/20 rounded-full"></div>
-    <div class="absolute bottom-1/3 left-1/5 w-1 h-1 bg-purple-500/20 rounded-full"></div>
+    <!-- 动态光晕 -->
+    <!-- 动态光晕 -->
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full opacity-20 animate-blob-slow mix-blend-screen"></div>
+    <div class="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-purple-900/20 blur-[100px] rounded-full opacity-20 animate-blob-slow animation-delay-4000 mix-blend-screen"></div>
+    <div class="absolute bottom-[-10%] left-[20%] w-[35%] h-[35%] bg-blue-900/20 blur-[120px] rounded-full opacity-20 animate-blob-slow animation-delay-8000 mix-blend-screen"></div>
+
+    <!-- 星星/粒子效果 -->
+    <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
     
     <slot name="bg">
       {bg ? <Fragment set:html={bg} /> : null}
@@ -37,47 +42,49 @@ const {
   <!-- 主要内容 -->
   <div class="relative max-w-7xl mx-auto px-6 sm:px-8 w-full">
     <div class="pt-0 md:pt-[76px] pointer-events-none"></div>
-    <div class="py-16 md:py-24 lg:py-32">
-      <div class="text-center pb-12 md:pb-16 max-w-6xl mx-auto">
+    <div class="py-12 md:py-16 lg:py-20">
+      <div class="text-center pb-12 md:pb-16 max-w-5xl mx-auto">
         
         <!-- 标语 -->
         {tagline && (
-          <div class="mb-16 animate-fade-in-down">
-            <span class="inline-block px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 tracking-wide cursor-default">
-              <Fragment set:html={tagline} />
-            </span>
+          <div class="mb-8 animate-fade-in-down flex justify-center">
+            <div class="inline-flex items-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm shadow-sm">
+              <span class="text-sm font-medium text-muted-foreground tracking-wide">
+                <Fragment set:html={tagline} />
+              </span>
+            </div>
           </div>
         )}
         
         <!-- 主标题 -->
         {title && (
-          <h1 class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light leading-[0.9] tracking-tight mb-12 font-heading animate-fade-in-up text-gray-900 dark:text-white" style="animation-delay: 0.2s;">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight mb-8 font-heading animate-text-reveal text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/70">
             <Fragment set:html={title} />
           </h1>
         )}
         
         <!-- 副标题 -->
-        <div class="max-w-5xl mx-auto animate-fade-in-up" style="animation-delay: 0.4s;">
+        <div class="max-w-4xl mx-auto animate-fade-in-up" style="animation-delay: 0.6s;">
           {subtitle && (
-            <div class="mb-16 leading-relaxed">
+            <div class="mb-10 leading-relaxed text-muted-foreground text-lg md:text-xl font-normal max-w-3xl mx-auto animate-slide-up-fade">
               <Fragment set:html={subtitle} />
             </div>
           )}
           
           <!-- 行动按钮 -->
           {actions && (
-            <div class="flex flex-wrap sm:flex-row gap-6 justify-center items-center mb-20">
+            <div class="flex flex-wrap sm:flex-row gap-4 justify-center items-center mb-16">
               {Array.isArray(actions) ? (
                 actions.map((action, index) => (
                   <div class="animate-fade-in-up" style={`animation-delay: ${0.6 + index * 0.1}s;`}>
                     <Button 
                       variant={action?.variant || 'primary'}
-                      size="md"
+                      size="lg"
                       href={action?.href?.toString() || undefined}
                       target={action?.target || undefined}
                       rel={action?.rel || undefined}
                       class={cn(
-                        "px-6 py-3 text-base font-medium rounded-lg transition-all duration-300 border-0 shadow-none hover:shadow-sm",
+                        "px-8 py-3.5 text-base font-medium rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5",
                         action?.class
                       )}
                     >
@@ -103,24 +110,24 @@ const {
       <div class="animate-fade-in-up" style="animation-delay: 1s;">
         {image && (
           <div class="relative m-auto max-w-6xl">
-            <!-- 图片装饰背景 -->
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl blur-3xl transform scale-110 opacity-50"></div>
-            
             <!-- 图片容器 -->
-            <div class="relative">
-              {typeof image === 'string' ? (
-                <Fragment set:html={image} />
-              ) : (
-                <Image
-                  class="mx-auto rounded-3xl shadow-2xl shadow-gray-500/20 dark:shadow-black/40 border border-gray-200/50 dark:border-gray-700/50 w-full hover:shadow-3xl hover:shadow-gray-500/30 dark:hover:shadow-black/50 transition-all duration-700 hover:scale-[1.02] hover:-translate-y-2"
-                  widths={[400, 768, 1024, 2040]}
-                  sizes="(max-width: 767px) 400px, (max-width: 1023px) 768px, (max-width: 2039px) 1024px, 2040px"
-                  loading="eager"
-                  width={1024}
-                  height={576}
-                  {...image}
-                />
-              )}
+            <div class="relative group">
+              <div class="absolute -inset-1 bg-gradient-to-r from-primary/20 to-accent-warm/20 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div class="relative">
+                {typeof image === 'string' ? (
+                  <Fragment set:html={image} />
+                ) : (
+                  <Image
+                    class="mx-auto rounded-[1.8rem] shadow-2xl shadow-black/50 border border-white/10 w-full bg-card"
+                    widths={[400, 768, 1024, 2040]}
+                    sizes="(max-width: 767px) 400px, (max-width: 1023px) 768px, (max-width: 2039px) 1024px, 2040px"
+                    loading="eager"
+                    width={1024}
+                    height={576}
+                    {...image}
+                  />
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -225,5 +232,63 @@ const {
     .hover\:-translate-y-2:hover {
       transform: none;
     }
+  }
+
+  /* 新增动画定义 */
+  @keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+  
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animate-blob-slow {
+    animation: blob 20s infinite;
+  }
+  
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  @keyframes text-reveal {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+      filter: blur(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+  
+  .animate-text-reveal {
+    animation: text-reveal 1s cubic-bezier(0.2, 0.65, 0.3, 0.9) both;
+    animation-delay: 0.2s;
+  }
+  
+  @keyframes slide-up-fade {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-slide-up-fade {
+    animation: slide-up-fade 0.8s ease-out both;
+    animation-delay: 0.4s;
   }
 </style>

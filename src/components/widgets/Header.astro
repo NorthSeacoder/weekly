@@ -54,9 +54,9 @@ const actions: Array<CallToAction> = [];
 <header
     class:list={[
         'fixed top-0 z-50 w-full transition-all duration-500 ease-out',
-        'bg-white/90 dark:bg-gray-900/90',
+        'bg-page/90',
         'backdrop-blur-md',
-        'border-b border-gray-100 dark:border-gray-800',
+        'border-b border-border',
     ]}
     {...id ? { id } : {}}
     data-header>
@@ -93,11 +93,11 @@ const actions: Array<CallToAction> = [];
                     <a
                         class:list={[
                             'relative px-3 py-2 rounded-lg font-medium text-sm transition-colors duration-200',
-                            'hover:bg-gray-100 dark:hover:bg-gray-800',
+                            'hover:bg-secondary',
                             'focus:outline-none',
                             {
-                                'text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800': href === currentPath,
-                                'text-gray-700 dark:text-gray-300': href !== currentPath,
+                                'text-foreground bg-secondary': href === currentPath,
+                                'text-muted-foreground': href !== currentPath,
                             },
                         ]}
                         href={href}

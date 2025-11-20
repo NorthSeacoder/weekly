@@ -6,54 +6,48 @@ import { cn } from '~/utils/utils'
 const weeklyList = await getWeeklyPosts()
 ---
 
-<section class="py-16 lg:py-20 bg-gradient-to-br from-gray-50/80 via-white to-blue-50/30 dark:from-gray-900/90 dark:via-gray-900 dark:to-blue-950/30 min-h-screen relative overflow-hidden">
+<section class="py-16 lg:py-20 bg-page min-h-screen relative overflow-hidden">
     <!-- 背景装饰元素 -->
     <div class="absolute inset-0 pointer-events-none">
-        <!-- 几何装饰 -->
-        <div class="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute bottom-32 right-16 w-24 h-24 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
-        <div class="absolute top-1/2 left-1/3 w-16 h-16 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 rounded-full blur-2xl animate-pulse" style="animation-delay: 4s;"></div>
+        <!-- 极简网格背景 -->
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20"></div>
         
-        <!-- 网格背景 -->
-        <div class="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(96,165,250,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(96,165,250,0.02)_1px,transparent_1px)] bg-[size:60px_60px] opacity-40"></div>
+        <!-- 顶部微光 -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-primary/5 blur-[120px] rounded-full opacity-30"></div>
     </div>
 
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <!-- 页面标题区域 -->
         <div class="text-center mb-16 lg:mb-20">
             <!-- 标签 -->
-            <div class="inline-flex items-center px-6 py-3 rounded-2xl bg-white/80 dark:bg-gray-800/80 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-8 border border-blue-200/50 dark:border-blue-800/50 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 group cursor-default">
-                <div class="w-2.5 h-2.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mr-3 animate-pulse"></div>
-                <span class="tracking-wide">全部内容</span>
-                <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div class="inline-flex items-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm shadow-sm mb-8">
+                <span class="text-sm font-medium text-muted-foreground tracking-wide">全部内容</span>
             </div>
             
             <!-- 主标题 -->
-            <h1 class="text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.05] tracking-tight mb-8 font-heading">
-                <span class="bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent">
-                    周刊归档
-                </span>
+            <h1 class="text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-tight mb-8 font-heading text-foreground">
+                周刊归档
             </h1>
             
             <!-- 副标题 -->
-            <p class="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed font-light mb-6">
+            <p class="text-xl lg:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-light mb-10">
                 探索我们精心整理的技术周刊合集，每一期都是前端技术世界的精华摘要
             </p>
             
             <!-- 统计信息 -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 text-gray-500 dark:text-gray-400">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 text-muted-foreground">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center">
-                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center border border-border">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                         </svg>
                     </div>
-                    <span class="text-lg font-medium">共 <strong class="text-gray-900 dark:text-white">{weeklyList.length}</strong> 期周刊</span>
+                    <span class="text-lg font-medium">共 <strong class="text-foreground">{weeklyList.length}</strong> 期周刊</span>
                 </div>
-                <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 hidden sm:block"></div>
+                <div class="w-px h-8 bg-border hidden sm:block"></div>
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-xl flex items-center justify-center">
-                        <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center border border-border">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
@@ -87,28 +81,27 @@ const weeklyList = await getWeeklyPosts()
         </div>
 
         <!-- 底部装饰区域 -->
+        <!-- 底部装饰区域 -->
         <div class="text-center">
             <!-- 装饰性分隔线 -->
-            <div class="flex items-center justify-center mb-8">
-                <div class="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent flex-1 max-w-32"></div>
-                <div class="mx-6 flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm font-medium">
-                    <div class="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+            <div class="flex items-center justify-center mb-12">
+                <div class="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1 max-w-[200px]"></div>
+                <div class="mx-6 flex items-center gap-2 text-muted-foreground text-sm font-medium">
                     <span class="tracking-wide">持续更新中</span>
-                    <div class="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
                 </div>
-                <div class="h-px bg-gradient-to-l from-transparent via-gray-300 dark:via-gray-600 to-transparent flex-1 max-w-32"></div>
+                <div class="h-px bg-gradient-to-l from-transparent via-border to-transparent flex-1 max-w-[200px]"></div>
             </div>
             
             <!-- 回到顶部按钮 -->
             <button 
                 onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-                class="inline-flex items-center gap-3 px-6 py-3 bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 group"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-secondary text-foreground rounded-full border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 group"
                 aria-label="回到顶部"
             >
-                <svg class="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                 </svg>
-                <span class="font-medium tracking-wide">回到顶部</span>
+                <span class="font-medium tracking-wide text-sm">回到顶部</span>
             </button>
         </div>
     </div>

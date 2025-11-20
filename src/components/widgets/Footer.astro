@@ -26,8 +26,8 @@ export interface Props {
 const {socialLinks = [], secondaryLinks = [], links = [], footNote = '', theme = 'light'} = Astro.props;
 ---
 
-<footer class:list={[{dark: theme === 'dark'}, 'relative border-t border-gray-200 dark:border-gray-800 not-prose']}>
-    <div class='dark:bg-dark absolute inset-0 pointer-events-none' aria-hidden='true'></div>
+<footer class:list={[{dark: theme === 'dark'}, 'relative border-t border-border not-prose']}>
+    <div class='bg-page absolute inset-0 pointer-events-none' aria-hidden='true'></div>
     <div
         class='relative max-w-7xl mx-auto px-4 sm:px-6 dark:text-gray-300 intersect-once intersect-quarter intercept-no-queue motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
         <div class='grid grid-cols-12 gap-4 gap-y-8 sm:gap-8 py-8 md:py-12'>
@@ -41,7 +41,7 @@ const {socialLinks = [], secondaryLinks = [], links = [], footNote = '', theme =
                             <>
                                 {index !== 0 ? ' · ' : ''}
                                 <a
-                                    class='text-muted hover:text-gray-700 dark:text-gray-400 hover:underline transition duration-150 ease-in-out'
+                                    class='text-muted-foreground hover:text-foreground hover:underline transition duration-150 ease-in-out'
                                     href={href}
                                     set:html={text}
                                 />
@@ -59,7 +59,7 @@ const {socialLinks = [], secondaryLinks = [], links = [], footNote = '', theme =
                                 {links.map(({text, href, ariaLabel}) => (
                                     <li class='mb-2'>
                                         <a
-                                            class='text-muted hover:text-gray-700 hover:underline dark:text-gray-400 transition duration-150 ease-in-out'
+                                            class='text-muted-foreground hover:text-foreground hover:underline transition duration-150 ease-in-out'
                                             href={href}
                                             aria-label={ariaLabel}>
                                             <Fragment set:html={text} />

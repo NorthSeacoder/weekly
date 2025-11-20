@@ -86,13 +86,13 @@ const getCategoryStyle = (category) => {
         <header
             class='space-y-6 mb-8 max-w-4xl mx-auto px-6 sm:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
             <h1
-                class='text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-gray-900 dark:text-white'>
+                class='text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-default'>
                 {post.title}
             </h1>
             
             {/* 顶部信息栏 */}
-            <div class="flex flex-col sm:flex-row sm:items-center gap-4 border-b border-gray-200/70 dark:border-gray-700/30 pb-6">
-                <div class='flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400'>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 border-b border-border pb-6">
+                <div class='flex flex-wrap gap-4 text-sm text-muted-foreground'>
                     <span class='flex items-center'>
                         <Icon name='tabler:calendar' class='w-4 h-4 inline-block mr-2' />
                         <time datetime={String(post.date)} class='inline-block'>{post.date}</time>
@@ -130,11 +130,11 @@ const getCategoryStyle = (category) => {
                             <section
                                 class={cn(
                                     'p-8 rounded-xl',
-                                    'border border-gray-200/70 dark:border-gray-700/40',
+                                    'border border-border',
                                     'transition-all duration-300',
-                                    'bg-white/80 dark:bg-gray-800/30',
-                                    'hover:border-gray-300 dark:hover:border-gray-600',
-                                    'hover:shadow-lg dark:hover:shadow-gray-900/30',
+                                    'bg-card',
+                                    'hover:border-gray-600',
+                                    'hover:shadow-lg hover:shadow-black/20',
                                     'backdrop-blur-sm'
                                 )}>
                                 {/* 分类与来源 */}
@@ -151,7 +151,7 @@ const getCategoryStyle = (category) => {
                                     )}
                                     {section.source && (
                                         <a href={section.source} target="_blank" rel="noopener noreferrer" 
-                                           class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center transition-colors group">
+                                           class="text-muted-foreground hover:text-primary flex items-center transition-colors group">
                                             <span class="mr-1.5 group-hover:underline">来源</span>
                                             <Icon name="tabler:external-link" class="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                                         </a>
@@ -167,14 +167,14 @@ const getCategoryStyle = (category) => {
                                 <div 
                                     class={cn(
                                         'prose prose-lg mx-auto',
-                                        'dark:prose-invert prose-headings:scroll-mt-[80px]',
-                                        'prose-headings:font-bold prose-headings:tracking-tight prose-headings:leading-tight prose-headings:text-gray-900 dark:prose-headings:text-white',
-                                        'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:underline-offset-4 prose-a:transition-all',
+                                        'prose-invert prose-headings:scroll-mt-[80px]',
+                                        'prose-headings:font-bold prose-headings:tracking-tight prose-headings:leading-tight prose-headings:text-foreground',
+                                        'prose-a:text-primary prose-a:font-medium prose-a:underline-offset-4 prose-a:transition-all',
                                         'prose-img:rounded-xl prose-img:shadow-md prose-img:my-8',
-                                        'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed',
-                                        'prose-li:my-1 prose-li:text-gray-700 dark:prose-li:text-gray-300',
-                                        'prose-pre:bg-gray-100 dark:prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-300 dark:prose-pre:border-gray-700 prose-pre:rounded-lg',
-                                        'prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-code:bg-gray-100 dark:prose-code:bg-gray-800/70 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none'
+                                        'prose-p:text-muted-foreground prose-p:leading-relaxed',
+                                        'prose-li:my-1 prose-li:text-muted-foreground',
+                                        'prose-pre:bg-surface prose-pre:border prose-pre:border-border prose-pre:rounded-lg',
+                                        'prose-code:text-foreground prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none'
                                     )}>
                                     <Fragment set:html={section.content} />
                                 </div>

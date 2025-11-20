@@ -98,7 +98,7 @@ const getVariantClasses = (themeIndex: number) => {
             return cn(
                 'bg-gray-100 dark:bg-gray-800',
                 'text-gray-600 dark:text-gray-400',
-                'border-0',
+                'border border-black/5 dark:border-white/20', // Added subtle border
                 'transition-colors duration-200',
                 'hover:bg-gray-200 dark:hover:bg-gray-700'
             );
@@ -132,10 +132,9 @@ const getVariantClasses = (themeIndex: number) => {
             );
         case 'minimal':
             return cn(
-                'bg-gray-100/60 dark:bg-gray-800/40',
-                'text-gray-600 dark:text-gray-400',
-                'border-transparent backdrop-blur-sm',
-                'hover:bg-gray-200/60 dark:hover:bg-gray-700/50'
+                'bg-primary/10 text-primary',
+                'border border-primary/10 backdrop-blur-sm',
+                'group-hover:bg-primary/20 group-hover:border-primary/20 transition-colors duration-300'
             );
         default:
             return cn(
@@ -151,7 +150,7 @@ const getVariantClasses = (themeIndex: number) => {
 const baseTagClasses = cn(
     sizeClasses[size],
     'relative inline-flex items-center justify-center',
-    'font-medium rounded-full',
+    'font-medium rounded-[2px]',
     'transition-all duration-300 ease-out',
     'cursor-default select-none',
     'overflow-hidden group',
@@ -161,12 +160,11 @@ const baseTagClasses = cn(
 const remainingTagClasses = cn(
     sizeClasses[size],
     'relative inline-flex items-center justify-center',
-    'font-semibold rounded-full',
-    'bg-gray-200 dark:bg-gray-700',
-    'text-gray-500 dark:text-gray-400',
-    'border-0',
-    'transition-colors duration-200',
-    'hover:bg-gray-300 dark:hover:bg-gray-600',
+    'font-semibold rounded-[2px]',
+    'bg-primary/5 text-primary/80',
+    'border border-primary/5',
+    'transition-colors duration-300',
+    'group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/10',
     'cursor-default select-none',
     'overflow-hidden'
 );

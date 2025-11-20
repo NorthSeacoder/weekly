@@ -23,51 +23,61 @@ const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
 
 const cardClasses = cn(
     'group relative overflow-hidden h-full',
-    'p-8 lg:p-10 rounded-xl transition-all duration-500 ease-out',
-    'bg-white dark:bg-gray-900',
-    'border border-gray-100 dark:border-gray-800',
-    'hover:border-gray-200 dark:hover:border-gray-700',
-    'hover:shadow-lg hover:shadow-gray-500/5 dark:hover:shadow-black/20',
-    'hover:-translate-y-1',
+    'p-6 lg:p-8 rounded-[2px] transition-all duration-500 ease-out',
+    'bg-card border border-white/5',
+    'hover:shadow-[inset_0_0_60px_-15px_rgba(255,255,255,0.1)]', // Inner glow
+    'hover:border-white/10', // Subtle border change
+    'hover:-translate-y-0.5', // Reduced movement
     'cursor-pointer transform-gpu',
-    'focus-within:ring-1 focus-within:ring-gray-300 dark:focus-within:ring-gray-700'
+    'focus-within:ring-2 focus-within:ring-primary/50'
 );
 ---
 
 <div class={cardClasses}>
-    <!-- New Badge - 重新设计 -->
+    <!-- 细微的渐变背景 -->
+    <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+    <!-- New Badge -->
     {isNew && (
-        <div class="absolute top-4 right-4 z-20">
-            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+        <div class="absolute top-5 right-5 z-20">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase bg-primary text-primary-foreground shadow-sm">
+                NEW
+            </span>
         </div>
     )}
 
     <!-- 内容区域 -->
     <div class="relative z-10 h-full flex flex-col">
+        <!-- 装饰性序号/图标 (可选，这里用圆点代替) -->
+        <div class="mb-6 flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-primary/60 group-hover:bg-primary transition-colors duration-300"></div>
+            <div class="h-px w-8 bg-border group-hover:bg-primary/30 transition-colors duration-300"></div>
+        </div>
+
         <!-- 主标题 -->
-        <h3 class="responsive-title font-medium text-gray-900 dark:text-white mb-6 transition-colors duration-300 font-heading leading-tight">
+        <h3 class="responsive-title font-bold text-[1.35rem] leading-relaxed text-foreground mb-4 transition-colors duration-300 font-heading group-hover:text-primary">
             {title}
         </h3>
         
         <!-- 底部信息区域 -->
-        <div class="mt-auto space-y-4">
+        <div class="mt-auto space-y-6">
             <!-- 标签 -->
             {tags.length > 0 && (
-                <div class="flex flex-wrap gap-1.5">
-                    <Tags tags={tags} maxVisible={4} variant="modern" size="sm" compact />
+                <div class="flex flex-wrap gap-2">
+                    <Tags tags={tags} maxVisible={3} variant="minimal" size="sm" compact />
                 </div>
             )}
             
             <!-- 日期和装饰 -->
-            <div class="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-gray-800">
-                <div class="flex items-center text-gray-400 dark:text-gray-500 text-sm">
-                    <time datetime={date.toString()} class="font-medium tracking-wide">{formattedDate}</time>
+            <div class="flex items-center justify-between pt-5 border-t border-border/40">
+                <div class="flex items-center text-muted-foreground text-xs font-medium tracking-wide">
+                    <time datetime={date.toString()} class="opacity-70 group-hover:opacity-100 transition-opacity duration-300">{formattedDate}</time>
                 </div>
                 
-                <!-- 简约箭头 -->
-                <div class="flex items-center justify-center w-6 h-6 transition-transform duration-300 group-hover:translate-x-1">
-                    <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                <!-- 箭头 -->
+                <div class="flex items-center justify-center w-8 h-8 rounded-full bg-secondary group-hover:bg-primary text-muted-foreground group-hover:text-primary-foreground transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-[-45deg]">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                 </div>
             </div>
@@ -109,18 +119,18 @@ const cardClasses = cn(
     /* 智能响应式标题 */
     .responsive-title {
         /* 基础字体大小 */
-        font-size: clamp(1.125rem, 4vw, 1.5rem);
+        font-size: clamp(1.25rem, 4vw, 1.75rem);
         line-height: 1.3;
         
-        /* 单行显示，超出省略 */
-        white-space: nowrap;
+        /* 多行显示，超出省略 */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
         
         /* 最小高度确保布局一致性 */
-        min-height: 1.8em;
-        display: flex;
-        align-items: center;
+        min-height: 2.6em; /* 2 lines approx */
     }
     
     /* 容器查询支持 - 现代浏览器优化 */
@@ -131,28 +141,28 @@ const cardClasses = cn(
         
         @container (max-width: 280px) {
             .responsive-title {
-                font-size: 1rem;
+                font-size: 1.125rem;
                 line-height: 1.2;
             }
         }
         
         @container (min-width: 281px) and (max-width: 320px) {
             .responsive-title {
-                font-size: 1.125rem;
+                font-size: 1.25rem;
                 line-height: 1.25;
             }
         }
         
         @container (min-width: 321px) and (max-width: 360px) {
             .responsive-title {
-                font-size: 1.25rem;
+                font-size: 1.375rem;
                 line-height: 1.3;
             }
         }
         
         @container (min-width: 361px) {
             .responsive-title {
-                font-size: 1.5rem;
+                font-size: 1.75rem;
                 line-height: 1.3;
             }
         }
@@ -165,28 +175,28 @@ const cardClasses = cn(
         }
         
         .responsive-title {
-            font-size: 1rem;
+            font-size: 1.125rem;
             line-height: 1.2;
         }
     }
     
     @media (min-width: 481px) and (max-width: 640px) {
         .responsive-title {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             line-height: 1.25;
         }
     }
     
     @media (min-width: 641px) and (max-width: 768px) {
         .responsive-title {
-            font-size: 1.25rem;
+            font-size: 1.375rem;
             line-height: 1.3;
         }
     }
     
     @media (min-width: 769px) {
         .responsive-title {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             line-height: 1.3;
         }
     }

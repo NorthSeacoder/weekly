@@ -63,28 +63,27 @@ const sizeVariants = {
 // 样式变体
 const variants = {
   primary: cn(
-    'bg-gray-900 dark:bg-white',
-    'text-white dark:text-gray-900 border-transparent',
-    'hover:bg-gray-800 dark:hover:bg-gray-100',
-    'focus:ring-gray-500/50'
+    'bg-primary',
+    'text-primary-foreground border-transparent',
+    'hover:bg-primary-hover',
+    'focus:ring-primary/50'
   ),
   secondary: cn(
-    'bg-gray-100 dark:bg-gray-800',
-    'text-gray-900 dark:text-white border-gray-200 dark:border-gray-700',
-    'hover:bg-gray-200 dark:hover:bg-gray-700',
+    'bg-secondary',
+    'text-secondary-foreground border-border',
+    'hover:bg-secondary-hover',
     'focus:ring-gray-500/50'
   ),
   tertiary: cn(
-    'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
-    'border-gray-200 dark:border-gray-700',
-    'hover:bg-gray-200 dark:hover:bg-gray-700',
-    'hover:text-gray-900 dark:hover:text-white',
+    'bg-transparent text-muted-foreground',
+    'border-border',
+    'hover:bg-secondary hover:text-foreground',
     'focus:ring-gray-500/50'
   ),
   ghost: cn(
-    'bg-transparent text-gray-700 dark:text-gray-300 border-transparent',
-    'hover:bg-gray-100 dark:hover:bg-gray-800',
-    'hover:text-gray-900 dark:hover:text-white',
+    'bg-transparent text-muted-foreground border-transparent',
+    'hover:bg-secondary',
+    'hover:text-foreground',
     'focus:ring-gray-500/50'
   ),
   destructive: cn(
