@@ -3,6 +3,9 @@ import {Icon} from 'astro-icon/components';
 import {cn} from '~/utils/utils';
 import Tags from '~/components/ui/Tags.astro';
 import TableOfContents from '~/components/common/TableOfContents.astro';
+import StructuredData from '~/components/common/StructuredData.astro';
+import Breadcrumbs from '~/components/common/Breadcrumbs.astro';
+import ShareButtons from '~/components/common/ShareButtons.astro';
 import type {BlogPost} from '@/types/blog';
 import slugify from 'limax';
 
@@ -11,6 +14,12 @@ export interface Props {
 }
 
 const {post} = Astro.props;
+
+// 面包屑数据
+const breadcrumbItems = [
+    { name: '博客', href: '/blog' },
+    { name: post.title }
+];
 
 // 为标题生成锚点并构建目录数据
 const headingRegex = /<h([2-3])([^>]*)>([\s\S]*?)<\/h\1>/gi;
@@ -51,8 +60,30 @@ contentWithAnchors = contentWithAnchors.replace(headingRegex, (match, level, att
         <div class="flex flex-col xl:flex-row gap-8">
             <!-- 主文章内容 -->
             <article class="flex-1 bg-white/80 dark:bg-gray-900/50 py-6 sm:py-8 md:py-12 rounded-2xl shadow-sm border border-gray-200/40 dark:border-gray-700/30 backdrop-blur-sm">
+                <StructuredData
+                    type="article"
+                    data={{
+                        title: post.title,
+                        description: post.desc,
+                        datePublished: post.date,
+                        dateModified: post.lastUpdated || post.date,
+                        tags: post.tags,
+                        category: post.category,
+                        wordCount: post.wordCount,
+                        url: post.permalink,
+                        image: post.cover || undefined
+                    }}
+                />
+                <StructuredData
+                    type="breadcrumb"
+                    data={{ items: [{ name: '首页', url: '/' }, { name: '博客', url: '/blog' }, { name: post.title }] }}
+                />
                 <header
                     class='space-y-6 sm:space-y-8 mb-8 sm:mb-12 max-w-4xl mx-auto px-4 sm:px-6 md:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
+                    
+                    <!-- 面包屑导航 -->
+                    <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+                    
                     <div class="mb-6">
                         <h1
                             class='text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-gray-900 dark:text-white mb-3'>
@@ -137,11 +168,20 @@ contentWithAnchors = contentWithAnchors.replace(headingRegex, (match, level, att
                 
                 {/* 文章页脚 */}
                 <footer class="max-w-4xl mx-auto mt-12 sm:mt-20 px-4 sm:px-6 md:px-8 border-t border-gray-200/60 dark:border-gray-700/40 pt-6 sm:pt-8">
-                    <div class="flex justify-between items-center">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <a href="/blog" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100/50 dark:hover:bg-gray-800/30 rounded-lg transition-all duration-200 group">
                             <Icon name="tabler:chevron-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1" />
                             <span class="font-medium">返回文章列表</span>
                         </a>
+
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-muted-foreground">分享</span>
+                            <ShareButtons
+                                url={post.permalink}
+                                title={post.title}
+                                description={post.desc || ''}
+                            />
+                        </div>
                     </div>
                 </footer>
             </article>

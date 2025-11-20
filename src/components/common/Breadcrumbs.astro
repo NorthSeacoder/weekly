@@ -1,0 +1,47 @@
+---
+export interface BreadcrumbItem {
+  name: string;
+  href?: string;
+}
+
+export interface Props {
+  items: BreadcrumbItem[];
+  className?: string;
+}
+
+const { items = [], className = '' } = Astro.props;
+const homeUrl = '/';
+const breadcrumbs = [
+  { name: '首页', href: homeUrl },
+  ...items.filter((item) => item.name)
+];
+---
+
+<nav aria-label="面包屑" class={`text-sm text-muted-foreground ${className}`} data-breadcrumb>
+  <ol class="flex flex-wrap items-center gap-1">
+    {breadcrumbs.map((item, index) => (
+      <li class="flex items-center gap-2">
+        {index > 0 && (
+          <span class="text-muted-foreground/60">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </span>
+        )}
+
+        {item.href ? (
+          <a
+            href={item.href}
+            class="px-2 py-1 rounded-lg transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            {item.name}
+          </a>
+        ) : (
+          <span class="px-2 py-1 rounded-lg bg-secondary text-foreground">
+            {item.name}
+          </span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
