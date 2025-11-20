@@ -91,3 +91,56 @@
 .dd *:first-child {
   margin-top: 0;
 }
+
+/* 修复滚动条被固定 header 遮挡的问题 */
+html {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-y: visible;
+  overflow-x: hidden;
+}
+
+/* 确保页面内容从正确位置开始，但滚动条从顶部开始 */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* 优化滚动条样式（适配暗色主题） */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* 暗色模式下的滚动条样式 */
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.3);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.5);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}

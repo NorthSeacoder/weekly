@@ -86,12 +86,12 @@ jobs:
                       ${{ runner.os }}-astro
             
             - name: Install Node.js
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: '18.x'
+                  node-version: '22.x'
 
             - name: Install pnpm
-              run: npm install -g pnpm@9.14.4
+              run: npm install -g pnpm@latest
 
             - name: Install pnpm dependencies
               run: |

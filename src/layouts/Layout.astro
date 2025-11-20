@@ -6,7 +6,6 @@ import { I18N } from 'weekly:config';
 import CommonMeta from '~/components/common/CommonMeta.astro';
 import Favicons from '~/components/Favicons.astro';
 import CustomStyles from '~/components/CustomStyles.astro';
-import ApplyColorMode from '~/components/common/ApplyColorMode.astro';
 import Metadata from '~/components/common/Metadata.astro';
 import StructuredData from '~/components/common/StructuredData.astro';
 import Analytics from '~/components/common/Analytics.astro';
@@ -38,7 +37,7 @@ const { language, textDirection } = I18N;
     <ClientRouter fallback="swap" />
   </head>
 
-  <body class="antialiased text-default bg-page tracking-tight">
+  <body class="antialiased text-default bg-page tracking-tight pt-16">
     <slot />
 
     <BasicScripts />

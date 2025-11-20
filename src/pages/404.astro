@@ -13,26 +13,26 @@ const recommendedPosts = weeklyPosts.slice(0, 3);
 ---
 
 <Layout metadata={{ title }}>
-  <div class="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
-    <!-- 动态背景 -->
-    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent-warm/5 dark:from-primary/10 dark:to-accent-warm/10"></div>
+  <div class="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden bg-black">
+    <!-- 深色背景层 -->
+    <div class="absolute inset-0 bg-black"></div>
     
-    <!-- 装饰性元素 -->
-    <div class="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-    <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent-warm/10 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+    <!-- 装饰性元素 - 增强发光效果 -->
+    <div class="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl animate-float"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent-warm/25 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
     
     <!-- 主内容 -->
     <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="max-w-4xl mx-auto">
         
-        <!-- 玻璃拟态卡片 -->
-        <div class="glass-effect rounded-3xl p-8 sm:p-12 shadow-2xl backdrop-blur-xl border border-white/20 dark:border-gray-700/30">
+        <!-- 深色卡片 -->
+        <div class="glass-effect rounded-2xl p-8 sm:p-12 shadow-2xl backdrop-blur-xl border border-gray-700/50">
           
           <!-- 404 数字 -->
           <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-32 h-32 sm:w-40 sm:h-40 mb-6 relative">
               <!-- 背景光晕 -->
-              <div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent-warm/20 rounded-full blur-2xl animate-pulse"></div>
+              <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent-warm/30 rounded-full blur-2xl animate-pulse"></div>
               
               <!-- 404 图标 -->
               <div class="relative">
@@ -59,7 +59,7 @@ const recommendedPosts = weeklyPosts.slice(0, 3);
             <div class="max-w-xl mx-auto">
               <button
                 type="button"
-                class="w-full flex items-center gap-3 px-6 py-4 bg-secondary hover:bg-secondary-hover border border-border rounded-xl transition-all duration-300 group hover:shadow-lg"
+                class="w-full flex items-center gap-3 px-6 py-4 bg-secondary hover:bg-secondary-hover border border-border rounded-2xl transition-all duration-300 group hover:shadow-lg"
                 data-search-trigger
               >
                 <Icon name="tabler:search" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -85,7 +85,7 @@ const recommendedPosts = weeklyPosts.slice(0, 3);
                 {recommendedPosts.map((post, index) => (
                   <a
                     href={post.permalink}
-                    class="group block p-4 bg-surface hover:bg-surface-hover border border-border rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+                    class="group block p-4 bg-surface hover:bg-surface-hover border border-border rounded-2xl transition-all duration-300 hover:shadow-md hover:-translate-y-1"
                     style={`animation: fadeInUp 0.6s ease-out ${0.5 + index * 0.1}s both;`}
                   >
                     <div class="flex items-start gap-3">
@@ -130,7 +130,7 @@ const recommendedPosts = weeklyPosts.slice(0, 3);
             
             <Button
               href={getPermalink('/blog')}
-              variant="ghost"
+              variant="secondary"
               size="lg"
               icon="tabler:article"
               class="w-full sm:w-auto"
@@ -143,7 +143,7 @@ const recommendedPosts = weeklyPosts.slice(0, 3);
           <div class="mt-10 pt-8 border-t border-border text-center animate-fade-in-up" style="animation-delay: 0.7s;">
             <p class="text-sm text-muted-foreground">
               如果你认为这是一个错误，请
-              <a href="https://github.com/yourusername/yourrepo/issues" class="text-primary hover:underline" target="_blank" rel="noopener">
+              <a href="https://github.com/NorthSeacoder/weekly/issues" class="text-primary hover:underline" target="_blank" rel="noopener">
                 报告问题
               </a>
             </p>
@@ -156,14 +156,10 @@ const recommendedPosts = weeklyPosts.slice(0, 3);
 </Layout>
 
 <style>
-  /* 玻璃拟态效果增强 */
+  /* 深色玻璃拟态效果 */
   .glass-effect {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(17, 24, 39, 0.85);
     backdrop-filter: blur(20px) saturate(180%);
-  }
-  
-  .dark .glass-effect {
-    background: rgba(17, 24, 39, 0.7);
   }
   
   /* 浮动动画 */

@@ -2,6 +2,7 @@
 import {Icon} from 'astro-icon/components';
 import {cn} from '~/utils/utils';
 import Tags from '~/components/ui/Tags.astro';
+import dayjs from 'dayjs';
 
 // import {getPermalink} from '~/utils/permalinks';
 
@@ -28,6 +29,9 @@ const sections = await Promise.all(
         source: section.source
     }))
 );
+
+// 格式化日期
+const formattedDate = dayjs(post.date).format('YYYY年MM月DD日');
 
 // 生成分类的颜色映射
 const categoryColors = {
@@ -81,41 +85,60 @@ const getCategoryStyle = (category) => {
 };
 ---
 
-<section class='py-8 sm:py-16 lg:py-20 mx-auto'>
-    <article class="py-6 sm:py-10 rounded-xl max-w-5xl mx-auto">
-        <header
-            class='space-y-6 mb-8 max-w-4xl mx-auto px-6 sm:px-8 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
-            <h1
-                class='text-4xl md:text-5xl font-bold leading-tight tracking-tight font-heading text-default'>
-                {post.title}
-            </h1>
-            
-            {/* 顶部信息栏 */}
-            <div class="flex flex-col sm:flex-row sm:items-center gap-4 border-b border-border pb-6">
-                <div class='flex flex-wrap gap-4 text-sm text-muted-foreground'>
-                    <span class='flex items-center'>
-                        <Icon name='tabler:calendar' class='w-4 h-4 inline-block mr-2' />
-                        <time datetime={String(post.date)} class='inline-block'>{post.date}</time>
+<section class='bg-page min-h-screen relative overflow-hidden'>
+    <!-- 背景装饰元素 -->
+    <div class="absolute inset-0 pointer-events-none">
+        <!-- 极简网格背景 -->
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20"></div>
+        
+        <!-- 顶部微光 -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-primary/5 blur-[120px] rounded-full opacity-30"></div>
+    </div>
+
+    <article class="py-8 sm:py-12 lg:py-16 max-w-5xl mx-auto relative z-10">
+        <!-- 页面标题区域 -->
+        <header class='mb-12 lg:mb-16 max-w-4xl mx-auto px-6 sm:px-8'>
+            <div class="text-center space-y-6">
+                <!-- 周刊标签 -->
+                <div class="inline-flex items-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm shadow-sm">
+                    <Icon name='tabler:article' class='w-4 h-4 mr-2 text-primary' />
+                    <span class="text-sm font-medium text-muted-foreground tracking-wide">技术周刊</span>
+                </div>
+                
+                <!-- 周刊标题 -->
+                <h1 class='text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight font-heading text-foreground'>
+                    {post.title}
+                </h1>
+                
+                <!-- 元信息 -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-sm text-muted-foreground pt-4">
+                    <span class='flex items-center gap-2'>
+                        <Icon name='tabler:calendar' class='w-4 h-4' />
+                        <time datetime={String(post.date)} class='inline-block'>{formattedDate}</time>
                     </span>
-                    {
-                        post.wordCount && (
-                            <span class='flex items-center'>
-                                <Icon
-                                    name='tabler:file-word'
-                                    class='w-4 h-4 inline-block mr-2'
-                                />
+                    {post.wordCount && (
+                        <>
+                            <div class="w-px h-4 bg-border hidden sm:block"></div>
+                            <span class='flex items-center gap-2'>
+                                <Icon name='tabler:file-word' class='w-4 h-4' />
                                 {post.wordCount.toLocaleString()} 字
                             </span>
-                        )
-                    }
-                    {
-                        post.readingTime && (
-                            <span class='flex items-center'>
-                                <Icon name='tabler:clock' class='w-4 h-4 inline-block mr-2' />
+                        </>
+                    )}
+                    {post.readingTime && (
+                        <>
+                            <div class="w-px h-4 bg-border hidden sm:block"></div>
+                            <span class='flex items-center gap-2'>
+                                <Icon name='tabler:clock' class='w-4 h-4' />
                                 {post.readingTime}
                             </span>
-                        )
-                    }
+                        </>
+                    )}
+                </div>
+                
+                <!-- 装饰性分隔线 -->
+                <div class="flex items-center justify-center pt-8">
+                    <div class="h-px bg-gradient-to-r from-transparent via-border to-transparent w-full max-w-md"></div>
                 </div>
             </div>
         </header>
@@ -187,49 +210,61 @@ const getCategoryStyle = (category) => {
         
         {/* 文章导航 */}
         <div class="max-w-4xl mx-auto mt-16 px-6 sm:px-8">
-            <nav class="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 mb-8">
+            <nav class="flex flex-col sm:flex-row justify-between items-stretch gap-4 mb-8">
                 {prevPost ? (
-                    <a href={`/weekly/${prevPost.slug}`} class="group w-full sm:w-auto">
-                        <div class="flex items-center p-4 border border-gray-200/70 dark:border-gray-700/40 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-all hover:shadow-md hover:-translate-y-0.5">
-                            <Icon name="tabler:chevron-left" class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-transform group-hover:-translate-x-1" />
-                            <div class="ml-3 overflow-hidden">
-                                <p class="text-xs text-gray-500 dark:text-gray-400">上一期</p>
-                                <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{prevPost.title}</h4>
+                    <a href={`/weekly/${prevPost.slug}`} class="group flex-1 sm:max-w-[calc(50%-0.5rem)]">
+                        <div class="flex items-center h-full p-5 border border-white/5 bg-card rounded-xl hover:border-white/10 transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] hover:-translate-y-1">
+                            <Icon name="tabler:chevron-left" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all group-hover:-translate-x-1 flex-shrink-0" />
+                            <div class="ml-3 overflow-hidden min-w-0">
+                                <p class="text-xs text-muted-foreground mb-1">上一期</p>
+                                <h4 class="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{prevPost.title}</h4>
                             </div>
                         </div>
                     </a>
                 ) : (
-                    <div class="w-full sm:w-auto"></div>
+                    <div class="flex-1 sm:max-w-[calc(50%-0.5rem)]"></div>
                 )}
                 
-                <a href="/weekly" class="flex items-center justify-center w-full sm:w-auto px-5 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 border border-gray-200/70 dark:border-gray-700/40 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-all hover:shadow-md">
+                <a href="/weekly" class="flex items-center justify-center px-6 py-4 text-sm font-medium text-muted-foreground border border-white/5 bg-card rounded-xl hover:border-white/10 hover:text-foreground transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] sm:flex-shrink-0">
                     <Icon name="tabler:layout-grid" class="w-4 h-4 mr-2" />
                     所有周刊
                 </a>
                 
                 {nextPost ? (
-                    <a href={`/weekly/${nextPost.slug}`} class="group w-full sm:w-auto">
-                        <div class="flex items-center justify-end p-4 border border-gray-200/70 dark:border-gray-700/40 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-all hover:shadow-md hover:-translate-y-0.5">
-                            <div class="mr-3 overflow-hidden text-right">
-                                <p class="text-xs text-gray-500 dark:text-gray-400">下一期</p>
-                                <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{nextPost.title}</h4>
+                    <a href={`/weekly/${nextPost.slug}`} class="group flex-1 sm:max-w-[calc(50%-0.5rem)]">
+                        <div class="flex items-center justify-end h-full p-5 border border-white/5 bg-card rounded-xl hover:border-white/10 transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] hover:-translate-y-1">
+                            <div class="mr-3 overflow-hidden text-right min-w-0">
+                                <p class="text-xs text-muted-foreground mb-1">下一期</p>
+                                <h4 class="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{nextPost.title}</h4>
                             </div>
-                            <Icon name="tabler:chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-transform group-hover:translate-x-1" />
+                            <Icon name="tabler:chevron-right" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1 flex-shrink-0" />
                         </div>
                     </a>
                 ) : (
-                    <div class="w-full sm:w-auto"></div>
+                    <div class="flex-1 sm:max-w-[calc(50%-0.5rem)]"></div>
                 )}
             </nav>
         </div>
         
         {/* 文章页脚 */}
-        <footer class="max-w-4xl mx-auto mt-4 px-6 sm:px-8 border-t border-gray-200/70 dark:border-gray-700/30 pt-6 text-sm text-gray-500 dark:text-gray-400">
-            <div class="flex justify-end items-center">
-                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-                        class="flex items-center hover:text-gray-800 dark:hover:text-gray-200 transition-colors group px-3 py-2">
-                    <span class="mr-2 group-hover:underline">回到顶部</span>
-                    <Icon name="tabler:arrow-up" class="w-4 h-4 transition-transform group-hover:-translate-y-1" />
+        <footer class="max-w-4xl mx-auto mt-12 px-6 sm:px-8">
+            <!-- 装饰性分隔线 -->
+            <div class="flex items-center justify-center mb-8">
+                <div class="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1 max-w-[200px]"></div>
+                <div class="mx-6 flex items-center gap-2 text-muted-foreground text-sm font-medium">
+                    <span class="tracking-wide">·</span>
+                </div>
+                <div class="h-px bg-gradient-to-l from-transparent via-border to-transparent flex-1 max-w-[200px]"></div>
+            </div>
+            
+            <div class="flex justify-center items-center">
+                <button 
+                    onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-card text-foreground rounded-xl border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 group"
+                    aria-label="回到顶部"
+                >
+                    <Icon name="tabler:arrow-up" class="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-1" />
+                    <span class="font-medium tracking-wide text-sm">回到顶部</span>
                 </button>
             </div>
         </footer>

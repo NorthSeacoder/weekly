@@ -1,7 +1,6 @@
 ---
 import {Icon} from 'astro-icon/components';
 import Logo from '~/components/Logo.astro';
-import ToggleTheme from '~/components/common/ToggleTheme.astro';
 import ToggleMenu from '~/components/common/ToggleMenu.astro';
 import Button from '~/components/ui/Button.astro';
 import {trimSlash, getAsset, getHomePermalink, getPermalink} from '~/utils/permalinks';
@@ -20,7 +19,7 @@ export interface Props {
     isSticky?: boolean;
     isDark?: boolean;
     isFullWidth?: boolean;
-    showToggleTheme?: boolean;
+
     showRssFeed?: boolean;
     showEmail?: boolean;
     position?: string;
@@ -31,7 +30,7 @@ const {
     isSticky = false,
     isDark = false,
     isFullWidth = false,
-    showToggleTheme = false,
+
     showRssFeed = false,
     showEmail = false,
     position = 'center'
@@ -53,7 +52,7 @@ const actions: Array<CallToAction> = [];
 
 <header
     class:list={[
-        'fixed top-0 z-50 w-full transition-all duration-500 ease-out',
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out',
         'bg-page/90',
         'backdrop-blur-md',
         'border-b border-border',
@@ -133,15 +132,7 @@ const actions: Array<CallToAction> = [];
                     </a>
                 )}
                 
-                <!-- 主题切换 -->
-                {showToggleTheme && (
-                    <div class="relative">
-                        <ToggleTheme 
-                            iconClass="w-5 h-5" 
-                            class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none"
-                        />
-                    </div>
-                )}
+
                 
                 <!-- CTA 按钮 -->
                 {actions?.length ? (
