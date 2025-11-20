@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install --no-frozen-lockfile)",
+      "Bash(pnpm:*)",
+      "Bash(npm install -g pnpm@latest)",
+      "Bash(corepack enable)",
+      "Bash(corepack prepare pnpm@latest --activate)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -91,7 +91,7 @@ jobs:
                   node-version: '22.x'
 
             - name: Install pnpm
-              run: npm install -g pnpm@latest
+              run: npm install -g pnpm@8
 
             - name: Install pnpm dependencies
               run: |
