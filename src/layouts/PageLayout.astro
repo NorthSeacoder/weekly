@@ -3,6 +3,7 @@ import Layout from '~/layouts/Layout.astro';
 import Header from '~/components/widgets/Header.astro';
 import Footer from '~/components/widgets/Footer.astro';
 import Announcement from '~/components/widgets/Announcement.astro';
+import SearchModal from '~/components/common/SearchModal.astro';
 
 import { footerData } from '~/navigation';
 
@@ -16,6 +17,9 @@ const { metadata } = Astro.props;
 ---
 
 <Layout metadata={metadata}>
+  <!-- 全局搜索弹窗 -->
+  <SearchModal />
+  
   <slot name="announcement">
     <Announcement />
   </slot>
