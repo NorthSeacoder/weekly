@@ -22,17 +22,17 @@ import { Icon } from 'astro-icon/components';
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-start justify-center p-4 pt-[10vh]">
       <div
-        class="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-2xl transition-all border border-gray-200 dark:border-gray-700"
+        class="relative w-full max-w-2xl transform overflow-hidden rounded-[2px] bg-card text-foreground shadow-2xl transition-all border border-border backdrop-blur-2xl"
         data-search-container
       >
         <!-- 搜索头部 -->
-        <div class="border-b border-gray-200 dark:border-gray-700 p-4">
+        <div class="border-b border-border/70 p-4 bg-surface/70">
           <div class="flex items-center gap-3">
-            <Icon name="tabler:search" class="w-5 h-5 text-gray-400 flex-shrink-0" />
+            <Icon name="tabler:search" class="w-5 h-5 text-muted-foreground flex-shrink-0" />
             <input
               type="search"
               id="search-input"
-              class="flex-1 bg-transparent border-0 outline-none text-base text-gray-900 dark:text-white placeholder:text-gray-400"
+              class="flex-1 bg-transparent border-0 outline-none text-base text-foreground placeholder:text-muted-foreground"
               placeholder="搜索文章和周刊..."
               aria-label="搜索内容"
               aria-describedby="search-description"
@@ -41,7 +41,7 @@ import { Icon } from 'astro-icon/components';
             />
             <button
               type="button"
-              class="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              class="flex-shrink-0 p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors"
               aria-label="关闭搜索"
               data-search-close
             >
@@ -100,27 +100,27 @@ import { Icon } from 'astro-icon/components';
         </div>
 
         <!-- 底部提示 -->
-        <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-3 text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between">
-          <div class="flex items-center gap-4">
+        <div class="border-t border-border/70 px-4 py-3 text-xs text-muted-foreground flex items-center justify-between bg-surface/70">
+          <div class="flex items-center gap-3 flex-wrap">
             <span class="flex items-center gap-1">
-              <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">↑↓</kbd>
+              <kbd class="px-2 py-1 bg-secondary rounded border border-border/70">↑↓</kbd>
               <span>导航</span>
             </span>
             <span class="flex items-center gap-1">
-              <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">Enter</kbd>
+              <kbd class="px-2 py-1 bg-secondary rounded border border-border/70">Enter</kbd>
               <span>打开</span>
             </span>
             <span class="flex items-center gap-1">
-              <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">Esc</kbd>
+              <kbd class="px-2 py-1 bg-secondary rounded border border-border/70">Esc</kbd>
               <span>关闭</span>
             </span>
           </div>
-          <span class="hidden sm:flex items-center gap-1 text-gray-400 dark:text-gray-500">
-            <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">⌘</kbd>
+          <span class="hidden sm:flex items-center gap-1 text-muted-foreground">
+            <kbd class="px-2 py-1 bg-secondary rounded border border-border/70">⌘</kbd>
             <span>/</span>
-            <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">Ctrl</kbd>
+            <kbd class="px-2 py-1 bg-secondary rounded border border-border/70">Ctrl</kbd>
             <span>+</span>
-            <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600">K</kbd>
+            <kbd class="px-2 py-1 bg-secondary rounded border border-border/70">K</kbd>
           </span>
         </div>
       </div>

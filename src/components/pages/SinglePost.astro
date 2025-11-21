@@ -86,13 +86,8 @@ const getCategoryStyle = (category) => {
 ---
 
 <section class='bg-page min-h-screen relative overflow-hidden'>
-    <!-- 背景装饰元素 -->
     <div class="absolute inset-0 pointer-events-none">
-        <!-- 极简网格背景 -->
-        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20"></div>
-        
-        <!-- 顶部微光 -->
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-primary/5 blur-[120px] rounded-full opacity-30"></div>
+        <div class="absolute inset-x-0 top-[-10%] h-80 bg-[radial-gradient(circle_at_50%_35%,hsl(var(--primary)/0.12),transparent_55%)] blur-[80px]"></div>
     </div>
 
     <article class="py-8 sm:py-12 lg:py-16 max-w-5xl mx-auto relative z-10">
@@ -152,13 +147,9 @@ const getCategoryStyle = (category) => {
                         return (
                             <section
                                 class={cn(
-                                    'p-6 rounded-[2px]',
-                                    'border border-white/5',
-                                    'transition-all duration-300',
-                                    'bg-card',
-                                    'hover:border-white/10',
-                                    'hover:shadow-[inset_0_0_60px_-15px_rgba(255,255,255,0.1)]',
-                                    'backdrop-blur-sm',
+                                    'p-6 rounded-[2px] border border-border/60 bg-card/95 shadow-sm',
+                                    'transition-all duration-200',
+                                    'hover:border-primary/40 hover:shadow-md hover:-translate-y-1',
                                     'break-inside-avoid-column',
                                     'mb-6',
                                     'inline-block',

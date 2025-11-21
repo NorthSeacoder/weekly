@@ -48,10 +48,11 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
     }, {});
     const posts: WeeklyPost[] = [];
     const postsByMonth: string[] = [];
-    const baseDate = dayjs('2024-06-24');
+    let weekCount = 0;
     Object.keys(weeklyData)
         .sort()
         .forEach((week) => {
+            const weekNumber = ++weekCount;
             const items = weeklyData[week];
             const contentParts: string[] = [];
             const tags: Set<string> = new Set();
@@ -101,10 +102,8 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
             });
 
             const [startOfWeek, endOfWeek] = week.split(' to ');
-            const startOfWeekDate = dayjs(startOfWeek);
             const endOfWeekDate = dayjs(endOfWeek);
             const month = endOfWeekDate.format('YYYY-MM');
-            const weekNumber = Math.floor(startOfWeekDate.diff(baseDate, 'week'));
             postsByMonth.unshift(month);
             posts.unshift({
                 content: contentParts.join(''),

@@ -29,7 +29,20 @@ const {socialLinks = [], secondaryLinks = [], links = [], footNote = '', theme =
 <footer class:list={[{dark: theme === 'dark'}, 'relative border-t border-border not-prose']}>
     <div class='bg-page absolute inset-0 pointer-events-none' aria-hidden='true'></div>
     <div
-        class='relative max-w-7xl mx-auto px-4 sm:px-6 dark:text-gray-300 intersect-once intersect-quarter intercept-no-queue motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'>
+        class='relative max-w-7xl mx-auto px-4 sm:px-6 dark:text-gray-300'>
+        <div class='py-6 md:py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border/70'>
+            <div>
+                <p class='text-sm text-muted-foreground'>坚持更新，精选每周的前端好内容。</p>
+            </div>
+            <div class='flex items-center gap-3'>
+                <a class='inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary-hover transition' href={getHomePermalink()}>
+                    立即阅读
+                </a>
+                <a class='inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/60 transition' href='https://github.com/NorthSeacoder/weekly' target='_blank' rel='noopener'>
+                    <Icon name='tabler:star' class='w-4 h-4' /> Star
+                </a>
+            </div>
+        </div>
         <div class='grid grid-cols-12 gap-4 gap-y-8 sm:gap-8 py-8 md:py-12'>
             <div class='col-span-12 lg:col-span-4'>
                 <div class='mb-2'>

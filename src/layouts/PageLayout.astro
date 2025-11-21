@@ -2,7 +2,6 @@
 import Layout from '~/layouts/Layout.astro';
 import Header from '~/components/widgets/Header.astro';
 import Footer from '~/components/widgets/Footer.astro';
-import Announcement from '~/components/widgets/Announcement.astro';
 import SearchModal from '~/components/common/SearchModal.astro';
 import ReadingProgress from '~/components/common/ReadingProgress.astro';
 import BackToTop from '~/components/common/BackToTop.astro';
@@ -30,9 +29,6 @@ const { metadata } = Astro.props;
   
   <slot name="header">
     <Header isSticky showRssFeed />
-  </slot>
-  <slot name="announcement">
-    <Announcement />
   </slot>
   <!-- 移动端不显示 Announcement，所以只需要 Header 的高度 -->
   <!-- 桌面端需要 Header + Announcement 的高度 -->

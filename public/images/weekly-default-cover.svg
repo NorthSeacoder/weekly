@@ -1,0 +1,57 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0ea5e9"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <radialGradient id="halo1" cx="0.75" cy="0.2" r="0.9">
+      <stop offset="0" stop-color="#38bdf8" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#0b1120" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="halo2" cx="0.25" cy="0.7" r="0.8">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#0b1120" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="noise" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.08"/>
+        <feFuncG type="linear" slope="0.08"/>
+        <feFuncB type="linear" slope="0.08"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="675" fill="#0b1120"/>
+  <rect width="1200" height="675" fill="url(#bg)" opacity="0.12"/>
+  <rect width="1200" height="675" fill="url(#halo1)"/>
+  <rect width="1200" height="675" fill="url(#halo2)"/>
+
+  <g opacity="0.4" filter="url(#noise)">
+    <rect width="1200" height="675" fill="white"/>
+  </g>
+
+  <!-- 网格 -->
+  <g stroke="#ffffff" stroke-opacity="0.05" stroke-width="1">
+    <path d="M0 90H1200M0 180H1200M0 270H1200M0 360H1200M0 450H1200M0 540H1200M0 630H1200"/>
+    <path d="M120 0V675M300 0V675M480 0V675M660 0V675M840 0V675M1020 0V675"/>
+  </g>
+
+  <!-- 中心文本 -->
+  <g transform="translate(140 220)">
+    <text x="0" y="70" fill="#e2e8f0" font-family="Inter, 'Helvetica Neue', Arial, sans-serif" font-size="56" font-weight="800" letter-spacing="-0.02em">
+      我不知道的周刊
+    </text>
+    <text x="0" y="120" fill="#cbd5e1" font-family="Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="0.08em">
+      WEEKLY DIGEST · FRONTEND · AI · DESIGN · TOOLING
+    </text>
+  </g>
+
+  <!-- 角标 -->
+  <g transform="translate(980 120)" opacity="0.9">
+    <circle cx="42" cy="42" r="42" fill="#0f172a" stroke="#38bdf8" stroke-opacity="0.4"/>
+    <path d="M42 22L58 58H26L42 22Z" fill="#38bdf8" fill-opacity="0.85"/>
+    <path d="M42 34L52 58H32L42 34Z" fill="#8b5cf6" fill-opacity="0.85"/>
+  </g>
+</svg>

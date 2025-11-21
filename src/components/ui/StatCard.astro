@@ -8,9 +8,20 @@ interface StatCardProps {
     date: string | Date;
     tags?: string[];
     desc?: string;
+    cover?: string;
+    showTags?: boolean;
+    eyebrow?: string;
 }
 
-const { title, date, desc, tags = [] } = Astro.props as StatCardProps;
+const {
+    title,
+    date,
+    desc,
+    tags = [],
+    cover,
+    showTags = true,
+    eyebrow = 'Weekly'
+} = Astro.props as StatCardProps;
 
 // 格式化日期
 const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
@@ -20,24 +31,22 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
 });
 
 const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
+const titleInitials = title?.toString().trim().slice(0, 2).toUpperCase() || 'W';
+const defaultCover = '/images/weekly-default-cover.svg';
+const coverSrc = cover || defaultCover;
 
 const cardClasses = cn(
-    'group relative overflow-hidden h-full',
-    'p-6 lg:p-8 rounded-[2px] transition-all duration-500 ease-out',
-    'bg-card border border-white/5',
-    'hover:shadow-[inset_0_0_60px_-15px_rgba(255,255,255,0.1)]', // Inner glow
-    'hover:border-white/10', // Subtle border change
-    'hover:-translate-y-0.5', // Reduced movement
+    'group relative h-full',
+    'p-6 lg:p-7 rounded-[2px] transition-all duration-200 ease-out',
+    'bg-card border border-white/5 shadow-sm',
+    'hover:shadow-[inset_0_0_60px_-15px_rgba(255,255,255,0.1)]',
+    'hover:border-white/10 hover:-translate-y-0.5',
     'cursor-pointer transform-gpu',
-    'focus-within:ring-2 focus-within:ring-primary/50'
+    'focus-within:ring-2 focus-within:ring-primary/40 focus-within:ring-offset-2 focus-within:ring-offset-background'
 );
 ---
 
 <div class={cardClasses}>
-    <!-- 细微的渐变背景 -->
-    <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-
-    <!-- New Badge -->
     {isNew && (
         <div class="absolute top-5 right-5 z-20">
             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase bg-primary text-primary-foreground shadow-sm">
@@ -47,39 +56,41 @@ const cardClasses = cn(
     )}
 
     <!-- 内容区域 -->
-    <div class="relative z-10 h-full flex flex-col">
-        <!-- 装饰性序号/图标 (可选，这里用圆点代替) -->
-        <div class="mb-6 flex items-center gap-2">
-            <div class="w-1.5 h-1.5 rounded-full bg-primary/60 group-hover:bg-primary transition-colors duration-300"></div>
-            <div class="h-px w-8 bg-border group-hover:bg-primary/30 transition-colors duration-300"></div>
+    <div class="relative z-10 h-full flex flex-col space-y-5">
+        <div class="-mx-6 -mt-6 mb-5 overflow-hidden rounded-t-[2px] border-b border-border/60 bg-surface aspect-[16/9]">
+            <img src={coverSrc} alt="" class="w-full h-full object-cover" loading="lazy" />
         </div>
 
-        <!-- 主标题 -->
-        <h3 class="responsive-title font-bold text-[1.35rem] leading-relaxed text-foreground mb-4 transition-colors duration-300 font-heading group-hover:text-primary">
+        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+            <div class="w-2 h-2 rounded-full bg-primary/70"></div>
+            <span class="uppercase tracking-[0.08em]">{eyebrow}</span>
+        </div>
+
+        <h3 class="responsive-title font-semibold text-[1.3rem] leading-relaxed text-foreground font-heading">
             {title}
         </h3>
         
-        <!-- 底部信息区域 -->
-        <div class="mt-auto space-y-6">
-            <!-- 标签 -->
-            {tags.length > 0 && (
+        <div class="mt-auto space-y-5">
+            {desc && (
+                <p class="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                    {desc}
+                </p>
+            )}
+
+            {showTags && tags.length > 0 && (
                 <div class="flex flex-wrap gap-2">
                     <Tags tags={tags} maxVisible={3} variant="minimal" size="sm" compact />
                 </div>
             )}
             
-            <!-- 日期和装饰 -->
-            <div class="flex items-center justify-between pt-5 border-t border-border/40">
-                <div class="flex items-center text-muted-foreground text-xs font-medium tracking-wide">
-                    <time datetime={date.toString()} class="opacity-70 group-hover:opacity-100 transition-opacity duration-300">{formattedDate}</time>
-                </div>
-                
-                <!-- 箭头 -->
-                <div class="flex items-center justify-center w-8 h-8 rounded-full bg-secondary group-hover:bg-primary text-muted-foreground group-hover:text-primary-foreground transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-[-45deg]">
+            <div class="flex items-center justify-between pt-4 border-t border-border/60 text-sm text-muted-foreground">
+                <time datetime={date.toString()} class="opacity-80">{formattedDate}</time>
+                <span class="inline-flex items-center gap-1 text-foreground/70 group-hover:text-primary transition-colors">
+                    阅读
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
-                </div>
+                </span>
             </div>
         </div>
     </div>
