@@ -128,40 +128,42 @@ import { Icon } from 'astro-icon/components';
   </div>
 </div>
 
-<script type="module" lang="ts">
+<script>
   import Fuse from 'fuse.js';
 
-  interface SearchItem {
-    type: 'blog' | 'weekly';
-    title: string;
-    description: string;
-    tags: string[];
-    date: string;
-    permalink: string;
-    category: string;
-  }
+  /**
+   * @typedef {Object} SearchItem
+   * @property {'blog' | 'weekly'} type
+   * @property {string} title
+   * @property {string} description
+   * @property {string[]} tags
+   * @property {string} date
+   * @property {string} permalink
+   * @property {string} category
+   */
 
-  type SearchState = 'empty' | 'loading' | 'no-results' | 'results' | 'error';
+  /**
+   * @typedef {'empty' | 'loading' | 'no-results' | 'results' | 'error'} SearchState
+   */
 
   class SearchModal {
-    private modal: HTMLElement | null = null;
-    private overlay: HTMLElement | null = null;
-    private input: HTMLInputElement | null = null;
-    private resultsContainer: HTMLElement | null = null;
-    private emptyState: HTMLElement | null = null;
-    private loadingState: HTMLElement | null = null;
-    private noResultsState: HTMLElement | null = null;
-    private errorState: HTMLElement | null = null;
-    private resultsList: HTMLElement | null = null;
-    private closeBtn: HTMLElement | null = null;
-
-    private fuse: Fuse<SearchItem> | null = null;
-    private searchData: SearchItem[] = [];
-    private currentIndex = -1;
-    private debounceTimer: number | null = null;
-    private controller: AbortController = new AbortController();
-
     constructor() {
+      this.modal = null;
+      this.overlay = null;
+      this.input = null;
+      this.resultsContainer = null;
+      this.emptyState = null;
+      this.loadingState = null;
+      this.noResultsState = null;
+      this.errorState = null;
+      this.resultsList = null;
+      this.closeBtn = null;
+      this.fuse = null;
+      this.searchData = [];
+      this.currentIndex = -1;
+      this.debounceTimer = null;
+      this.controller = new AbortController();
+
       this.bindElements();
       this.registerGlobalShortcuts();
     }
@@ -172,7 +174,7 @@ import { Icon } from 'astro-icon/components';
       this.bindElements();
     }
 
-    private bindElements() {
+    bindElements() {
       this.modal = document.querySelector('[data-search-modal]');
       this.overlay = document.querySelector('[data-search-overlay]');
       this.input = document.querySelector('[data-search-input]');
@@ -233,7 +235,7 @@ import { Icon } from 'astro-icon/components';
       );
     }
 
-    private registerGlobalShortcuts() {
+    registerGlobalShortcuts() {
       document.addEventListener(
         'open-search',
         () => this.open(),
@@ -277,7 +279,7 @@ import { Icon } from 'astro-icon/components';
       this.showState('empty');
     }
 
-    private async loadSearchData() {
+    async loadSearchData() {
       this.showState('loading');
 
       try {
@@ -305,7 +307,7 @@ import { Icon } from 'astro-icon/components';
       }
     }
 
-    private handleSearch(query: string) {
+    handleSearch(query) {
       if (this.debounceTimer) {
         clearTimeout(this.debounceTimer);
       }
@@ -315,7 +317,7 @@ import { Icon } from 'astro-icon/components';
       }, 200);
     }
 
-    private performSearch(query: string) {
+    performSearch(query) {
       if (!query.trim()) {
         this.showState('empty');
         return;
@@ -337,7 +339,7 @@ import { Icon } from 'astro-icon/components';
       this.currentIndex = -1;
     }
 
-    private renderResults(results: Fuse.FuseResult<SearchItem>[]) {
+    renderResults(results) {
       if (!this.resultsList) return;
 
       const markup = results
@@ -361,7 +363,7 @@ import { Icon } from 'astro-icon/components';
       this.showState('results');
     }
 
-    private renderResultItem(item: SearchItem, index: number) {
+    renderResultItem(item, index) {
       const typeLabel = item.type === 'blog' ? '博客' : '周刊';
       const typeColor =
         item.type === 'blog'
@@ -409,7 +411,7 @@ import { Icon } from 'astro-icon/components';
       `;
     }
 
-    private handleKeyboard(event: KeyboardEvent) {
+    handleKeyboard(event) {
       const items = this.resultsList?.querySelectorAll('[data-result-item]') || [];
       if (items.length === 0) return;
 
@@ -437,13 +439,13 @@ import { Icon } from 'astro-icon/components';
       }
     }
 
-    private setActiveItem(index: number) {
+    setActiveItem(index) {
       this.currentIndex = index;
       const items = this.resultsList?.querySelectorAll('[data-result-item]') || [];
       this.updateActiveItem(items);
     }
 
-    private updateActiveItem(items: NodeListOf<Element>) {
+    updateActiveItem(items) {
       items.forEach((item, index) => {
         if (index === this.currentIndex) {
           item.classList.add('bg-gray-50', 'dark:bg-gray-800');
@@ -457,7 +459,7 @@ import { Icon } from 'astro-icon/components';
       });
     }
 
-    private showState(state: SearchState) {
+    showState(state) {
       this.emptyState?.classList.add('hidden');
       this.loadingState?.classList.add('hidden');
       this.noResultsState?.classList.add('hidden');
@@ -487,14 +489,13 @@ import { Icon } from 'astro-icon/components';
   const SEARCH_MODAL_KEY = '__search_modal_instance__';
 
   const initSearchModal = () => {
-    const globalThis = window as typeof window & { [SEARCH_MODAL_KEY]?: SearchModal };
-    if (globalThis[SEARCH_MODAL_KEY]) {
-      globalThis[SEARCH_MODAL_KEY]?.refresh();
+    if (window[SEARCH_MODAL_KEY]) {
+      window[SEARCH_MODAL_KEY].refresh();
       return;
     }
 
     const instance = new SearchModal();
-    globalThis[SEARCH_MODAL_KEY] = instance;
+    window[SEARCH_MODAL_KEY] = instance;
   };
 
   if (typeof window !== 'undefined') {

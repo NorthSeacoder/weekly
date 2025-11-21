@@ -5,7 +5,8 @@
       "Bash(pnpm:*)",
       "Bash(npm install -g pnpm@latest)",
       "Bash(corepack enable)",
-      "Bash(corepack prepare pnpm@latest --activate)"
+      "Bash(corepack prepare pnpm@latest --activate)",
+      "WebFetch(domain:codepen.io)"
     ],
     "deny": [],
     "ask": []

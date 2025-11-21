@@ -61,7 +61,7 @@ const actions: Array<CallToAction> = [];
     data-header>
     
     <div class:list={['relative mx-auto w-full px-4 sm:px-6 lg:px-8', { 'max-w-7xl': !isFullWidth }]}>
-        <div class="flex justify-between items-center h-16">
+        <div class="flex justify-between items-center h-10">
             
             <!-- Logo 区域 -->
             <div class="flex items-center group">
@@ -72,14 +72,14 @@ const actions: Array<CallToAction> = [];
                 >
                     <!-- Logo 图标容器 -->
                     <div class="relative">
-                        <div class="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center transition-all duration-200">
-                            <Icon name="tabler:rocket" class="w-5 h-5 text-white dark:text-gray-900" />
+                        <div class="w-7 h-7 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center transition-all duration-200">
+                            <Icon name="tabler:rocket" class="w-4 h-4 text-white dark:text-gray-900" />
                         </div>
                     </div>
                     
                     <!-- 站点名称 -->
                     <div class="hidden sm:block">
-                        <h1 class="text-lg font-medium text-gray-900 dark:text-white">
+                        <h1 class="text-base font-medium text-gray-900 dark:text-white">
                             我不知道的周刊
                         </h1>
                     </div>
@@ -91,7 +91,7 @@ const actions: Array<CallToAction> = [];
                 {links.map(({ text, href }) => (
                     <a
                         class:list={[
-                            'relative px-3 py-2 rounded-lg font-medium text-sm transition-colors duration-200',
+                            'relative px-3 py-1.5 rounded-lg font-medium text-sm transition-colors duration-200',
                             'hover:bg-secondary',
                             'focus:outline-none',
                             {
@@ -112,23 +112,24 @@ const actions: Array<CallToAction> = [];
                 <!-- 搜索按钮 -->
                 <button
                     type="button"
-                    class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none group"
+                    class="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none group"
                     aria-label="搜索"
                     data-search-trigger
+                    id="header-search-btn"
                 >
-                    <Icon name="tabler:search" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+                    <Icon name="tabler:search" class="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
                 </button>
                 
                 <!-- RSS 订阅 -->
                 {showRssFeed && (
                     <a
-                        class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none"
+                        class="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none"
                         aria-label="RSS 订阅"
                         href={getAsset('/rss.xml')}
                         target="_blank"
                         rel="noopener"
                     >
-                        <Icon name="tabler:rss" class="w-5 h-5" />
+                        <Icon name="tabler:rss" class="w-4 h-4" />
                     </a>
                 )}
                 
@@ -150,8 +151,8 @@ const actions: Array<CallToAction> = [];
                 
                 <!-- 移动端菜单按钮 -->
                 <div class="md:hidden">
-                    <ToggleMenu 
-                        class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none"
+                    <ToggleMenu
+                        class="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 focus:outline-none"
                     />
                 </div>
             </div>
@@ -163,7 +164,7 @@ const actions: Array<CallToAction> = [];
                 {links.map(({ text, href }) => (
                     <a
                         class:list={[
-                            'block px-4 py-3 rounded-lg font-medium text-base transition-colors duration-200',
+                            'block px-4 py-2.5 rounded-lg font-medium text-sm transition-colors duration-200',
                             'hover:bg-gray-100 dark:hover:bg-gray-800',
                             'focus:outline-none',
                             {
@@ -179,11 +180,12 @@ const actions: Array<CallToAction> = [];
 
                 <button
                     type="button"
-                    class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none"
+                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none"
                     data-search-trigger
+                    id="mobile-search-btn"
                 >
                     <span>搜索内容</span>
-                    <Icon name="tabler:search" class="w-5 h-5 text-gray-400" />
+                    <Icon name="tabler:search" class="w-4 h-4 text-gray-400" />
                 </button>
                 
                 <!-- 移动端 CTA -->

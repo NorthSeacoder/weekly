@@ -1,26 +1,79 @@
 ---
-import { getWeeklyPosts } from '@/src/utils/contents/weekly'
+import { getWeeklyPosts } from '@/src/utils/contents/unified-content'
 
 const weekly = await getWeeklyPosts()
 const latestWeekly = weekly[0]
+
 ---
 
 <div
-  class="text-muted text-sm dark:bg-dark dark:border-b dark:border-gray-50/0 dark:text-gray-400 hidden md:flex gap-1 overflow-hidden px-3 py-2 relative text-ellipsis whitespace-nowrap"
+  class="fixed top-10 left-0 right-0 z-40 bg-page border-b border-border hidden md:flex items-center justify-between px-4 py-1.5 text-sm"
+  data-announcement
 >
-  <span
-    class="dark:bg-gray-700 bg-white/40 dark:text-gray-300 font-semibold px-1 py-0.5 text-xs mr-0.5 rtl:mr-0 rtl:ml-0.5 inline-block"
-    >NEW</span
-  >
-  <a href={latestWeekly.permalink} class="text-muted hover:underline dark:text-gray-400 font-medium"
-    >{latestWeekly.title} »</a
-  >
+  <div class="flex items-center gap-2 min-w-0 flex-1">
+    <span
+      class="bg-foreground text-background font-medium px-1.5 py-0.5 text-xs rounded-[2px] flex-shrink-0"
+      >NEW</span
+    >
+    <a
+      href={latestWeekly.permalink}
+      class="text-muted-foreground hover:text-foreground font-medium transition-colors truncate"
+    >
+      {latestWeekly.title}
+    </a>
+  </div>
   <a
     target="_blank"
     rel="noopener"
-    class="ltr:ml-auto rtl:mr-auto w-[4.4rem] h-[1.2rem] ml-auto bg-contain inline-block bg-[url(https://img.shields.io/github/stars/NorthSeacoder/weekly.svg?style=social&label=Stars&maxAge=86400)]"
-    title="If you like this site, give me a star."
+    class="flex-shrink-0 ml-4 text-muted-foreground hover:text-foreground transition-colors text-xs"
+    title="如果你喜欢这个网站，给我一个 Star"
     href="https://github.com/NorthSeacoder/weekly"
   >
+    <img
+      src="https://img.shields.io/github/stars/NorthSeacoder/weekly.svg?style=social&label=Stars&maxAge=86400"
+      alt="GitHub Stars"
+      class="h-4"
+      loading="lazy"
+    />
   </a>
 </div>
+
+<script is:inline>
+  (function() {
+    function initAnnouncement() {
+      const announcement = document.querySelector('[data-announcement]');
+
+      if (!announcement) return;
+
+      // 检查元素是否实际可见
+      const isVisible = window.getComputedStyle(announcement).display !== 'none';
+      if (!isVisible) return;
+
+      function updateAnnouncement() {
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        const maxScroll = 150;
+        const progress = Math.min(scrollY / maxScroll, 1);
+
+        announcement.style.transform = 'translateY(' + (-progress * 100) + '%)';
+        announcement.style.opacity = (1 - progress).toString();
+      }
+
+      // 使用 requestAnimationFrame 持续检查滚动位置
+      function checkScroll() {
+        updateAnnouncement();
+        requestAnimationFrame(checkScroll);
+      }
+      checkScroll();
+    }
+
+    // 立即执行
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAnnouncement);
+    } else {
+      initAnnouncement();
+    }
+
+    // Astro 页面导航
+    document.addEventListener('astro:page-load', initAnnouncement);
+  })();
+</script>

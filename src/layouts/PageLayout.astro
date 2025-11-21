@@ -28,13 +28,15 @@ const { metadata } = Astro.props;
   <!-- 返回顶部按钮 -->
   <BackToTop />
   
-  <slot name="announcement">
-    <Announcement />
-  </slot>
   <slot name="header">
     <Header isSticky showRssFeed />
   </slot>
-  <main>
+  <slot name="announcement">
+    <Announcement />
+  </slot>
+  <!-- 移动端不显示 Announcement，所以只需要 Header 的高度 -->
+  <!-- 桌面端需要 Header + Announcement 的高度 -->
+  <main class="pt-10 md:pt-[76px]">
     <slot />
   </main>
   <slot name="footer">

@@ -97,16 +97,16 @@ const getCategoryStyle = (category) => {
 
     <article class="py-8 sm:py-12 lg:py-16 max-w-5xl mx-auto relative z-10">
         <!-- 页面标题区域 -->
-        <header class='mb-12 lg:mb-16 max-w-4xl mx-auto px-6 sm:px-8'>
+        <header class='mb-12 lg:mb-16 max-w-7xl mx-auto px-6 sm:px-8'>
             <div class="text-center space-y-6">
                 <!-- 周刊标签 -->
-                <div class="inline-flex items-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm shadow-sm">
+                <div class="inline-flex items-center px-4 py-1.5 rounded-[2px] border border-white/10 bg-white/5 backdrop-blur-sm shadow-sm">
                     <Icon name='tabler:article' class='w-4 h-4 mr-2 text-primary' />
                     <span class="text-sm font-medium text-muted-foreground tracking-wide">技术周刊</span>
                 </div>
                 
                 <!-- 周刊标题 -->
-                <h1 class='text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight font-heading text-foreground'>
+                <h1 class='text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight font-heading text-foreground' data-scroll-title>
                     {post.title}
                 </h1>
                 
@@ -144,27 +144,31 @@ const getCategoryStyle = (category) => {
         </header>
         
         {/* 文章内容 */}
-        <div class='mx-auto max-w-4xl px-6 sm:px-8'>
-            <div class="space-y-8">
+        <div class='mx-auto max-w-7xl px-6 sm:px-8'>
+            <div class="columns-1 lg:columns-2 gap-6">
                 {
                     sections?.map((section, index) => {
                         const categoryStyle = getCategoryStyle(section.category);
                         return (
                             <section
                                 class={cn(
-                                    'p-8 rounded-xl',
+                                    'p-6 rounded-[2px]',
                                     'border border-white/5',
                                     'transition-all duration-300',
                                     'bg-card',
                                     'hover:border-white/10',
                                     'hover:shadow-[inset_0_0_60px_-15px_rgba(255,255,255,0.1)]',
-                                    'backdrop-blur-sm'
+                                    'backdrop-blur-sm',
+                                    'break-inside-avoid-column',
+                                    'mb-6',
+                                    'inline-block',
+                                    'w-full'
                                 )}>
                                 {/* 分类与来源 */}
-                                <div class="flex justify-between items-center mb-5 text-sm">
+                                <div class="flex justify-between items-center mb-4 text-sm">
                                     {section.category && (
                                         <span class={cn(
-                                            "px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 border border-black/5 dark:border-white/10",
+                                            "px-3 py-1.5 rounded-[2px] font-medium flex items-center gap-1.5 border border-black/5 dark:border-white/10",
                                             categoryStyle.bg,
                                             categoryStyle.text
                                         )}>
@@ -180,23 +184,23 @@ const getCategoryStyle = (category) => {
                                         </a>
                                     )}
                                 </div>
-                                
+
                                 {/* 标签 */}
-                                <div class='mb-6'>
+                                <div class='mb-4'>
                                     <Tags tags={section.tags} maxVisible={5} compact={true} variant="minimal" />
                                 </div>
                                 
                                 {/* 内容 */}
-                                <div 
+                                <div
                                     class={cn(
-                                        'prose prose-lg mx-auto',
+                                        'prose prose-sm lg:prose-base',
                                         'prose-invert prose-headings:scroll-mt-[80px]',
                                         'prose-headings:font-bold prose-headings:tracking-tight prose-headings:leading-tight prose-headings:text-foreground',
                                         'prose-a:text-primary prose-a:font-medium prose-a:underline-offset-4 prose-a:transition-all',
-                                        'prose-img:rounded-xl prose-img:shadow-md prose-img:my-8',
+                                        'prose-img:rounded-[2px] prose-img:shadow-md prose-img:my-4',
                                         'prose-p:text-muted-foreground prose-p:leading-relaxed',
                                         'prose-li:my-1 prose-li:text-muted-foreground',
-                                        'prose-pre:bg-surface prose-pre:border prose-pre:border-border prose-pre:rounded-lg',
+                                        'prose-pre:bg-surface prose-pre:border prose-pre:border-border prose-pre:rounded-[2px]',
                                         'prose-code:text-foreground prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none'
                                     )}>
                                     <Fragment set:html={section.content} />
@@ -209,11 +213,11 @@ const getCategoryStyle = (category) => {
         </div>
         
         {/* 文章导航 */}
-        <div class="max-w-4xl mx-auto mt-16 px-6 sm:px-8">
+        <div class="max-w-7xl mx-auto mt-16 px-6 sm:px-8">
             <nav class="flex flex-col sm:flex-row justify-between items-stretch gap-4 mb-8">
                 {prevPost ? (
                     <a href={`/weekly/${prevPost.slug}`} class="group flex-1 sm:max-w-[calc(50%-0.5rem)]">
-                        <div class="flex items-center h-full p-5 border border-white/5 bg-card rounded-xl hover:border-white/10 transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] hover:-translate-y-1">
+                        <div class="flex items-center h-full p-5 border border-white/5 bg-card rounded-[2px] hover:border-white/10 transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] hover:-translate-y-1">
                             <Icon name="tabler:chevron-left" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all group-hover:-translate-x-1 flex-shrink-0" />
                             <div class="ml-3 overflow-hidden min-w-0">
                                 <p class="text-xs text-muted-foreground mb-1">上一期</p>
@@ -225,14 +229,14 @@ const getCategoryStyle = (category) => {
                     <div class="flex-1 sm:max-w-[calc(50%-0.5rem)]"></div>
                 )}
                 
-                <a href="/weekly" class="flex items-center justify-center px-6 py-4 text-sm font-medium text-muted-foreground border border-white/5 bg-card rounded-xl hover:border-white/10 hover:text-foreground transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] sm:flex-shrink-0">
+                <a href="/weekly" class="flex items-center justify-center px-6 py-4 text-sm font-medium text-muted-foreground border border-white/5 bg-card rounded-[2px] hover:border-white/10 hover:text-foreground transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] sm:flex-shrink-0">
                     <Icon name="tabler:layout-grid" class="w-4 h-4 mr-2" />
                     所有周刊
                 </a>
                 
                 {nextPost ? (
                     <a href={`/weekly/${nextPost.slug}`} class="group flex-1 sm:max-w-[calc(50%-0.5rem)]">
-                        <div class="flex items-center justify-end h-full p-5 border border-white/5 bg-card rounded-xl hover:border-white/10 transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] hover:-translate-y-1">
+                        <div class="flex items-center justify-end h-full p-5 border border-white/5 bg-card rounded-[2px] hover:border-white/10 transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] hover:-translate-y-1">
                             <div class="mr-3 overflow-hidden text-right min-w-0">
                                 <p class="text-xs text-muted-foreground mb-1">下一期</p>
                                 <h4 class="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{nextPost.title}</h4>
@@ -247,7 +251,7 @@ const getCategoryStyle = (category) => {
         </div>
         
         {/* 文章页脚 */}
-        <footer class="max-w-4xl mx-auto mt-12 px-6 sm:px-8">
+        <footer class="max-w-7xl mx-auto mt-12 px-6 sm:px-8">
             <!-- 装饰性分隔线 -->
             <div class="flex items-center justify-center mb-8">
                 <div class="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1 max-w-[200px]"></div>
@@ -258,9 +262,9 @@ const getCategoryStyle = (category) => {
             </div>
             
             <div class="flex justify-center items-center">
-                <button 
-                    onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-card text-foreground rounded-xl border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 group"
+                <button
+                    onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-card text-foreground rounded-[2px] border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 group"
                     aria-label="回到顶部"
                 >
                     <Icon name="tabler:arrow-up" class="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-1" />
@@ -272,6 +276,24 @@ const getCategoryStyle = (category) => {
 </section>
 
 <style>
+    /* 滚动视差动效 - 标题 */
+    [data-scroll-title] {
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    }
+
+    /* 瀑布流布局优化 */
+    .columns-1,
+    .lg\:columns-2 {
+        column-fill: balance;
+    }
+
+    /* 防止卡片被分割到两列 */
+    section {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+    }
+
     /* 字体优化 */
     article {
         --font-sans: 'Noto Sans SC', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -611,7 +633,51 @@ const getCategoryStyle = (category) => {
     
     // 页面加载完成后执行
     document.addEventListener('DOMContentLoaded', addLanguageLabelsToCodeBlocks);
-    
+
     // 对于使用 Astro View Transitions 的页面，监听导航事件
     document.addEventListener('astro:page-load', addLanguageLabelsToCodeBlocks);
+
+    // 滚动动效 - 标题
+    function initScrollAnimations() {
+        const title = document.querySelector('[data-scroll-title]');
+        if (!title) return;
+
+        let ticking = false;
+
+        function updateTitle() {
+            const rect = title.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            // 计算元素在视口中的位置（0 = 顶部，1 = 底部）
+            const elementTop = rect.top;
+            const elementHeight = rect.height;
+
+            // 当标题开始离开视口顶部时开始动画
+            if (elementTop < windowHeight * 0.3 && elementTop > -elementHeight) {
+                const progress = Math.max(0, Math.min(1, (windowHeight * 0.3 - elementTop) / (windowHeight * 0.3)));
+
+                title.style.opacity = String(1 - progress * 0.7);
+                title.style.transform = `translateY(-${progress * 30}px) scale(${1 - progress * 0.03})`;
+            } else if (elementTop >= windowHeight * 0.3) {
+                // 标题在视口中，完全可见
+                title.style.opacity = '1';
+                title.style.transform = 'translateY(0) scale(1)';
+            }
+
+            ticking = false;
+        }
+
+        function onScroll() {
+            if (!ticking) {
+                requestAnimationFrame(updateTitle);
+                ticking = true;
+            }
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        updateTitle(); // 初始化
+    }
+
+    document.addEventListener('DOMContentLoaded', initScrollAnimations);
+    document.addEventListener('astro:page-load', initScrollAnimations);
 </script>
