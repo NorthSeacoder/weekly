@@ -205,7 +205,7 @@ export class WeeklyService {
                             id: issue.id.toString(),
                             slug: issue.slug,
                             title: issue.title,
-                            date: issue.published_at,
+                            date: issue.end_date,
                             content: content,
                             sections: sections,
                             tags: tags,
