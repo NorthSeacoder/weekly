@@ -1,22 +1,9 @@
 ---
-import { structuredContentToText } from '@/lib/structured-content'
 import { getWeeklyPosts } from '~/utils/contents/unified-content'
 import StatCard from '~/components/ui/StatCard.astro'
 import { cn } from '~/utils/utils'
 
 const weeklyList = await getWeeklyPosts()
-
-const getExcerpt = (raw?: unknown) => {
-    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
-        const summary = (raw as any).summary || (raw as any).description || (raw as any).desc;
-        if (typeof summary === 'string') {
-            return summary.trim().slice(0, 140);
-        }
-    }
-    const text = structuredContentToText(raw as any);
-    if (!text) return '';
-    return text.replace(/\s+/g, ' ').trim().slice(0, 140);
-};
 ---
 
 <section class="py-16 lg:py-20 bg-page min-h-screen relative overflow-hidden">
@@ -38,7 +25,7 @@ const getExcerpt = (raw?: unknown) => {
             </div>
             
             <!-- 主标题 -->
-            <h1 class="text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-tight mb-8 font-heading text-foreground">
+            <h1 class="text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] tracking-tight mb-8 font-heading text-transparent bg-clip-text bg-gradient-to-b from-foreground to-foreground/70">
                 周刊归档
             </h1>
             

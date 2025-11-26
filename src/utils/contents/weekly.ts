@@ -9,13 +9,6 @@ import {getPermalink} from '../permalinks';
 
 type Dayjs = dayjs.Dayjs;
 
-interface Metadata {
-    tags: string[];
-    source: string;
-    date: string;
-    category: string;
-}
-
 export type DataItem = EnhancedEntry<'weekly'>;
 
 // 固定的 category 顺序
@@ -100,7 +93,6 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
             const sections: Section[] = [];
             let totalWordCount: number = 0;
             let totalReadingMinutes: number = 0;
-            let lastUpdated: Date | undefined = undefined;
 
             // 首先处理每个 item 并创建对应的 section
             items.forEach((item) => {
@@ -145,15 +137,6 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
 
                 const wordsFromMetaOrContent = sectionWordCount ?? (plainContent ? getReadingTime(plainContent).words : 0);
                 totalWordCount += wordsFromMetaOrContent;
-                // if (item.data.lastUpdated) {
-                //     if (!lastUpdated || item.data.lastUpdated > lastUpdated) {
-                //         lastUpdated = item.data.lastUpdated;
-                //     }
-                // }
-
-                if (item.data.wordCount) {
-                    totalWordCount += item.data.wordCount;
-                }
             });
 
             // 按照固定的 category 顺序处理内容
@@ -181,7 +164,6 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
                 date: endOfWeek,
                 title: `我不知道的周刊第 ${weekNumber} 期`,
                 permalink: getPermalink(String(weekNumber), 'weekly'),
-                lastUpdated: lastUpdated ? dayjs(lastUpdated).format('YYYY-MM-DD HH:mm:ss') : undefined,
                 wordCount: totalWordCount || undefined,
                 sections: sections.sort((a, b) => {
                     // 按照 categoryOrder 的顺序排序 sections
