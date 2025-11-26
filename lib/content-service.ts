@@ -1,5 +1,6 @@
 import { query, initDatabase } from './database';
 import { getCachedData } from './cache';
+import { parseStructuredContent } from './structured-content';
 import type { RowDataPacket } from 'mysql2/promise';
 import type { WeeklyPost, Section } from '@/types/weekly';
 import type { BlogPost } from '@/types/blog';
@@ -199,20 +200,34 @@ export class WeeklyService {
                         const sections = await this.getWeeklyIssueSections(issue.id);
                         const tags = this.extractTagsFromSections(sections);
                         const sources = this.extractSourcesFromSections(sections);
-                        const content = this.generateWeeklyContent(sections);
+                        const sectionsWordCount = sections.reduce((acc, s) => acc + (s.wordCount || 0), 0);
+                        const sectionsReading = sections.reduce((acc, s) => {
+                            if (typeof s.readingTime === 'number') return acc + s.readingTime;
+                            if (typeof s.readingTime === 'string') {
+                                const parsed = parseFloat(s.readingTime);
+                                return Number.isFinite(parsed) ? acc + parsed : acc;
+                            }
+                            return acc;
+                        }, 0);
+                        const totalWordCount = issue.total_word_count || sectionsWordCount || undefined;
+                        const readingMinutes =
+                            issue.reading_time ||
+                            sectionsReading ||
+                            (totalWordCount ? Math.max(1, Math.ceil(totalWordCount / 200)) : undefined);
                         
                         posts.push({
                             id: issue.id.toString(),
                             slug: issue.slug,
                             title: issue.title,
                             date: issue.end_date,
-                            content: content,
+                            cover:issue.cover,
+                            desc: issue.desc,
                             sections: sections,
                             tags: tags,
                             source: sources,
                             permalink: getPermalink(issue.slug, 'weekly'),
-                            readingTime: `${issue.reading_time} 分钟`,
-                            wordCount: issue.total_word_count
+                            readingTime: readingMinutes ? `${readingMinutes} 分钟` : undefined,
+                            wordCount: totalWordCount
                         });
                     }
                     
@@ -238,6 +253,13 @@ export class WeeklyService {
                     c.title,
                     c.content,
                     c.source,
+                    c.source_url,
+                    c.image_url,
+                    c.description,
+                    c.summary,
+                    c.word_count,
+                    c.reading_time,
+                    c.screenshot_api,
                     cat.name as category_name,
                     GROUP_CONCAT(t.name SEPARATOR ',') as tags
                 FROM weekly_content_items wci
@@ -253,10 +275,17 @@ export class WeeklyService {
             const rows = await query<RowDataPacket[]>(sql, [issueId]);
             
             return rows.map(row => ({
-                content: row.content,
+                content: parseStructuredContent(row.content),
                 tags: row.tags ? row.tags.split(',').map((tag: string) => tag.trim()) : [],
                 category: row.category_name,
-                source: row.source
+                source: row.source || row.source_url,
+                source_url: row.source_url,
+                title: row.title,
+                summary: row.summary || row.description,
+                image_url: row.image_url,
+                wordCount: row.word_count,
+                readingTime: row.reading_time,
+                screenshot_api: row.screenshot_api
             }));
             
         } catch (error) {
@@ -270,9 +299,13 @@ export class WeeklyService {
      */
     private static extractTagsFromSections(sections: Section[]): string[] {
         const tagSet = new Set<string>();
-        sections.forEach(section => {
-            section.tags.forEach(tag => tagSet.add(tag));
-        });
+        for (const section of sections) {
+            for (const tag of section.tags) {
+                if (tagSet.size >= 10) break;
+                tagSet.add(tag);
+            }
+            if (tagSet.size >= 10) break;
+        }
         return Array.from(tagSet);
     }
     
@@ -289,38 +322,6 @@ export class WeeklyService {
         return Array.from(sourceSet);
     }
 
-    /**
-     * 生成周刊完整内容（按分类组织）
-     */
-    private static generateWeeklyContent(sections: Section[]): string {
-        // 固定的分类顺序
-        const categoryOrder = ['工具', '文章', '教程', '言论', 'bug', '面试题', 'repos', 'bigones', '网站', 'prompt', 'demo'];
-        
-        // 按分类分组
-        const categorizedSections: Record<string, Section[]> = {};
-        sections.forEach(section => {
-            const category = section.category || '其他';
-            if (!categorizedSections[category]) {
-                categorizedSections[category] = [];
-            }
-            categorizedSections[category].push(section);
-        });
-        
-        // 按固定顺序生成内容
-        const contentParts: string[] = [];
-        
-        categoryOrder.forEach(category => {
-            if (categorizedSections[category]) {
-                contentParts.push(`\n## ${category}\n`);
-                categorizedSections[category].forEach(section => {
-                    contentParts.push(section.content);
-                    contentParts.push('\n');
-                });
-            }
-        });
-        
-        return contentParts.join('');
-    }
 }
 
 // 所有服务已通过 export class 导出 

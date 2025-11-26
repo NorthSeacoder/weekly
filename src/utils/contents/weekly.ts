@@ -1,6 +1,7 @@
 import {getCachedData} from '@/lib/cache';
+import {parseStructuredContent, structuredContentToText} from '@/lib/structured-content';
 import getReadingTime from 'reading-time';
-import type {PostsByMonth, WeeklyPost, Section} from '@/types/weekly';
+import type {PostsByMonth, WeeklyPost, Section, StructuredContent} from '@/types/weekly';
 import dayjs from 'dayjs';
 import {getEnhancedCollection} from './content-utils';
 import type {EnhancedEntry} from './content-utils';
@@ -25,6 +26,44 @@ function removeFrontmatter(content: string | undefined): string {
     const frontmatterRegex = /^---\n[\s\S]*?\n---\n/;
     return content?.replace(frontmatterRegex, '') || '';
 }
+
+const getSourceFromContent = (content: StructuredContent): string | undefined => {
+    if (!content || typeof content !== 'object' || Array.isArray(content)) return undefined;
+    const possible = (content as any).source_url;
+    return typeof possible === 'string' ? possible : undefined;
+};
+
+const getWordCountFromContent = (content: StructuredContent): number | undefined => {
+    if (!content || typeof content !== 'object' || Array.isArray(content)) return undefined;
+    const wc = (content as any).word_count ?? (content as any).wordCount;
+    return typeof wc === 'number' ? wc : undefined;
+};
+
+const getReadingTimeFromContent = (content: StructuredContent): number | undefined => {
+    if (!content || typeof content !== 'object' || Array.isArray(content)) return undefined;
+    const rt = (content as any).reading_time ?? (content as any).readingTime;
+    if (typeof rt === 'number') return rt;
+    const parsed = typeof rt === 'string' ? parseFloat(rt) : Number(rt);
+    return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const getTitleFromContent = (content: StructuredContent): string | undefined => {
+    if (!content || typeof content !== 'object' || Array.isArray(content)) return undefined;
+    const title = (content as any).title;
+    return typeof title === 'string' ? title : undefined;
+};
+
+const getSummaryFromContent = (content: StructuredContent): string | undefined => {
+    if (!content || typeof content !== 'object' || Array.isArray(content)) return undefined;
+    const summary = (content as any).summary || (content as any).description;
+    return typeof summary === 'string' ? summary : undefined;
+};
+
+const getImageFromContent = (content: StructuredContent): string | undefined => {
+    if (!content || typeof content !== 'object' || Array.isArray(content)) return undefined;
+    const img = (content as any).image_url;
+    return typeof img === 'string' ? img : undefined;
+};
 
 export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMonth: PostsByMonth} {
     // 获取一周的开始和结束日期
@@ -60,6 +99,7 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
             const categories: Record<string, string[]> = {};
             const sections: Section[] = [];
             let totalWordCount: number = 0;
+            let totalReadingMinutes: number = 0;
             let lastUpdated: Date | undefined = undefined;
 
             // 首先处理每个 item 并创建对应的 section
@@ -69,19 +109,42 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
                     categories[category] = [];
                 }
                 const contentWithoutFrontmatter = removeFrontmatter(item.body);
-                categories[category].push('\n', contentWithoutFrontmatter);
+                const structuredContent = parseStructuredContent(contentWithoutFrontmatter);
+                const plainContent = structuredContentToText(structuredContent);
+                categories[category].push('\n', plainContent);
 
                 // 为每个 item 创建一个 section
+                const derivedSource = item.data.source || getSourceFromContent(structuredContent);
+                const sectionWordCount = item.data.wordCount ?? getWordCountFromContent(structuredContent);
+                const sectionReading = getReadingTimeFromContent(structuredContent);
+                const sectionTitle = item.data.title || getTitleFromContent(structuredContent);
+                const sectionSummary = getSummaryFromContent(structuredContent);
+                const sectionImage = getImageFromContent(structuredContent);
                 sections.push({
-                    content: contentWithoutFrontmatter,
+                    content: structuredContent,
                     tags: item.data.tags,
                     category: item.data.category,
-                    source: item.data.source
+                    source: derivedSource,
+                    source_url: derivedSource,
+                    title: sectionTitle,
+                    summary: sectionSummary,
+                    description: sectionSummary,
+                    image_url: sectionImage,
+                    wordCount: sectionWordCount,
+                    readingTime: sectionReading
                 });
 
                 item.data.tags.forEach((tag) => tags.add(tag));
-                source.add(item.data.source);
+                if (derivedSource) {
+                    source.add(derivedSource);
+                }
 
+                if (sectionReading) {
+                    totalReadingMinutes += sectionReading;
+                }
+
+                const wordsFromMetaOrContent = sectionWordCount ?? (plainContent ? getReadingTime(plainContent).words : 0);
+                totalWordCount += wordsFromMetaOrContent;
                 // if (item.data.lastUpdated) {
                 //     if (!lastUpdated || item.data.lastUpdated > lastUpdated) {
                 //         lastUpdated = item.data.lastUpdated;
@@ -96,7 +159,7 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
             // 按照固定的 category 顺序处理内容
             categoryOrder.forEach((category) => {
                 if (categories[category]) {
-                    contentParts.push(`\n## ${category} \n`);
+                    contentParts.push(`\n${category}:\n`);
                     contentParts.push(...categories[category]);
                 }
             });
@@ -105,9 +168,12 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
             const endOfWeekDate = dayjs(endOfWeek);
             const month = endOfWeekDate.format('YYYY-MM');
             postsByMonth.unshift(month);
+            const readingMinutes =
+                totalReadingMinutes ||
+                (totalWordCount ? Math.max(1, Math.ceil(totalWordCount / 200)) : Math.ceil(getReadingTime(contentParts.join('')).minutes));
             posts.unshift({
                 content: contentParts.join(''),
-                readingTime: getReadingTime(contentParts.join('')).text,
+                readingTime: readingMinutes ? `${readingMinutes} 分钟` : undefined,
                 tags: Array.from(tags),
                 source: Array.from(source),
                 id: month,
@@ -115,7 +181,7 @@ export function processData(data: DataItem[]): {posts: WeeklyPost[]; postsByMont
                 date: endOfWeek,
                 title: `我不知道的周刊第 ${weekNumber} 期`,
                 permalink: getPermalink(String(weekNumber), 'weekly'),
-                lastUpdated: lastUpdated ?? dayjs(lastUpdated).format('YYYY-MM-DD HH:mm:ss'),
+                lastUpdated: lastUpdated ? dayjs(lastUpdated).format('YYYY-MM-DD HH:mm:ss') : undefined,
                 wordCount: totalWordCount || undefined,
                 sections: sections.sort((a, b) => {
                     // 按照 categoryOrder 的顺序排序 sections

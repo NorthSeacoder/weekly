@@ -31,7 +31,6 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
 });
 
 const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
-const titleInitials = title?.toString().trim().slice(0, 2).toUpperCase() || 'W';
 const defaultCover = '/images/weekly-default-cover.svg';
 const coverSrc = cover || defaultCover;
 

@@ -7,29 +7,14 @@ import dayjs from 'dayjs';
 // import {getPermalink} from '~/utils/permalinks';
 
 import type {WeeklyPost} from '@/types/weekly';
-import {remark} from 'remark';
-import html from 'remark-html';
 
 export interface Props {
     post: WeeklyPost;
     prevPost?: WeeklyPost;
     nextPost?: WeeklyPost;
 }
-async function processMarkdown(markdownString) {
-    const result = await remark().use(html).process(markdownString);
-    return result.value;
-}
-
 const {post, prevPost, nextPost} = Astro.props;
-const sections = await Promise.all(
-    post.sections.map(async (section) => ({
-        content: await processMarkdown(section.content),
-        tags: section.tags,
-        category: section.category,
-        source: section.source
-    }))
-);
-
+const sections = post.sections ?? [];
 // 格式化日期
 const formattedDate = dayjs(post.date).format('YYYY年MM月DD日');
 
@@ -140,66 +125,58 @@ const getCategoryStyle = (category) => {
         
         {/* 文章内容 */}
         <div class='mx-auto max-w-7xl px-6 sm:px-8'>
-            <div class="columns-1 lg:columns-2 gap-6">
-                {
-                    sections?.map((section, index) => {
-                        const categoryStyle = getCategoryStyle(section.category);
-                        return (
-                            <section
-                                class={cn(
-                                    'p-6 rounded-[2px] border border-border/60 bg-card/95 shadow-sm',
-                                    'transition-all duration-200',
-                                    'hover:border-primary/40 hover:shadow-md hover:-translate-y-1',
-                                    'break-inside-avoid-column',
-                                    'mb-6',
-                                    'inline-block',
-                                    'w-full'
-                                )}>
-                                {/* 分类与来源 */}
-                                <div class="flex justify-between items-center mb-4 text-sm">
-                                    {section.category && (
-                                        <span class={cn(
-                                            "px-3 py-1.5 rounded-[2px] font-medium flex items-center gap-1.5 border border-black/5 dark:border-white/10",
-                                            categoryStyle.bg,
-                                            categoryStyle.text
-                                        )}>
-                                            <Icon name={categoryStyle.icon} class="w-4 h-4" />
-                                            {section.category}
-                                        </span>
-                                    )}
-                                    {section.source && (
-                                        <a href={section.source} target="_blank" rel="noopener noreferrer" 
-                                           class="text-muted-foreground hover:text-primary flex items-center transition-colors group">
-                                            <span class="mr-1.5 group-hover:underline">来源</span>
-                                            <Icon name="tabler:external-link" class="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                                        </a>
-                                    )}
-                                </div>
-
-                                {/* 标签 */}
-                                <div class='mb-4'>
-                                    <Tags tags={section.tags} maxVisible={5} compact={true} variant="minimal" />
-                                </div>
-                                
-                                {/* 内容 */}
-                                <div
-                                    class={cn(
-                                        'prose prose-sm lg:prose-base',
-                                        'prose-invert prose-headings:scroll-mt-[80px]',
-                                        'prose-headings:font-bold prose-headings:tracking-tight prose-headings:leading-tight prose-headings:text-foreground',
-                                        'prose-a:text-primary prose-a:font-medium prose-a:underline-offset-4 prose-a:transition-all',
-                                        'prose-img:rounded-[2px] prose-img:shadow-md prose-img:my-4',
-                                        'prose-p:text-muted-foreground prose-p:leading-relaxed',
-                                        'prose-li:my-1 prose-li:text-muted-foreground',
-                                        'prose-pre:bg-surface prose-pre:border prose-pre:border-border prose-pre:rounded-[2px]',
-                                        'prose-code:text-foreground prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none'
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {sections.map((section) => {
+                    const categoryStyle = getCategoryStyle(section.category);
+                    return (
+                        <section
+                            class={cn(
+                                'p-6 rounded-[2px] border border-border/60 bg-card/95 shadow-sm',
+                                'transition-all duration-200',
+                                'hover:border-primary/40 hover:shadow-md hover:-translate-y-1',
+                                'mb-6',
+                                'w-full flex flex-col gap-3'
+                            )}>
+                            <div class="flex justify-between items-center text-sm">
+                                {section.category && (
+                                    <span class={cn(
+                                        "px-3 py-1.5 rounded-[2px] font-medium flex items-center gap-1.5 border border-black/5 dark:border-white/10",
+                                        categoryStyle.bg,
+                                        categoryStyle.text
                                     )}>
-                                    <Fragment set:html={section.content} />
+                                        <Icon name={categoryStyle.icon} class="w-4 h-4" />
+                                        {section.category}
+                                    </span>
+                                )}
+                                {section.source_url && (
+                                    <a href={section.source_url} target="_blank" rel="noopener noreferrer" 
+                                       class="text-muted-foreground hover:text-primary flex items-center transition-colors group">
+                                        <span class="mr-1.5 group-hover:underline">来源</span>
+                                        <Icon name="tabler:external-link" class="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                    </a>
+                                )}
+                            </div>
+
+                            {section.title && (
+                                <h3 class="text-lg font-semibold text-foreground leading-tight">{section.title}</h3>
+                            )}
+
+                            {section.image_url && (
+                                <div class="overflow-hidden rounded border border-border/60">
+                                    <img src={section.image_url} alt={section.title || 'section image'} class="w-full object-cover" loading="lazy" />
                                 </div>
-                            </section>
-                        )
-                    })
-                }
+                            )}
+
+                            {(section.summary || section.description) && (
+                                <p class="text-muted-foreground leading-relaxed">
+                                    {section.summary || section.description}
+                                </p>
+                            )}
+
+                            <Tags tags={section.tags} maxVisible={5} compact={true} variant="minimal" />
+                        </section>
+                    )
+                })}
             </div>
         </div>
         
@@ -627,48 +604,4 @@ const getCategoryStyle = (category) => {
 
     // 对于使用 Astro View Transitions 的页面，监听导航事件
     document.addEventListener('astro:page-load', addLanguageLabelsToCodeBlocks);
-
-    // 滚动动效 - 标题
-    function initScrollAnimations() {
-        const title = document.querySelector('[data-scroll-title]');
-        if (!title) return;
-
-        let ticking = false;
-
-        function updateTitle() {
-            const rect = title.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-
-            // 计算元素在视口中的位置（0 = 顶部，1 = 底部）
-            const elementTop = rect.top;
-            const elementHeight = rect.height;
-
-            // 当标题开始离开视口顶部时开始动画
-            if (elementTop < windowHeight * 0.3 && elementTop > -elementHeight) {
-                const progress = Math.max(0, Math.min(1, (windowHeight * 0.3 - elementTop) / (windowHeight * 0.3)));
-
-                title.style.opacity = String(1 - progress * 0.7);
-                title.style.transform = `translateY(-${progress * 30}px) scale(${1 - progress * 0.03})`;
-            } else if (elementTop >= windowHeight * 0.3) {
-                // 标题在视口中，完全可见
-                title.style.opacity = '1';
-                title.style.transform = 'translateY(0) scale(1)';
-            }
-
-            ticking = false;
-        }
-
-        function onScroll() {
-            if (!ticking) {
-                requestAnimationFrame(updateTitle);
-                ticking = true;
-            }
-        }
-
-        window.addEventListener('scroll', onScroll, { passive: true });
-        updateTitle(); // 初始化
-    }
-
-    document.addEventListener('DOMContentLoaded', initScrollAnimations);
-    document.addEventListener('astro:page-load', initScrollAnimations);
 </script>

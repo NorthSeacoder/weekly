@@ -1,20 +1,21 @@
 ---
+import { structuredContentToText } from '@/lib/structured-content'
 import { getWeeklyPosts } from '~/utils/contents/unified-content'
 import StatCard from '~/components/ui/StatCard.astro'
 import { cn } from '~/utils/utils'
 
 const weeklyList = await getWeeklyPosts()
 
-const getExcerpt = (raw?: string) => {
-    if (!raw) return '';
-    return raw
-        .replace(/`{1,3}[\s\S]*?`{1,3}/g, '')
-        .replace(/\!\[.*?\]\(.*?\)/g, '')
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-        .replace(/[#>*\-]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .slice(0, 140);
+const getExcerpt = (raw?: unknown) => {
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+        const summary = (raw as any).summary || (raw as any).description || (raw as any).desc;
+        if (typeof summary === 'string') {
+            return summary.trim().slice(0, 140);
+        }
+    }
+    const text = structuredContentToText(raw as any);
+    if (!text) return '';
+    return text.replace(/\s+/g, ' ').trim().slice(0, 140);
 };
 ---
 
@@ -85,7 +86,7 @@ const getExcerpt = (raw?: string) => {
                         <StatCard
                             title={weekly.title}
                             date={weekly.date}
-                            desc={getExcerpt(weekly.sections?.[0]?.content || weekly.content)}
+                            desc={weekly.desc}
                             showTags={false}
                         />
                     </a>
