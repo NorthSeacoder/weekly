@@ -4,7 +4,8 @@ import fs from 'fs';
 import {remark} from 'remark';
 import gemoji from 'remark-gemoji';
 import html from 'remark-html';
-import {getWeeklyPosts} from './lib/weekly';
+import {WeeklyService} from './lib/content-service';
+import {structuredContentToText} from './lib/structured-content';
 
 dotenv.config({path: './.env'});
 
@@ -21,7 +22,7 @@ const generateRssFeed = async () => {
         name: AUTHOR_NAME,
         link: SITE_URL
     };
-    const posts = await getWeeklyPosts();
+    const posts = await WeeklyService.getWeeklyPosts();
 
     const latestPosts = posts.slice(0, 12).filter((i) => i);
     const feed = new Feed({
@@ -41,12 +42,17 @@ const generateRssFeed = async () => {
     });
 
     latestPosts.forEach((post) => {
+        // 从 sections 中提取内容
+        const contentText = post.sections
+            ?.map(section => structuredContentToText(section.content))
+            .join('\n\n') || '';
+
         feed.addItem({
             title: post.title,
             id: `${SITE_URL}/weekly/${post.slug}`,
             link: `${SITE_URL}/weekly/${post.slug}`,
-            description: post.title || '',
-            content: markdownToHtml(post.content),
+            description: post.desc || post.title || '',
+            content: markdownToHtml(contentText),
             date: new Date(post.date),
             author: [author],
             category: post.tags ? post.tags.map(tag => ({ name: tag })) : []
@@ -54,9 +60,9 @@ const generateRssFeed = async () => {
     });
 
     const rssOutput = feed.rss2();
-    
+
     const styleSheetProcessingInstruction = '<?xml-stylesheet href="/pretty-feed-v3.xsl" type="text/xsl"?>';
-    
+
     const finalRssOutput = rssOutput.replace(
         '<?xml version="1.0" encoding="utf-8"?>',
         '<?xml version="1.0" encoding="utf-8"?>\n' + styleSheetProcessingInstruction
@@ -65,7 +71,7 @@ const generateRssFeed = async () => {
     if (!fs.existsSync('./public/pretty-feed-v3.xsl')) {
         console.warn('警告: public目录中未找到pretty-feed-v3.xsl文件。RSS样式将不会生效。');
     }
-    
+
     fs.writeFileSync(`./dist/rss.xml`, finalRssOutput, 'utf8');
     console.log('RSS feed 生成成功，已应用样式表。');
 };

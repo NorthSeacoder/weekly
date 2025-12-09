@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { structuredContentToText } from '@/lib/structured-content';
-import { getWeeklyPosts, getBlogPosts } from '~/utils/contents/unified-content';
+import { getWeeklyPosts } from '~/utils/contents/unified-content';
 
 export const prerender = true;
 
@@ -11,7 +11,6 @@ export const GET: APIRoute = async () => {
     const weeklyData = weeklyPosts.map(post => {
       const sectionPreview = structuredContentToText(post.sections?.[0]?.content ?? '');
       return {
-        type: 'weekly',
         title: post.title,
         description: sectionPreview,
         tags: post.tags || [],
@@ -21,22 +20,8 @@ export const GET: APIRoute = async () => {
       };
     });
 
-    // 获取博客数据
-    const blogPosts = await getBlogPosts();
-    const blogData = Object.values(blogPosts)
-      .flat()
-      .map(post => ({
-        type: 'blog',
-        title: post.title,
-        description: post.desc || '',
-        tags: post.tags || [],
-        date: post.date,
-        permalink: post.permalink,
-        category: post.category || ''
-      }));
-
-    // 合并并按日期倒序排序
-    const allData = [...weeklyData, ...blogData].sort((a, b) => {
+    // 按日期倒序排序
+    const allData = weeklyData.sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
       return dateB - dateA;

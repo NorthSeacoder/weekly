@@ -21,7 +21,6 @@ export const cleanSlug = (text = '') =>
         .map((slug) => slugify(slug))
         .join('/');
 
-export const BLOG_BASE = cleanSlug(APP_BLOG?.blog?.pathname);
 export const WEEKLY_BASE = cleanSlug(APP_BLOG?.weekly?.pathname);
 export const CATEGORY_BASE = cleanSlug(APP_BLOG?.category?.pathname);
 export const TAG_BASE = cleanSlug(APP_BLOG?.tag?.pathname) || 'tag';
@@ -55,17 +54,10 @@ export const getPermalink = (slug = '', type = 'page'): string => {
             permalink = getHomePermalink();
             break;
 
-        case 'blog':
-            permalink = getBlogPermalink();
-            break;
-
-        case 'blog-post':
-            permalink = createPath(BLOG_BASE, trimSlash(slug));
-            break;
-
         case 'weekly':
             permalink = createPath(WEEKLY_BASE, trimSlash(slug));
             break;
+
         case 'asset':
             permalink = getAsset(slug);
             break;
@@ -95,7 +87,6 @@ export const getPermalink = (slug = '', type = 'page'): string => {
 export const getHomePermalink = (): string => getPermalink('/');
 
 /** */
-export const getBlogPermalink = (): string => getPermalink(BLOG_BASE);
 export const getWeeklyPermalink = (): string => getPermalink(WEEKLY_BASE);
 
 /** */
@@ -122,8 +113,6 @@ export const applyGetPermalinks = (menu: object = {}) => {
                 } else if (typeof menu[key] === 'object') {
                     if (menu[key].type === 'home') {
                         obj[key] = getHomePermalink();
-                    } else if (menu[key].type === 'blog') {
-                        obj[key] = getBlogPermalink();
                     } else if (menu[key].type === 'asset') {
                         obj[key] = getAsset(menu[key].url);
                     } else if (menu[key].url) {

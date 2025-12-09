@@ -3,40 +3,12 @@ import { getCachedData } from './cache';
 import { parseStructuredContent } from './structured-content';
 import type { RowDataPacket } from 'mysql2/promise';
 import type { WeeklyPost, Section } from '@/types/weekly';
-import type { BlogPost } from '@/types/blog';
-import dayjs from 'dayjs';
 import { getPermalink } from '@/src/utils/permalinks';
-import { processMarkdown } from '@/src/utils/remark';
 
 // 初始化数据库连接
 initDatabase();
 
 // 数据库查询结果类型定义
-interface ContentRow extends RowDataPacket {
-    id: number;
-    content_type_id: number;
-    category_id: number;
-    title: string;
-    slug: string;
-    description: string;
-    content: string;
-    content_format: string;
-    status: string;
-    published_at: string;
-    source?: string;
-    source_url?: string;
-    word_count: number;
-    reading_time: number;
-    view_count: number;
-    created_at: string;
-    updated_at: string;
-    // 关联数据
-    category_name?: string;
-    category_slug?: string;
-    tags?: string;
-    content_type_slug?: string;
-}
-
 interface WeeklyIssueRow extends RowDataPacket {
     id: number;
     issue_number: number;
@@ -50,125 +22,12 @@ interface WeeklyIssueRow extends RowDataPacket {
     total_word_count: number;
     reading_time: number;
     status: string;
+    cover?: string;
+    desc?: string;
 }
 
 /**
- * 博客内容服务
- */
-export class BlogService {
-    /**
-     * 获取所有博客文章，按分类分组
-     */
-    static async getBlogPosts(): Promise<Record<string, BlogPost[]>> {
-        return getCachedData<Record<string, BlogPost[]>>(
-            'blog-posts-db',
-            async () => {
-                try {
-                    const sql = `
-                        SELECT 
-                            c.*,
-                            cat.name as category_name,
-                            cat.slug as category_slug,
-                            GROUP_CONCAT(t.name SEPARATOR ',') as tags
-                        FROM contents c
-                        LEFT JOIN categories cat ON c.category_id = cat.id
-                        LEFT JOIN content_tags ct ON c.id = ct.content_id
-                        LEFT JOIN tags t ON ct.tag_id = t.id
-                        LEFT JOIN content_types ct_type ON c.content_type_id = ct_type.id
-                        WHERE ct_type.slug = 'blog' 
-                            AND c.status = 'published'
-                        GROUP BY c.id
-                        ORDER BY c.published_at DESC
-                    `;
-                    
-                    const rows = await query<ContentRow[]>(sql);
-                    
-                    if (!rows || rows.length === 0) {
-                        console.warn('No blog posts found in database');
-                        return {};
-                    }
-                    
-                    const blogList = await Promise.all(
-                        rows.map(row => this.transformToBlogPost(row))
-                    );
-                    
-                    // 按分类分组
-                    return blogList.reduce((acc, item) => {
-                        const category = item.category || 'uncategorized';
-                        acc[category] = acc[category] || [];
-                        acc[category].push(item);
-                        return acc;
-                    }, {} as Record<string, BlogPost[]>);
-                    
-                } catch (error) {
-                    console.error('Error getting blog posts from database:', error);
-                    return {};
-                }
-            },
-            { debug: true }
-        );
-    }
-
-    /**
-     * 根据slug获取单篇博客文章
-     */
-    static async getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-        try {
-            const sql = `
-                SELECT 
-                    c.*,
-                    cat.name as category_name,
-                    cat.slug as category_slug,
-                    GROUP_CONCAT(t.name SEPARATOR ',') as tags
-                FROM contents c
-                LEFT JOIN categories cat ON c.category_id = cat.id
-                LEFT JOIN content_tags ct ON c.id = ct.content_id
-                LEFT JOIN tags t ON ct.tag_id = t.id
-                LEFT JOIN content_types ct_type ON c.content_type_id = ct_type.id
-                WHERE ct_type.slug = 'blog' 
-                    AND c.status = 'published'
-                    AND c.slug = ?
-                GROUP BY c.id
-                LIMIT 1
-            `;
-            
-            const rows = await query<ContentRow[]>(sql, [slug]);
-            
-            if (!rows || rows.length === 0) {
-                return null;
-            }
-            
-            return await this.transformToBlogPost(rows[0]);
-            
-        } catch (error) {
-            console.error('Error getting blog post by slug:', error);
-            return null;
-        }
-    }
-
-    private static async transformToBlogPost(row: ContentRow): Promise<BlogPost> {
-        // 处理 markdown 内容转换为 HTML
-        const content = await processMarkdown(row.content);
-        
-        return {
-            id: row.id.toString(),
-            title: row.title,
-            slug: row.slug,
-            desc: row.description,
-            content: content,
-            category: row.category_name,
-            tags: row.tags ? row.tags.split(',').map(tag => tag.trim()) : [],
-            date: dayjs(row.published_at).format('YYYY-MM-DD'),
-            permalink: getPermalink(row.slug, 'blog-post'),
-            readingTime: `${row.reading_time} 分钟`,
-            wordCount: row.word_count,
-            lastUpdated: dayjs(row.updated_at).format('YYYY-MM-DD HH:mm:ss')
-        };
-    }
-}
-
-/**
- * 周刊内容服务  
+ * 周刊内容服务
  */
 export class WeeklyService {
     /**
@@ -180,22 +39,22 @@ export class WeeklyService {
             async () => {
                 try {
                     const sql = `
-                        SELECT 
+                        SELECT
                             wi.*
                         FROM weekly_issues wi
                         WHERE wi.status = 'published'
                         ORDER BY wi.issue_number DESC
                     `;
-                    
+
                     const issues = await query<WeeklyIssueRow[]>(sql);
-                    
+
                     if (!issues || issues.length === 0) {
                         console.warn('No weekly issues found in database');
                         return [];
                     }
-                    
+
                     const posts: WeeklyPost[] = [];
-                    
+
                     for (const issue of issues) {
                         const sections = await this.getWeeklyIssueSections(issue.id);
                         const tags = this.extractTagsFromSections(sections);
@@ -214,13 +73,13 @@ export class WeeklyService {
                             issue.reading_time ||
                             sectionsReading ||
                             (totalWordCount ? Math.max(1, Math.ceil(totalWordCount / 200)) : undefined);
-                        
+
                         posts.push({
                             id: issue.id.toString(),
                             slug: issue.slug,
                             title: issue.title,
                             date: issue.end_date,
-                            cover:issue.cover,
+                            cover: issue.cover,
                             desc: issue.desc,
                             sections: sections,
                             tags: tags,
@@ -230,9 +89,9 @@ export class WeeklyService {
                             wordCount: totalWordCount
                         });
                     }
-                    
+
                     return posts;
-                    
+
                 } catch (error) {
                     console.error('Error getting weekly posts from database:', error);
                     return [];
@@ -248,7 +107,7 @@ export class WeeklyService {
     private static async getWeeklyIssueSections(issueId: number): Promise<Section[]> {
         try {
             const sql = `
-                SELECT 
+                SELECT
                     wci.sort_order,
                     c.title,
                     c.content,
@@ -271,9 +130,9 @@ export class WeeklyService {
                 GROUP BY c.id, wci.sort_order
                 ORDER BY wci.sort_order ASC
             `;
-            
+
             const rows = await query<RowDataPacket[]>(sql, [issueId]);
-            
+
             return rows.map(row => ({
                 content: parseStructuredContent(row.content),
                 tags: row.tags ? row.tags.split(',').map((tag: string) => tag.trim()) : [],
@@ -287,7 +146,7 @@ export class WeeklyService {
                 readingTime: row.reading_time,
                 screenshot_api: row.screenshot_api
             }));
-            
+
         } catch (error) {
             console.error('Error getting weekly issue sections:', error);
             return [];
@@ -308,7 +167,7 @@ export class WeeklyService {
         }
         return Array.from(tagSet);
     }
-    
+
     /**
      * 从sections中提取所有来源
      */
@@ -321,7 +180,4 @@ export class WeeklyService {
         });
         return Array.from(sourceSet);
     }
-
 }
-
-// 所有服务已通过 export class 导出 

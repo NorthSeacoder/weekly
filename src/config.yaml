@@ -36,23 +36,19 @@ apps:
 
     weekly:
       isEnabled: true
-      pathname: 'weekly' # Weekly main path, you can change this to "articles" (/articles)
+      pathname: 'weekly'
       robots:
         index: true
-    blog:
-      isEnabled: true
-      pathname: 'blog' # Blog main path, you can change this to "articles" (/articles)
-      robots:
-        index: true
+
     category:
       isEnabled: true
-      pathname: 'category' # Category main path /category/some-category, you can change this to "group" (/group/some-category)
+      pathname: 'category'
       robots:
         index: true
 
     tag:
       isEnabled: true
-      pathname: 'tag' # Tag main path /tag/some-tag, you can change this to "topics" (/topics/some-category)
+      pathname: 'tag'
       robots:
         index: false
 
@@ -60,4 +56,4 @@ apps:
     relatedPostsCount: 4
 
 ui:
-  theme: 'system' # Values: "system" | "light" | "dark" | "light:only" | "dark:only"
+  theme: 'system'

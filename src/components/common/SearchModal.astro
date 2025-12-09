@@ -33,7 +33,7 @@ import { Icon } from 'astro-icon/components';
               type="search"
               id="search-input"
               class="flex-1 bg-transparent border-0 outline-none text-base text-foreground placeholder:text-muted-foreground"
-              placeholder="搜索文章和周刊..."
+              placeholder="搜索周刊..."
               aria-label="搜索内容"
               aria-describedby="search-description"
               autocomplete="off"
@@ -133,7 +133,6 @@ import { Icon } from 'astro-icon/components';
 
   /**
    * @typedef {Object} SearchItem
-   * @property {'blog' | 'weekly'} type
    * @property {string} title
    * @property {string} description
    * @property {string[]} tags
@@ -364,11 +363,6 @@ import { Icon } from 'astro-icon/components';
     }
 
     renderResultItem(item, index) {
-      const typeLabel = item.type === 'blog' ? '博客' : '周刊';
-      const typeColor =
-        item.type === 'blog'
-          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-          : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300';
       const date = new Date(item.date).toLocaleDateString('zh-CN', {
         year: 'numeric',
         month: 'short',
@@ -388,10 +382,6 @@ import { Icon } from 'astro-icon/components';
         >
           <div class="flex items-start gap-3">
             <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1">
-                <span class="px-2 py-0.5 text-xs font-medium rounded ${typeColor}">${typeLabel}</span>
-                ${item.category ? `<span class="text-xs text-gray-500 dark:text-gray-400">${item.category}</span>` : ''}
-              </div>
               <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-primary transition-colors">
                 ${item.title}
               </h4>

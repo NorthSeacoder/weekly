@@ -1,11 +1,8 @@
-import {handleDir} from '@/lib/file';
-import {processData} from '@/lib/weekly';
+import {WeeklyService} from './lib/content-service';
+import {structuredContentToText} from './lib/structured-content';
 import dotenv from 'dotenv';
-import path from 'path';
-// import {getDemoFallbackContent} from './lib/demo-utils';
 
 dotenv.config();
-const contentDir = path.join(process.cwd(), 'sections');
 const API_BASE = 'https://api.quail.ink';
 
 interface PostData {
@@ -54,11 +51,6 @@ async function request(endpoint: string, method: string, data?: any) {
 
 function transformContent(content: string): string {
     console.log('[DEBUG] Transforming content', content);
-
-    // Replace DemoLoader components with their fallback content
-    // return content.replace(/<DemoLoader\s+demoPath="([^"]+)"\s*\/>/g, (_, demoPath) => {
-    //     return getDemoFallbackContent(demoPath);
-    // });
     return content;
 }
 
@@ -75,8 +67,7 @@ async function publishToQuail() {
         throw new Error('LIST_ID must be a valid number');
     }
 
-    const content = handleDir(contentDir);
-    const {posts} = processData(content);
+    const posts = await WeeklyService.getWeeklyPosts();
     if (!posts || posts.length === 0) {
         console.log('No posts to publish');
         return;
@@ -85,16 +76,21 @@ async function publishToQuail() {
     const latestPost = posts[0];
     console.log(`Publishing latest post: ${latestPost.title}`);
 
+    // 从 sections 中提取内容
+    const contentText = latestPost.sections
+        ?.map(section => structuredContentToText(section.content))
+        .join('\n\n') || '';
+
     const postData: PostData = {
         title: latestPost.title,
-        content: transformContent(latestPost.content),
+        content: transformContent(contentText),
         status: 'published',
         tags: latestPost.tags.join(','),
-        excerpt: generateExcerpt(latestPost.content),
+        excerpt: generateExcerpt(contentText),
         language: 'zh',
         metadata: {
             author: process.env.NEXT_PUBLIC_AUTHOR_NAME,
-            publication_date: latestPost.date,
+            publication_date: String(latestPost.date),
             source: 'weekly'
         }
     };
