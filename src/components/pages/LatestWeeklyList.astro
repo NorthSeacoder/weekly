@@ -1,5 +1,4 @@
 ---
-import { structuredContentToText } from '@/lib/structured-content'
 import { getWeeklyPosts } from '~/utils/contents/unified-content'
 import StatCard from '~/components/ui/StatCard.astro'
 import Button from '~/components/ui/Button.astro'
@@ -7,18 +6,6 @@ import { cn } from '~/utils/utils'
 
 const weekly = await getWeeklyPosts()
 const latestWeeklyList = weekly.slice(0, 12);
-
-const getExcerpt = (raw?: unknown) => {
-    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
-        const summary = (raw as any).summary || (raw as any).description || (raw as any).desc;
-        if (typeof summary === 'string') {
-            return summary.trim().slice(0, 120);
-        }
-    }
-    const text = structuredContentToText(raw as any);
-    if (!text) return '';
-    return text.replace(/\s+/g, ' ').trim().slice(0, 120);
-};
 ---
 
 <section class="py-12 lg:py-16 bg-page relative">
@@ -59,7 +46,7 @@ const getExcerpt = (raw?: unknown) => {
                             <StatCard
                                 title={weekly.title}
                                 date={weekly.date}
-                                desc={getExcerpt(weekly.sections?.[0]?.content || weekly.desc)}
+                                desc={weekly.desc || '精选本周前端技术内容'}
                                 showTags={false}
                             />
                         </a>

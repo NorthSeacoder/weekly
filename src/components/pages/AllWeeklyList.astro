@@ -73,7 +73,7 @@ const weeklyList = await getWeeklyPosts()
                         <StatCard
                             title={weekly.title}
                             date={weekly.date}
-                            desc={weekly.desc}
+                            desc={weekly.desc || '精选本周前端技术内容'}
                             showTags={false}
                         />
                     </a>
