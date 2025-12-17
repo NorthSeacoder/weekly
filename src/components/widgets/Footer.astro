@@ -1,7 +1,7 @@
 ---
 import {Icon} from 'astro-icon/components';
 import {SITE} from 'weekly:config';
-import {getHomePermalink} from '~/utils/permalinks';
+import {getHomePermalink, getPermalink} from '~/utils/permalinks';
 
 interface Link {
     text?: string;
@@ -24,99 +24,189 @@ export interface Props {
 }
 
 const {socialLinks = [], secondaryLinks = [], links = [], footNote = '', theme = 'light'} = Astro.props;
+
+const currentYear = new Date().getFullYear();
 ---
 
-<footer class:list={[{dark: theme === 'dark'}, 'relative border-t border-border not-prose']}>
-    <div class='bg-page absolute inset-0 pointer-events-none' aria-hidden='true'></div>
-    <div
-        class='relative max-w-7xl mx-auto px-4 sm:px-6 dark:text-gray-300'>
-        <div class='py-6 md:py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border/70'>
-            <div>
-                <p class='text-sm text-muted-foreground'>坚持更新，精选每周的前端好内容。</p>
-            </div>
-            <div class='flex items-center gap-3'>
-                <a class='inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary-hover transition' href={getHomePermalink()}>
-                    立即阅读
-                </a>
-                <a class='inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/60 transition' href='https://github.com/NorthSeacoder/weekly' target='_blank' rel='noopener'>
-                    <Icon name='tabler:star' class='w-4 h-4' /> Star
-                </a>
+<footer class="relative border-t border-border/50 bg-background not-prose overflow-hidden">
+    <!-- 背景装饰 -->
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-primary/3 blur-[150px] rounded-full"></div>
+        <div class="absolute top-0 right-1/4 w-[400px] h-[400px] bg-accent-cool/3 blur-[120px] rounded-full"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
+        <!-- 顶部 CTA 区域 -->
+        <div class="py-12 md:py-16 border-b border-border/50">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                <div class="max-w-xl">
+                    <h3 class="text-2xl md:text-3xl font-bold text-foreground mb-3">
+                        保持技术敏锐度
+                    </h3>
+                    <p class="text-muted-foreground leading-relaxed">
+                        每周精选前端技术内容，助你了解最新技术动态，提升开发效率。
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <a
+                        class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary-hover transition-all duration-200 shadow-lg shadow-primary/25 hover:shadow-primary/40"
+                        href={getPermalink('/weekly')}
+                    >
+                        <Icon name="tabler:book" class="w-5 h-5" />
+                        开始阅读
+                    </a>
+                    <a
+                        class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border bg-secondary/50 text-foreground font-semibold hover:bg-secondary hover:border-border transition-all duration-200"
+                        href="https://github.com/NorthSeacoder/weekly"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        <Icon name="tabler:brand-github" class="w-5 h-5" />
+                        Star on GitHub
+                    </a>
+                </div>
             </div>
         </div>
-        <div class='grid grid-cols-12 gap-4 gap-y-8 sm:gap-8 py-8 md:py-12'>
-            <div class='col-span-12 lg:col-span-4'>
-                <div class='mb-2'>
-                    <a class='inline-block font-bold text-xl' href={getHomePermalink()}>{SITE?.name}</a>
-                </div>
-                <div class='text-sm text-muted flex gap-1'>
-                    {
-                        secondaryLinks.map(({text, href}, index) => (
-                            <>
-                                {index !== 0 ? ' · ' : ''}
+
+        <!-- 主要内容区域 -->
+        <div class="py-12 md:py-16">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
+                <!-- 品牌区域 -->
+                <div class="col-span-2 md:col-span-4 lg:col-span-2">
+                    <a class="inline-flex items-center gap-3 mb-6 group" href={getHomePermalink()}>
+                        <div class="relative">
+                            <div class="absolute -inset-1 bg-primary/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div class="relative w-10 h-10 rounded-lg bg-gradient-to-br from-primary via-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/25">
+                                <Icon name="tabler:rocket" class="w-5 h-5 text-white" />
+                            </div>
+                        </div>
+                        <div>
+                            <span class="block text-lg font-bold text-foreground">{SITE?.name}</span>
+                            <span class="block text-xs text-muted-foreground">Weekly Tech Insights</span>
+                        </div>
+                    </a>
+                    <p class="text-sm text-muted-foreground leading-relaxed mb-6 max-w-sm">
+                        专注于前端技术的周刊，每周精选优质内容，帮助开发者保持技术敏锐度。
+                    </p>
+
+                    <!-- 社交链接 -->
+                    {socialLinks?.length > 0 && (
+                        <div class="flex items-center gap-2">
+                            {socialLinks.map(({ariaLabel, href, icon}) => (
                                 <a
-                                    class='text-muted-foreground hover:text-foreground hover:underline transition duration-150 ease-in-out'
+                                    class="flex items-center justify-center w-10 h-10 rounded-lg border border-border/50 bg-secondary/30 text-muted-foreground hover:text-foreground hover:border-border hover:bg-secondary transition-all duration-200"
+                                    aria-label={ariaLabel}
                                     href={href}
-                                    set:html={text}
-                                />
-                            </>
-                        ))
-                    }
+                                    target="_blank"
+                                    rel="noopener"
+                                >
+                                    {icon && <Icon name={icon} class="w-5 h-5" />}
+                                </a>
+                            ))}
+                        </div>
+                    )}
                 </div>
-            </div>
-            {
-                links.map(({title, links}) => (
-                    <div class='col-span-6 md:col-span-3 lg:col-span-2'>
-                        <div class='dark:text-gray-300 font-medium mb-2'>{title}</div>
-                        {links && Array.isArray(links) && links.length > 0 && (
-                            <ul class='text-sm'>
-                                {links.map(({text, href, ariaLabel}) => (
-                                    <li class='mb-2'>
+
+                <!-- 链接列表 -->
+                {links.map(({title, links: linkItems}) => (
+                    <div>
+                        <h4 class="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
+                            {title}
+                        </h4>
+                        {linkItems && Array.isArray(linkItems) && linkItems.length > 0 && (
+                            <ul class="space-y-3">
+                                {linkItems.map(({text, href, ariaLabel}) => (
+                                    <li>
                                         <a
-                                            class='text-muted-foreground hover:text-foreground hover:underline transition duration-150 ease-in-out'
+                                            class="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 inline-flex items-center gap-1 group/link"
                                             href={href}
-                                            aria-label={ariaLabel}>
-                                            <Fragment set:html={text} />
+                                            aria-label={ariaLabel}
+                                        >
+                                            <span>{text}</span>
+                                            <Icon name="tabler:arrow-up-right" class="w-3 h-3 opacity-0 -translate-y-0.5 translate-x-0.5 group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:translate-x-0 transition-all duration-200" />
                                         </a>
                                     </li>
                                 ))}
                             </ul>
                         )}
                     </div>
-                ))
-            }
+                ))}
+            </div>
         </div>
-        <div class='md:flex md:items-center md:justify-between py-6 md:py-8'>
-            {
-                socialLinks?.length ? (
-                    <ul class='flex mb-4 md:order-1 -ml-2 md:ml-4 md:mb-0 rtl:ml-0 rtl:-mr-2 rtl:md:ml-0 rtl:md:mr-4'>
-                        {socialLinks.map(({ariaLabel, href, text, icon}) => (
-                            <li>
-                                <a
-                                    class='text-muted dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
-                                    aria-label={ariaLabel}
-                                    href={href}>
-                                    {icon && <Icon name={icon} class='w-5 h-5' />}
-                                    <Fragment set:html={text} />
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    ''
-                )
-            }
 
-            <div class='text-xs leading-3 flex items-center justify-center'>
-                <img src='/gongan.png' alt='' class='inline-block w-3 h-3' />
-                <a
-                    class='ml-1'
-                    href='https://beian.mps.gov.cn/#/query/webSearch?code=11010502054628'
-                    rel='noreferrer'
-                    target='_blank'>
-                    京公网安备11010502054628
-                </a>
-                <a class='ml-2' href='https://beian.miit.gov.cn/' target='_blank'> 京ICP备2024042617号-1 </a>
+        <!-- 底部版权区域 -->
+        <div class="py-6 border-t border-border/50">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <!-- 版权信息 -->
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+                    <span>&copy; {currentYear} {SITE?.name}. All rights reserved.</span>
+                    {secondaryLinks.map(({text, href}, index) => (
+                        <>
+                            {index !== 0 && <span class="hidden sm:inline">·</span>}
+                            <a
+                                class="hover:text-foreground transition-colors duration-200"
+                                href={href}
+                                set:html={text}
+                            />
+                        </>
+                    ))}
+                </div>
+
+                <!-- 备案信息 -->
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                    <a
+                        class="inline-flex items-center gap-1 hover:text-foreground transition-colors duration-200"
+                        href="https://beian.mps.gov.cn/#/query/webSearch?code=11010502054628"
+                        rel="noreferrer"
+                        target="_blank"
+                    >
+                        <img src="/gongan.png" alt="" class="w-3 h-3" />
+                        京公网安备11010502054628
+                    </a>
+                    <a
+                        class="hover:text-foreground transition-colors duration-200"
+                        href="https://beian.miit.gov.cn/"
+                        target="_blank"
+                    >
+                        京ICP备2024042617号-1
+                    </a>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- 底部装饰线 -->
+    <div class="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 </footer>
+
+<style>
+    footer {
+        position: relative;
+    }
+
+    /* 链接悬停效果 */
+    footer a {
+        transition: all 0.2s ease;
+    }
+
+    /* 减少动画 */
+    @media (prefers-reduced-motion: reduce) {
+        footer *,
+        footer *::before,
+        footer *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    /* 高对比度模式 */
+    @media (prefers-contrast: high) {
+        footer {
+            background: hsl(var(--background));
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    }
+</style>

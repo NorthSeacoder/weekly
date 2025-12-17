@@ -36,58 +36,74 @@ const coverSrc = cover || defaultCover;
 
 const cardClasses = cn(
     'group relative h-full',
-    'p-6 lg:p-7 rounded-[2px] transition-all duration-200 ease-out',
-    'bg-card border border-white/5 shadow-sm',
-    'hover:shadow-[inset_0_0_60px_-15px_rgba(255,255,255,0.1)]',
-    'hover:border-white/10 hover:-translate-y-0.5',
-    'cursor-pointer transform-gpu',
-    'focus-within:ring-2 focus-within:ring-primary/40 focus-within:ring-offset-2 focus-within:ring-offset-background'
+    'p-5 rounded-sm',
+    'bg-card/50 border border-border/40',
+    'backdrop-blur-sm',
+    'transition-all duration-200',
+    'hover:bg-card hover:border-border/60 hover:shadow-lg',
+    'cursor-pointer',
+    'focus-within:ring-2 focus-within:ring-primary/50 focus-within:ring-offset-2 focus-within:ring-offset-background'
 );
 ---
 
 <div class={cardClasses}>
+    <!-- Linear-style hover glow -->
+    <div class="absolute inset-0 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <div class="absolute inset-0 rounded-sm bg-gradient-to-br from-primary/5 via-transparent to-transparent"></div>
+    </div>
+
     {isNew && (
-        <div class="absolute top-5 right-5 z-20">
-            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase bg-primary text-primary-foreground shadow-sm">
-                NEW
+        <div class="absolute top-4 right-4 z-20">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase bg-primary text-primary-foreground">
+                New
             </span>
         </div>
     )}
 
     <!-- 内容区域 -->
-    <div class="relative z-10 h-full flex flex-col space-y-5">
-        <div class="-mx-6 -mt-6 mb-5 overflow-hidden rounded-t-[2px] border-b border-border/60 bg-surface aspect-[16/9]">
-            <img src={coverSrc} alt="" class="w-full h-full object-cover" loading="lazy" />
+    <div class="relative z-10 h-full flex flex-col gap-4">
+        <!-- Cover image -->
+        <div class="-mx-5 -mt-5 overflow-hidden rounded-t-sm border-b border-border/30 bg-secondary/30 aspect-[16/9] max-h-[180px]">
+            <img
+                src={coverSrc}
+                alt=""
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                loading="lazy"
+            />
         </div>
 
+        <!-- Eyebrow -->
         <div class="flex items-center gap-2 text-xs text-muted-foreground">
-            <div class="w-2 h-2 rounded-full bg-primary/70"></div>
-            <span class="uppercase tracking-[0.08em]">{eyebrow}</span>
+            <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+            <span class="font-medium uppercase tracking-wider">{eyebrow}</span>
         </div>
 
-        <h3 class="responsive-title font-semibold text-[1.3rem] leading-relaxed text-foreground font-heading">
+        <!-- Title -->
+        <h3 class="text-lg font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-foreground transition-colors">
             {title}
         </h3>
-        
-        <div class="mt-auto space-y-5">
+
+        <!-- Content -->
+        <div class="mt-auto space-y-4">
             {desc && (
-                <p class="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                <p class="text-sm text-muted-foreground leading-relaxed line-clamp-2">
                     {desc}
                 </p>
             )}
 
             {showTags && tags.length > 0 && (
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-1.5">
                     <Tags tags={tags} maxVisible={3} variant="minimal" size="sm" compact />
                 </div>
             )}
-            
-            <div class="flex items-center justify-between pt-4 border-t border-border/60 text-sm text-muted-foreground">
-                <time datetime={date.toString()} class="opacity-80">{formattedDate}</time>
-                <span class="inline-flex items-center gap-1 text-foreground/70 group-hover:text-primary transition-colors">
-                    阅读
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+
+            <!-- Footer -->
+            <div class="flex items-center justify-between pt-3 border-t border-border/30 text-sm">
+                <time datetime={date.toString()} class="text-muted-foreground">{formattedDate}</time>
+                <span class="inline-flex items-center gap-1.5 text-muted-foreground group-hover:text-primary transition-colors duration-200">
+                    <span class="text-xs font-medium">阅读</span>
+                    <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </span>
             </div>
@@ -96,198 +112,43 @@ const cardClasses = cn(
 </div>
 
 <style>
-    /* 文字渲染优化 */
+    /* Typography optimization */
     h3 {
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        font-feature-settings: "kern" 1, "liga" 1;
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
 
-    /* 文本截断 */
+    /* Text truncation */
     .line-clamp-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    
-    .line-clamp-3 {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
 
-    /* 动画性能优化 */
-    .transform-gpu {
-        transform: translateZ(0);
-        backface-visibility: hidden;
-        perspective: 1000px;
-    }
-
-    /* 智能响应式标题 */
-    .responsive-title {
-        /* 基础字体大小 */
-        font-size: clamp(1.25rem, 4vw, 1.75rem);
-        line-height: 1.3;
-        
-        /* 多行显示，超出省略 */
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        
-        /* 最小高度确保布局一致性 */
-        min-height: 2.6em; /* 2 lines approx */
-    }
-    
-    /* 容器查询支持 - 现代浏览器优化 */
-    @supports (container-type: inline-size) {
-        .group {
-            container-type: inline-size;
-        }
-        
-        @container (max-width: 280px) {
-            .responsive-title {
-                font-size: 1.125rem;
-                line-height: 1.2;
-            }
-        }
-        
-        @container (min-width: 281px) and (max-width: 320px) {
-            .responsive-title {
-                font-size: 1.25rem;
-                line-height: 1.25;
-            }
-        }
-        
-        @container (min-width: 321px) and (max-width: 360px) {
-            .responsive-title {
-                font-size: 1.375rem;
-                line-height: 1.3;
-            }
-        }
-        
-        @container (min-width: 361px) {
-            .responsive-title {
-                font-size: 1.75rem;
-                line-height: 1.3;
-            }
-        }
-    }
-
-    /* 回退方案 - 基于视口宽度的响应式调整 */
-    @media (max-width: 480px) {
-        .group {
-            padding: 1.25rem;
-        }
-        
-        .responsive-title {
-            font-size: 1.125rem;
-            line-height: 1.2;
-        }
-    }
-    
-    @media (min-width: 481px) and (max-width: 640px) {
-        .responsive-title {
-            font-size: 1.25rem;
-            line-height: 1.25;
-        }
-    }
-    
-    @media (min-width: 641px) and (max-width: 768px) {
-        .responsive-title {
-            font-size: 1.375rem;
-            line-height: 1.3;
-        }
-    }
-    
-    @media (min-width: 769px) {
-        .responsive-title {
-            font-size: 1.75rem;
-            line-height: 1.3;
-        }
-    }
-
-    /* 减少动画对于喜欢减少动画的用户 */
+    /* Reduced motion */
     @media (prefers-reduced-motion: reduce) {
-        .group {
+        .group,
+        .group * {
             transition: none !important;
-        }
-        
-        .group *,
-        .group::before,
-        .group::after {
             animation: none !important;
-            transition: none !important;
         }
     }
 
-    /* 触摸设备优化 */
+    /* Touch device optimization */
     @media (hover: none) {
         .group:hover {
             transform: none;
         }
-        
-        .group:hover::before {
-            opacity: 0.3;
-        }
     }
 
-    /* 高对比度模式 */
+    /* High contrast mode */
     @media (prefers-contrast: high) {
         .group {
             border-width: 2px;
             background: hsl(var(--card));
-            color: hsl(var(--card-foreground));
         }
-        
-        .group::before {
-            display: none;
-        }
-    }
-    
-    /* 暗色模式特殊处理 */
-    .dark .group {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-    
-    .dark .group:hover {
-        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
-    }
-    
-    /* 性能优化 */
-    .group,
-    .group::before,
-    .group::after {
-        will-change: transform, opacity;
-    }
-    
-    /* 焦点状态增强 */
-    .group:focus-within {
-        outline: none;
-        transform: translateY(-1px) scale(1.01);
-    }
-    
-    /* 加载状态 */
-    .group[data-loading="true"] {
-        pointer-events: none;
-        opacity: 0.7;
-    }
-    
-    .group[data-loading="true"]::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        animation: shimmer 1.5s linear infinite;
-        border-radius: inherit;
-    }
-    
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
     }
 </style>

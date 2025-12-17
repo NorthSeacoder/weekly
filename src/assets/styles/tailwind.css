@@ -2,55 +2,165 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   Linear/Raycast Style - Base Layer
+   ============================================ */
+
+@layer base {
+  html {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    overflow-y: visible;
+    overflow-x: hidden;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
 @layer utilities {
   .bg-page {
     background-color: var(--aw-color-bg-page);
   }
-  /* .bg-dark {
-    background-color: var(--aw-color-bg-page-dark);
-  } */
 
   .bg-light {
     background-color: var(--aw-color-bg-page);
   }
+
   .text-page {
     color: var(--aw-color-text-page);
   }
+
   .text-muted {
     color: var(--aw-color-text-muted);
+  }
+
+  /* Linear-style text gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60;
+  }
+
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70;
+  }
+
+  /* Linear-style glow effects */
+  .glow-primary {
+    box-shadow: var(--glow-primary);
+  }
+
+  .glow-primary-lg {
+    box-shadow: var(--glow-primary-lg);
+  }
+
+  /* Linear-style border glow on hover */
+  .border-glow {
+    @apply relative;
+  }
+
+  .border-glow::before {
+    content: '';
+    @apply absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.2), transparent 50%);
+    pointer-events: none;
+  }
+
+  .border-glow:hover::before {
+    @apply opacity-100;
   }
 }
 
 @layer components {
+  /* Linear-style buttons */
   .btn {
-    @apply inline-flex items-center justify-center rounded-full border-gray-400 border bg-transparent font-medium text-center text-base text-page leading-snug transition py-3.5 px-6 md:px-8 ease-in duration-200 focus:ring-blue-500 focus:ring-offset-blue-200 focus:ring-2 focus:ring-offset-2 hover:bg-gray-100 hover:border-gray-600 dark:text-slate-300 dark:border-slate-500 dark:hover:bg-dark-lighter dark:hover:border-dark-lighter cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2;
+    @apply rounded-lg border font-medium text-sm;
+    @apply transition-all duration-200;
+    @apply py-2.5 px-4;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply cursor-pointer;
   }
 
   .btn-primary {
-    @apply btn font-semibold bg-primary text-white border-primary hover:bg-secondary hover:border-secondary hover:text-white dark:text-white dark:bg-primary dark:border-primary dark:hover:border-secondary dark:hover:bg-secondary;
+    @apply btn;
+    @apply bg-primary text-primary-foreground border-transparent;
+    @apply hover:bg-primary-hover;
+    @apply shadow-sm hover:shadow-md;
   }
 
   .btn-secondary {
     @apply btn;
+    @apply bg-secondary text-secondary-foreground border-border;
+    @apply hover:bg-secondary-hover hover:border-border;
   }
 
   .btn-tertiary {
-    @apply btn border-none shadow-none text-muted hover:text-gray-900 dark:text-gray-400 dark:hover:text-white;
+    @apply btn;
+    @apply bg-transparent text-muted-foreground border-transparent;
+    @apply hover:bg-secondary hover:text-foreground;
+  }
+
+  .btn-ghost {
+    @apply btn;
+    @apply bg-transparent text-muted-foreground border-transparent;
+    @apply hover:bg-secondary/50 hover:text-foreground;
+  }
+
+  /* Linear-style card */
+  .linear-card {
+    @apply relative overflow-hidden;
+    @apply rounded-xl border border-border/50;
+    @apply bg-card/80 backdrop-blur-sm;
+    @apply transition-all duration-300;
+  }
+
+  .linear-card:hover {
+    @apply border-border bg-card;
+    @apply shadow-lg;
+  }
+
+  /* Linear-style input */
+  .linear-input {
+    @apply w-full px-4 py-2.5;
+    @apply rounded-lg border border-border;
+    @apply bg-input text-foreground;
+    @apply placeholder:text-muted-foreground;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+  }
+
+  /* Linear-style badge */
+  .linear-badge {
+    @apply inline-flex items-center gap-1.5;
+    @apply px-2.5 py-1 rounded-md;
+    @apply text-xs font-medium;
+    @apply bg-secondary text-secondary-foreground;
+    @apply border border-border/50;
+  }
+
+  .linear-badge-primary {
+    @apply linear-badge;
+    @apply bg-primary/10 text-primary border-primary/20;
   }
 }
 
+/* Header scroll styles */
 #header.scroll > div:first-child {
-  @apply bg-page md:bg-white/90 md:backdrop-blur-md;
-  box-shadow: 0 0.375rem 1.5rem 0 rgb(140 152 164 / 13%);
+  @apply bg-background/80 backdrop-blur-xl;
+  box-shadow: 0 1px 0 0 hsl(var(--border) / 0.5);
 }
+
 .dark #header.scroll > div:first-child,
 #header.scroll.dark > div:first-child {
-  @apply bg-page  border-b border-gray-500/20;
+  @apply bg-background/80 backdrop-blur-xl border-b border-border/30;
   box-shadow: none;
 }
-/* #header.scroll > div:last-child {
-  @apply py-3;
-} */
 
 #header.expanded nav {
   position: fixed;
@@ -61,12 +171,14 @@
   padding: 0 5px;
 }
 
+/* Dropdown styles */
 .dropdown:focus .dropdown-menu,
 .dropdown:focus-within .dropdown-menu,
 .dropdown:hover .dropdown-menu {
   display: block;
 }
 
+/* Icon styles */
 [astro-icon].icon-light > * {
   stroke-width: 1.2;
 }
@@ -75,9 +187,11 @@
   stroke-width: 2.4;
 }
 
+/* Toggle menu animation */
 [data-aw-toggle-menu] path {
-  @apply transition;
+  @apply transition-all duration-200;
 }
+
 [data-aw-toggle-menu].expanded g > path:first-child {
   @apply -rotate-45 translate-y-[15px] translate-x-[-3px];
 }
@@ -86,61 +200,7 @@
   @apply rotate-45 translate-y-[-8px] translate-x-[14px];
 }
 
-/* To deprecated */
-
+/* Prose first child margin fix */
 .dd *:first-child {
   margin-top: 0;
-}
-
-/* 修复滚动条被固定 header 遮挡的问题 */
-html {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
-body {
-  overflow-y: visible;
-  overflow-x: hidden;
-}
-
-/* 确保页面内容从正确位置开始，但滚动条从顶部开始 */
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-/* 优化滚动条样式（适配暗色主题） */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.3);
-  border-radius: 6px;
-  border: 3px solid transparent;
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.5);
-  border: 3px solid transparent;
-  background-clip: padding-box;
-}
-
-/* 暗色模式下的滚动条样式 */
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(107, 114, 128, 0.3);
-  border: 3px solid transparent;
-  background-clip: padding-box;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 114, 128, 0.5);
-  border: 3px solid transparent;
-  background-clip: padding-box;
 }

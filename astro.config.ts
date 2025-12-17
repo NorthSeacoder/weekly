@@ -8,6 +8,7 @@ import sentry from '@sentry/astro';
 // import {readingTimeRemarkPlugin} from './src/utils/frontmatter';
 
 export default defineConfig({
+    site: 'https://weekly.mengpeng.tech',
     output: 'static',
 
     integrations: [

@@ -11,7 +11,11 @@
       "mcp__nowledge-mem__memory_add",
       "mcp__nowledge-mem__memory_search",
       "mcp__nowledge-mem__memory_delete",
-      "mcp__nowledge-mem__memory_update"
+      "mcp__nowledge-mem__memory_update",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Bash(cat:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

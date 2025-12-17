@@ -1,6 +1,6 @@
 ---
 import '@fontsource-variable/inter';
-import 'highlight.js/styles/nnfx-dark.min.css';
+import 'highlight.js/styles/github-dark.min.css';
 ---
 
 <style is:inline>
@@ -9,62 +9,71 @@ import 'highlight.js/styles/nnfx-dark.min.css';
     --aw-font-serif: 'Inter Variable', serif;
     --aw-font-heading: 'Inter Variable', sans-serif;
 
-    /* Deep Warm Dark Theme (Claude-inspired) */
-    /* Using HSL values for compatibility with tailwind.config.ts */
-    
-    /* Primary: Warm Orange/Clay */
-    --primary: 28 90% 65%;
+    /* ============================================
+       Linear/Raycast Style - Warm Orange Theme
+       ============================================ */
+
+    /* Primary: Warm Orange (保持暖橙色) */
+    --primary: 24 95% 58%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 28 90% 60%;
-    --primary-soft: 28 90% 15%;
-    --primary-muted: 28 40% 25%;
-    
-    /* Secondary: Darker Warm Gray */
-    --secondary: 30 5% 15%;
-    --secondary-foreground: 30 10% 90%;
-    --secondary-hover: 30 5% 20%;
-    
-    /* Accent */
-    --accent: 30 5% 15%;
-    --accent-foreground: 30 10% 90%;
-    --accent-warm: 25 95% 53%;
-    --accent-cool: 221 83% 53%;
-    
-    /* Muted */
-    --muted: 30 5% 15%;
-    --muted-foreground: 30 5% 60%;
-    
-    /* Background: Deep Dark Warm Gray */
-    --background: 30 5% 8%;
-    --foreground: 30 10% 90%;
-    
-    /* Surface */
-    --surface: 30 5% 10%;
-    --surface-elevated: 30 5% 12%;
-    --surface-hover: 30 5% 14%;
-    
-    /* Card */
-    --card: 30 5% 10%;
-    --card-foreground: 30 10% 90%;
-    --card-border: 30 5% 15%;
-    --card-shadow: 0 0 0 1px rgba(255,255,255,0.05);
-    
+    --primary-hover: 24 95% 52%;
+    --primary-soft: 24 60% 12%;
+    --primary-muted: 24 30% 20%;
+
+    /* Secondary: Linear-style cool gray */
+    --secondary: 220 10% 12%;
+    --secondary-foreground: 220 10% 85%;
+    --secondary-hover: 220 10% 16%;
+
+    /* Accent: 保持暖色调但更现代 */
+    --accent: 220 10% 14%;
+    --accent-foreground: 220 10% 85%;
+    --accent-warm: 24 95% 58%;
+    --accent-cool: 220 70% 55%;
+
+    /* Muted: Linear 风格的灰色 */
+    --muted: 220 10% 14%;
+    --muted-foreground: 220 8% 55%;
+
+    /* Background: Linear 风格深色背景 - 带微妙蓝调 */
+    --background: 220 15% 6%;
+    --foreground: 220 10% 92%;
+
+    /* Surface: 层次分明的表面 */
+    --surface: 220 12% 9%;
+    --surface-elevated: 220 12% 11%;
+    --surface-hover: 220 12% 13%;
+
+    /* Card: 毛玻璃风格卡片 */
+    --card: 220 12% 9%;
+    --card-foreground: 220 10% 92%;
+    --card-border: 220 10% 16%;
+    --card-shadow: 0 0 0 1px rgba(255,255,255,0.04);
+
     /* Borders & Inputs */
-    --border: 30 5% 15%;
-    --input: 30 5% 15%;
-    --ring: 28 90% 65%;
-    
-    /* Status Colors */
-    --success: 142 70% 45%;
-    --success-foreground: 0 0% 10%;
-    
-    --warning: 38 90% 50%;
+    --border: 220 10% 16%;
+    --input: 220 10% 14%;
+    --ring: 24 95% 58%;
+
+    /* Popover */
+    --popover: 220 12% 10%;
+    --popover-foreground: 220 10% 92%;
+
+    /* Destructive */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Status Colors - 更现代的配色 */
+    --success: 142 76% 42%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
     --warning-foreground: 0 0% 10%;
-    
-    --error: 0 80% 60%;
+
+    --error: 0 84% 60%;
     --error-foreground: 0 0% 100%;
-    
-    --info: 210 80% 60%;
+
+    --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
 
     /* Legacy color mappings */
@@ -75,72 +84,157 @@ import 'highlight.js/styles/nnfx-dark.min.css';
     --aw-color-text-default: hsl(var(--foreground));
     --aw-color-text-muted: hsl(var(--muted-foreground));
     --aw-color-bg-page: hsl(var(--background));
+    --main: 24 95% 58%;
+    --mainHover: 24 95% 52%;
 
-    /* Spacing system - Optimized for breathing room */
+    /* Spacing system */
     --space-xs: 0.5rem;
     --space-sm: 0.75rem;
-    --space-md: 1.25rem; /* Increased */
-    --space-lg: 2rem;    /* Increased */
-    --space-xl: 3rem;
-    --space-2xl: 4rem;
-    --space-3xl: 6rem;
-    --space-4xl: 8rem;
-    --space-5xl: 10rem;
-    
-    /* Typography scale - Optimized for readability */
-    --text-xs: 0.8125rem;
-    --text-sm: 0.9375rem;
-    --text-base: 1.0625rem; /* Slightly larger base */
-    --text-lg: 1.25rem;
-    --text-xl: 1.5rem;
-    --text-2xl: 1.875rem;
-    --text-3xl: 2.25rem;
-    --text-4xl: 3rem;
-    --text-5xl: 3.75rem;
-    --text-6xl: 4.5rem;
-    --text-7xl: 6rem;
-    
-    /* Border radius */
-    --radius-sm: 0.25rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+    --space-4xl: 6rem;
+    --space-5xl: 8rem;
+
+    /* Typography scale */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
+    --text-6xl: 3.75rem;
+    --text-7xl: 4.5rem;
+
+    /* Border radius - Linear 风格更圆润 */
+    --radius-sm: 0.375rem;
     --radius: 0.5rem;
     --radius-lg: 0.75rem;
     --radius-xl: 1rem;
-    --radius-2xl: 1.5rem;
-    --radius-3xl: 2rem;
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    --shadow-3xl: 0 35px 60px -12px rgba(0, 0, 0, 0.5);
-    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-    
+    --radius-2xl: 1.25rem;
+    --radius-3xl: 1.5rem;
+
+    /* Shadows - Linear 风格柔和阴影 */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    --shadow-3xl: 0 35px 60px -15px rgba(0, 0, 0, 0.6);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+
+    /* Glow effects - Linear 风格发光 */
+    --glow-primary: 0 0 20px hsl(24 95% 58% / 0.25);
+    --glow-primary-lg: 0 0 40px hsl(24 95% 58% / 0.3);
+
     /* Animation durations */
-    --duration-fast: 150ms;
-    --duration-normal: 300ms;
-    --duration-slow: 500ms;
-    --duration-slower: 700ms;
+    --duration-fast: 100ms;
+    --duration-normal: 200ms;
+    --duration-slow: 300ms;
+    --duration-slower: 500ms;
+
+    /* Linear-style easing */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
 
     ::selection {
-      background-color: hsl(var(--primary) / 0.3);
+      background-color: hsl(var(--primary) / 0.35);
       color: hsl(var(--foreground));
     }
   }
 
-  /* Ensure dark mode values are applied even if .dark class is present */
+  /* Dark mode (default) */
   .dark {
-    /* Inherit from root since we made root dark */
-    --primary: 28 90% 65%;
+    --primary: 24 95% 58%;
     --primary-foreground: 0 0% 100%;
-    --background: 30 5% 8%;
-    --foreground: 30 10% 90%;
+    --background: 220 15% 6%;
+    --foreground: 220 10% 92%;
   }
-  
+
+  /* ============================================
+     Global Styles
+     ============================================ */
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Body base styles */
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Linear-style focus ring */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+
   /* Remove code backticks */
   .prose :where(code)::before,
   .prose :where(code)::after {
     content: none !important;
+  }
+
+  /* Linear-style scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  /* Linear-style dot grid background */
+  .bg-grid-pattern {
+    background-image: radial-gradient(circle at 1px 1px, hsl(var(--border)) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  /* Linear-style gradient mesh */
+  .bg-gradient-mesh {
+    background:
+      radial-gradient(at 27% 37%, hsl(24 95% 58% / 0.08) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, hsl(220 70% 55% / 0.06) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, hsl(24 95% 58% / 0.05) 0px, transparent 50%),
+      radial-gradient(at 10% 29%, hsl(220 70% 55% / 0.04) 0px, transparent 50%);
+  }
+
+  /* Linear-style noise texture overlay */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.02;
+    pointer-events: none;
+  }
+
+  /* Linear-style glass effect */
+  .glass {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .glass-strong {
+    background: hsl(var(--card) / 0.9);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsl(var(--border) / 0.6);
   }
 </style>

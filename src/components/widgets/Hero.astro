@@ -19,48 +19,64 @@ const {
 } = Astro.props;
 ---
 
-<section class="relative overflow-hidden py-16 md:py-20 lg:py-24 flex items-center bg-gradient-to-b from-background via-surface to-background" {...id ? { id } : {}}>
+<section class="relative min-h-[70vh] flex items-center overflow-hidden" {...id ? { id } : {}}>
+  <!-- Linear-style background -->
   <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-    <div class="absolute inset-x-0 top-[-6%] h-64 bg-[radial-gradient(circle_at_25%_30%,hsl(var(--primary)/0.12),transparent_40%),radial-gradient(circle_at_80%_10%,hsl(var(--accent-warm)/0.1),transparent_38%)]"></div>
-    <div class="absolute inset-x-0 bottom-[-12%] h-72 bg-[radial-gradient(circle_at_60%_10%,hsl(var(--primary)/0.08),transparent_46%)] blur-[80px]"></div>
+    <!-- Gradient mesh background -->
+    <div class="absolute inset-0 bg-gradient-mesh"></div>
+
+    <!-- Dot grid pattern -->
+    <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
+
+    <!-- Top glow -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/8 blur-[120px] rounded-full"></div>
+
+    <!-- Bottom accent glow -->
+    <div class="absolute bottom-0 right-1/4 w-[600px] h-[300px] bg-accent-cool/5 blur-[100px] rounded-full"></div>
+
     <slot name="bg">
       {bg ? <Fragment set:html={bg} /> : null}
     </slot>
   </div>
 
-  <div class="relative max-w-6xl mx-auto px-6 sm:px-8 w-full">
-    <div class="relative max-w-5xl mx-auto px-6 sm:px-10 py-10 md:py-12 rounded-xl border border-white/30 dark:border-white/10 bg-white/70 dark:bg-white/5 shadow-xl shadow-black/5 backdrop-blur-2xl text-center space-y-8">
+  <div class="relative w-full max-w-5xl mx-auto px-6 sm:px-8 py-20 md:py-28">
+    <div class="text-center space-y-8">
+      <!-- Tagline badge - Linear style -->
       {tagline && (
-        <div class="inline-flex items-center px-4 py-1.5 rounded-full border border-border/60 bg-white/70 dark:bg-white/10 backdrop-blur-sm shadow-sm animate-fade-in-down">
-          <span class="text-sm font-medium text-muted-foreground tracking-wide">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-secondary/50 backdrop-blur-sm animate-fade-in-down">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          <span class="text-sm font-medium text-muted-foreground">
             <Fragment set:html={tagline} />
           </span>
         </div>
       )}
 
+      <!-- Title - Linear gradient text -->
       {title && (
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight font-heading text-transparent bg-clip-text bg-gradient-to-b from-foreground to-foreground/70 animate-text-reveal">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-gradient animate-text-reveal">
           <Fragment set:html={title} />
         </h1>
       )}
 
+      <!-- Subtitle -->
       {subtitle && (
-        <div class="max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground leading-relaxed animate-fade-in-up" style="animation-delay: 0.35s;">
+        <div class="max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground leading-relaxed animate-fade-in-up" style="animation-delay: 0.2s;">
           <Fragment set:html={subtitle} />
         </div>
       )}
 
+      <!-- Actions - Linear style buttons -->
       {actions && (
-        <div class="flex flex-wrap sm:flex-row gap-3 sm:gap-4 justify-center items-center animate-fade-in-up" style="animation-delay: 0.45s;">
+        <div class="flex flex-wrap gap-3 justify-center items-center pt-4 animate-fade-in-up" style="animation-delay: 0.3s;">
           {Array.isArray(actions) ? (
-            actions.map((action) => (
-              <Button 
-                variant={action?.variant || 'primary'}
+            actions.map((action, index) => (
+              <Button
+                variant={action?.variant || (index === 0 ? 'primary' : 'secondary')}
                 size="lg"
                 href={action?.href?.toString() || undefined}
                 target={action?.target || undefined}
                 rel={action?.rel || undefined}
-                class={cn("px-7 py-3 rounded-xl", action?.class)}
+                class={cn("min-w-[140px]", action?.class)}
               >
                 {action?.text || action?.title}
               </Button>
@@ -72,15 +88,19 @@ const {
       )}
     </div>
 
-    <div class="mt-14 md:mt-16 lg:mt-20 animate-fade-in-up" style="animation-delay: 0.6s;">
-      {image && (
-        <div class="relative m-auto max-w-5xl">
-          <div class="rounded-2xl border border-border/60 bg-card shadow-md shadow-black/5">
+    <!-- Image section -->
+    {image && (
+      <div class="mt-16 md:mt-20 animate-fade-in-up" style="animation-delay: 0.4s;">
+        <div class="relative mx-auto max-w-4xl">
+          <!-- Glow effect behind image -->
+          <div class="absolute -inset-4 bg-gradient-to-r from-primary/10 via-transparent to-accent-cool/10 blur-2xl opacity-50"></div>
+
+          <div class="relative rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-2xl overflow-hidden">
             {typeof image === 'string' ? (
               <Fragment set:html={image} />
             ) : (
               <Image
-                class="mx-auto rounded-2xl w-full bg-card object-cover"
+                class="w-full object-cover"
                 widths={[400, 768, 1024, 2040]}
                 sizes="(max-width: 767px) 400px, (max-width: 1023px) 768px, (max-width: 2039px) 1024px, 2040px"
                 loading="eager"
@@ -91,11 +111,12 @@ const {
             )}
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    )}
 
+    <!-- Content slot -->
     {content && (
-      <div class="mt-10 animate-fade-in-up" style="animation-delay: 0.75s;">
+      <div class="mt-12 animate-fade-in-up" style="animation-delay: 0.5s;">
         <Fragment set:html={content} />
       </div>
     )}
@@ -103,99 +124,26 @@ const {
 </section>
 
 <style>
-  /* 动画定义 */
+  /* Linear-style animations */
   @keyframes fade-in-down {
     0% {
       opacity: 0;
-      transform: translateY(-20px);
+      transform: translateY(-12px);
     }
     100% {
       opacity: 1;
       transform: translateY(0);
     }
   }
-  
+
   @keyframes fade-in-up {
     0% {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(16px);
     }
     100% {
       opacity: 1;
       transform: translateY(0);
-    }
-  }
-  
-  .animate-fade-in-down {
-    animation: fade-in-down 0.8s ease-out both;
-  }
-  
-  .animate-fade-in-up {
-    animation: fade-in-up 0.8s ease-out both;
-  }
-
-  /* 优化文字渲染 */
-  h1 {
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-  }
-
-  /* 响应式优化 */
-  @media (max-width: 640px) {
-    h1 {
-      font-size: 2.25rem;
-      line-height: 1.1;
-      margin-bottom: 2rem;
-    }
-    
-    p {
-      font-size: 1.125rem;
-      margin-bottom: 2.5rem;
-    }
-  }
-
-  /* 减少动画 */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-
-  /* 高对比度模式 */
-  @media (prefers-contrast: high) {
-    .bg-gradient-to-r {
-      background: hsl(var(--primary)) !important;
-    }
-    
-    .text-transparent {
-      color: hsl(var(--foreground)) !important;
-      background: none !important;
-      -webkit-background-clip: unset !important;
-      background-clip: unset !important;
-    }
-  }
-
-  /* 动画性能优化 */
-  .animate-fade-in-down,
-  .animate-fade-in-up {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-  }
-
-  /* 触摸设备优化 */
-  @media (hover: none) {
-    .hover\:scale-105:hover,
-    .hover\:scale-\[1\.02\]:hover,
-    .hover\:-translate-y-1:hover,
-    .hover\:-translate-y-2:hover {
-      transform: none;
     }
   }
 
@@ -203,7 +151,7 @@ const {
     0% {
       opacity: 0;
       transform: translateY(20px);
-      filter: blur(10px);
+      filter: blur(8px);
     }
     100% {
       opacity: 1;
@@ -211,25 +159,53 @@ const {
       filter: blur(0);
     }
   }
-  
+
+  .animate-fade-in-down {
+    animation: fade-in-down 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
   .animate-text-reveal {
-    animation: text-reveal 1s cubic-bezier(0.2, 0.65, 0.3, 0.9) both;
-    animation-delay: 0.2s;
+    animation: text-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.1s;
   }
-  
-  @keyframes slide-up-fade {
-    0% {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
+
+  /* Text gradient utility */
+  .text-gradient {
+    background: linear-gradient(180deg, hsl(var(--foreground)) 0%, hsl(var(--foreground) / 0.6) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Typography optimization */
+  h1 {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
     }
   }
-  
-  .animate-slide-up-fade {
-    animation: slide-up-fade 0.8s ease-out both;
-    animation-delay: 0.4s;
+
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .text-gradient {
+      background: none !important;
+      color: hsl(var(--foreground)) !important;
+      -webkit-background-clip: unset !important;
+      background-clip: unset !important;
+    }
   }
 </style>

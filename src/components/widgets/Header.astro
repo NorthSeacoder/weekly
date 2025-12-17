@@ -1,6 +1,5 @@
 ---
 import {Icon} from 'astro-icon/components';
-import Logo from '~/components/Logo.astro';
 import ToggleMenu from '~/components/common/ToggleMenu.astro';
 import { getWeeklyPosts } from '~/utils/contents/unified-content';
 import Button from '~/components/ui/Button.astro';
@@ -20,7 +19,6 @@ export interface Props {
     isSticky?: boolean;
     isDark?: boolean;
     isFullWidth?: boolean;
-
     showRssFeed?: boolean;
     showEmail?: boolean;
     position?: string;
@@ -31,7 +29,6 @@ const {
     isSticky = false,
     isDark = false,
     isFullWidth = false,
-
     showRssFeed = false,
     showEmail = false,
     position = 'center'
@@ -39,14 +36,8 @@ const {
 
 const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
 const links: Array<Link> = [
-    {
-        text: '首页',
-        href: getPermalink('/')
-    },
-    {
-        text: '周刊',
-        href: getPermalink('/weekly')
-    },
+    { text: '首页', href: getPermalink('/'), icon: 'tabler:home' },
+    { text: '周刊', href: getPermalink('/weekly'), icon: 'tabler:news' },
 ];
 const actions: Array<CallToAction> = [];
 const weekly = await getWeeklyPosts();
@@ -54,87 +45,109 @@ const latestWeekly = weekly?.[0];
 ---
 
 <header
-    class:list={[
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out',
-        'bg-transparent',
-    ]}
+    class="fixed top-0 left-0 right-0 z-50 header-container bg-background/80 backdrop-blur-xl"
     {...id ? { id } : {}}
     data-header>
 
-    <div class:list={['relative mx-auto w-full px-4 sm:px-6 lg:px-8 pt-3 pb-2', { 'max-w-7xl': !isFullWidth }]}>
-        <div class="mx-auto max-w-5xl rounded-xl border border-white/30 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-xl shadow-lg shadow-black/5 px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
+    <!-- 顶部装饰线 -->
+    <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 transition-opacity duration-500" data-header-glow></div>
 
-            <!-- Logo 区域 -->
-            <div class="flex items-center group">
-                <a 
-                    class="flex items-center space-x-2 transition-all duration-200 focus:outline-none rounded-lg px-2 py-1" 
+    <div class="relative mx-auto w-full max-w-7xl px-4 sm:px-6 py-1.5">
+        <div class="header-inner flex items-center justify-between gap-3">
+
+            <!-- 左侧: Logo + 导航 -->
+            <div class="flex items-center gap-4">
+                <!-- Logo -->
+                <a
+                    class="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                     href={getHomePermalink()}
                     aria-label="回到首页"
                 >
-                    <!-- Logo 图标容器 -->
-                    <div class="relative">
-                        <div class="w-6 h-6 bg-gray-900 dark:bg-white rounded-md flex items-center justify-center transition-all duration-200">
-                            <Icon name="tabler:rocket" class="w-3.5 h-3.5 text-white dark:text-gray-900" />
-                        </div>
+                    <div class="w-6 h-6 rounded bg-primary flex items-center justify-center">
+                        <Icon name="tabler:rocket" class="w-3.5 h-3.5 text-white" />
                     </div>
-                    
-                    <!-- 站点名称 -->
-                    <div class="hidden sm:block">
-                        <h1 class="text-sm font-medium text-gray-900 dark:text-white">
-                            我不知道的周刊
-                        </h1>
-                    </div>
+                    <span class="hidden sm:block text-sm font-semibold text-foreground">
+                        我不知道的周刊
+                    </span>
                 </a>
-            </div>
-            
-            <!-- 桌面导航 -->
-            <nav class="hidden md:flex items-center space-x-1" aria-label="主导航">
-                {links.map(({ text, href }) => (
-                    <a
-                        class:list={[
-                            'relative px-3 py-1.5 rounded-md font-medium text-sm transition-colors duration-200',
-                            'hover:bg-secondary',
-                            'focus:outline-none',
-                            {
-                                'text-foreground bg-secondary': href === currentPath,
-                                'text-muted-foreground': href !== currentPath,
-                            },
-                        ]}
-                        href={href}
-                    >
-                        <span class="tracking-wide">{text}</span>
-                    </a>
-                ))}
-            </nav>
 
+                <!-- 桌面导航 -->
+                <nav class="hidden md:flex items-center" aria-label="主导航">
+                    <div class="flex items-center gap-0.5 p-0.5 rounded-md bg-secondary/30 border border-border/20">
+                        {links.map(({ text, href, icon }) => (
+                            <a
+                                class:list={[
+                                    'nav-link group/nav relative flex items-center gap-1.5 px-3 py-1 rounded text-sm font-medium',
+                                    'transition-all duration-200',
+                                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                                    'active:scale-95',
+                                    {
+                                        'text-foreground bg-background shadow-sm border border-border/50': href === currentPath,
+                                        'text-muted-foreground hover:text-foreground hover:bg-secondary/50': href !== currentPath,
+                                    },
+                                ]}
+                                href={href}
+                            >
+                                {icon && <Icon name={icon} class="w-3.5 h-3.5 opacity-60 group-hover/nav:opacity-100 transition-opacity" />}
+                                <span>{text}</span>
+                            </a>
+                        ))}
+                    </div>
+                </nav>
+            </div>
+
+            <!-- 中间: 最新周刊提示 (大屏幕) -->
             {latestWeekly && (
                 <a
                     href={latestWeekly.permalink}
-                    class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/10 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    class="hidden xl:flex items-center gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 hover:border-primary/40 transition-all duration-300 group/latest"
                 >
-                    <span class="px-2 py-0.5 rounded-sm bg-foreground text-background text-[11px] font-semibold">NEW</span>
-                    <span class="truncate max-w-[240px]">{latestWeekly.title}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                        <span class="text-xs font-semibold text-primary uppercase tracking-wider">最新</span>
+                    </div>
+                    <span class="text-sm text-muted-foreground group-hover/latest:text-foreground transition-colors truncate max-w-[200px]">
+                        {latestWeekly.title}
+                    </span>
+                    <Icon name="tabler:arrow-right" class="w-4 h-4 text-muted-foreground group-hover/latest:text-primary group-hover/latest:translate-x-0.5 transition-all" />
                 </a>
             )}
-            
-            <!-- 右侧工具栏 -->
-            <div class="flex items-center space-x-2 lg:space-x-3">
-                
+
+            <!-- 右侧: 工具栏 -->
+            <div class="flex items-center gap-1.5">
                 <!-- 搜索按钮 -->
                 <button
                     type="button"
-                    class="p-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/70 dark:hover:bg-gray-800/70 rounded-md transition-colors duration-200 focus:outline-none group"
+                    class="flex items-center gap-1.5 h-7 px-2.5 rounded border border-border/40 bg-secondary/20 text-muted-foreground hover:text-foreground hover:border-border/60 hover:bg-secondary/40 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     aria-label="搜索"
                     data-search-trigger
                     id="header-search-btn"
                 >
-                    <Icon name="tabler:search" class="w-4 h-4 transition-transform duration-200 group-hover:scale-105" />
+                    <Icon name="tabler:search" class="w-3.5 h-3.5" />
+                    <span class="hidden sm:inline text-xs">搜索</span>
+                    <kbd class="hidden lg:inline-flex items-center gap-0.5 px-1 py-0.5 rounded bg-background/60 border border-border/30 text-[9px] font-mono text-muted-foreground">
+                        <span>⌘</span><span>K</span>
+                    </kbd>
                 </button>
-                
+
+                <!-- GitHub -->
+                <a
+                    class="flex items-center justify-center w-7 h-7 rounded border border-border/40 bg-secondary/20 text-muted-foreground hover:text-foreground hover:border-border/60 hover:bg-secondary/40 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    aria-label="GitHub"
+                    href="https://github.com/NorthSeacoder/weekly"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <Icon name="tabler:brand-github" class="w-3.5 h-3.5" />
+                </a>
+
                 <!-- RSS 订阅 -->
                 {showRssFeed && (
                     <a
-                        class="p-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/70 dark:hover:bg-gray-800/70 rounded-md transition-colors duration-200 focus:outline-none"
+                        class="flex items-center justify-center w-7 h-7 rounded border border-border/40 bg-secondary/20 text-muted-foreground hover:text-foreground hover:border-border/60 hover:bg-secondary/40 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         aria-label="RSS 订阅"
                         href={getAsset('/rss.xml')}
                         target="_blank"
@@ -143,207 +156,138 @@ const latestWeekly = weekly?.[0];
                         <Icon name="tabler:rss" class="w-3.5 h-3.5" />
                     </a>
                 )}
-                
 
-                
-                <!-- CTA 按钮 -->
-                {actions?.length ? (
-                    <div class="hidden sm:flex items-center space-x-2">
-                        {actions.map((btnProps) => (
-                            <Button
-                                variant="primary"
-                                size="sm"
-                                class="px-4 py-2 text-sm font-medium transition-colors duration-200"
-                                {...btnProps}
-                            />
-                        ))}
-                    </div>
-                ) : null}
-                
                 <!-- 移动端菜单按钮 -->
                 <div class="md:hidden">
                     <ToggleMenu
-                        class="p-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/70 dark:hover:bg-gray-800/70 rounded-md transition-colors duration-200 focus:outline-none"
+                        class="flex items-center justify-center w-7 h-7 rounded border border-border/40 bg-secondary/20 text-muted-foreground hover:text-foreground hover:border-border/60 transition-all duration-200 focus:outline-none"
                     />
                 </div>
             </div>
         </div>
-        
+
         <!-- 移动端导航菜单 -->
-        <nav class="md:hidden hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 border-b border-gray-100 dark:border-gray-800 shadow-sm rounded-b-xl" data-mobile-menu>
-            <div class="px-4 py-4 space-y-2">
-                {links.map(({ text, href }) => (
+        <nav class="md:hidden hidden absolute top-full left-4 right-4 mt-2 rounded-xl border border-border/50 bg-background/98 backdrop-blur-xl shadow-2xl shadow-black/20" data-mobile-menu>
+            <div class="p-4 space-y-2">
+                {links.map(({ text, href, icon }) => (
                     <a
                         class:list={[
-                            'block px-4 py-2.5 rounded-md font-medium text-sm transition-colors duration-200',
-                            'hover:bg-gray-100 dark:hover:bg-gray-800',
-                            'focus:outline-none',
+                            'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium',
+                            'transition-all duration-200',
+                            'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                             {
-                                'text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800': href === currentPath,
-                                'text-gray-700 dark:text-gray-300': href !== currentPath,
+                                'text-foreground bg-secondary border border-border/50': href === currentPath,
+                                'text-muted-foreground hover:text-foreground hover:bg-secondary/50': href !== currentPath,
                             },
                         ]}
                         href={href}
                     >
-                        {text}
+                        {icon && <Icon name={icon} class="w-5 h-5 opacity-60" />}
+                        <span>{text}</span>
                     </a>
                 ))}
 
-                <button
-                    type="button"
-                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none"
-                    data-search-trigger
-                    id="mobile-search-btn"
-                >
-                    <span>搜索内容</span>
-                    <Icon name="tabler:search" class="w-4 h-4 text-gray-400" />
-                </button>
-                
-                <!-- 移动端 CTA -->
-                {actions?.length ? (
-                    <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
-                        {actions.map((btnProps) => (
-                            <Button
-                                variant="primary"
-                                size="md"
-                                class="w-full justify-center"
-                                {...btnProps}
-                            />
-                        ))}
-                    </div>
-                ) : null}
+                <div class="pt-2 mt-2 border-t border-border/50">
+                    <button
+                        type="button"
+                        class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all duration-200 focus:outline-none"
+                        data-search-trigger
+                        id="mobile-search-btn"
+                    >
+                        <div class="flex items-center gap-3">
+                            <Icon name="tabler:search" class="w-5 h-5 opacity-60" />
+                            <span>搜索内容</span>
+                        </div>
+                        <Icon name="tabler:chevron-right" class="w-4 h-4" />
+                    </button>
+                </div>
+
+                {latestWeekly && (
+                    <a
+                        href={latestWeekly.permalink}
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/5 border border-primary/20 text-sm"
+                    >
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                        <span class="text-muted-foreground">最新:</span>
+                        <span class="text-foreground truncate">{latestWeekly.title}</span>
+                    </a>
+                )}
             </div>
         </nav>
     </div>
 </header>
 
-<!-- 滚动效果和交互脚本 -->
 <script>
-    function initAdvancedHeader() {
+    function initHeader() {
         const header = document.querySelector('[data-header]') as HTMLElement;
-        const scrollIndicator = document.querySelector('[data-scroll-indicator]') as HTMLElement;
-        const bgEffect = document.querySelector('[data-bg-effect]') as HTMLElement;
-        const shimmer = document.querySelector('[data-shimmer]') as HTMLElement;
+        const headerGlow = document.querySelector('[data-header-glow]') as HTMLElement;
         const mobileMenu = document.querySelector('[data-mobile-menu]') as HTMLElement;
         const toggleButton = document.querySelector('[data-aw-toggle-menu]') as HTMLElement;
-        
+
         if (!header) return;
-        
-        let lastScrollY = window.scrollY;
-        let isScrolling = false;
+
         let ticking = false;
-        
-        // 滚动效果处理
+
         function updateHeaderOnScroll() {
             const scrollY = window.scrollY;
-            const scrollProgress = Math.min(scrollY / 200, 1);
-            
-            // 更新背景透明度和模糊效果
-            if (scrollY > 10) {
-                header.style.setProperty('--tw-bg-opacity', '0.9');
-                header.style.backdropFilter = 'blur(20px) saturate(180%)';
-                
-                // 显示顶部指示器
-                if (scrollIndicator) {
-                    scrollIndicator.style.opacity = scrollProgress.toString();
-                }
-                
-                // 显示背景效果
-                if (bgEffect) {
-                    bgEffect.style.opacity = (scrollProgress * 0.5).toString();
-                }
-                
-                // 添加阴影
-                header.style.boxShadow = `0 4px 20px rgba(0, 0, 0, ${scrollProgress * 0.1})`;
-                
+
+            if (scrollY > 20) {
+                header.classList.add('scrolled');
+                if (headerGlow) headerGlow.style.opacity = '1';
             } else {
-                header.style.setProperty('--tw-bg-opacity', '0.7');
-                header.style.backdropFilter = 'blur(16px) saturate(150%)';
-                header.style.boxShadow = 'none';
-                
-                if (scrollIndicator) scrollIndicator.style.opacity = '0';
-                if (bgEffect) bgEffect.style.opacity = '0';
+                header.classList.remove('scrolled');
+                if (headerGlow) headerGlow.style.opacity = '0';
             }
-            
-            // 滚动方向检测（可选：自动隐藏功能）
-            const scrollDelta = scrollY - lastScrollY;
-            if (Math.abs(scrollDelta) > 5) {
-                if (scrollDelta > 0 && scrollY > 100) {
-                    // 向下滚动 - 可以添加隐藏逻辑
-                    header.style.transform = 'translateY(-2px)';
-                } else {
-                    // 向上滚动
-                    header.style.transform = 'translateY(0)';
-                }
-            }
-            
-            lastScrollY = scrollY;
+
             ticking = false;
         }
-        
-        // 节流滚动事件
+
         function handleScroll() {
             if (!ticking) {
                 requestAnimationFrame(updateHeaderOnScroll);
                 ticking = true;
             }
         }
-        
-        // 微光扫描效果
-        function triggerShimmer() {
-            if (shimmer) {
-                shimmer.style.transform = 'translateX(-100%) skewX(-12deg)';
-                setTimeout(() => {
-                    shimmer.style.transition = 'transform 1s ease-out';
-                    shimmer.style.transform = 'translateX(100%) skewX(-12deg)';
-                }, 100);
-                
-                setTimeout(() => {
-                    shimmer.style.transition = 'none';
-                    shimmer.style.transform = 'translateX(-100%) skewX(-12deg)';
-                }, 1100);
-            }
-        }
-        
-        // 移动端菜单切换
+
         function toggleMobileMenu() {
             if (mobileMenu && toggleButton) {
                 const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
                 const newState = !isExpanded;
-                
+
                 toggleButton.setAttribute('aria-expanded', newState.toString());
-                
+                toggleButton.classList.toggle('expanded', newState);
+
                 if (newState) {
                     mobileMenu.classList.remove('hidden');
                     mobileMenu.style.opacity = '0';
-                    mobileMenu.style.transform = 'translateY(-10px)';
-                    
+                    mobileMenu.style.transform = 'translateY(-8px) scale(0.98)';
+
                     requestAnimationFrame(() => {
-                        mobileMenu.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                        mobileMenu.style.transition = 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
                         mobileMenu.style.opacity = '1';
-                        mobileMenu.style.transform = 'translateY(0)';
+                        mobileMenu.style.transform = 'translateY(0) scale(1)';
                     });
                 } else {
-                    mobileMenu.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                    mobileMenu.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
                     mobileMenu.style.opacity = '0';
-                    mobileMenu.style.transform = 'translateY(-10px)';
-                    
+                    mobileMenu.style.transform = 'translateY(-8px) scale(0.98)';
+
                     setTimeout(() => {
                         mobileMenu.classList.add('hidden');
-                    }, 300);
+                    }, 150);
                 }
             }
         }
-        
-        // 事件监听
+
         window.addEventListener('scroll', handleScroll, { passive: true });
-        
-        // 移动端菜单事件
+
         if (toggleButton) {
             toggleButton.addEventListener('click', toggleMobileMenu);
         }
-        
-        // 点击外部关闭移动端菜单
+
         document.addEventListener('click', (e) => {
             if (mobileMenu && !mobileMenu.contains(e.target as Node) && !toggleButton?.contains(e.target as Node)) {
                 if (!mobileMenu.classList.contains('hidden')) {
@@ -351,128 +295,57 @@ const latestWeekly = weekly?.[0];
                 }
             }
         });
-        
-        // 定期触发微光效果
-        setInterval(triggerShimmer, 8000);
-        
-        // 初始化
+
+        // 键盘快捷键 Cmd/Ctrl + K 打开搜索
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchBtn = document.querySelector('[data-search-trigger]') as HTMLElement;
+                searchBtn?.click();
+            }
+        });
+
         updateHeaderOnScroll();
-        
-        // 页面加载完成后触发一次微光效果
-        setTimeout(triggerShimmer, 1000);
-        
-        // 清理函数
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
     }
-    
-    // 初始化
-    document.addEventListener('DOMContentLoaded', initAdvancedHeader);
-    
-    // 页面导航时重新初始化
-    document.addEventListener('astro:after-swap', initAdvancedHeader);
+
+    document.addEventListener('DOMContentLoaded', initHeader);
+    document.addEventListener('astro:after-swap', initHeader);
 </script>
 
 <style>
-    /* 确保 header 始终固定在顶部 */
-    header[data-header] {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 50;
+    .header-container {
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border-bottom: 1px solid transparent;
     }
-    
-    /* 平滑过渡效果 */
-    header[data-header] {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    .header-container.scrolled {
+        background: hsl(var(--background) / 0.95);
+        backdrop-filter: blur(20px) saturate(180%);
+        border-bottom: 1px solid hsl(var(--border) / 0.5);
     }
-    
-    /* Logo 悬停效果增强 */
-    .group:hover .animate-ping {
-        animation-duration: 1s;
+
+    .header-inner {
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    
-    /* 导航链接悬停效果 */
-    nav a {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    /* 工具提示样式 */
-    .group:hover [class*="tooltip"] {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-    
-    /* 移动端菜单动画 */
+
     [data-mobile-menu] {
-        transform-origin: top;
+        transform-origin: top center;
     }
-    
-    /* 响应式优化 */
-    @media (max-width: 768px) {
-        header[data-header] {
-            backdrop-filter: blur(20px) saturate(180%);
-        }
-        
-        .group h1 {
-            font-size: 1.25rem;
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
         }
     }
-    
-    /* 高对比度模式 */
+
     @media (prefers-contrast: high) {
-        header[data-header] {
+        .header-container {
             background: hsl(var(--background)) !important;
             backdrop-filter: none !important;
             border-bottom: 2px solid hsl(var(--border));
-        }
-        
-        nav a:hover {
-            background: hsl(var(--primary)) !important;
-            color: hsl(var(--primary-foreground)) !important;
-        }
-    }
-    
-    /* 减少动画 */
-    @media (prefers-reduced-motion: reduce) {
-        * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-        }
-        
-        [data-shimmer] {
-            display: none;
-        }
-    }
-    
-    /* 暗色模式特殊处理 */
-    .dark header[data-header] {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-    
-    /* 性能优化 */
-    header[data-header],
-    nav a,
-    [data-shimmer] {
-        transform: translateZ(0);
-        backface-visibility: hidden;
-        perspective: 1000px;
-    }
-    
-    /* 触摸设备优化 */
-    @media (hover: none) {
-        .hover\:scale-110:hover,
-        .hover\:scale-105:hover,
-        .hover\:-translate-y-0\.5:hover {
-            transform: none;
-        }
-        
-        nav a::before {
-            display: none;
         }
     }
 </style>

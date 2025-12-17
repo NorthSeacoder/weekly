@@ -37,58 +37,55 @@ const {
   ...rest
 } = Astro.props;
 
-// 基础样式
+// Linear-style base classes
 const baseClasses = cn(
   'relative inline-flex items-center justify-center gap-2',
-  'font-semibold font-heading tracking-wide',
-  'rounded-xl border transition-all duration-200 ease-out',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
-  'disabled:opacity-60 disabled:cursor-not-allowed disabled:pointer-events-none',
-  'transform-gpu',
+  'font-medium',
+  'rounded-lg border',
+  'transition-all duration-200',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary focus-visible:ring-offset-background',
+  'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
   {
     'w-full': fullWidth,
     'cursor-not-allowed opacity-50': disabled || loading,
   }
 );
 
-// 尺寸变体
+// Size variants - Linear style compact sizing
 const sizeVariants = {
-  sm: 'px-4 py-2.5 text-sm min-h-[2.5rem] gap-1.5',
-  md: 'px-6 py-3 text-base min-h-[2.75rem] gap-2',
-  lg: 'px-8 py-4 text-lg min-h-[3.25rem] gap-2.5',
-  xl: 'px-10 py-5 text-xl min-h-[3.75rem] gap-3',
+  sm: 'px-3 py-1.5 text-sm h-8 gap-1.5',
+  md: 'px-4 py-2 text-sm h-9 gap-2',
+  lg: 'px-5 py-2.5 text-base h-10 gap-2',
+  xl: 'px-6 py-3 text-base h-12 gap-2.5',
 };
 
-// 样式变体
+// Style variants - Linear/Raycast inspired
 const variants = {
   primary: cn(
     'bg-primary text-primary-foreground border-transparent',
-    'shadow-sm hover:shadow-md hover:-translate-y-0.5',
-    'hover:bg-primary-hover'
+    'hover:bg-primary-hover',
+    'shadow-sm hover:shadow-md'
   ),
   secondary: cn(
-    'bg-card text-foreground border-border',
-    'hover:border-primary/60 hover:bg-surface',
-    'shadow-sm hover:shadow-md hover:-translate-y-0.5'
+    'bg-secondary text-secondary-foreground border-border/50',
+    'hover:bg-secondary-hover hover:border-border'
   ),
   tertiary: cn(
-    'bg-transparent text-muted-foreground',
-    'border-transparent',
+    'bg-transparent text-muted-foreground border-transparent',
     'hover:bg-secondary hover:text-foreground'
   ),
   ghost: cn(
     'bg-transparent text-muted-foreground border-transparent',
-    'hover:bg-secondary',
-    'hover:text-foreground'
+    'hover:bg-secondary/50 hover:text-foreground'
   ),
   destructive: cn(
-    'bg-red-500 text-white border-transparent',
-    'hover:bg-red-600',
-    'shadow-sm hover:shadow-md hover:-translate-y-0.5'
+    'bg-destructive text-destructive-foreground border-transparent',
+    'hover:bg-destructive/90',
+    'shadow-sm'
   ),
   link: cn(
-    'bg-transparent text-primary border-transparent p-0 h-auto min-h-0',
-    'hover:text-primary-hover hover:underline'
+    'bg-transparent text-primary border-transparent p-0 h-auto',
+    'hover:text-primary-hover hover:underline underline-offset-4'
   ),
 };
 
@@ -138,51 +135,41 @@ const elementProps = href
 </Element>
 
 <style>
-  /* 增强按钮的可访问性 */
-  button:focus-visible,
-  a:focus-visible {
-    outline: 2px solid hsl(var(--primary));
-    outline-offset: 2px;
-  }
-
-  /* 禁用状态下的链接样式 */
-  a[aria-disabled="true"] {
-    pointer-events: none;
-    cursor: not-allowed;
-  }
-
-  /* 优化文字渲染 */
+  /* Typography optimization */
   button,
   a {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* 按钮动画性能优化 */
-  button,
-  a {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
+  /* Disabled link styles */
+  a[aria-disabled="true"] {
+    pointer-events: none;
+    cursor: not-allowed;
   }
 
-  /* 减少动画对于喜欢减少动画的用户 */
+  /* Active state - Linear style subtle feedback */
+  button:active:not(:disabled),
+  a:active:not([aria-disabled="true"]) {
+    transform: scale(0.98);
+  }
+
+  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     button,
     a {
       transition: none !important;
-      transform: none !important;
     }
-    
-    button *,
-    a * {
-      animation: none !important;
-      transition: none !important;
+
+    button:active,
+    a:active {
+      transform: none !important;
     }
   }
 
-  /* 触摸设备优化 */
+  /* Touch device optimization */
   @media (hover: none) {
     button:hover,
     a:hover {
@@ -190,67 +177,11 @@ const elementProps = href
     }
   }
 
-  /* 高对比度模式 */
+  /* High contrast mode */
   @media (prefers-contrast: high) {
     button,
     a {
       border-width: 2px;
-    }
-  }
-
-  /* 大屏幕优化 */
-  @media (min-width: 1024px) {
-    button,
-    a {
-      transition-duration: 200ms;
-    }
-  }
-
-  /* 暗色模式特殊处理 */
-  .dark button[class*="primary"],
-  .dark a[class*="primary"] {
-    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
-  }
-
-  .dark button[class*="primary"]:hover,
-  .dark a[class*="primary"]:hover {
-    box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.4);
-  }
-
-  /* 按钮组样式 */
-  .btn-group button:not(:first-child):not(:last-child),
-  .btn-group a:not(:first-child):not(:last-child) {
-    border-radius: 0;
-  }
-
-  .btn-group button:first-child,
-  .btn-group a:first-child {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  .btn-group button:last-child,
-  .btn-group a:last-child {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
-  /* 加载状态优化 */
-  button[aria-busy="true"],
-  a[aria-busy="true"] {
-    cursor: wait;
-  }
-
-  /* 增强点击反馈 */
-  button:active,
-  a:active {
-    transform: translateY(1px) scale(0.98);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    button:active,
-    a:active {
-      transform: none;
     }
   }
 </style>
