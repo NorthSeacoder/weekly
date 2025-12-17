@@ -12,37 +12,42 @@ const metadata = {
 
 <Layout metadata={metadata}>
     <!-- 极简优雅 Hero Section -->
-    <Hero
-        tagline="AI 驱动的前端技术周刊">
-        
+    <Hero tagline='AI 驱动的前端技术周刊'>
         <Fragment slot='title'>
-            <span class="title-animate">
-                <span class="title-word font-light" style="--delay: 0">我</span>
-                <span class="title-word font-light" style="--delay: 1">不</span>
-                <span class="title-word font-light" style="--delay: 2">知</span>
-                <span class="title-word font-light" style="--delay: 3">道</span>
-                <span class="title-word font-light" style="--delay: 4">的</span>
+            <span class='title-animate'>
+                <span class='title-word font-light' style='--delay: 0'>我</span>
+                <span class='title-word font-light' style='--delay: 1'>不</span>
+                <span class='title-word font-light' style='--delay: 2'>知</span>
+                <span class='title-word font-light' style='--delay: 3'>道</span>
+                <span class='title-word font-light' style='--delay: 4'>的</span>
             </span>
-            <span class="title-highlight font-bold">周刊</span>
+            <span class='title-highlight font-bold'>周刊</span>
         </Fragment>
- 
+
         <Fragment slot='subtitle'>
-            <p class="text-lg md:text-xl text-foreground/70 leading-relaxed max-w-3xl mx-auto">
+            <p class='text-lg md:text-xl text-foreground/70 leading-relaxed max-w-3xl mx-auto'>
                 发现前端技术的未知之美，每周精选优质内容
             </p>
         </Fragment>
 
         <Fragment slot='bg'>
+            <div class='absolute inset-0 bg-page'>
+                <div class='absolute inset-0 bg-grid-pattern opacity-30'></div>
+                <div class='absolute inset-0 bg-gradient-mesh opacity-80'></div>
+                <div class='absolute inset-0 bg-noise opacity-20 mix-blend-overlay'></div>
+            </div>
         </Fragment>
 
         <Fragment slot='actions'>
-            <Button href="/weekly" variant="primary" size="md" class="px-6 py-3 text-base font-medium">开始阅读</Button>
-            <Button href="#latest-content" variant="secondary" size="md" class="px-6 py-3 text-base font-medium">最新内容</Button>
+            <Button href='/weekly' variant='primary' size='md' class='px-6 py-3 text-base font-medium'>开始阅读</Button>
+            <Button href='#latest-content' variant='secondary' size='md' class='px-6 py-3 text-base font-medium'
+                >最新内容</Button
+            >
         </Fragment>
     </Hero>
-    
+
     <!-- 最新内容区域 -->
-    <section id="latest-content" class="scroll-mt-20">
+    <section id='latest-content' class='scroll-mt-20'>
         <LatestWeeklyList />
     </section>
 </Layout>
@@ -142,5 +147,3 @@ const metadata = {
         }
     }
 </style>
-
-

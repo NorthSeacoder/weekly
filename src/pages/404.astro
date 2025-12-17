@@ -1,8 +1,8 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
-import { getHomePermalink, getPermalink } from '~/utils/permalinks';
-import { getWeeklyPosts } from '~/utils/contents/unified-content';
-import { Icon } from 'astro-icon/components';
+import {getHomePermalink, getPermalink} from '~/utils/permalinks';
+import {getWeeklyPosts} from '~/utils/contents/unified-content';
+import {Icon} from 'astro-icon/components';
 import Button from '~/components/ui/Button.astro';
 
 const title = '页面未找到';
@@ -12,225 +12,200 @@ const weeklyPosts = await getWeeklyPosts();
 const recommendedPosts = weeklyPosts.slice(0, 3);
 ---
 
-<Layout metadata={{ title }}>
-  <div class="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden bg-black">
-    <!-- 深色背景层 -->
-    <div class="absolute inset-0 bg-black"></div>
-    
-    <!-- 装饰性元素 - 增强发光效果 -->
-    <div class="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl animate-float"></div>
-    <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent-warm/25 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
-    
-    <!-- 主内容 -->
-    <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="max-w-4xl mx-auto">
-        
-        <!-- 深色卡片 -->
-        <div class="glass-effect rounded-2xl p-8 sm:p-12 shadow-2xl backdrop-blur-xl border border-gray-700/50">
-          
-          <!-- 404 数字 -->
-          <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-32 h-32 sm:w-40 sm:h-40 mb-6 relative">
-              <!-- 背景光晕 -->
-              <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent-warm/30 rounded-full blur-2xl animate-pulse"></div>
-              
-              <!-- 404 图标 -->
-              <div class="relative">
-                <Icon name="tabler:error-404" class="w-32 h-32 sm:w-40 sm:h-40 text-primary/80 animate-bounce-in" />
-              </div>
-            </div>
-            
-            <!-- 标题 -->
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-4 tracking-tight animate-fade-in-up">
-              迷失在知识的星空中
-            </h1>
-            
-            <!-- 副标题 -->
-            <p class="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-2 animate-fade-in-up" style="animation-delay: 0.1s;">
-              看起来这个页面正在探索未知领域...
-            </p>
-            <p class="text-base text-muted-foreground/80 animate-fade-in-up" style="animation-delay: 0.2s;">
-              但别担心，让我们一起找到回家的路
-            </p>
-          </div>
-          
-          <!-- 搜索区域 -->
-          <div class="mb-10 animate-fade-in-up" style="animation-delay: 0.3s;">
-            <div class="max-w-xl mx-auto">
-              <button
-                type="button"
-                class="w-full flex items-center gap-3 px-6 py-4 bg-secondary hover:bg-secondary-hover border border-border rounded-2xl transition-all duration-300 group hover:shadow-lg"
-                data-search-trigger
-              >
-                <Icon name="tabler:search" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                <span class="flex-1 text-left text-muted-foreground group-hover:text-foreground transition-colors">
-                  搜索你想要的内容...
-                </span>
-                <kbd class="hidden sm:inline-flex px-2 py-1 text-xs bg-background border border-border rounded">
-                  ⌘K
-                </kbd>
-              </button>
-            </div>
-          </div>
-          
-          <!-- 推荐内容 -->
-          {recommendedPosts.length > 0 && (
-            <div class="mb-10 animate-fade-in-up" style="animation-delay: 0.4s;">
-              <h2 class="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Icon name="tabler:sparkles" class="w-5 h-5 text-primary" />
-                <span>或者看看这些推荐</span>
-              </h2>
-              
-              <div class="grid gap-4 sm:grid-cols-3">
-                {recommendedPosts.map((post, index) => (
-                  <a
-                    href={post.permalink}
-                    class="group block p-4 bg-surface hover:bg-surface-hover border border-border rounded-2xl transition-all duration-300 hover:shadow-md hover:-translate-y-1"
-                    style={`animation: fadeInUp 0.6s ease-out ${0.5 + index * 0.1}s both;`}
-                  >
-                    <div class="flex items-start gap-3">
-                      <div class="flex-shrink-0 w-2 h-2 mt-2 bg-primary rounded-full"></div>
-                      <div class="flex-1 min-w-0">
-                        <h3 class="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
-                          {post.title}
-                        </h3>
-                        <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Icon name="tabler:calendar" class="w-3 h-3" />
-                          <time>{new Date(post.date).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}</time>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          <!-- 导航链接 -->
-          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style="animation-delay: 0.6s;">
-            <Button
-              href={getHomePermalink()}
-              variant="primary"
-              size="lg"
-              icon="tabler:home"
-              class="w-full sm:w-auto"
-            >
-              返回首页
-            </Button>
-
-            <Button
-              href={getPermalink('/weekly')}
-              variant="secondary"
-              size="lg"
-              icon="tabler:news"
-              class="w-full sm:w-auto"
-            >
-              浏览周刊
-            </Button>
-          </div>
-          
-          <!-- 底部提示 -->
-          <div class="mt-10 pt-8 border-t border-border text-center animate-fade-in-up" style="animation-delay: 0.7s;">
-            <p class="text-sm text-muted-foreground">
-              如果你认为这是一个错误，请
-              <a href="https://github.com/NorthSeacoder/weekly/issues" class="text-primary hover:underline" target="_blank" rel="noopener">
-                报告问题
-              </a>
-            </p>
-          </div>
+<Layout metadata={{title}}>
+    <div class='relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden bg-page'>
+        <!-- 背景装饰 -->
+        <div class='absolute inset-0 pointer-events-none'>
+            <div class='absolute inset-0 bg-grid-pattern opacity-10'></div>
+            <div class='absolute inset-0 bg-gradient-mesh opacity-50'></div>
+            <div class='absolute inset-0 bg-noise opacity-20 mix-blend-overlay'></div>
         </div>
-        
-      </div>
+
+        <!-- 主内容 -->
+        <div class='relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+            <div class='max-w-4xl mx-auto'>
+                <!-- 深色卡片 -->
+                <div class='glass-strong rounded-3xl p-8 sm:p-12 shadow-2xl overflow-hidden relative'>
+                    <!-- 内部光效 -->
+                    <div
+                        class='absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent'>
+                    </div>
+
+                    <!-- 404 数字 -->
+                    <div class='text-center mb-10'>
+                        <div class='inline-flex items-center justify-center w-32 h-32 sm:w-40 sm:h-40 mb-8 relative'>
+                            <!-- 背景光晕 -->
+                            <div class='absolute inset-0 bg-primary/20 rounded-full blur-[60px] animate-pulse'></div>
+
+                            <!-- 404 图标 -->
+                            <div class='relative'>
+                                <Icon
+                                    name='tabler:error-404'
+                                    class='w-32 h-32 sm:w-40 sm:h-40 text-primary drop-shadow-[0_0_15px_rgba(var(--primary),0.5)] animate-bounce-in'
+                                />
+                            </div>
+                        </div>
+
+                        <!-- 标题 -->
+                        <h1
+                            class='text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-4 tracking-tight animate-fade-in-up'>
+                            迷失在知识的星空中
+                        </h1>
+
+                        <!-- 副标题 -->
+                        <p
+                            class='text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-2 animate-fade-in-up'
+                            style='animation-delay: 0.1s;'>
+                            看起来这个页面正在探索未知领域...
+                        </p>
+                    </div>
+
+                    <!-- 搜索区域 -->
+                    <div class='mb-12 animate-fade-in-up' style='animation-delay: 0.2s;'>
+                        <div class='max-w-xl mx-auto'>
+                            <button
+                                type='button'
+                                class='w-full flex items-center gap-3 px-5 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300 group hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50'
+                                data-search-trigger>
+                                <Icon
+                                    name='tabler:search'
+                                    class='w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors'
+                                />
+                                <span
+                                    class='flex-1 text-left text-muted-foreground group-hover:text-foreground transition-colors'>
+                                    搜索你想要的内容...
+                                </span>
+                                <kbd
+                                    class='hidden sm:inline-flex px-2 py-1 text-xs bg-black/20 border border-white/5 rounded text-muted-foreground'>
+                                    ⌘K
+                                </kbd>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 推荐内容 -->
+                    {
+                        recommendedPosts.length > 0 && (
+                            <div class='mb-12 animate-fade-in-up' style='animation-delay: 0.3s;'>
+                                <h2 class='text-lg font-semibold text-foreground mb-6 flex items-center justify-center gap-2'>
+                                    <span class='w-8 h-[1px] bg-white/10' />
+                                    <span>或者看看这些推荐</span>
+                                    <span class='w-8 h-[1px] bg-white/10' />
+                                </h2>
+
+                                <div class='grid gap-4 sm:grid-cols-3'>
+                                    {recommendedPosts.map((post, index) => (
+                                        <a
+                                            href={post.permalink}
+                                            class='group block p-4 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1 relative overflow-hidden'
+                                            style={`animation: fadeInUp 0.6s ease-out ${0.4 + index * 0.1}s both;`}>
+                                            <div class='absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
+                                            <div class='flex flex-col gap-3 relative z-10'>
+                                                <h3 class='font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2'>
+                                                    {post.title}
+                                                </h3>
+                                                <div class='flex items-center gap-2 text-xs text-muted-foreground mt-auto'>
+                                                    <time>
+                                                        {new Date(post.date).toLocaleDateString('zh-CN', {
+                                                            month: 'short',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    }
+
+                    <!-- 导航链接 -->
+                    <div
+                        class='flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up'
+                        style='animation-delay: 0.5s;'>
+                        <Button
+                            href={getHomePermalink()}
+                            variant='primary'
+                            size='lg'
+                            icon='tabler:home'
+                            class='w-full sm:w-auto shadow-lg shadow-primary/20'>
+                            返回首页
+                        </Button>
+
+                        <Button
+                            href={getPermalink('/weekly')}
+                            variant='secondary'
+                            size='lg'
+                            icon='tabler:news'
+                            class='w-full sm:w-auto'>
+                            浏览周刊
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </Layout>
 
 <style>
-  /* 深色玻璃拟态效果 */
-  .glass-effect {
-    background: rgba(17, 24, 39, 0.85);
-    backdrop-filter: blur(20px) saturate(180%);
-  }
-  
-  /* 浮动动画 */
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px) scale(1);
+    /* 弹入动画 */
+    @keyframes bounce-in {
+        0% {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
-    50% {
-      transform: translateY(-20px) scale(1.05);
+
+    .animate-bounce-in {
+        animation: bounce-in 0.8s ease-out;
     }
-  }
-  
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  /* 弹入动画 */
-  @keyframes bounce-in {
-    0% {
-      opacity: 0;
-      transform: scale(0.3);
+
+    /* 淡入上移动画 */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-    50% {
-      opacity: 1;
-      transform: scale(1.05);
-    }
-    70% {
-      transform: scale(0.9);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  .animate-bounce-in {
-    animation: bounce-in 0.8s ease-out;
-  }
-  
-  /* 淡入上移动画 */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .animate-fade-in-up {
-    animation: fadeInUp 0.6s ease-out both;
-  }
-  
-  /* 文本截断 */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  /* 减少动画 */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-float,
-    .animate-bounce-in,
+
     .animate-fade-in-up {
-      animation: none !important;
+        animation: fadeInUp 0.6s ease-out both;
     }
-    
-    * {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
+
+    /* 文本截断 */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
-  }
-  
-  /* 移动端优化 */
-  @media (max-width: 640px) {
-    .glass-effect {
-      padding: 2rem 1.5rem;
+
+    /* 减少动画 */
+    @media (prefers-reduced-motion: reduce) {
+        .animate-bounce-in,
+        .animate-fade-in-up {
+            animation: none !important;
+        }
+
+        * {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+        }
     }
-  }
 </style>

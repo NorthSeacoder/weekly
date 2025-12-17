@@ -1,54 +1,66 @@
 ---
-import { getWeeklyPosts } from '~/utils/contents/unified-content'
-import StatCard from '~/components/ui/StatCard.astro'
-import { cn } from '~/utils/utils'
+import {getWeeklyPosts} from '~/utils/contents/unified-content';
+import StatCard from '~/components/ui/StatCard.astro';
+import {cn} from '~/utils/utils';
 
-const weeklyList = await getWeeklyPosts()
+const weeklyList = await getWeeklyPosts();
 ---
 
-<section class="py-16 lg:py-20 bg-page min-h-screen relative overflow-hidden">
+<section class='py-20 lg:py-28 bg-page min-h-screen relative overflow-hidden'>
     <!-- 背景装饰元素 -->
-    <div class="absolute inset-0 pointer-events-none">
+    <div class='absolute inset-0 pointer-events-none'>
         <!-- 渐变光晕背景 -->
-        <div class="absolute inset-0 bg-gradient-mesh"></div>
+        <div class='absolute inset-0 bg-gradient-mesh opacity-80'></div>
         <!-- 点阵背景 -->
-        <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
-        <!-- 顶部微光 -->
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/8 blur-[120px] rounded-full"></div>
+        <div class='absolute inset-0 bg-grid-pattern opacity-20'></div>
+        <!-- 顶部微光 - 增强色彩 -->
+        <div
+            class='absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full mix-blend-screen'>
+        </div>
+        <div
+            class='absolute top-[20%] left-[20%] w-[600px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full mix-blend-screen animate-pulse duration-[4000ms]'>
+        </div>
     </div>
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class='container mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
         <!-- 页面标题区域 -->
-        <div class="text-center mb-12 lg:mb-16">
+        <div class='text-center mb-12 lg:mb-16'>
             <!-- 标签 -->
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-secondary/50 backdrop-blur-sm mb-6">
-                <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                <span class="text-sm font-medium text-muted-foreground">全部周刊</span>
+            <div
+                class='inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md mb-8'>
+                <span class='w-1.5 h-1.5 rounded-full bg-primary animate-pulse'></span>
+                <span class='text-sm font-medium text-primary/80'>全部周刊</span>
             </div>
 
             <!-- 主标题 -->
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight mb-4 text-foreground">
+            <h1 class='text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight mb-4 text-foreground'>
                 周刊归档
             </h1>
 
             <!-- 副标题 -->
-            <p class="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed mb-8">
+            <p class='text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed mb-8'>
                 探索精心整理的技术周刊合集，每一期都是前端技术世界的精华
             </p>
 
             <!-- 统计信息 -->
-            <div class="flex items-center justify-center gap-6 text-sm">
-                <div class="flex items-center gap-2 text-muted-foreground">
-                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            <div class='flex items-center justify-center gap-6 text-sm'>
+                <div class='flex items-center gap-2 text-muted-foreground'>
+                    <svg class='w-4 h-4 text-primary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path
+                            stroke-linecap='round'
+                            stroke-linejoin='round'
+                            stroke-width='2'
+                            d='M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z'
+                        ></path>
                     </svg>
-                    <span>共 <strong class="text-foreground font-semibold">{weeklyList.length}</strong> 期</span>
+                    <span>共 <strong class='text-foreground font-semibold'>{weeklyList.length}</strong> 期</span>
                 </div>
-                <span class="text-border">|</span>
-                <div class="flex items-center gap-2 text-muted-foreground">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                <span class='text-border'>|</span>
+                <div class='flex items-center gap-2 text-muted-foreground'>
+                    <span class='relative flex h-2 w-2'>
+                        <span class='animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75'
+                        ></span>
+                        <span class='relative inline-flex rounded-full h-2 w-2 bg-primary'></span>
                     </span>
                     <span>持续更新中</span>
                 </div>
@@ -56,41 +68,43 @@ const weeklyList = await getWeeklyPosts()
         </div>
 
         <!-- 周刊网格 -->
-        <div class={cn(
-            "grid gap-6 md:gap-8",
-            "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
-            "2xl:grid-cols-4 auto-cols-fr",
-            "max-w-8xl mx-auto mb-16 weekly-grid"
-        )}>
-            {weeklyList.map((weekly, index) => (
-                <div 
-                    class="animate-fade-in-up group" 
-                    style={`animation-delay: ${Math.min(index * 0.05, 1)}s;`}
-                    data-weekly-card
-                >
-                    <a href={weekly.permalink} class="block h-full focus:outline-none rounded-[2px]">
-                        <StatCard
-                            title={weekly.title}
-                            date={weekly.date}
-                            desc={weekly.desc || '精选本周前端技术内容'}
-                            showTags={false}
-                        />
-                    </a>
-                </div>
-            ))}
+        <div
+            class={cn(
+                'grid gap-6 md:gap-8',
+                'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+                '2xl:grid-cols-4 auto-cols-fr',
+                'max-w-8xl mx-auto mb-16 weekly-grid'
+            )}>
+            {
+                weeklyList.map((weekly, index) => (
+                    <div
+                        class='animate-fade-in-up group'
+                        style={`animation-delay: ${Math.min(index * 0.05, 1)}s;`}
+                        data-weekly-card>
+                        <a href={weekly.permalink} class='block h-full focus:outline-none rounded-[2px]'>
+                            <StatCard
+                                title={weekly.title}
+                                date={weekly.date}
+                                desc={weekly.desc || '精选本周前端技术内容'}
+                                showTags={false}
+                            />
+                        </a>
+                    </div>
+                ))
+            }
         </div>
 
         <!-- 底部区域 -->
-        <div class="text-center pt-8">
+        <div class='text-center pt-8'>
             <button
                 onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-                class="inline-flex items-center gap-2 px-5 py-2.5 bg-secondary/50 text-muted-foreground rounded-lg border border-border/50 hover:text-foreground hover:border-border hover:bg-secondary transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95"
-                aria-label="回到顶部"
-            >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                class='inline-flex items-center gap-2 px-5 py-2.5 bg-secondary/50 text-muted-foreground rounded-lg border border-border/50 hover:text-foreground hover:border-border hover:bg-secondary transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95'
+                aria-label='回到顶部'>
+                <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 10l7-7m0 0l7 7m-7-7v18'
+                    ></path>
                 </svg>
-                <span class="text-sm font-medium">回到顶部</span>
+                <span class='text-sm font-medium'>回到顶部</span>
             </button>
         </div>
     </div>
@@ -108,7 +122,7 @@ const weeklyList = await getWeeklyPosts()
             transform: translateY(0) scale(1);
         }
     }
-    
+
     .animate-fade-in-up {
         animation: fade-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     }
@@ -137,19 +151,19 @@ const weeklyList = await getWeeklyPosts()
         /* 使用 CSS Grid 的 auto-fit 和 minmax 来实现智能响应式 */
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
-    
+
     /* 针对不同屏幕尺寸的优化 */
     @media (max-width: 480px) {
         .weekly-grid {
             grid-template-columns: 1fr;
             gap: 1.5rem;
         }
-        
+
         h1 {
             font-size: 2.5rem;
             line-height: 1.1;
         }
-        
+
         .text-xl {
             font-size: 1.125rem;
         }
@@ -207,7 +221,7 @@ const weeklyList = await getWeeklyPosts()
             opacity: 1;
             transform: none;
         }
-        
+
         .animate-pulse {
             animation: none;
         }
@@ -218,7 +232,7 @@ const weeklyList = await getWeeklyPosts()
         transform: translateZ(0);
         backface-visibility: hidden;
     }
-    
+
     /* 高对比度模式 */
     @media (prefers-contrast: high) {
         .bg-gradient-to-r,
@@ -226,7 +240,7 @@ const weeklyList = await getWeeklyPosts()
         .bg-gradient-to-l {
             background: hsl(var(--background)) !important;
         }
-        
+
         .text-transparent {
             color: hsl(var(--foreground)) !important;
             background: none !important;
@@ -242,34 +256,37 @@ const weeklyList = await getWeeklyPosts()
             transform: none;
         }
     }
-    
+
     /* 文字渲染优化 */
     h1 {
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+        font-feature-settings:
+            'kern' 1,
+            'liga' 1,
+            'calt' 1;
     }
-    
+
     /* 卡片悬停效果增强 */
     [data-weekly-card]:hover {
         z-index: 10;
     }
-    
+
     /* 焦点状态增强 */
     a:focus-visible {
         outline: 2px solid hsl(var(--primary));
         outline-offset: 4px;
         border-radius: 1rem;
     }
-    
+
     /* 加载状态 */
-    .grid[data-loading="true"] > div {
+    .grid[data-loading='true'] > div {
         opacity: 0.5;
         pointer-events: none;
     }
-    
-    .grid[data-loading="true"] > div::after {
+
+    .grid[data-loading='true'] > div::after {
         content: '';
         position: absolute;
         inset: 0;
@@ -277,17 +294,21 @@ const weeklyList = await getWeeklyPosts()
         animation: shimmer 1.5s linear infinite;
         border-radius: inherit;
     }
-    
+
     @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
     }
-    
+
     /* 暗色模式特殊处理 */
     .dark .grid > div {
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
-    
+
     /* 打印样式 */
     @media print {
         .animate-fade-in-up {
@@ -295,7 +316,7 @@ const weeklyList = await getWeeklyPosts()
             opacity: 1;
             transform: none;
         }
-        
+
         button {
             display: none;
         }

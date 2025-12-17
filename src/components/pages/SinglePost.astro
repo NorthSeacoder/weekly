@@ -18,48 +18,48 @@ const formattedDate = dayjs(post.date).format('YYYY年MM月DD日');
 
 // 生成分类的颜色映射
 const categoryColors = {
-    "技术": { 
-        bg: "bg-blue-100 dark:bg-blue-900/40", 
-        text: "text-blue-700 dark:text-blue-300",
-        icon: "tabler:code"
+    技术: {
+        bg: 'bg-blue-100 dark:bg-blue-900/40',
+        text: 'text-blue-700 dark:text-blue-300',
+        icon: 'tabler:code'
     },
-    "工具": { 
-        bg: "bg-emerald-100 dark:bg-emerald-900/40", 
-        text: "text-emerald-700 dark:text-emerald-300",
-        icon: "tabler:tool"
+    工具: {
+        bg: 'bg-emerald-100 dark:bg-emerald-900/40',
+        text: 'text-emerald-700 dark:text-emerald-300',
+        icon: 'tabler:tool'
     },
-    "设计": { 
-        bg: "bg-purple-100 dark:bg-purple-900/40", 
-        text: "text-purple-700 dark:text-purple-300",
-        icon: "tabler:brush"
+    设计: {
+        bg: 'bg-purple-100 dark:bg-purple-900/40',
+        text: 'text-purple-700 dark:text-purple-300',
+        icon: 'tabler:brush'
     },
-    "资源": { 
-        bg: "bg-amber-100 dark:bg-amber-900/40", 
-        text: "text-amber-700 dark:text-amber-300",
-        icon: "tabler:book"
+    资源: {
+        bg: 'bg-amber-100 dark:bg-amber-900/40',
+        text: 'text-amber-700 dark:text-amber-300',
+        icon: 'tabler:book'
     },
-    "观点": { 
-        bg: "bg-rose-100 dark:bg-rose-900/40", 
-        text: "text-rose-700 dark:text-rose-300",
-        icon: "tabler:message-circle"
+    观点: {
+        bg: 'bg-rose-100 dark:bg-rose-900/40',
+        text: 'text-rose-700 dark:text-rose-300',
+        icon: 'tabler:message-circle'
     },
-    "新闻": { 
-        bg: "bg-sky-100 dark:bg-sky-900/40", 
-        text: "text-sky-700 dark:text-sky-300",
-        icon: "tabler:news"
+    新闻: {
+        bg: 'bg-sky-100 dark:bg-sky-900/40',
+        text: 'text-sky-700 dark:text-sky-300',
+        icon: 'tabler:news'
     },
-    "学习": { 
-        bg: "bg-indigo-100 dark:bg-indigo-900/40", 
-        text: "text-indigo-700 dark:text-indigo-300",
-        icon: "tabler:school"
+    学习: {
+        bg: 'bg-indigo-100 dark:bg-indigo-900/40',
+        text: 'text-indigo-700 dark:text-indigo-300',
+        icon: 'tabler:school'
     }
 };
 
 // 默认分类样式
-const defaultCategoryStyle = { 
-    bg: "bg-gray-100 dark:bg-gray-800/60", 
-    text: "text-gray-700 dark:text-gray-300",
-    icon: "tabler:tag"
+const defaultCategoryStyle = {
+    bg: 'bg-gray-100 dark:bg-gray-800/60',
+    text: 'text-gray-700 dark:text-gray-300',
+    icon: 'tabler:tag'
 };
 
 // 获取分类样式
@@ -69,151 +69,187 @@ const getCategoryStyle = (category) => {
 ---
 
 <section class='bg-page min-h-screen relative overflow-hidden'>
-    <div class="absolute inset-0 pointer-events-none">
-        <div class="absolute inset-x-0 top-[-10%] h-80 bg-[radial-gradient(circle_at_50%_35%,hsl(var(--primary)/0.12),transparent_55%)] blur-[80px]"></div>
+    <div class='absolute inset-0 pointer-events-none'>
+        <!-- 渐变光晕背景 -->
+        <div class='absolute inset-0 bg-gradient-mesh opacity-80'></div>
+        <!-- 点阵背景 -->
+        <div class='absolute inset-0 bg-grid-pattern opacity-20'></div>
+        <!-- 顶部微光 - 增强色彩 -->
+        <div
+            class='absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full mix-blend-screen'>
+        </div>
+        <div
+            class='absolute top-[20%] left-[20%] w-[600px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full mix-blend-screen animate-pulse duration-[4000ms]'>
+        </div>
     </div>
 
-    <article class="py-8 sm:py-12 lg:py-16 max-w-5xl mx-auto relative z-10">
+    <article class='py-8 sm:py-12 lg:py-16 max-w-5xl mx-auto relative z-10'>
         <!-- 页面标题区域 -->
         <header class='mb-12 lg:mb-16 max-w-7xl mx-auto px-6 sm:px-8'>
-            <div class="text-center space-y-6">
+            <div class='text-center space-y-6'>
                 <!-- 周刊标签 -->
-                <div class="inline-flex items-center px-4 py-1.5 rounded-[2px] border border-white/10 bg-white/5 backdrop-blur-sm shadow-sm">
-                    <Icon name='tabler:article' class='w-4 h-4 mr-2 text-primary' />
-                    <span class="text-sm font-medium text-muted-foreground tracking-wide">技术周刊</span>
+                <div
+                    class='inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md shadow-sm'>
+                    <span class='relative flex h-2 w-2'>
+                        <span class='animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75'
+                        ></span>
+                        <span class='relative inline-flex rounded-full h-2 w-2 bg-primary'></span>
+                    </span>
+                    <span class='text-sm font-medium text-primary/80 tracking-wide'>技术周刊</span>
                 </div>
-                
+
                 <!-- 周刊标题 -->
-                <h1 class='text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.05] tracking-tight font-heading text-transparent bg-clip-text bg-gradient-to-b from-foreground to-foreground/70' data-scroll-title>
+                <h1
+                    class='text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.05] tracking-tight font-heading text-transparent bg-clip-text bg-gradient-to-b from-foreground to-foreground/70'
+                    data-scroll-title>
                     {post.title}
                 </h1>
-                
+
                 <!-- 元信息 -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-sm text-muted-foreground pt-4">
+                <div
+                    class='flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-sm text-muted-foreground pt-4'>
                     <span class='flex items-center gap-2'>
                         <Icon name='tabler:calendar' class='w-4 h-4' />
                         <time datetime={String(post.date)} class='inline-block'>{formattedDate}</time>
                     </span>
-                    {post.wordCount && (
-                        <>
-                            <div class="w-px h-4 bg-border hidden sm:block"></div>
-                            <span class='flex items-center gap-2'>
-                                <Icon name='tabler:file-word' class='w-4 h-4' />
-                                {post.wordCount.toLocaleString()} 字
-                            </span>
-                        </>
-                    )}
-                    {post.readingTime && (
-                        <>
-                            <div class="w-px h-4 bg-border hidden sm:block"></div>
-                            <span class='flex items-center gap-2'>
-                                <Icon name='tabler:clock' class='w-4 h-4' />
-                                {post.readingTime}
-                            </span>
-                        </>
-                    )}
+                    {
+                        post.wordCount && (
+                            <>
+                                <div class='w-px h-4 bg-border hidden sm:block' />
+                                <span class='flex items-center gap-2'>
+                                    <Icon name='tabler:file-word' class='w-4 h-4' />
+                                    {post.wordCount.toLocaleString()} 字
+                                </span>
+                            </>
+                        )
+                    }
+                    {
+                        post.readingTime && (
+                            <>
+                                <div class='w-px h-4 bg-border hidden sm:block' />
+                                <span class='flex items-center gap-2'>
+                                    <Icon name='tabler:clock' class='w-4 h-4' />
+                                    {post.readingTime}
+                                </span>
+                            </>
+                        )
+                    }
                 </div>
-                
+
                 <!-- 装饰性分隔线 -->
-                <div class="flex items-center justify-center pt-8">
-                    <div class="h-px bg-gradient-to-r from-transparent via-border to-transparent w-full max-w-md"></div>
+                <div class='flex items-center justify-center pt-8'>
+                    <div class='h-px bg-gradient-to-r from-transparent via-border to-transparent w-full max-w-md'></div>
                 </div>
             </div>
         </header>
-        
+
         {/* 文章内容 */}
-        <div class='mx-auto max-w-7xl px-6 sm:px-8'>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {sections.map((section) => {
-                    const categoryStyle = getCategoryStyle(section.category);
-                    const hasImage = !!section.image_url;
-                    return (
-                        <article
+        <div class="mx-auto max-w-7xl px-6 sm:px-8">
+            <div class="columns-1 lg:columns-2 gap-6 space-y-6">
+                {
+                    sections.map((section) => {
+                        const categoryStyle = getCategoryStyle(section.category);
+                        const hasImage = !!section.image_url;
+                        return (
+                            <article
                             class={cn(
-                                'group relative rounded-sm border border-border/60 bg-card/80 overflow-hidden',
-                                'transition-all duration-300',
-                                'hover:border-border hover:shadow-lg'
+                                'break-inside-avoid mb-6', // Masonry: avoid break and add bottom margin
+                                'glass-panel rounded-xl p-5', // New glass token and increased radius/padding
+                                'group relative overflow-hidden',
+                                'transition-all duration-300 ease-out',
+                                'hover:scale-[1.01] hover:-translate-y-1', // Subtle lift
+                                'hover:shadow-xl hover:shadow-primary/10'
                             )}>
-                            {/* 图片区域 - 始终显示 */}
-                            <div class="relative w-full overflow-hidden bg-secondary/30">
-                                {hasImage ? (
-                                    <div class="image-container">
-                                        <img
-                                            src={section.image_url}
-                                            alt={section.title || 'section image'}
-                                            class="w-full h-auto max-h-[220px] object-contain bg-secondary/20 transition-transform duration-500 group-hover:scale-[1.02]"
-                                            loading="lazy"
-                                            data-fallback-image
-                                        />
-                                        <div class="image-fallback hidden w-full h-[120px] flex items-center justify-center bg-gradient-to-br from-secondary/50 to-secondary/30">
-                                            <Icon name="tabler:photo-off" class="w-10 h-10 text-muted-foreground/30" />
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div class="w-full h-[120px] flex items-center justify-center bg-gradient-to-br from-secondary/50 to-secondary/30">
-                                        <Icon name="tabler:photo" class="w-10 h-10 text-muted-foreground/20" />
-                                    </div>
-                                )}
+                            <!-- Shine Border Effect -->
+                            <div class="absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0">
+                                <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
                             </div>
-
-                            {/* 内容区域 */}
-                            <div class="p-5 space-y-3">
-                                {/* 分类标签 */}
-                                {section.category && (
-                                    <span class={cn(
-                                        "inline-flex px-2 py-0.5 rounded-sm text-xs font-medium items-center gap-1",
-                                        categoryStyle.bg,
-                                        categoryStyle.text
-                                    )}>
-                                        <Icon name={categoryStyle.icon} class="w-3 h-3" />
-                                        {section.category}
-                                    </span>
-                                )}
-
-                                {/* 标题 */}
-                                {section.title && (
-                                    <h3 class="text-base font-semibold text-foreground leading-snug group-hover:text-primary transition-colors">
-                                        {section.title}
-                                    </h3>
-                                )}
-
-                                {/* 描述 */}
-                                {(section.summary || section.description) && (
-                                    <p class="text-sm text-foreground/70 leading-relaxed line-clamp-3">
-                                        {section.summary || section.description}
-                                    </p>
-                                )}
-
-                                {/* 底部：标签和来源 */}
-                                <div class="flex items-center justify-between pt-3 border-t border-border/40">
-                                    <div class="flex-1 min-w-0">
-                                        <Tags tags={section.tags} maxVisible={10} compact={true} variant="minimal" />
-                                    </div>
-                                    {section.source_url && (
-                                        <a
-                                            href={section.source_url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="flex-shrink-0 ml-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium text-muted-foreground bg-secondary/50 hover:bg-secondary hover:text-foreground transition-all duration-200"
-                                        >
-                                            <span>原文</span>
-                                            <Icon name="tabler:external-link" class="w-3 h-3" />
-                                        </a>
+                            
+                            <!-- Content Wrapper to ensure z-index above glow -->
+                            <div class="relative z-10 h-full flex flex-col">
+                                {/* 图片区域 - 始终显示 */}
+                                <div class="relative w-full overflow-hidden rounded-lg bg-secondary/20 border border-white/5">
+                                    {hasImage ? (
+                                        <div class="image-container">
+                                            <img
+                                                src={section.image_url}
+                                                alt={section.title || 'section image'}
+                                                class="w-full h-auto max-h-[220px] object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+                                                loading="lazy"
+                                                data-fallback-image
+                                            />
+                                            <div class="image-fallback hidden w-full h-[120px] flex items-center justify-center bg-secondary/10">
+                                                <Icon name="tabler:photo-off" class="w-10 h-10 text-muted-foreground/50" />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div class="w-full h-[120px] flex items-center justify-center bg-secondary/10 border-b border-white/5">
+                                            <Icon name="tabler:photo" class="w-10 h-10 text-muted-foreground/40" />
+                                        </div>
                                     )}
                                 </div>
-                            </div>
+
+                                {/* 内容区域 */}
+                                <div class="pt-4 space-y-3">
+                                    {/* 分类标签 */}
+                                    {section.category && (
+                                        <span class={cn(
+                                            "inline-flex px-2 py-0.5 rounded-sm text-xs font-medium items-center gap-1",
+                                            categoryStyle.bg,
+                                            categoryStyle.text
+                                        )}>
+                                            <Icon name={categoryStyle.icon} class="w-3 h-3" />
+                                            {section.category}
+                                        </span>
+                                    )}
+
+                                    {/* 标题 */}
+                                    {section.title && (
+                                        <h3 class="text-base font-semibold text-foreground leading-snug group-hover:text-primary transition-colors">
+                                            {section.title}
+                                        </h3>
+                                    )}
+
+                                    {/* 描述 - REMOVED LINE CLAMP */}
+                                    {(section.summary || section.description) && (
+                                        <p class="text-sm text-foreground/70 leading-relaxed">
+                                            {section.summary || section.description}
+                                        </p>
+                                    )}
+
+                                    {/* 底部：标签和来源 */}
+                                    <div class="flex items-center justify-between pt-2 border-t border-border/40 mt-2">
+                                        <div class="flex-1 min-w-0">
+                                            <Tags tags={section.tags} maxVisible={10} compact={true} variant="minimal" />
+                                        </div>
+                                        {section.source_url && (
+                                            <a
+                                                href={section.source_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="flex-shrink-0 ml-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium text-muted-foreground bg-secondary/50 hover:bg-secondary hover:text-foreground transition-all duration-200"
+                                            >
+                                                <span>原文</span>
+                                                <Icon name="tabler:external-link" class="w-3 h-3" />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                                </div>
                         </article>
-                    )
-                })}
+                        );
+                    })
+                }
             </div>
         </div>
-        
+
         {/* 文章导航 */}
-        <div class="max-w-7xl mx-auto mt-16 px-6 sm:px-8">
-            <nav class="flex flex-col sm:flex-row justify-between items-stretch gap-4 mb-8">
-                {prevPost ? (
-                    <a href={`/weekly/${prevPost.slug}`} class="group flex-1 sm:max-w-[calc(50%-0.5rem)]">
-                        <div class="flex items-center h-full p-5 border border-white/5 bg-card rounded-[2px] hover:border-white/10 transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] hover:-translate-y-1">
+        <div class='max-w-7xl mx-auto mt-16 px-6 sm:px-8'>
+            <nav class='flex flex-col sm:flex-row justify-between items-stretch gap-4 mb-8'>
+                {
+                    prevPost ? (
+                        <a href={`/weekly/${prevPost.slug}`} class='group flex-1 sm:max-w-[calc(50%-0.5rem)]'>
+                            <div class="flex items-center h-full p-5 glass-panel rounded-xl hover:scale-[1.01] hover:-translate-y-0.5 transition-all duration-300 group-hover:shadow-lg">
                             <Icon name="tabler:chevron-left" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all group-hover:-translate-x-1 flex-shrink-0" />
                             <div class="ml-3 overflow-hidden min-w-0">
                                 <p class="text-xs text-muted-foreground mb-1">上一期</p>
@@ -225,14 +261,14 @@ const getCategoryStyle = (category) => {
                     <div class="flex-1 sm:max-w-[calc(50%-0.5rem)]"></div>
                 )}
                 
-                <a href="/weekly" class="flex items-center justify-center px-6 py-4 text-sm font-medium text-muted-foreground border border-white/5 bg-card rounded-[2px] hover:border-white/10 hover:text-foreground transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] sm:flex-shrink-0">
+                <a href="/weekly" class="flex items-center justify-center px-6 py-4 text-sm font-medium text-muted-foreground glass-panel rounded-xl hover:scale-105 hover:text-foreground transition-all duration-300 hover:shadow-lg sm:flex-shrink-0">
                     <Icon name="tabler:layout-grid" class="w-4 h-4 mr-2" />
                     所有周刊
                 </a>
                 
                 {nextPost ? (
                     <a href={`/weekly/${nextPost.slug}`} class="group flex-1 sm:max-w-[calc(50%-0.5rem)]">
-                        <div class="flex items-center justify-end h-full p-5 border border-white/5 bg-card rounded-[2px] hover:border-white/10 transition-all duration-300 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] hover:-translate-y-1">
+                        <div class="flex items-center justify-end h-full p-5 glass-panel rounded-xl hover:scale-[1.01] hover:-translate-y-0.5 transition-all duration-300 group-hover:shadow-lg">
                             <div class="mr-3 overflow-hidden text-right min-w-0">
                                 <p class="text-xs text-muted-foreground mb-1">下一期</p>
                                 <h4 class="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{nextPost.title}</h4>
@@ -240,31 +276,36 @@ const getCategoryStyle = (category) => {
                             <Icon name="tabler:chevron-right" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1 flex-shrink-0" />
                         </div>
                     </a>
-                ) : (
-                    <div class="flex-1 sm:max-w-[calc(50%-0.5rem)]"></div>
-                )}
+                    ) : (
+                        <div class='flex-1 sm:max-w-[calc(50%-0.5rem)]' />
+                    )
+                }
             </nav>
         </div>
-        
+
         {/* 文章页脚 */}
-        <footer class="max-w-7xl mx-auto mt-12 px-6 sm:px-8">
+        <footer class='max-w-7xl mx-auto mt-12 px-6 sm:px-8'>
             <!-- 装饰性分隔线 -->
-            <div class="flex items-center justify-center mb-8">
-                <div class="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1 max-w-[200px]"></div>
-                <div class="mx-6 flex items-center gap-2 text-muted-foreground text-sm font-medium">
-                    <span class="tracking-wide">·</span>
+            <div class='flex items-center justify-center mb-8'>
+                <div class='h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1 max-w-[200px]'>
                 </div>
-                <div class="h-px bg-gradient-to-l from-transparent via-border to-transparent flex-1 max-w-[200px]"></div>
+                <div class='mx-6 flex items-center gap-2 text-muted-foreground text-sm font-medium'>
+                    <span class='tracking-wide'>·</span>
+                </div>
+                <div class='h-px bg-gradient-to-l from-transparent via-border to-transparent flex-1 max-w-[200px]'>
+                </div>
             </div>
-            
-            <div class="flex justify-center items-center">
+
+            <div class='flex justify-center items-center'>
                 <button
                     onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-card text-foreground rounded-[2px] border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 group"
-                    aria-label="回到顶部"
-                >
-                    <Icon name="tabler:arrow-up" class="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-1" />
-                    <span class="font-medium tracking-wide text-sm">回到顶部</span>
+                    class='inline-flex items-center gap-2 px-6 py-3 bg-card text-foreground rounded-[2px] border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 group'
+                    aria-label='回到顶部'>
+                    <Icon
+                        name='tabler:arrow-up'
+                        class='w-4 h-4 transition-transform duration-300 group-hover:-translate-y-1'
+                    />
+                    <span class='font-medium tracking-wide text-sm'>回到顶部</span>
                 </button>
             </div>
         </footer>

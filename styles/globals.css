@@ -135,19 +135,19 @@ html {
     --accent-cool: 198, 82%, 75%;
 
     /* Dark Mode Neutrals */
-    --background: 220 15% 6%;
-    --foreground: 214 35% 98%;
-    --surface: 220 15% 8%;
-    --surface-elevated: 220 15% 10%;
-    --surface-hover: 220 15% 12%;
+    --background: 220 18% 14%;
+      --foreground: 220 15% 94%;
+      --surface: 220 18% 18%;
+      --surface-elevated: 220 18% 20%;
+      --surface-hover: 220 18% 22%;
 
-    --card: 220 15% 8%;
-    --card-foreground: 214 35% 98%;
-    --card-border: 214 32% 18%;
+    --card: 220 18% 18%;
+      --card-foreground: 220 15% 94%;
+      --card-border: 220 15% 25%;
     --card-shadow: 214 32% 15%;
  
-    --popover: 220 15% 8%;
-    --popover-foreground: 214 35% 98%;
+    --popover: 220 18% 18%;
+      --popover-foreground: 220 15% 94%;
  
     --primary: 214 88% 72%;
     --primary-foreground: 214 100% 3%;
@@ -155,23 +155,23 @@ html {
     --primary-soft: 214 88% 65%;
     --primary-muted: 214 45% 28%;
  
-    --secondary: 214 32% 18%;
-    --secondary-foreground: 214 35% 98%;
-    --secondary-hover: 214 32% 22%;
+    --secondary: 220 15% 20%;
+      --secondary-foreground: 220 15% 90%;
+      --secondary-hover: 220 15% 24%;
  
-    --muted: 214 32% 18%;
-    --muted-foreground: 214 20% 68%;
+    --muted: 220 15% 20%;
+      --muted-foreground: 220 10% 65%;
  
-    --accent: 214 32% 18%;
-    --accent-foreground: 214 35% 98%;
+    --accent: 220 15% 22%;
+      --accent-foreground: 220 10% 90%;
  
     --destructive: 0 62% 48%;
     --destructive-foreground: 214 35% 98%;
 
-    --border: 214 32% 18%;
-    --input: 214 32% 18%;
-    --ring: 214 88% 72%;
-    --ring-offset: 220 15% 6%;
+    --border: 220 15% 25%;
+      --input: 220 15% 22%;
+      --ring: 24 95% 60%;
+      --ring-offset: 220 18% 14%;
 
     /* Dark Mode Status Colors */
     --success: 142 76% 48%;

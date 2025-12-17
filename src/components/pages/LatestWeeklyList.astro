@@ -1,72 +1,76 @@
 ---
-import { getWeeklyPosts } from '~/utils/contents/unified-content'
-import StatCard from '~/components/ui/StatCard.astro'
-import Button from '~/components/ui/Button.astro'
-import { cn } from '~/utils/utils'
+import {getWeeklyPosts} from '~/utils/contents/unified-content';
+import StatCard from '~/components/ui/StatCard.astro';
+import Button from '~/components/ui/Button.astro';
+import {cn} from '~/utils/utils';
 
-const weekly = await getWeeklyPosts()
+const weekly = await getWeeklyPosts();
 const latestWeeklyList = weekly.slice(0, 12);
 ---
 
-<section class="py-12 lg:py-16 bg-page relative">
+<section class='py-12 lg:py-16 bg-page relative overflow-hidden'>
+    <div class='absolute inset-0 pointer-events-none'>
+        <div class='absolute inset-0 bg-grid-pattern opacity-10'></div>
+        <div class='absolute inset-0 bg-gradient-mesh opacity-50'></div>
+        <div
+            class='absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full mix-blend-screen pointer-events-none'>
+        </div>
+    </div>
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <!-- 背景装饰 -->
-        <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
-
+    <div class='container mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
         <!-- 标题区域 -->
-        <div class="text-center mb-12">
-            
+        <div class='text-center mb-12'>
             <!-- 主标题 -->
-            <h2 class="text-3xl lg:text-4xl font-bold leading-tight tracking-tighter mb-4 font-heading text-foreground">
+            <h2 class='text-3xl lg:text-4xl font-bold leading-tight tracking-tighter mb-4 font-heading text-foreground'>
                 精选周刊
             </h2>
-            
+
             <!-- 副标题 -->
-            <p class="text-base text-foreground/70 max-w-2xl mx-auto leading-relaxed">
+            <p class='text-base text-foreground/70 max-w-2xl mx-auto leading-relaxed'>
                 每周精心筛选的前端技术内容，助你保持技术敏锐度
             </p>
         </div>
 
         <!-- 卡片网格 -->
-        {latestWeeklyList.length > 0 ? (
-            <div class={cn(
-                "grid gap-4 md:gap-6",
-                "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
-                "2xl:grid-cols-4 auto-cols-fr",
-                "mb-12 lg:mb-16 max-w-8xl mx-auto weekly-grid"
-            )}>
-                {latestWeeklyList.map((weekly, index) => (
-                    <div 
-                        class="animate-fade-in-up group" 
-                        style={`animation-delay: ${index * 0.08}s;`}
-                        data-weekly-card
-                    >
-                        <a href={weekly.permalink} class="block h-full focus:outline-none rounded-[2px]">
-                            <StatCard
-                                title={weekly.title}
-                                date={weekly.date}
-                                desc={weekly.desc || '精选本周前端技术内容'}
-                                showTags={false}
-                            />
-                        </a>
-                    </div>
-                ))}
-            </div>
-        ) : (
-            <div class="text-center py-12">
-                <p class="text-gray-500 dark:text-gray-400 text-lg">暂无周刊数据</p>
-            </div>
-        )}
+        {
+            latestWeeklyList.length > 0 ? (
+                <div
+                    class={cn(
+                        'grid gap-4 md:gap-6',
+                        'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+                        '2xl:grid-cols-4 auto-cols-fr',
+                        'mb-12 lg:mb-16 max-w-8xl mx-auto weekly-grid'
+                    )}>
+                    {latestWeeklyList.map((weekly, index) => (
+                        <div
+                            class='animate-fade-in-up group'
+                            style={`animation-delay: ${index * 0.08}s;`}
+                            data-weekly-card>
+                            <a href={weekly.permalink} class='block h-full focus:outline-none rounded-[2px]'>
+                                <StatCard
+                                    title={weekly.title}
+                                    date={weekly.date}
+                                    desc={weekly.desc || '精选本周前端技术内容'}
+                                    showTags={false}
+                                />
+                            </a>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div class='text-center py-12'>
+                    <p class='text-gray-500 dark:text-gray-400 text-lg'>暂无周刊数据</p>
+                </div>
+            )
+        }
 
         <!-- 查看更多按钮区域 -->
-        <div class="text-center">
-            <Button 
-                href="/weekly"
-                variant="secondary"
-                size="lg"
-                class="px-8 py-3.5 text-base font-medium rounded-full hover:shadow-lg transition-all duration-300"
-            >
+        <div class='text-center'>
+            <Button
+                href='/weekly'
+                variant='secondary'
+                size='lg'
+                class='px-8 py-3.5 text-base font-medium rounded-full hover:shadow-lg transition-all duration-300'>
                 查看全部周刊
             </Button>
         </div>
@@ -85,7 +89,7 @@ const latestWeeklyList = weekly.slice(0, 12);
             transform: translateY(0) scale(1);
         }
     }
-    
+
     .animate-fade-in-up {
         animation: fade-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     }
@@ -114,19 +118,19 @@ const latestWeeklyList = weekly.slice(0, 12);
         /* 使用 CSS Grid 的 auto-fit 和 minmax 来实现智能响应式 */
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
-    
+
     /* 响应式优化 */
     @media (max-width: 480px) {
         .weekly-grid {
             grid-template-columns: 1fr;
             gap: 1.5rem;
         }
-        
+
         h2 {
             font-size: 2.25rem;
             line-height: 1.1;
         }
-        
+
         .text-xl {
             font-size: 1.125rem;
         }
@@ -181,7 +185,7 @@ const latestWeeklyList = weekly.slice(0, 12);
             opacity: 1;
             transform: none;
         }
-        
+
         .animate-pulse {
             animation: none;
         }
@@ -194,22 +198,25 @@ const latestWeeklyList = weekly.slice(0, 12);
             transform: none;
         }
     }
-    
+
     /* 文字渲染优化 */
     h2 {
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+        font-feature-settings:
+            'kern' 1,
+            'liga' 1,
+            'calt' 1;
     }
-    
+
     /* 高对比度模式 */
     @media (prefers-contrast: high) {
         .bg-gradient-to-r,
         .bg-gradient-to-br {
             background: hsl(var(--background)) !important;
         }
-        
+
         .text-transparent {
             color: hsl(var(--foreground)) !important;
             background: none !important;
@@ -217,35 +224,35 @@ const latestWeeklyList = weekly.slice(0, 12);
             background-clip: unset !important;
         }
     }
-    
+
     /* 性能优化 */
     .grid > div {
         transform: translateZ(0);
         backface-visibility: hidden;
     }
-    
+
     /* 卡片悬停效果增强 */
     [data-weekly-card]:hover {
         z-index: 10;
     }
-    
+
     /* 焦点状态增强 */
     a:focus-visible {
         outline: 2px solid hsl(var(--primary));
         outline-offset: 4px;
         border-radius: 1rem;
     }
-    
+
     /* 按钮增强效果 */
     .group:hover .relative {
         transform: translateY(-2px) scale(1.05);
     }
-    
+
     /* 暗色模式特殊处理 */
     .dark .grid > div {
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
-    
+
     /* 打印样式 */
     @media print {
         .animate-fade-in-up {

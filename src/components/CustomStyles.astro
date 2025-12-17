@@ -4,237 +4,282 @@ import 'highlight.js/styles/github-dark.min.css';
 ---
 
 <style is:inline>
-  :root {
-    --aw-font-sans: 'Inter Variable', sans-serif;
-    --aw-font-serif: 'Inter Variable', serif;
-    --aw-font-heading: 'Inter Variable', sans-serif;
+    :root {
+        --aw-font-sans: 'Inter Variable', sans-serif;
+        --aw-font-serif: 'Inter Variable', serif;
+        --aw-font-heading: 'Inter Variable', sans-serif;
 
-    /* ============================================
-       Linear/Raycast Style - Warm Orange Theme
+        /* ============================================
+       Linear/Raycast Style - Pro Max Theme
        ============================================ */
 
-    /* Primary: Warm Orange (保持暖橙色) */
-    --primary: 24 95% 58%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 24 95% 52%;
-    --primary-soft: 24 60% 12%;
-    --primary-muted: 24 30% 20%;
+        /* Primary: Warm Orange (Refined for Dark Mode) */
+        --primary: 24 95% 58%;
+        --primary-foreground: 0 0% 100%;
+        --primary-hover: 24 95% 53%;
+        --primary-soft: 24 90% 15%; /* Deeper, richer soft bg */
+        --primary-muted: 24 40% 20%;
 
-    /* Secondary: Linear-style cool gray */
-    --secondary: 220 10% 12%;
-    --secondary-foreground: 220 10% 85%;
-    --secondary-hover: 220 10% 16%;
+        /* Secondary: Cool technical gray */
+        --secondary: 240 4% 16%;
+        --secondary-foreground: 240 5% 90%;
+        --secondary-hover: 240 4% 20%;
 
-    /* Accent: 保持暖色调但更现代 */
-    --accent: 220 10% 14%;
-    --accent-foreground: 220 10% 85%;
-    --accent-warm: 24 95% 58%;
-    --accent-cool: 220 70% 55%;
+        /* Accent: Vibrant Interaction Points */
+        --accent: 240 4% 16%;
+        --accent-foreground: 0 0% 100%;
+        --accent-warm: 24 95% 58%;
+        --accent-cool: 210 100% 65%;
 
-    /* Muted: Linear 风格的灰色 */
-    --muted: 220 10% 14%;
-    --muted-foreground: 220 8% 55%;
+        /* Muted: Subtle technical details */
+        --muted: 240 4% 12%;
+        --muted-foreground: 240 5% 65%; /* Readable gray */
 
-    /* Background: Linear 风格深色背景 - 带微妙蓝调 */
-    --background: 220 15% 6%;
-    --foreground: 220 10% 92%;
+        /* Background: Deep Obsidian - The Foundation */
+        /* Using Zinc-950/Black range for that premium "OLED-like" feel */
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%; /* High contrast off-white */
 
-    /* Surface: 层次分明的表面 */
-    --surface: 220 12% 9%;
-    --surface-elevated: 220 12% 11%;
-    --surface-hover: 220 12% 13%;
+        /* Surface: Glass Layers */
+        --surface: 240 10% 5%; /* Slightly lighter than bg */
+        --surface-elevated: 240 10% 7%; /* Floating cards */
+        --surface-hover: 240 10% 9%;
 
-    /* Card: 毛玻璃风格卡片 */
-    --card: 220 12% 9%;
-    --card-foreground: 220 10% 92%;
-    --card-border: 220 10% 16%;
-    --card-shadow: 0 0 0 1px rgba(255,255,255,0.04);
+        /* Card: Premium Glass */
+        --card: 240 10% 4.5%; /* Base card color */
+        --card-foreground: 0 0% 98%;
+        --card-border: 0 0% 100%; /* Opacity handled in utility */
+        --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 
-    /* Borders & Inputs */
-    --border: 220 10% 16%;
-    --input: 220 10% 14%;
-    --ring: 24 95% 58%;
+        /* Borders & Inputs */
+        --border: 0 0% 100%; /* Will use opacity */
+        --input: 240 4% 16%;
+        --ring: 24 95% 58%;
 
-    /* Popover */
-    --popover: 220 12% 10%;
-    --popover-foreground: 220 10% 92%;
+        /* Popover */
+        --popover: 240 10% 5%;
+        --popover-foreground: 0 0% 98%;
 
-    /* Destructive */
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+        /* Destructive */
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
 
-    /* Status Colors - 更现代的配色 */
-    --success: 142 76% 42%;
-    --success-foreground: 0 0% 100%;
+        /* Status Colors - Vibrant & Clear */
+        --success: 150 60% 45%;
+        --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 10%;
+        --warning: 35 90% 50%;
+        --warning-foreground: 0 0% 10%;
 
-    --error: 0 84% 60%;
-    --error-foreground: 0 0% 100%;
+        --error: 0 84% 60%;
+        --error-foreground: 0 0% 100%;
 
-    --info: 217 91% 60%;
-    --info-foreground: 0 0% 100%;
+        --info: 210 100% 60%;
+        --info-foreground: 0 0% 100%;
 
-    /* Legacy color mappings */
-    --aw-color-primary: hsl(var(--primary));
-    --aw-color-secondary: hsl(var(--secondary));
-    --aw-color-accent: hsl(var(--accent));
-    --aw-color-text-heading: hsl(var(--foreground));
-    --aw-color-text-default: hsl(var(--foreground));
-    --aw-color-text-muted: hsl(var(--muted-foreground));
-    --aw-color-bg-page: hsl(var(--background));
-    --main: 24 95% 58%;
-    --mainHover: 24 95% 52%;
+        /* Legacy color mappings */
+        --aw-color-primary: hsl(var(--primary));
+        --aw-color-secondary: hsl(var(--secondary));
+        --aw-color-accent: hsl(var(--accent));
+        --aw-color-text-heading: hsl(var(--foreground));
+        --aw-color-text-default: hsl(var(--foreground));
+        --aw-color-text-muted: hsl(var(--muted-foreground));
+        --aw-color-bg-page: hsl(var(--background));
+        --main: 24 95% 58%;
+        --mainHover: 24 95% 53%;
 
-    /* Spacing system */
-    --space-xs: 0.5rem;
-    --space-sm: 0.75rem;
-    --space-md: 1rem;
-    --space-lg: 1.5rem;
-    --space-xl: 2rem;
-    --space-2xl: 3rem;
-    --space-3xl: 4rem;
-    --space-4xl: 6rem;
-    --space-5xl: 8rem;
+        /* Spacing system */
+        --space-xs: 0.5rem;
+        --space-sm: 0.75rem;
+        --space-md: 1rem;
+        --space-lg: 1.5rem;
+        --space-xl: 2rem;
+        --space-2xl: 3rem;
+        --space-3xl: 4rem;
+        --space-4xl: 6rem;
+        --space-5xl: 8rem;
 
-    /* Typography scale */
-    --text-xs: 0.75rem;
-    --text-sm: 0.875rem;
-    --text-base: 1rem;
-    --text-lg: 1.125rem;
-    --text-xl: 1.25rem;
-    --text-2xl: 1.5rem;
-    --text-3xl: 1.875rem;
-    --text-4xl: 2.25rem;
-    --text-5xl: 3rem;
-    --text-6xl: 3.75rem;
-    --text-7xl: 4.5rem;
+        /* Typography scale - Refined for readability */
+        --text-xs: 0.75rem;
+        --text-sm: 0.875rem;
+        --text-base: 1rem;
+        --text-lg: 1.125rem;
+        --text-xl: 1.25rem;
+        --text-2xl: 1.5rem;
+        --text-3xl: 1.875rem;
+        --text-4xl: 2.25rem;
+        --text-5xl: 3rem;
+        --text-6xl: 3.75rem;
+        --text-7xl: 4.5rem;
 
-    /* Border radius - Linear 风格更圆润 */
-    --radius-sm: 0.375rem;
-    --radius: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
-    --radius-2xl: 1.25rem;
-    --radius-3xl: 1.5rem;
+        /* Border radius - Highly Rounded Premium Feel */
+        --radius-sm: 0.25rem;
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+        --radius-2xl: 1.5rem;
+        --radius-3xl: 2rem;
 
-    /* Shadows - Linear 风格柔和阴影 */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-    --shadow-3xl: 0 35px 60px -15px rgba(0, 0, 0, 0.6);
-    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+        /* Shadows - Deep & Soft */
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+        --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        --shadow-3xl: 0 35px 60px -15px rgba(0, 0, 0, 0.6);
+        --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 
-    /* Glow effects - Linear 风格发光 */
-    --glow-primary: 0 0 20px hsl(24 95% 58% / 0.25);
-    --glow-primary-lg: 0 0 40px hsl(24 95% 58% / 0.3);
+        /* Glow effects - Enhanced */
+        --glow-primary: 0 0 20px hsl(24 95% 58% / 0.15);
+        --glow-primary-lg: 0 0 40px hsl(24 95% 58% / 0.25);
 
-    /* Animation durations */
-    --duration-fast: 100ms;
-    --duration-normal: 200ms;
-    --duration-slow: 300ms;
-    --duration-slower: 500ms;
+        /* Animation durations */
+        --duration-fast: 150ms;
+        --duration-normal: 250ms;
+        --duration-slow: 400ms;
+        --duration-slower: 600ms;
 
-    /* Linear-style easing */
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-    --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+        /* Easing - "Snap" feel */
+        --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+        --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
 
-    ::selection {
-      background-color: hsl(var(--primary) / 0.35);
-      color: hsl(var(--foreground));
+        ::selection {
+            background-color: hsl(var(--primary) / 0.3);
+            color: hsl(var(--foreground));
+        }
     }
-  }
 
-  /* Dark mode (default) */
-  .dark {
-    --primary: 24 95% 58%;
-    --primary-foreground: 0 0% 100%;
-    --background: 220 15% 6%;
-    --foreground: 220 10% 92%;
-  }
+    /* Dark mode (Always on) */
+    .dark {
+        --primary: 24 95% 58%;
+        --primary-foreground: 0 0% 100%;
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%;
+    }
 
-  /* ============================================
+    /* ============================================
      Global Styles
      ============================================ */
 
-  /* Smooth scrolling */
-  html {
-    scroll-behavior: smooth;
-  }
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
 
-  /* Body base styles */
-  body {
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+    /* Body base styles */
+    body {
+        font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+    }
 
-  /* Linear-style focus ring */
-  *:focus-visible {
-    outline: 2px solid hsl(var(--primary));
-    outline-offset: 2px;
-  }
+    /* Focus ring */
+    *:focus-visible {
+        outline: 2px solid hsl(var(--primary));
+        outline-offset: 2px;
+    }
 
-  /* Remove code backticks */
-  .prose :where(code)::before,
-  .prose :where(code)::after {
-    content: none !important;
-  }
+    /* Remove code backticks */
+    .prose :where(code)::before,
+    .prose :where(code)::after {
+        content: none !important;
+    }
 
-  /* Linear-style scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
 
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
 
-  ::-webkit-scrollbar-thumb {
-    background: hsl(var(--border));
-    border-radius: 4px;
-  }
+    ::-webkit-scrollbar-thumb {
+        background: hsl(var(--muted-foreground) / 0.2);
+        border-radius: 3px;
+    }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.5);
-  }
+    ::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--muted-foreground) / 0.4);
+    }
 
-  /* Linear-style dot grid background */
-  .bg-grid-pattern {
-    background-image: radial-gradient(circle at 1px 1px, hsl(var(--border)) 1px, transparent 0);
-    background-size: 24px 24px;
-  }
+    /* Dot grid background */
+    .bg-grid-pattern {
+        background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+        background-size: 24px 24px;
+        mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+    }
 
-  /* Linear-style gradient mesh */
-  .bg-gradient-mesh {
-    background:
-      radial-gradient(at 27% 37%, hsl(24 95% 58% / 0.08) 0px, transparent 50%),
-      radial-gradient(at 97% 21%, hsl(220 70% 55% / 0.06) 0px, transparent 50%),
-      radial-gradient(at 52% 99%, hsl(24 95% 58% / 0.05) 0px, transparent 50%),
-      radial-gradient(at 10% 29%, hsl(220 70% 55% / 0.04) 0px, transparent 50%);
-  }
+    /* Gradient mesh - Subtle Atmosphere */
+    .bg-gradient-mesh {
+        background:
+            radial-gradient(at 0% 0%, hsl(24 95% 58% / 0.05) 0px, transparent 40%),
+            radial-gradient(at 100% 0%, hsl(240 70% 55% / 0.05) 0px, transparent 40%);
+        opacity: 0.6;
+    }
 
-  /* Linear-style noise texture overlay */
-  .bg-noise {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    opacity: 0.02;
-    pointer-events: none;
-  }
+    /* Noise texture */
+    .bg-noise {
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.03;
+        pointer-events: none;
+        mix-blend-mode: overlay;
+    }
 
-  /* Linear-style glass effect */
-  .glass {
-    background: hsl(var(--card) / 0.8);
-    backdrop-filter: blur(12px) saturate(150%);
-    border: 1px solid hsl(var(--border) / 0.5);
-  }
+    /* Glass Utilities - The "Sauce" */
 
-  .glass-strong {
-    background: hsl(var(--card) / 0.9);
-    backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid hsl(var(--border) / 0.6);
-  }
+    /* Base Glass - Subtle */
+    .glass {
+        background: rgba(20, 20, 22, 0.6);
+        backdrop-filter: blur(12px) saturate(150%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Panel Glass - Stronger for Cards */
+    .glass-panel {
+        background: rgba(25, 25, 28, 0.7);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Strong Glass - For floating elements/modals */
+    .glass-strong {
+        background: rgba(30, 30, 35, 0.85);
+        backdrop-filter: blur(24px) saturate(200%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Shine effect for borders/hover */
+    .shine-border {
+        position: relative;
+    }
+    .shine-border::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0.02) 40%,
+            rgba(255, 255, 255, 0.02) 60%,
+            rgba(255, 255, 255, 0.1)
+        );
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
 </style>
