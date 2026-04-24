@@ -6,28 +6,13 @@ import {cn} from '~/utils/utils';
 const weeklyList = await getWeeklyPosts();
 ---
 
-<section class='py-20 lg:py-28 bg-page min-h-screen relative overflow-hidden'>
-    <!-- 背景装饰元素 -->
-    <div class='absolute inset-0 pointer-events-none'>
-        <!-- 渐变光晕背景 -->
-        <div class='absolute inset-0 bg-gradient-mesh opacity-80'></div>
-        <!-- 点阵背景 -->
-        <div class='absolute inset-0 bg-grid-pattern opacity-20'></div>
-        <!-- 顶部微光 - 增强色彩 -->
-        <div
-            class='absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full mix-blend-screen'>
-        </div>
-        <div
-            class='absolute top-[20%] left-[20%] w-[600px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full mix-blend-screen animate-pulse duration-[4000ms]'>
-        </div>
-    </div>
-
+<section class='py-20 lg:py-28 bg-background min-h-screen relative overflow-hidden'>
     <div class='container mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
         <!-- 页面标题区域 -->
         <div class='text-center mb-12 lg:mb-16'>
             <!-- 标签 -->
             <div
-                class='inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md mb-8'>
+                class='inline-flex items-center gap-2 px-3 py-1.5 rounded border border-primary/20 bg-primary/5 mb-8'>
                 <span class='w-1.5 h-1.5 rounded-full bg-primary animate-pulse'></span>
                 <span class='text-sm font-medium text-primary/80'>全部周刊</span>
             </div>
@@ -81,11 +66,12 @@ const weeklyList = await getWeeklyPosts();
                         class='animate-fade-in-up group'
                         style={`animation-delay: ${Math.min(index * 0.05, 1)}s;`}
                         data-weekly-card>
-                        <a href={weekly.permalink} class='block h-full focus:outline-none rounded-[2px]'>
+                        <a href={weekly.permalink} class='block h-full focus:outline-none rounded'>
                             <StatCard
                                 title={weekly.title}
                                 date={weekly.date}
                                 desc={weekly.desc || '精选本周前端技术内容'}
+                                cover={weekly.cover}
                                 showTags={false}
                             />
                         </a>
@@ -98,7 +84,7 @@ const weeklyList = await getWeeklyPosts();
         <div class='text-center pt-8'>
             <button
                 onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-                class='inline-flex items-center gap-2 px-5 py-2.5 bg-secondary/50 text-muted-foreground rounded-lg border border-border/50 hover:text-foreground hover:border-border hover:bg-secondary transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95'
+                class='inline-flex items-center gap-2 px-5 py-2.5 bg-surface text-muted-foreground rounded border border-border hover:text-foreground hover:border-border hover:bg-surface-hover transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95'
                 aria-label='回到顶部'>
                 <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 10l7-7m0 0l7 7m-7-7v18'
@@ -277,7 +263,7 @@ const weeklyList = await getWeeklyPosts();
     a:focus-visible {
         outline: 2px solid hsl(var(--primary));
         outline-offset: 4px;
-        border-radius: 1rem;
+        border-radius: 4px;
     }
 
     /* 加载状态 */

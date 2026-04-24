@@ -7,6 +7,11 @@ import mdx from '@astrojs/mdx';
 import sentry from '@sentry/astro';
 // import {readingTimeRemarkPlugin} from './src/utils/frontmatter';
 
+function parseRate(value: string | undefined, fallback: number) {
+    const num = value ? Number(value) : NaN;
+    return Number.isFinite(num) ? num : fallback;
+}
+
 export default defineConfig({
     site: 'https://weekly.mengpeng.tech',
     output: 'static',
@@ -24,8 +29,11 @@ export default defineConfig({
         }),
         weekly(),
         sentry({
-            dsn: process.env.SENTRY_DSN, //
-            tracesSampleRate: 1.0, // 跟踪采样率，1.0 表示捕获所有请求
+            dsn: process.env.PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN,
+            tracesSampleRate:
+                process.env.NODE_ENV === 'development'
+                    ? 1.0
+                    : parseRate(process.env.PUBLIC_SENTRY_TRACES_SAMPLE_RATE, 0.1),
             
             // 可选:添加浏览器跟踪集成
             sourceMapsUploadOptions: {

@@ -29,24 +29,19 @@ const coverSrc = cover || defaultCover;
 
 const cardClasses = cn(
     'group relative h-full',
-    'rounded-xl overflow-hidden', // Increased radius
-    'glass-panel', // New glass token
-    'transition-all duration-300 ease-out',
-    'hover:scale-[1.02] hover:-translate-y-1', // Subtle lift
-    'hover:shadow-xl hover:shadow-primary/10',
+    'rounded overflow-hidden', // VSCode style: 4px radius
+    'glass-panel', // Solid panel style
+    'transition-all duration-200 ease-out',
+    'hover:border-[#505050]', // Subtle border highlight on hover
     'cursor-pointer',
     'focus-within:ring-2 focus-within:ring-primary/50 focus-within:ring-offset-2 focus-within:ring-offset-background'
 );
 ---
 
 <div class={cardClasses}>
-    <!-- Shine Border Effect -->
+    <!-- Border highlight on hover -->
     <div
-        class='absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20'
-        style='background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%)'>
-    </div>
-    <div
-        class='absolute inset-0 rounded-xl pointer-events-none border border-white/5 group-hover:border-white/10 transition-colors duration-300 z-20'>
+        class='absolute inset-0 rounded pointer-events-none border border-transparent group-hover:border-[#505050] transition-colors duration-200 z-20'>
     </div>
 
     {
@@ -71,6 +66,8 @@ const cardClasses = cn(
                 alt=''
                 class='w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
                 loading='lazy'
+                decoding='async'
+                onerror={`this.onerror=null;this.src='${defaultCover}';`}
             />
         </div>
 
@@ -106,7 +103,7 @@ const cardClasses = cn(
                 }
 
                 <!-- Footer -->
-                <div class='flex items-center justify-between pt-3 border-t border-white/5 text-sm'>
+                <div class='flex items-center justify-between pt-3 border-t border-border text-sm'>
                     <time datetime={date.toString()} class='text-muted-foreground/70 font-mono text-xs'
                         >{formattedDate}</time
                     >
@@ -123,20 +120,6 @@ const cardClasses = cn(
         </div>
     </div>
 </div>
-
-<script>
-    // Mouse move effect for shine
-    const cards = document.querySelectorAll('.group');
-    cards.forEach((card) => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = (card as HTMLElement).getBoundingClientRect();
-            const x = (e as MouseEvent).clientX - rect.left;
-            const y = (e as MouseEvent).clientY - rect.top;
-            (card as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
-            (card as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
-        });
-    });
-</script>
 
 <style>
     /* Typography optimization */

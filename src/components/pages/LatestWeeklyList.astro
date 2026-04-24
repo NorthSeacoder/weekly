@@ -8,15 +8,7 @@ const weekly = await getWeeklyPosts();
 const latestWeeklyList = weekly.slice(0, 12);
 ---
 
-<section class='py-12 lg:py-16 bg-page relative overflow-hidden'>
-    <div class='absolute inset-0 pointer-events-none'>
-        <div class='absolute inset-0 bg-grid-pattern opacity-10'></div>
-        <div class='absolute inset-0 bg-gradient-mesh opacity-50'></div>
-        <div
-            class='absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full mix-blend-screen pointer-events-none'>
-        </div>
-    </div>
-
+<section class='py-12 lg:py-16 bg-background relative overflow-hidden'>
     <div class='container mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
         <!-- 标题区域 -->
         <div class='text-center mb-12'>
@@ -46,11 +38,12 @@ const latestWeeklyList = weekly.slice(0, 12);
                             class='animate-fade-in-up group'
                             style={`animation-delay: ${index * 0.08}s;`}
                             data-weekly-card>
-                            <a href={weekly.permalink} class='block h-full focus:outline-none rounded-[2px]'>
+                            <a href={weekly.permalink} class='block h-full focus:outline-none rounded'>
                                 <StatCard
                                     title={weekly.title}
                                     date={weekly.date}
                                     desc={weekly.desc || '精选本周前端技术内容'}
+                                    cover={weekly.cover}
                                     showTags={false}
                                 />
                             </a>
@@ -70,7 +63,7 @@ const latestWeeklyList = weekly.slice(0, 12);
                 href='/weekly'
                 variant='secondary'
                 size='lg'
-                class='px-8 py-3.5 text-base font-medium rounded-full hover:shadow-lg transition-all duration-300'>
+                class='px-8 py-3.5 text-base font-medium rounded hover:shadow-lg transition-all duration-300'>
                 查看全部周刊
             </Button>
         </div>
@@ -240,7 +233,7 @@ const latestWeeklyList = weekly.slice(0, 12);
     a:focus-visible {
         outline: 2px solid hsl(var(--primary));
         outline-offset: 4px;
-        border-radius: 1rem;
+        border-radius: 4px;
     }
 
     /* 按钮增强效果 */

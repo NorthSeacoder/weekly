@@ -10,55 +10,58 @@ import 'highlight.js/styles/github-dark.min.css';
         --aw-font-heading: 'Inter Variable', sans-serif;
 
         /* ============================================
-       Linear/Raycast Style - Pro Max Theme
+       VSCode Dark Modern Theme
+       设计理念: 技术向、代码风格、极简主义、锋利边角
+       圆角规范: 统一 4px (rounded)
        ============================================ */
 
-        /* Primary: Warm Orange (Refined for Dark Mode) */
-        --primary: 24 95% 58%;
+        /* Primary: VSCode Blue */
+        --primary: 207 90% 54%;
         --primary-foreground: 0 0% 100%;
-        --primary-hover: 24 95% 53%;
-        --primary-soft: 24 90% 15%; /* Deeper, richer soft bg */
-        --primary-muted: 24 40% 20%;
+        --primary-hover: 207 90% 48%;
+        --primary-soft: 207 50% 15%;
+        --primary-muted: 207 30% 20%;
 
-        /* Secondary: Cool technical gray */
-        --secondary: 240 4% 16%;
-        --secondary-foreground: 240 5% 90%;
-        --secondary-hover: 240 4% 20%;
+        /* Secondary: VSCode Surface */
+        --secondary: 0 0% 15%;
+        --secondary-foreground: 0 0% 80%;
+        --secondary-hover: 0 0% 18%;
 
-        /* Accent: Vibrant Interaction Points */
-        --accent: 240 4% 16%;
+        /* Accent: Code syntax colors */
+        --accent: 0 0% 15%;
         --accent-foreground: 0 0% 100%;
-        --accent-warm: 24 95% 58%;
-        --accent-cool: 210 100% 65%;
+        --accent-warm: 24 80% 55%;
+        --accent-cool: 207 90% 54%;
+        --accent-purple: 261 100% 75%;
+        --accent-teal: 174 63% 50%;
 
-        /* Muted: Subtle technical details */
-        --muted: 240 4% 12%;
-        --muted-foreground: 240 5% 65%; /* Readable gray */
+        /* Muted: Subtle details */
+        --muted: 0 0% 13%;
+        --muted-foreground: 0 0% 62%;
 
-        /* Background: Deep Obsidian - The Foundation */
-        /* Using Zinc-950/Black range for that premium "OLED-like" feel */
-        --background: 240 10% 3.9%;
-        --foreground: 0 0% 98%; /* High contrast off-white */
+        /* Background: VSCode Dark - #1f1f1f */
+        --background: 0 0% 12%;
+        --foreground: 0 0% 80%;
 
-        /* Surface: Glass Layers */
-        --surface: 240 10% 5%; /* Slightly lighter than bg */
-        --surface-elevated: 240 10% 7%; /* Floating cards */
-        --surface-hover: 240 10% 9%;
+        /* Surface: Panel colors - slightly lighter than background */
+        --surface: 0 0% 15%;
+        --surface-elevated: 0 0% 18%;
+        --surface-hover: 0 0% 22%;
 
-        /* Card: Premium Glass */
-        --card: 240 10% 4.5%; /* Base card color */
-        --card-foreground: 0 0% 98%;
-        --card-border: 0 0% 100%; /* Opacity handled in utility */
-        --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        /* Card: VSCode Surface - #2d2d2d (more visible) */
+        --card: 0 0% 18%;
+        --card-foreground: 0 0% 80%;
+        --card-border: 0 0% 24%;
+        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
-        /* Borders & Inputs */
-        --border: 0 0% 100%; /* Will use opacity */
-        --input: 240 4% 16%;
-        --ring: 24 95% 58%;
+        /* Borders: VSCode Border - #3c3c3c */
+        --border: 0 0% 24%;
+        --input: 0 0% 15%;
+        --ring: 207 90% 54%;
 
         /* Popover */
-        --popover: 240 10% 5%;
-        --popover-foreground: 0 0% 98%;
+        --popover: 0 0% 15%;
+        --popover-foreground: 0 0% 80%;
 
         /* Destructive */
         --destructive: 0 84% 60%;
@@ -85,8 +88,8 @@ import 'highlight.js/styles/github-dark.min.css';
         --aw-color-text-default: hsl(var(--foreground));
         --aw-color-text-muted: hsl(var(--muted-foreground));
         --aw-color-bg-page: hsl(var(--background));
-        --main: 24 95% 58%;
-        --mainHover: 24 95% 53%;
+        --main: 207 90% 54%;
+        --mainHover: 207 90% 48%;
 
         /* Spacing system */
         --space-xs: 0.5rem;
@@ -112,13 +115,13 @@ import 'highlight.js/styles/github-dark.min.css';
         --text-6xl: 3.75rem;
         --text-7xl: 4.5rem;
 
-        /* Border radius - Highly Rounded Premium Feel */
-        --radius-sm: 0.25rem;
-        --radius: 0.5rem;
-        --radius-lg: 0.75rem;
-        --radius-xl: 1rem;
-        --radius-2xl: 1.5rem;
-        --radius-3xl: 2rem;
+        /* Border radius - VSCode Style: Sharp corners (4px) */
+        --radius-sm: 2px;
+        --radius: 4px;
+        --radius-lg: 4px;
+        --radius-xl: 4px;
+        --radius-2xl: 4px;
+        --radius-3xl: 4px;
 
         /* Shadows - Deep & Soft */
         --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -149,12 +152,12 @@ import 'highlight.js/styles/github-dark.min.css';
         }
     }
 
-    /* Dark mode (Always on) */
+    /* Dark mode (Always on) - VSCode Dark */
     .dark {
-        --primary: 24 95% 58%;
+        --primary: 207 90% 54%;
         --primary-foreground: 0 0% 100%;
-        --background: 240 10% 3.9%;
-        --foreground: 0 0% 98%;
+        --background: 0 0% 12%;
+        --foreground: 0 0% 80%;
     }
 
     /* ============================================
@@ -216,9 +219,18 @@ import 'highlight.js/styles/github-dark.min.css';
     /* Gradient mesh - Subtle Atmosphere */
     .bg-gradient-mesh {
         background:
-            radial-gradient(at 0% 0%, hsl(24 95% 58% / 0.05) 0px, transparent 40%),
-            radial-gradient(at 100% 0%, hsl(240 70% 55% / 0.05) 0px, transparent 40%);
-        opacity: 0.6;
+            radial-gradient(at 0% 0%, hsl(24 95% 58% / 0.06) 0px, transparent 40%),
+            radial-gradient(at 100% 0%, hsl(210 100% 65% / 0.05) 0px, transparent 40%),
+            radial-gradient(at 50% 100%, hsl(270 70% 60% / 0.03) 0px, transparent 50%);
+        opacity: 0.7;
+    }
+
+    /* Enhanced gradient mesh for hero sections */
+    .bg-gradient-mesh-hero {
+        background:
+            radial-gradient(at 0% 0%, hsl(24 95% 58% / 0.08) 0px, transparent 50%),
+            radial-gradient(at 100% 20%, hsl(210 100% 65% / 0.06) 0px, transparent 50%),
+            radial-gradient(at 30% 80%, hsl(270 70% 60% / 0.04) 0px, transparent 50%);
     }
 
     /* Noise texture */
@@ -229,30 +241,27 @@ import 'highlight.js/styles/github-dark.min.css';
         mix-blend-mode: overlay;
     }
 
-    /* Glass Utilities - The "Sauce" */
+    /* VSCode Style Panels - Solid colors, no glass effect */
 
-    /* Base Glass - Subtle */
+    /* Base Panel */
     .glass {
-        background: rgba(20, 20, 22, 0.6);
-        backdrop-filter: blur(12px) saturate(150%);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
-    /* Panel Glass - Stronger for Cards */
+    /* Card Panel */
     .glass-panel {
-        background: rgba(25, 25, 28, 0.7);
-        backdrop-filter: blur(20px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
 
-    /* Strong Glass - For floating elements/modals */
+    /* Elevated Panel - For modals/dropdowns */
     .glass-strong {
-        background: rgba(30, 30, 35, 0.85);
-        backdrop-filter: blur(24px) saturate(200%);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        background: hsl(var(--surface-elevated));
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
 
     /* Shine effect for borders/hover */

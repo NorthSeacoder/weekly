@@ -1,11 +1,10 @@
 import rss from '@astrojs/rss';
 import type {APIContext} from 'astro';
-import {WeeklyService} from '@/lib/content-service';
+import {getLatestWeeklyPostsWithSections} from '@/src/utils/contents/unified-content';
 import {structuredContentToText} from '@/lib/structured-content';
 
 export async function GET(context: APIContext) {
-    const posts = await WeeklyService.getWeeklyPosts();
-    const latestPosts = posts.slice(0, 12);
+    const latestPosts = await getLatestWeeklyPostsWithSections(12);
 
     return rss({
         title: '我不知道的周刊',

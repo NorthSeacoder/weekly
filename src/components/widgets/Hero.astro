@@ -19,21 +19,9 @@ const {
 } = Astro.props;
 ---
 
-<section class="relative min-h-[70vh] flex items-center overflow-hidden" {...id ? { id } : {}}>
-  <!-- Linear-style background -->
+<section class="relative min-h-[70vh] flex items-center overflow-hidden bg-background" {...id ? { id } : {}}>
+  <!-- VSCode style: clean background, no gradients -->
   <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-    <!-- Gradient mesh background -->
-    <div class="absolute inset-0 bg-gradient-mesh"></div>
-
-    <!-- Dot grid pattern -->
-    <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
-
-    <!-- Top glow -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/8 blur-[120px] rounded-full"></div>
-
-    <!-- Bottom accent glow -->
-    <div class="absolute bottom-0 right-1/4 w-[600px] h-[300px] bg-accent-cool/5 blur-[100px] rounded-full"></div>
-
     <slot name="bg">
       {bg ? <Fragment set:html={bg} /> : null}
     </slot>
@@ -41,9 +29,9 @@ const {
 
   <div class="relative w-full max-w-5xl mx-auto px-6 sm:px-8 py-20 md:py-28">
     <div class="text-center space-y-8">
-      <!-- Tagline badge - Linear style -->
+      <!-- Tagline badge - VSCode style -->
       {tagline && (
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-secondary/50 backdrop-blur-sm animate-fade-in-down">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border bg-surface animate-fade-in-down">
           <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
           <span class="text-sm font-medium text-muted-foreground">
             <Fragment set:html={tagline} />
@@ -51,9 +39,9 @@ const {
         </div>
       )}
 
-      <!-- Title - Linear gradient text -->
+      <!-- Title -->
       {title && (
-        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-gradient animate-text-reveal">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-foreground animate-text-reveal">
           <Fragment set:html={title} />
         </h1>
       )}
@@ -92,10 +80,7 @@ const {
     {image && (
       <div class="mt-16 md:mt-20 animate-fade-in-up" style="animation-delay: 0.4s;">
         <div class="relative mx-auto max-w-4xl">
-          <!-- Glow effect behind image -->
-          <div class="absolute -inset-4 bg-gradient-to-r from-primary/10 via-transparent to-accent-cool/10 blur-2xl opacity-50"></div>
-
-          <div class="relative rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-2xl overflow-hidden">
+          <div class="relative rounded border border-border bg-card shadow-lg overflow-hidden">
             {typeof image === 'string' ? (
               <Fragment set:html={image} />
             ) : (

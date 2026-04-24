@@ -2,7 +2,7 @@
 import Layout from '~/layouts/PageLayout.astro';
 import SinglePost from '~/components/pages/SinglePost.astro';
 import type { InferGetStaticPropsType, GetStaticPaths } from 'astro';
-import { getStaticPathsWeeklyPost } from '~/utils/contents/unified-content';
+import { getStaticPathsWeeklyPost, getWeeklyPostWithSectionsBySlug } from '~/utils/contents/unified-content';
 
 export const getStaticPaths = (async () => {
   const paths = await getStaticPathsWeeklyPost();
@@ -15,7 +15,6 @@ export const getStaticPaths = (async () => {
     return {
       ...path,
       props: {
-        ...path.props,
         prevPost,
         nextPost,
       },
@@ -25,9 +24,12 @@ export const getStaticPaths = (async () => {
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
-const { post, prevPost, nextPost } = Astro.props as Props;
+const { prevPost, nextPost } = Astro.props as Props;
+const rawSlug = Astro.params.slug;
+const slug = Array.isArray(rawSlug) ? rawSlug.join('/') : rawSlug;
+const post = slug ? await getWeeklyPostWithSectionsBySlug(slug) : null;
 ---
 
 <Layout>
-  <SinglePost post={post} prevPost={prevPost} nextPost={nextPost} />
+  {post && <SinglePost post={post} prevPost={prevPost} nextPost={nextPost} />}
 </Layout>

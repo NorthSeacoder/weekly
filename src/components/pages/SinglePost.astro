@@ -68,28 +68,14 @@ const getCategoryStyle = (category) => {
 };
 ---
 
-<section class='bg-page min-h-screen relative overflow-hidden'>
-    <div class='absolute inset-0 pointer-events-none'>
-        <!-- 渐变光晕背景 -->
-        <div class='absolute inset-0 bg-gradient-mesh opacity-80'></div>
-        <!-- 点阵背景 -->
-        <div class='absolute inset-0 bg-grid-pattern opacity-20'></div>
-        <!-- 顶部微光 - 增强色彩 -->
-        <div
-            class='absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full mix-blend-screen'>
-        </div>
-        <div
-            class='absolute top-[20%] left-[20%] w-[600px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full mix-blend-screen animate-pulse duration-[4000ms]'>
-        </div>
-    </div>
-
+<section class='bg-background min-h-screen relative overflow-hidden'>
     <article class='py-8 sm:py-12 lg:py-16 max-w-5xl mx-auto relative z-10'>
         <!-- 页面标题区域 -->
         <header class='mb-12 lg:mb-16 max-w-7xl mx-auto px-6 sm:px-8'>
             <div class='text-center space-y-6'>
                 <!-- 周刊标签 -->
                 <div
-                    class='inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md shadow-sm'>
+                    class='inline-flex items-center gap-2 px-3 py-1.5 rounded border border-primary/20 bg-primary/5'>
                     <span class='relative flex h-2 w-2'>
                         <span class='animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75'
                         ></span>
@@ -100,7 +86,7 @@ const getCategoryStyle = (category) => {
 
                 <!-- 周刊标题 -->
                 <h1
-                    class='text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.05] tracking-tight font-heading text-transparent bg-clip-text bg-gradient-to-b from-foreground to-foreground/70'
+                    class='text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.05] tracking-tight font-heading text-foreground'
                     data-scroll-title>
                     {post.title}
                 </h1>
@@ -153,37 +139,34 @@ const getCategoryStyle = (category) => {
                         return (
                             <article
                             class={cn(
-                                'break-inside-avoid mb-6', // Masonry: avoid break and add bottom margin
-                                'glass-panel rounded-xl p-5', // New glass token and increased radius/padding
+                                'break-inside-avoid mb-6',
+                                'glass-panel rounded p-5', // VSCode style: 4px radius
                                 'group relative overflow-hidden',
-                                'transition-all duration-300 ease-out',
-                                'hover:scale-[1.01] hover:-translate-y-1', // Subtle lift
-                                'hover:shadow-xl hover:shadow-primary/10'
+                                'transition-all duration-200 ease-out',
+                                'hover:border-[#505050]' // Subtle border highlight
                             )}>
-                            <!-- Shine Border Effect -->
-                            <div class="absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0">
-                                <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
-                            </div>
-                            
-                            <!-- Content Wrapper to ensure z-index above glow -->
+                            <!-- Border highlight on hover -->
+                            <div class="absolute inset-0 rounded pointer-events-none border border-transparent group-hover:border-[#505050] transition-colors duration-200 z-0"></div>
+
+                            <!-- Content Wrapper -->
                             <div class="relative z-10 h-full flex flex-col">
                                 {/* 图片区域 - 始终显示 */}
-                                <div class="relative w-full overflow-hidden rounded-lg bg-secondary/20 border border-white/5">
+                                <div class="relative w-full overflow-hidden rounded bg-surface border border-border">
                                     {hasImage ? (
                                         <div class="image-container">
                                             <img
                                                 src={section.image_url}
                                                 alt={section.title || 'section image'}
-                                                class="w-full h-auto max-h-[220px] object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+                                                class="w-full h-auto max-h-[220px] object-cover"
                                                 loading="lazy"
                                                 data-fallback-image
                                             />
-                                            <div class="image-fallback hidden w-full h-[120px] flex items-center justify-center bg-secondary/10">
+                                            <div class="image-fallback hidden w-full h-[120px] flex items-center justify-center bg-surface">
                                                 <Icon name="tabler:photo-off" class="w-10 h-10 text-muted-foreground/50" />
                                             </div>
                                         </div>
                                     ) : (
-                                        <div class="w-full h-[120px] flex items-center justify-center bg-secondary/10 border-b border-white/5">
+                                        <div class="w-full h-[120px] flex items-center justify-center bg-surface border-b border-border">
                                             <Icon name="tabler:photo" class="w-10 h-10 text-muted-foreground/40" />
                                         </div>
                                     )}
@@ -191,17 +174,42 @@ const getCategoryStyle = (category) => {
 
                                 {/* 内容区域 */}
                                 <div class="pt-4 space-y-3">
-                                    {/* 分类标签 */}
-                                    {section.category && (
-                                        <span class={cn(
-                                            "inline-flex px-2 py-0.5 rounded-sm text-xs font-medium items-center gap-1",
-                                            categoryStyle.bg,
-                                            categoryStyle.text
-                                        )}>
-                                            <Icon name={categoryStyle.icon} class="w-3 h-3" />
-                                            {section.category}
-                                        </span>
-                                    )}
+                                    {/* 分类标签 + 评分 */}
+                                    <div class="flex items-center justify-between gap-3">
+                                        {section.category && (
+                                            <span class={cn(
+                                                "inline-flex px-2 py-0.5 rounded-sm text-xs font-medium items-center gap-1",
+                                                categoryStyle.bg,
+                                                categoryStyle.text
+                                            )}>
+                                                <Icon name={categoryStyle.icon} class="w-3 h-3" />
+                                                {section.category}
+                                            </span>
+                                        )}
+
+                                        {(section.original_score != null || section.summary_score != null || section.ai_metadata) && (
+                                            <div class="flex items-center gap-2 text-xs text-muted-foreground/80">
+                                                {section.original_score != null && (
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-secondary/60 border border-border/50">
+                                                        <Icon name="tabler:stars" class="w-3 h-3" />
+                                                        原文 {section.original_score}
+                                                    </span>
+                                                )}
+                                                {section.summary_score != null && (
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-secondary/60 border border-border/50">
+                                                        <Icon name="tabler:message-2" class="w-3 h-3" />
+                                                        摘要 {section.summary_score}
+                                                    </span>
+                                                )}
+                                                {section.ai_metadata && (
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-secondary/40 border border-border/40">
+                                                        <Icon name="tabler:robot" class="w-3 h-3" />
+                                                        AI
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
 
                                     {/* 标题 */}
                                     {section.title && (
@@ -249,7 +257,7 @@ const getCategoryStyle = (category) => {
                 {
                     prevPost ? (
                         <a href={`/weekly/${prevPost.slug}`} class='group flex-1 sm:max-w-[calc(50%-0.5rem)]'>
-                            <div class="flex items-center h-full p-5 glass-panel rounded-xl hover:scale-[1.01] hover:-translate-y-0.5 transition-all duration-300 group-hover:shadow-lg">
+                            <div class="flex items-center h-full p-5 glass-panel rounded hover:border-[#505050] transition-all duration-200">
                             <Icon name="tabler:chevron-left" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all group-hover:-translate-x-1 flex-shrink-0" />
                             <div class="ml-3 overflow-hidden min-w-0">
                                 <p class="text-xs text-muted-foreground mb-1">上一期</p>
@@ -260,15 +268,15 @@ const getCategoryStyle = (category) => {
                 ) : (
                     <div class="flex-1 sm:max-w-[calc(50%-0.5rem)]"></div>
                 )}
-                
-                <a href="/weekly" class="flex items-center justify-center px-6 py-4 text-sm font-medium text-muted-foreground glass-panel rounded-xl hover:scale-105 hover:text-foreground transition-all duration-300 hover:shadow-lg sm:flex-shrink-0">
+
+                <a href="/weekly" class="flex items-center justify-center px-6 py-4 text-sm font-medium text-muted-foreground glass-panel rounded hover:text-foreground hover:border-[#505050] transition-all duration-200 sm:flex-shrink-0">
                     <Icon name="tabler:layout-grid" class="w-4 h-4 mr-2" />
                     所有周刊
                 </a>
-                
+
                 {nextPost ? (
                     <a href={`/weekly/${nextPost.slug}`} class="group flex-1 sm:max-w-[calc(50%-0.5rem)]">
-                        <div class="flex items-center justify-end h-full p-5 glass-panel rounded-xl hover:scale-[1.01] hover:-translate-y-0.5 transition-all duration-300 group-hover:shadow-lg">
+                        <div class="flex items-center justify-end h-full p-5 glass-panel rounded hover:border-[#505050] transition-all duration-200">
                             <div class="mr-3 overflow-hidden text-right min-w-0">
                                 <p class="text-xs text-muted-foreground mb-1">下一期</p>
                                 <h4 class="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{nextPost.title}</h4>

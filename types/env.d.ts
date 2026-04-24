@@ -21,6 +21,24 @@ declare namespace NodeJS {
 
         // Quail API
         QUAIL_API_KEY: string;
+
+        // Database
+        DB_HOST?: string;
+        DB_PORT?: string;
+        DB_USER?: string;
+        DB_PASSWORD?: string;
+        DB_NAME?: string;
+        DB_LOG_SLOW_QUERIES_MS?: string;
+
+        // Monitoring (Sentry)
+        PUBLIC_SENTRY_DSN?: string;
+        SENTRY_DSN?: string;
+        SENTRY_AUTH_TOKEN?: string;
+        PUBLIC_SENTRY_TRACES_SAMPLE_RATE?: string;
+        PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE?: string;
+        PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE?: string;
+        PUBLIC_WEB_VITALS_SAMPLE_RATE?: string;
+
     }
 }
 declare module "*.mdx" {

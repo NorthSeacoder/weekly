@@ -1,3 +1,5 @@
+import type { AiMetadata, ImageSource } from './ai';
+
 export type StructuredContent =
     | string
     | number
@@ -34,6 +36,12 @@ export type Section = {
     summary?: string;
     description?: string;
     image_url?: string;
+    image_source?: ImageSource;
+    image_width?: number | null;
+    image_height?: number | null;
+    original_score?: number | null;
+    summary_score?: number | null;
+    ai_metadata?: AiMetadata | unknown | null;
     wordCount?: number;
     readingTime?: number | string;
     screenshot_api?: 'ScreenshotLayer' | 'HCTI' | 'manual';

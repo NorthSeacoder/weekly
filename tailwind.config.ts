@@ -69,6 +69,8 @@ export default {
                 // Enhanced accent colors
                 'accent-warm': 'hsl(var(--accent-warm))',
                 'accent-cool': 'hsl(var(--accent-cool))',
+                'accent-purple': 'hsl(var(--accent-purple))',
+                'accent-teal': 'hsl(var(--accent-teal))',
                 // Status colors
                 success: {
                     DEFAULT: 'hsl(var(--success))',

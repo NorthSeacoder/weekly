@@ -1,16 +1,17 @@
 ---
 import { Icon } from 'astro-icon/components';
-import { getWeeklyPosts } from '@/src/utils/contents/unified-content'
+import { getLatestWeeklyPost } from '@/src/utils/contents/unified-content'
 
-const weekly = await getWeeklyPosts()
-const latestWeekly = weekly[0]
+const latestWeekly = await getLatestWeeklyPost()
 
 ---
 
-<div
-  class="fixed top-12 left-0 right-0 z-40 hidden md:flex justify-center px-4"
-  data-announcement
->
+{
+  latestWeekly && (
+    <div
+      class="fixed top-12 left-0 right-0 z-40 hidden md:flex justify-center px-4"
+      data-announcement
+    >
   <div class="flex items-center gap-3 min-w-0 max-w-4xl w-full px-3 py-2 rounded-xl border border-white/30 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-xl shadow-md shadow-black/5">
     <span
       class="bg-foreground text-background font-medium px-2 py-0.5 text-[11px] rounded-md flex-shrink-0"
@@ -33,10 +34,16 @@ const latestWeekly = weekly[0]
     </a>
   </div>
 </div>
+  )
+}
 
 <script is:inline>
   (function() {
+    let abortController;
     function initAnnouncement() {
+      if (abortController) abortController.abort();
+      abortController = new AbortController();
+
       const announcement = document.querySelector('[data-announcement]');
 
       if (!announcement) return;
@@ -46,7 +53,8 @@ const latestWeekly = weekly[0]
       if (!isVisible) return;
 
       function updateAnnouncement() {
-        const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        const scrollY =
+          window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
         const maxScroll = 150;
         const progress = Math.min(scrollY / maxScroll, 1);
 
@@ -54,12 +62,19 @@ const latestWeekly = weekly[0]
         announcement.style.opacity = (1 - progress).toString();
       }
 
-      // 使用 requestAnimationFrame 持续检查滚动位置
-      function checkScroll() {
-        updateAnnouncement();
-        requestAnimationFrame(checkScroll);
+      // 仅在滚动时更新（用 rAF 合帧），避免常驻每帧循环
+      let ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          updateAnnouncement();
+        });
       }
-      checkScroll();
+
+      updateAnnouncement();
+      window.addEventListener('scroll', onScroll, { passive: true, signal: abortController.signal });
     }
 
     // 立即执行

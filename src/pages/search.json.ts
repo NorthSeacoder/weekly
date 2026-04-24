@@ -1,5 +1,4 @@
 import type { APIRoute } from 'astro';
-import { structuredContentToText } from '@/lib/structured-content';
 import { getWeeklyPosts } from '~/utils/contents/unified-content';
 
 export const prerender = true;
@@ -9,10 +8,9 @@ export const GET: APIRoute = async () => {
     // 获取周刊数据
     const weeklyPosts = await getWeeklyPosts();
     const weeklyData = weeklyPosts.map(post => {
-      const sectionPreview = structuredContentToText(post.sections?.[0]?.content ?? '');
       return {
         title: post.title,
-        description: sectionPreview,
+        description: post.desc || post.title,
         tags: post.tags || [],
         date: post.date,
         permalink: post.permalink,

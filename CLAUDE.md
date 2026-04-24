@@ -1,6 +1,6 @@
 # Weekly - 我不知道的周刊
 
-> 最后更新: 2025-12-09T10:40:52+0800
+> 最后更新: 2026-01-13
 
 ## 项目概述
 
@@ -121,14 +121,14 @@ export function useDatabase(): boolean {
 ## 开发命令
 
 ```bash
-# 开发模式（文件系统数据源）
-pnpm dev:file
-
-# 开发模式（数据库数据源）
-pnpm dev:db
+# 开发模式
+pnpm dev
 
 # 构建
 pnpm build
+
+# 预览构建结果
+pnpm preview
 
 # 创建周刊条目
 pnpm weekly:add
@@ -137,8 +137,10 @@ pnpm weekly:add
 pnpm migrate:mysql
 
 # 数据库状态检查
-pnpm db:status
+pnpm db:check
 ```
+
+> **注意**: 数据源通过环境变量 `DATA_SOURCE` 控制，设置为 `database` 使用数据库，否则默认使用文件系统。
 
 ## 关键文件
 

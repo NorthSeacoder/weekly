@@ -7,6 +7,8 @@ const cache = new NodeCache({
     useClones: false // 禁用克隆以提高性能
 });
 
+const inFlight = new Map<string, Promise<unknown>>();
+
 export async function getCachedData<T>(
     key: string,
     fetchData: () => Promise<T>,
@@ -14,20 +16,35 @@ export async function getCachedData<T>(
 ): Promise<T> {
     // 尝试从缓存获取数据
     const cachedData = cache.get<T>(key);
-    console.log('getCachedData', process.env.NODE_ENV);
     if (cachedData !== undefined) {
-        if (options.debug && process.env.NODE_ENV !== 'development') {
-            console.log(`Cache hit for key: ${key}`);
+        if (options.debug) {
+            console.log(`[cache] hit: ${key}`);
         }
         return cachedData;
     }
 
-    // 如果缓存中没有，则获取新数据
-    if (options.debug && process.env.NODE_ENV !== 'development') {
-        console.log(`Cache miss for key: ${key}, fetching data...`);
+    const existingPromise = inFlight.get(key);
+    if (existingPromise) {
+        if (options.debug) {
+            console.log(`[cache] await: ${key}`);
+        }
+        return existingPromise as Promise<T>;
     }
 
-    const freshData = await fetchData();
-    cache.set(key, freshData);
-    return freshData;
+    // 如果缓存中没有，则获取新数据
+    if (options.debug) {
+        console.log(`[cache] miss: ${key}`);
+    }
+
+    const promise = fetchData()
+        .then((freshData) => {
+            cache.set(key, freshData);
+            return freshData;
+        })
+        .finally(() => {
+            inFlight.delete(key);
+        });
+
+    inFlight.set(key, promise);
+    return promise;
 }

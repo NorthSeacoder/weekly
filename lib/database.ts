@@ -4,6 +4,7 @@ config();
 
 import mysql from 'mysql2/promise';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
+import { performance } from 'node:perf_hooks';
 
 // 数据库配置接口
 interface DatabaseConfig {
@@ -61,7 +62,14 @@ export async function query<T extends RowDataPacket[]>(
     params?: any[]
 ): Promise<T> {
     const db = getDatabase();
+    const start = performance.now();
     const [rows] = await db.query<T>(sql, params);
+    const durationMs = performance.now() - start;
+    const slowThresholdMs = Number(process.env.DB_LOG_SLOW_QUERIES_MS || '');
+    if (Number.isFinite(slowThresholdMs) && slowThresholdMs > 0 && durationMs >= slowThresholdMs) {
+        const preview = sql.replace(/\s+/g, ' ').trim().slice(0, 160);
+        console.warn(`[db] slow query ${durationMs.toFixed(1)}ms: ${preview}`);
+    }
     return rows;
 }
 
@@ -71,7 +79,14 @@ export async function execute(
     params?: any[]
 ): Promise<ResultSetHeader> {
     const db = getDatabase();
+    const start = performance.now();
     const [result] = await db.query<ResultSetHeader>(sql, params);
+    const durationMs = performance.now() - start;
+    const slowThresholdMs = Number(process.env.DB_LOG_SLOW_QUERIES_MS || '');
+    if (Number.isFinite(slowThresholdMs) && slowThresholdMs > 0 && durationMs >= slowThresholdMs) {
+        const preview = sql.replace(/\s+/g, ' ').trim().slice(0, 160);
+        console.warn(`[db] slow execute ${durationMs.toFixed(1)}ms: ${preview}`);
+    }
     return result;
 }
 

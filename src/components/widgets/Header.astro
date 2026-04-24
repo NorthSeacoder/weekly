@@ -1,122 +1,89 @@
 ---
 import {Icon} from 'astro-icon/components';
 import ToggleMenu from '~/components/common/ToggleMenu.astro';
-import {getWeeklyPosts} from '~/utils/contents/unified-content';
-import Button from '~/components/ui/Button.astro';
-import {trimSlash, getAsset, getHomePermalink, getPermalink} from '~/utils/permalinks';
-import type {CallToAction} from '~/types';
+import {getLatestWeeklyPost} from '~/utils/contents/unified-content';
+import {trimSlash, getHomePermalink, getPermalink} from '~/utils/permalinks';
 
 interface Link {
     text?: string;
     href?: string;
     ariaLabel?: string;
     icon?: string;
-    links?: Link[];
 }
 
 export interface Props {
     id?: string;
-    isSticky?: boolean;
-    isDark?: boolean;
-    isFullWidth?: boolean;
-    showRssFeed?: boolean;
-    showEmail?: boolean;
-    position?: string;
 }
 
-const {
-    id = 'header',
-    isSticky = false,
-    isDark = false,
-    isFullWidth = false,
-    showRssFeed = false,
-    showEmail = false,
-    position = 'center'
-} = Astro.props;
+const {id = 'header'} = Astro.props;
 
 const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
 const links: Array<Link> = [
     {text: '首页', href: getPermalink('/'), icon: 'tabler:home'},
     {text: '周刊', href: getPermalink('/weekly'), icon: 'tabler:news'}
 ];
-const actions: Array<CallToAction> = [];
-const weekly = await getWeeklyPosts();
-const latestWeekly = weekly?.[0];
+const latestWeekly = await getLatestWeeklyPost();
 ---
 
 <header
-    class='fixed top-2 md:top-4 left-0 right-0 z-50 mx-auto w-full max-w-5xl transition-all duration-300 ease-in-out'
+    class='fixed top-0 left-0 right-0 z-50 mx-auto w-full'
     {...id ? {id} : {}}
-    data-header>
-    <div
-        class='mx-2 md:mx-0 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-xl shadow-lg shadow-black/20 transition-all duration-300'
-        data-header-inner>
-        <div class='relative px-4 sm:px-6 py-2.5'>
-            <div class='flex items-center justify-between gap-3'>
+    data-header
+    transition:persist="main-header"
+>
+
+    <div class='h-2'></div>
+
+    <div class='mx-auto max-w-5xl px-4' data-header-inner>
+        <!-- 导航容器 -->
+        <div class='rounded bg-card/95 backdrop-blur-md border border-border shadow-lg header-bg px-3 sm:px-4 py-1.5'>
+            <div class='flex items-center justify-between gap-4'>
                 <!-- 左侧: Logo + 导航 -->
                 <div class='flex items-center gap-6'>
                     <!-- Logo -->
                     <a
-                        class='flex items-center gap-2.5 focus:outline-none group/logo'
+                        class='flex items-center gap-2 group/logo'
                         href={getHomePermalink()}
                         aria-label='回到首页'>
-                        <div
-                            class='relative w-8 h-8 flex items-center justify-center rounded-xl bg-gradient-to-br from-primary via-primary/80 to-primary/60 shadow-lg shadow-primary/20 group-hover/logo:shadow-primary/40 transition-all duration-300 group-hover/logo:scale-105'>
-                            <Icon name='tabler:rocket' class='w-4 h-4 text-white' />
+                        <div class='w-7 h-7 flex items-center justify-center rounded bg-primary group-hover/logo:bg-primary-hover transition-colors'>
+                            <Icon name='tabler:code' class='w-3.5 h-3.5 text-white' />
                         </div>
-                        <span class='hidden sm:block text-base font-bold text-foreground/90 tracking-tight'>
+                        <span class='hidden sm:block text-sm font-semibold text-foreground'>
                             我不知道的周刊
                         </span>
                     </a>
 
                     <!-- 桌面导航 -->
-                    <nav class='hidden md:flex items-center' aria-label='主导航'>
-                        <div class='flex items-center gap-1'>
-                            {
-                                links.map(({text, href, icon}) => (
-                                    <a
-                                        class:list={[
-                                            'relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200',
-                                            'hover:bg-white/5 active:scale-95',
-                                            {
-                                                'text-foreground bg-white/10 shadow-sm border border-white/5':
-                                                    href === currentPath,
-                                                'text-muted-foreground/80 hover:text-foreground': href !== currentPath
-                                            }
-                                        ]}
-                                        href={href}>
-                                        {icon && (
-                                            <Icon
-                                                name={icon}
-                                                class:list={[
-                                                    'w-4 h-4 transition-colors',
-                                                    href === currentPath
-                                                        ? 'text-primary'
-                                                        : 'text-muted-foreground group-hover:text-foreground'
-                                                ]}
-                                            />
-                                        )}
-                                        <span>{text}</span>
-                                    </a>
-                                ))
-                            }
-                        </div>
+                    <nav class='hidden md:flex items-center gap-1' aria-label='主导航'>
+                        {
+                            links.map(({text, href, icon}) => (
+                                <a
+                                    class:list={[
+                                        'flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors',
+                                        href === currentPath
+                                            ? 'text-foreground bg-surface'
+                                            : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover'
+                                    ]}
+                                    href={href}
+                                    data-nav-link>
+                                    {icon && <Icon name={icon} class='w-4 h-4' />}
+                                    <span>{text}</span>
+                                </a>
+                            ))
+                        }
                     </nav>
                 </div>
 
                 <!-- 右侧: 工具栏 -->
                 <div class='flex items-center gap-2'>
-                    <!-- 最新周刊提示 (大屏幕) -->
+                    <!-- 最新周刊 (大屏幕) -->
                     {
                         latestWeekly && (
                             <a
                                 href={latestWeekly.permalink}
-                                class='hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/15 hover:border-primary/30 transition-all duration-300 group/latest mr-2'>
-                                <span class='relative flex h-2 w-2'>
-                                    <span class='animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75' />
-                                    <span class='relative inline-flex rounded-full h-2 w-2 bg-primary' />
-                                </span>
-                                <span class='text-xs font-semibold text-primary/90 max-w-[150px] truncate'>
+                                class='hidden lg:flex items-center gap-2 px-3 py-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors mr-1'>
+                                <span class='w-2 h-2 rounded-full bg-primary animate-pulse' />
+                                <span class='text-xs font-medium max-w-[120px] truncate'>
                                     {latestWeekly.title}
                                 </span>
                             </a>
@@ -126,32 +93,30 @@ const latestWeekly = weekly?.[0];
                     <!-- 搜索按钮 -->
                     <button
                         type='button'
-                        class='flex items-center gap-2 h-9 px-3 rounded-xl border border-white/5 bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-200'
+                        class='flex items-center gap-1.5 h-8 px-2.5 rounded bg-surface text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors cursor-pointer'
                         aria-label='搜索'
                         data-search-trigger
                         id='header-search-btn'>
-                        <Icon name='tabler:search' class='w-4 h-4' />
-                        <span class='hidden sm:inline text-xs font-medium opacity-60'>搜索...</span>
-                        <kbd
-                            class='hidden lg:inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 rounded-md bg-black/20 text-[10px] font-mono text-muted-foreground/60'>
+                        <Icon name='tabler:search' class='w-3.5 h-3.5' />
+                        <kbd class='hidden sm:inline text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded'>
                             ⌘K
                         </kbd>
                     </button>
 
                     <!-- GitHub -->
                     <a
-                        class='flex items-center justify-center w-9 h-9 rounded-xl border border-white/5 bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-200'
+                        class='flex items-center justify-center w-8 h-8 rounded bg-surface text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors'
                         aria-label='GitHub'
                         href='https://github.com/NorthSeacoder/weekly'
                         target='_blank'
                         rel='noopener'>
-                        <Icon name='tabler:brand-github' class='w-4.5 h-4.5' />
+                        <Icon name='tabler:brand-github' class='w-3.5 h-3.5' />
                     </a>
 
                     <!-- 移动端菜单按钮 -->
                     <div class='md:hidden'>
                         <ToggleMenu
-                            class='flex items-center justify-center w-9 h-9 rounded-xl border border-white/5 bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-200'
+                            class='flex items-center justify-center w-8 h-8 rounded bg-surface text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors'
                         />
                     </div>
                 </div>
@@ -159,164 +124,174 @@ const latestWeekly = weekly?.[0];
 
             <!-- 移动端导航菜单 -->
             <nav
-                class='md:hidden hidden absolute top-full left-0 right-0 mt-2 p-1 rounded-2xl border border-white/10 bg-[#09090b]/95 backdrop-blur-2xl shadow-2xl shadow-black/40 overflow-hidden'
+                class='md:hidden hidden absolute top-full left-4 right-4 mt-2 p-2 rounded bg-card border border-border shadow-xl'
                 data-mobile-menu>
-                <div class='p-2 space-y-1'>
-                    {
-                        links.map(({text, href, icon}) => (
-                            <a
-                                class:list={[
-                                    'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium',
-                                    'transition-all duration-200',
-                                    {
-                                        'text-foreground bg-white/10 shadow-sm': href === currentPath,
-                                        'text-muted-foreground hover:text-foreground hover:bg-white/5':
-                                            href !== currentPath
-                                    }
-                                ]}
-                                href={href}>
-                                {icon && <Icon name={icon} class='w-5 h-5 opacity-70' />}
-                                <span>{text}</span>
-                            </a>
-                        ))
-                    }
+                {
+                    links.map(({text, href, icon}) => (
+                        <a
+                            class:list={[
+                                'flex items-center gap-3 px-4 py-3 rounded text-sm font-medium transition-colors',
+                                href === currentPath
+                                    ? 'text-foreground bg-surface'
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover'
+                            ]}
+                            href={href}
+                            data-nav-link-mobile>
+                            {icon && <Icon name={icon} class='w-5 h-5' />}
+                            <span>{text}</span>
+                        </a>
+                    ))
+                }
 
-                    <div class='my-2 h-[1px] bg-white/5'></div>
+                <div class='my-2 h-px bg-border'></div>
 
-                    <button
-                        type='button'
-                        class='w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all duration-200'
-                        data-search-trigger
-                        id='mobile-search-btn'>
-                        <div class='flex items-center gap-3'>
-                            <Icon name='tabler:search' class='w-5 h-5 opacity-70' />
-                            <span>搜索内容</span>
-                        </div>
-                    </button>
+                <button
+                    type='button'
+                    class='w-full flex items-center gap-3 px-4 py-3 rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors'
+                    data-search-trigger
+                    id='mobile-search-btn'>
+                    <Icon name='tabler:search' class='w-5 h-5' />
+                    <span>搜索</span>
+                </button>
 
-                    {
-                        latestWeekly && (
-                            <a
-                                href={latestWeekly.permalink}
-                                class='flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-primary hover:bg-primary/5 transition-all duration-200'>
-                                <span class='relative flex h-2 w-2'>
-                                    <span class='animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75' />
-                                    <span class='relative inline-flex rounded-full h-2 w-2 bg-primary' />
-                                </span>
-                                <span class='truncate'>{latestWeekly.title}</span>
-                            </a>
-                        )
-                    }
-                </div>
+                {
+                    latestWeekly && (
+                        <a
+                            href={latestWeekly.permalink}
+                            class='flex items-center gap-3 px-4 py-3 rounded text-sm font-medium text-primary hover:bg-primary/10 transition-colors'>
+                            <span class='w-2 h-2 rounded-full bg-primary animate-pulse' />
+                            <span class='truncate'>{latestWeekly.title}</span>
+                        </a>
+                    )
+                }
             </nav>
         </div>
     </div>
 </header>
 
 <script>
-    function initHeader() {
-        const headerInner = document.querySelector('[data-header-inner]') as HTMLElement;
-        const mobileMenu = document.querySelector('[data-mobile-menu]') as HTMLElement;
-        const toggleButton = document.querySelector('[data-aw-toggle-menu]') as HTMLElement;
+    (function () {
+        let abortController: AbortController | undefined;
 
-        if (!headerInner) return;
+        function initHeader() {
+            if (abortController) abortController.abort();
+            abortController = new AbortController();
 
-        let ticking = false;
+            const headerInner = document.querySelector('[data-header-inner]') as HTMLElement | null;
+            const mobileMenu = document.querySelector('[data-mobile-menu]') as HTMLElement | null;
+            const toggleButton = document.querySelector('[data-aw-toggle-menu]') as HTMLElement | null;
 
-        function updateHeaderOnScroll() {
-            const scrollY = window.scrollY;
+            if (!headerInner) return;
 
-            if (scrollY > 20) {
-                headerInner.classList.add('bg-black/80', 'backdrop-blur-2xl', 'scale-[0.98]');
-                headerInner.classList.remove('bg-black/60', 'backdrop-blur-xl', 'scale-100');
-            } else {
-                headerInner.classList.remove('bg-black/80', 'backdrop-blur-2xl', 'scale-[0.98]');
-                headerInner.classList.add('bg-black/60', 'backdrop-blur-xl', 'scale-100');
+            function normalizePath(path: string) {
+                const clean = (path || '/').split('?')[0].split('#')[0];
+                return clean === '/' ? '/' : clean.replace(/\/$/, '');
             }
 
-            ticking = false;
-        }
+            function setActiveLinks(targetPath: string) {
+                const normalizedTarget = normalizePath(targetPath);
+                document.querySelectorAll('[data-nav-link], [data-nav-link-mobile]').forEach((link) => {
+                    const href = normalizePath(link.getAttribute('href') || '/');
+                    const isActive = href === normalizedTarget;
 
-        function handleScroll() {
-            if (!ticking) {
-                requestAnimationFrame(updateHeaderOnScroll);
-                ticking = true;
+                    if (isActive) {
+                        link.classList.add('text-foreground', 'bg-surface');
+                        link.classList.remove('text-muted-foreground');
+                    } else {
+                        link.classList.remove('text-foreground', 'bg-surface');
+                        link.classList.add('text-muted-foreground');
+                    }
+                });
             }
-        }
 
-        function toggleMobileMenu() {
-            if (mobileMenu && toggleButton) {
+            // 立即根据当前地址同步一次（解决 persist 后的“旧高亮”）
+            setActiveLinks(window.location.pathname);
+
+            // 点击导航时立即更新高亮，避免导航过渡期间闪一下
+            document.querySelectorAll('[data-nav-link], [data-nav-link-mobile]').forEach((link) => {
+                link.addEventListener(
+                    'click',
+                    () => {
+                        const href = link.getAttribute('href');
+                        if (href) setActiveLinks(href);
+                    },
+                    { signal: abortController.signal }
+                );
+            });
+
+            // 移动端菜单切换
+            function toggleMobileMenu() {
+                if (!mobileMenu || !toggleButton) return;
+
                 const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
-                const newState = !isExpanded;
+                toggleButton.setAttribute('aria-expanded', (!isExpanded).toString());
+                toggleButton.classList.toggle('expanded', !isExpanded);
 
-                toggleButton.setAttribute('aria-expanded', newState.toString());
-                toggleButton.classList.toggle('expanded', newState);
-
-                if (newState) {
+                if (!isExpanded) {
                     mobileMenu.classList.remove('hidden');
-                    // Simple fade in
                     mobileMenu.style.opacity = '0';
-                    mobileMenu.style.transform = 'translateY(-10px)';
+                    mobileMenu.style.transform = 'translateY(-8px)';
                     requestAnimationFrame(() => {
-                        mobileMenu.style.transition = 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
+                        mobileMenu.style.transition = 'all 0.2s ease-out';
                         mobileMenu.style.opacity = '1';
                         mobileMenu.style.transform = 'translateY(0)';
                     });
                 } else {
                     mobileMenu.style.opacity = '0';
-                    mobileMenu.style.transform = 'translateY(-10px)';
-                    setTimeout(() => {
-                        mobileMenu.classList.add('hidden');
-                    }, 200);
+                    mobileMenu.style.transform = 'translateY(-8px)';
+                    setTimeout(() => mobileMenu.classList.add('hidden'), 200);
                 }
             }
-        }
 
-        window.addEventListener('scroll', handleScroll, {passive: true});
-
-        if (toggleButton) {
-            toggleButton.addEventListener('click', toggleMobileMenu);
-        }
-
-        document.addEventListener('click', (e) => {
-            if (mobileMenu && !mobileMenu.contains(e.target as Node) && !toggleButton?.contains(e.target as Node)) {
-                if (!mobileMenu.classList.contains('hidden')) {
-                    toggleMobileMenu();
-                }
+            if (toggleButton) {
+                toggleButton.addEventListener('click', toggleMobileMenu, { signal: abortController.signal });
             }
-        });
 
-        // Search trigger
-        document.querySelectorAll('[data-search-trigger]').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                // Dispatch custom event or open modal
-                // Assuming there is a global search handler listening for clicks or a specific event
-                // For now, let's trigger the existing search behavior if any
-                const searchModalBtn = document.querySelector('[data-aw-search-modal-trigger]');
-                if (searchModalBtn) (searchModalBtn as HTMLElement).click();
+            // 点击外部关闭菜单
+            document.addEventListener(
+                'click',
+                (e) => {
+                    if (mobileMenu && !mobileMenu.contains(e.target as Node) && !toggleButton?.contains(e.target as Node)) {
+                        if (!mobileMenu.classList.contains('hidden')) {
+                            toggleMobileMenu();
+                        }
+                    }
+                },
+                { signal: abortController.signal }
+            );
 
-                // If using Pagefind or Algolia, trigger appropriate method
-                // Assuming the user just wants the UI for now, we leave this hook ready
-                console.log('Open search');
+            // 搜索触发
+            document.querySelectorAll('[data-search-trigger]').forEach((btn) => {
+                btn.addEventListener(
+                    'click',
+                    () => {
+                        const searchModalBtn = document.querySelector('[data-aw-search-modal-trigger]');
+                        if (searchModalBtn) (searchModalBtn as HTMLElement).click();
+                    },
+                    { signal: abortController.signal }
+                );
             });
-        });
 
-        // Keyboard shortcut
-        document.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                const searchBtn = document.querySelector('[data-search-trigger]') as HTMLElement;
-                searchBtn?.click();
-            }
-        });
+            // 键盘快捷键
+            document.addEventListener(
+                'keydown',
+                (e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                        e.preventDefault();
+                        const searchBtn = document.querySelector('[data-search-trigger]') as HTMLElement | null;
+                        searchBtn?.click();
+                    }
+                },
+                { signal: abortController.signal }
+            );
+        }
 
-        updateHeaderOnScroll();
-    }
-
-    document.addEventListener('DOMContentLoaded', initHeader);
-    document.addEventListener('astro:after-swap', initHeader);
+        document.addEventListener('astro:page-load', initHeader);
+    })();
 </script>
 
 <style>
-    /* No custom styles needed, strictly Tailwind */
+    .header-bg {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
 </style>
