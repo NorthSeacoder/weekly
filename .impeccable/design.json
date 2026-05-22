@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-21T00:00:00+08:00",
+  "title": "Design System: Weekly",
+  "extensions": {
+    "northStar": "安静的技术阅览室",
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "静读蓝",
+        "canonical": "hsl(214 88% 62%)",
+        "tonalRamp": ["#c2d6fb", "#78aff7", "#4a90f4", "#337ef2"]
+      },
+      "accent-warm": {
+        "role": "secondary",
+        "displayName": "阅览室暖光",
+        "canonical": "hsl(38 95% 68%)",
+        "tonalRamp": ["#fde7b7", "#fbd98f", "#fbc35f", "#f2af2c"]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "纸白",
+        "canonical": "hsl(0 0% 100%)",
+        "tonalRamp": ["#ffffff", "#f7fafe", "#f1f5fa", "#d9e0e7"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero 标题与高优先级栏目标题。"
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "长时间阅读的正文与摘要。"
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "按钮、标签与状态信息。"
+      }
+    },
+    "elevation": {
+      "quiet-lift": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+      "reading-card-lift": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+      "deep-lift": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+    },
+    "motion": {
+      "entryCurve": "cubic-bezier(0.16, 1, 0.3, 1)",
+      "durationFast": "150ms",
+      "durationNormal": "300ms",
+      "durationSlow": "500ms",
+      "rules": [
+        "动效仅用于进入、聚焦和轻度反馈。",
+        "所有核心动效必须可被 prefers-reduced-motion 关闭。"
+      ]
+    },
+    "componentNotes": {
+      "button": "中小圆角、轻微阴影、主色稀缺使用，hover 只做加深和微抬升。",
+      "hero": "大标题逐字进入，副标题与动作按钮顺序淡入，背景保持干净。",
+      "badge": "浅色底、细边框、小主色圆点，用于轻量上下文提示。"
+    },
+    "dos": [
+      "优先让用户快速进入内容。",
+      "用浅色层级和留白建立编辑秩序。",
+      "让主蓝承担判断和行动信号。"
+    ],
+    "donts": [
+      "不要做成典型 SaaS 模板站。",
+      "不要依赖夸张渐变、悬浮卡片堆叠或科技感装饰。",
+      "不要让首页像素材广场或组件库目录。"
+    ]
+  }
+}

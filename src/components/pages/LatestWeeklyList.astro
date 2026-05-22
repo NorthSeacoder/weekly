@@ -2,256 +2,280 @@
 import {getWeeklyPosts} from '~/utils/contents/unified-content';
 import StatCard from '~/components/ui/StatCard.astro';
 import Button from '~/components/ui/Button.astro';
-import {cn} from '~/utils/utils';
 
 const weekly = await getWeeklyPosts();
 const latestWeeklyList = weekly.slice(0, 12);
+const featuredWeekly = latestWeeklyList[0];
+const latestWeeklyGrid = latestWeeklyList.slice(1);
 ---
 
-<section class='py-12 lg:py-16 bg-background relative overflow-hidden'>
-    <div class='container mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
-        <!-- 标题区域 -->
-        <div class='text-center mb-12'>
-            <!-- 主标题 -->
-            <h2 class='text-3xl lg:text-4xl font-bold leading-tight tracking-tighter mb-4 font-heading text-foreground'>
-                精选周刊
-            </h2>
+<section class='latest-section'>
+    <div class='latest-shell'>
+        <div class='latest-section-head'>
+            <div class='latest-title-group'>
+                <p class='section-kicker'>Recent Issues</p>
+                <h2>最近几期集中在这里，便于快速浏览，也便于继续回看。</h2>
+            </div>
 
-            <!-- 副标题 -->
-            <p class='text-base text-foreground/70 max-w-2xl mx-auto leading-relaxed'>
-                每周精心筛选的前端技术内容，助你保持技术敏锐度
-            </p>
+            <div class='section-summary'>
+                <p>先看最近更新，再按时间回看归档。</p>
+                <Button href='/weekly' variant='secondary' size='lg'>查看全部归档</Button>
+            </div>
         </div>
 
-        <!-- 卡片网格 -->
         {
             latestWeeklyList.length > 0 ? (
-                <div
-                    class={cn(
-                        'grid gap-4 md:gap-6',
-                        'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-                        '2xl:grid-cols-4 auto-cols-fr',
-                        'mb-12 lg:mb-16 max-w-8xl mx-auto weekly-grid'
-                    )}>
-                    {latestWeeklyList.map((weekly, index) => (
-                        <div
-                            class='animate-fade-in-up group'
-                            style={`animation-delay: ${index * 0.08}s;`}
-                            data-weekly-card>
-                            <a href={weekly.permalink} class='block h-full focus:outline-none rounded'>
-                                <StatCard
-                                    title={weekly.title}
-                                    date={weekly.date}
-                                    desc={weekly.desc || '精选本周前端技术内容'}
-                                    cover={weekly.cover}
-                                    showTags={false}
-                                />
-                            </a>
-                        </div>
-                    ))}
-                </div>
+                <>
+                    {
+                        featuredWeekly && (
+                            <article class='featured-issue'>
+                                <div class='featured-copy'>
+                                    <p class='featured-label'>最近更新</p>
+                                    <h3>{featuredWeekly.title}</h3>
+                                    <p class='featured-desc'>
+                                        {featuredWeekly.desc || '本期整理了近期值得阅读与留意的内容。'}
+                                    </p>
+                                    <div class='featured-actions'>
+                                        <Button href={featuredWeekly.permalink} variant='primary' size='lg'>打开本期</Button>
+                                        <span>先浏览本期，再按兴趣进入具体条目。</span>
+                                    </div>
+                                </div>
+
+                                <a href={featuredWeekly.permalink} class='featured-card-link' aria-label={`阅读 ${featuredWeekly.title}`}>
+                                    <StatCard
+                                        title={featuredWeekly.title}
+                                        date={featuredWeekly.date}
+                                        desc={featuredWeekly.desc || '精选本周前端技术内容'}
+                                        cover={featuredWeekly.cover}
+                                        showTags={true}
+                                        eyebrow='Latest weekly'
+                                    />
+                                </a>
+                            </article>
+                        )
+                    }
+
+                    <div class='latest-grid' aria-label='最近周刊列表'>
+                        {latestWeeklyGrid.map((weekly, index) => (
+                            <div class='latest-card-wrap' style={`animation-delay: ${index * 0.04}s;`} data-weekly-card>
+                                <a href={weekly.permalink} class='block h-full focus:outline-none rounded-lg'>
+                                    <StatCard
+                                        title={weekly.title}
+                                        date={weekly.date}
+                                        desc={weekly.desc || '精选本周前端技术内容'}
+                                        cover={weekly.cover}
+                                        showTags={true}
+                                        eyebrow='Archive'
+                                    />
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+                </>
             ) : (
-                <div class='text-center py-12'>
-                    <p class='text-gray-500 dark:text-gray-400 text-lg'>暂无周刊数据</p>
+                <div class='latest-empty'>
+                    <p>暂无周刊数据</p>
+                    <span>内容仍在整理中，稍后再来。</span>
                 </div>
             )
         }
-
-        <!-- 查看更多按钮区域 -->
-        <div class='text-center'>
-            <Button
-                href='/weekly'
-                variant='secondary'
-                size='lg'
-                class='px-8 py-3.5 text-base font-medium rounded hover:shadow-lg transition-all duration-300'>
-                查看全部周刊
-            </Button>
-        </div>
     </div>
 </section>
 
 <style>
-    /* 动画定义 */
-    @keyframes fade-in-up {
-        0% {
-            opacity: 0;
-            transform: translateY(40px) scale(0.95);
-        }
-        100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+    .latest-section {
+        padding: 1rem 1.5rem 5rem;
+        background: hsl(var(--background));
     }
 
-    .animate-fade-in-up {
-        animation: fade-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-    }
-
-    /* 网格布局优化 */
-    .grid {
+    .latest-shell {
+        max-width: 72rem;
+        margin: 0 auto;
         display: grid;
-        align-items: stretch;
+        gap: 2rem;
     }
 
-    /* 确保卡片高度一致 */
-    .grid > div {
-        height: 100%;
+    .latest-section-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+        gap: 2rem;
+        align-items: end;
+    }
+
+    .latest-title-group h2 {
+        margin: 0.5rem 0 0;
+        max-width: 15ch;
+        font-size: clamp(2rem, 4vw, 3.35rem);
+        line-height: 1.04;
+        letter-spacing: -0.04em;
+        text-wrap: balance;
+    }
+
+    .section-kicker {
+        margin: 0;
+        color: hsl(var(--primary));
+        font-size: 0.875rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .section-summary {
+        display: grid;
+        gap: 1rem;
+        color: hsl(var(--muted-foreground));
+        line-height: 1.75;
+    }
+
+    .section-summary p {
+        margin: 0;
+    }
+
+    .featured-issue {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 1.5rem;
+        padding: 1.5rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: 1.5rem;
+        background: linear-gradient(180deg, hsl(var(--surface)) 0%, hsl(var(--background)) 100%);
+    }
+
+    .featured-copy {
+        display: grid;
+        align-content: start;
+        gap: 1rem;
+        padding: 0.5rem 0;
+    }
+
+    .featured-label {
+        margin: 0;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.8125rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .featured-copy h3 {
+        margin: 0;
+        max-width: 14ch;
+        font-size: clamp(1.9rem, 4vw, 3rem);
+        line-height: 1.06;
+        text-wrap: balance;
+    }
+
+    .featured-desc {
+        margin: 0;
+        max-width: 34rem;
+        color: hsl(var(--muted-foreground));
+        line-height: 1.8;
+    }
+
+    .featured-actions {
         display: flex;
-        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid hsl(var(--border));
     }
 
-    .grid > div > a {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
+    .featured-actions span {
+        color: hsl(var(--muted-foreground));
+        font-size: 0.875rem;
     }
 
-    /* 智能响应式网格 */
-    .weekly-grid {
-        /* 使用 CSS Grid 的 auto-fit 和 minmax 来实现智能响应式 */
+    .featured-card-link {
+        display: block;
+        min-width: 0;
+    }
+
+    .latest-grid {
+        display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
     }
 
-    /* 响应式优化 */
-    @media (max-width: 480px) {
-        .weekly-grid {
+    .latest-card-wrap {
+        min-width: 0;
+    }
+
+    .latest-empty {
+        display: grid;
+        gap: 0.5rem;
+        padding: 3rem 1.5rem;
+        border: 1px dashed hsl(var(--border));
+        border-radius: 1.25rem;
+        text-align: center;
+    }
+
+    .latest-empty p {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .latest-empty span {
+        color: hsl(var(--muted-foreground));
+    }
+
+    @media (max-width: 960px) {
+        .latest-section-head,
+        .featured-issue {
             grid-template-columns: 1fr;
-            gap: 1.5rem;
         }
 
-        h2 {
-            font-size: 2.25rem;
-            line-height: 1.1;
-        }
-
-        .text-xl {
-            font-size: 1.125rem;
+        .section-summary {
+            max-width: 32rem;
         }
     }
 
-    @media (min-width: 481px) and (max-width: 640px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
+    @media (max-width: 640px) {
+        .latest-section {
+            padding: 0.5rem 1rem 4rem;
+        }
+
+        .latest-section-head {
+            gap: 1rem;
+        }
+
+        .latest-title-group h2 {
+            max-width: 12ch;
+            font-size: clamp(1.7rem, 9vw, 2.4rem);
+        }
+
+        .featured-issue {
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .featured-actions {
+            align-items: start;
+            flex-direction: column;
+        }
+
+        .featured-copy h3 {
+            max-width: 100%;
+            font-size: clamp(1.5rem, 8vw, 2.1rem);
+        }
+
+        .featured-desc,
+        .section-summary {
+            line-height: 1.65;
+        }
+
+        .latest-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
     }
 
-    @media (min-width: 641px) and (max-width: 768px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-    }
-
-    @media (min-width: 769px) and (max-width: 1024px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-    }
-
-    @media (min-width: 1025px) and (max-width: 1280px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-        }
-    }
-
-    @media (min-width: 1281px) and (max-width: 1536px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 2.5rem;
-        }
-    }
-
-    @media (min-width: 1537px) {
-        .weekly-grid {
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2.5rem;
-        }
-    }
-
-    /* 减少动画 */
     @media (prefers-reduced-motion: reduce) {
-        .animate-fade-in-up {
-            animation: none;
-            opacity: 1;
-            transform: none;
-        }
-
-        .animate-pulse {
-            animation: none;
-        }
-    }
-
-    /* 触摸设备优化 */
-    @media (hover: none) {
-        .hover\:scale-105:hover,
-        .hover\:-translate-y-1:hover {
-            transform: none;
-        }
-    }
-
-    /* 文字渲染优化 */
-    h2 {
-        text-rendering: optimizeLegibility;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-feature-settings:
-            'kern' 1,
-            'liga' 1,
-            'calt' 1;
-    }
-
-    /* 高对比度模式 */
-    @media (prefers-contrast: high) {
-        .bg-gradient-to-r,
-        .bg-gradient-to-br {
-            background: hsl(var(--background)) !important;
-        }
-
-        .text-transparent {
-            color: hsl(var(--foreground)) !important;
-            background: none !important;
-            -webkit-background-clip: unset !important;
-            background-clip: unset !important;
-        }
-    }
-
-    /* 性能优化 */
-    .grid > div {
-        transform: translateZ(0);
-        backface-visibility: hidden;
-    }
-
-    /* 卡片悬停效果增强 */
-    [data-weekly-card]:hover {
-        z-index: 10;
-    }
-
-    /* 焦点状态增强 */
-    a:focus-visible {
-        outline: 2px solid hsl(var(--primary));
-        outline-offset: 4px;
-        border-radius: 4px;
-    }
-
-    /* 按钮增强效果 */
-    .group:hover .relative {
-        transform: translateY(-2px) scale(1.05);
-    }
-
-    /* 暗色模式特殊处理 */
-    .dark .grid > div {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    /* 打印样式 */
-    @media print {
-        .animate-fade-in-up {
-            animation: none;
-            opacity: 1;
-            transform: none;
+        .latest-section *,
+        .latest-section *::before,
+        .latest-section *::after {
+            transition-duration: 0.01ms !important;
         }
     }
 </style>

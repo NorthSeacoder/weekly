@@ -1,310 +1,401 @@
 ---
 import {getWeeklyPosts} from '~/utils/contents/unified-content';
 import StatCard from '~/components/ui/StatCard.astro';
-import {cn} from '~/utils/utils';
+import Button from '~/components/ui/Button.astro';
 
 const weeklyList = await getWeeklyPosts();
+const groupedByYear = Object.entries(
+    weeklyList.reduce<Record<string, typeof weeklyList>>((acc, weekly) => {
+        const year = new Date(weekly.date).getFullYear().toString();
+        acc[year] ||= [];
+        acc[year].push(weekly);
+        return acc;
+    }, {})
+).sort((a, b) => Number(b[0]) - Number(a[0]));
+
+const topTags = Array.from(
+    weeklyList
+        .flatMap((weekly) => weekly.tags || [])
+        .reduce<Map<string, number>>((acc, tag) => {
+            acc.set(tag, (acc.get(tag) || 0) + 1);
+            return acc;
+        }, new Map())
+        .entries()
+)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
 ---
 
-<section class='py-20 lg:py-28 bg-background min-h-screen relative overflow-hidden'>
-    <div class='container mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
-        <!-- 页面标题区域 -->
-        <div class='text-center mb-12 lg:mb-16'>
-            <!-- 标签 -->
-            <div
-                class='inline-flex items-center gap-2 px-3 py-1.5 rounded border border-primary/20 bg-primary/5 mb-8'>
-                <span class='w-1.5 h-1.5 rounded-full bg-primary animate-pulse'></span>
-                <span class='text-sm font-medium text-primary/80'>全部周刊</span>
-            </div>
+<section class='archive-section'>
+    <div class='archive-shell'>
+        <header class='archive-hero'>
+            <div class='archive-copy'>
+                <p class='archive-kicker'>Archive</p>
+                <h1>按时间回看每一期，再顺着主题继续发现。</h1>
+                <p class='archive-lead'>
+                    归档按时间展开，主题标签作为辅助线索，便于回看与检索。
+                </p>
 
-            <!-- 主标题 -->
-            <h1 class='text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight mb-4 text-foreground'>
-                周刊归档
-            </h1>
-
-            <!-- 副标题 -->
-            <p class='text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed mb-8'>
-                探索精心整理的技术周刊合集，每一期都是前端技术世界的精华
-            </p>
-
-            <!-- 统计信息 -->
-            <div class='flex items-center justify-center gap-6 text-sm'>
-                <div class='flex items-center gap-2 text-muted-foreground'>
-                    <svg class='w-4 h-4 text-primary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path
-                            stroke-linecap='round'
-                            stroke-linejoin='round'
-                            stroke-width='2'
-                            d='M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z'
-                        ></path>
-                    </svg>
-                    <span>共 <strong class='text-foreground font-semibold'>{weeklyList.length}</strong> 期</span>
-                </div>
-                <span class='text-border'>|</span>
-                <div class='flex items-center gap-2 text-muted-foreground'>
-                    <span class='relative flex h-2 w-2'>
-                        <span class='animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75'
-                        ></span>
-                        <span class='relative inline-flex rounded-full h-2 w-2 bg-primary'></span>
-                    </span>
-                    <span>持续更新中</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 周刊网格 -->
-        <div
-            class={cn(
-                'grid gap-6 md:gap-8',
-                'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-                '2xl:grid-cols-4 auto-cols-fr',
-                'max-w-8xl mx-auto mb-16 weekly-grid'
-            )}>
-            {
-                weeklyList.map((weekly, index) => (
-                    <div
-                        class='animate-fade-in-up group'
-                        style={`animation-delay: ${Math.min(index * 0.05, 1)}s;`}
-                        data-weekly-card>
-                        <a href={weekly.permalink} class='block h-full focus:outline-none rounded'>
-                            <StatCard
-                                title={weekly.title}
-                                date={weekly.date}
-                                desc={weekly.desc || '精选本周前端技术内容'}
-                                cover={weekly.cover}
-                                showTags={false}
-                            />
-                        </a>
+                <dl class='archive-metrics'>
+                    <div>
+                        <dt>总期数</dt>
+                        <dd>{weeklyList.length}</dd>
                     </div>
-                ))
-            }
-        </div>
+                    <div>
+                        <dt>归档年份</dt>
+                        <dd>{groupedByYear.length}</dd>
+                    </div>
+                    <div>
+                        <dt>状态</dt>
+                        <dd>每周更新</dd>
+                    </div>
+                </dl>
+            </div>
 
-        <!-- 底部区域 -->
-        <div class='text-center pt-8'>
+            <aside class='archive-aside'>
+                <div class='archive-panel'>
+                    <p class='panel-title'>常见主题</p>
+                    {
+                        topTags.length > 0 ? (
+                            <div class='tag-cloud'>
+                                {topTags.map(([tag, count]) => (
+                                    <span class='tag-pill'>{tag} · {count}</span>
+                                ))}
+                            </div>
+                        ) : (
+                            <p class='panel-empty'>暂时还没有可用标签。</p>
+                        )
+                    }
+                    <Button href='/' variant='secondary' size='lg'>返回首页</Button>
+                </div>
+            </aside>
+        </header>
+
+        {
+            weeklyList.length === 0 ? (
+                <div class='archive-empty'>
+                    <h2>归档暂时为空</h2>
+                    <p>周刊内容还在整理中，稍后再来看。</p>
+                    <Button href='/' variant='primary' size='lg'>回到首页</Button>
+                </div>
+            ) : (
+                <div class='archive-years'>
+                    {groupedByYear.map(([year, items]) => (
+                        <section class='year-block' aria-labelledby={`year-${year}`}>
+                            <div class='year-head'>
+                                <div>
+                                    <p class='year-label'>Year</p>
+                                    <h2 id={`year-${year}`}>{year}</h2>
+                                </div>
+                                <p class='year-count'>{items.length} 期归档</p>
+                            </div>
+
+                            <div class='year-grid'>
+                                {items.map((weekly) => (
+                                    <a href={weekly.permalink} class='block h-full focus:outline-none rounded-lg'>
+                                        <StatCard
+                                            title={weekly.title}
+                                            date={weekly.date}
+                                            desc={weekly.desc || '精选本周前端技术内容'}
+                                            cover={weekly.cover}
+                                            tags={weekly.tags}
+                                            showTags={true}
+                                            eyebrow={year}
+                                        />
+                                    </a>
+                                ))}
+                            </div>
+                        </section>
+                    ))}
+                </div>
+            )
+        }
+
+        <div class='archive-footer'>
             <button
                 onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-                class='inline-flex items-center gap-2 px-5 py-2.5 bg-surface text-muted-foreground rounded border border-border hover:text-foreground hover:border-border hover:bg-surface-hover transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95'
+                class='back-to-top'
                 aria-label='回到顶部'>
-                <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 10l7-7m0 0l7 7m-7-7v18'
-                    ></path>
-                </svg>
-                <span class='text-sm font-medium'>回到顶部</span>
+                回到顶部
             </button>
         </div>
     </div>
 </section>
 
 <style>
-    /* 动画定义 */
-    @keyframes fade-in-up {
-        0% {
-            opacity: 0;
-            transform: translateY(40px) scale(0.95);
-        }
-        100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+    .archive-section {
+        min-height: 100vh;
+        padding: 3rem 1.5rem 5rem;
+        background:
+            radial-gradient(circle at top left, hsl(var(--primary) / 0.07), transparent 24%),
+            hsl(var(--background));
     }
 
-    .animate-fade-in-up {
-        animation: fade-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-    }
-
-    /* 网格布局优化 */
-    .grid {
+    .archive-shell {
+        max-width: 72rem;
+        margin: 0 auto;
         display: grid;
-        align-items: stretch;
+        gap: 2.5rem;
     }
 
-    /* 确保卡片高度一致 */
-    .grid > div {
-        height: 100%;
+    .archive-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 22rem);
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .archive-copy {
+        display: grid;
+        gap: 1.25rem;
+    }
+
+    .archive-kicker,
+    .year-label {
+        margin: 0;
+        color: hsl(var(--primary));
+        font-size: 0.875rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .archive-copy h1 {
+        margin: 0;
+        max-width: 12ch;
+        font-size: clamp(2.75rem, 6vw, 5rem);
+        line-height: 0.98;
+        letter-spacing: -0.045em;
+        text-wrap: balance;
+    }
+
+    .archive-lead {
+        max-width: 38rem;
+        margin: 0;
+        color: hsl(var(--muted-foreground));
+        font-size: 1.0625rem;
+        line-height: 1.8;
+    }
+
+    .archive-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        margin: 0;
+        padding-top: 0.5rem;
+    }
+
+    .archive-metrics div {
+        padding-top: 1rem;
+        border-top: 1px solid hsl(var(--border));
+    }
+
+    .archive-metrics dt {
+        margin-bottom: 0.5rem;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.8125rem;
+    }
+
+    .archive-metrics dd {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: hsl(var(--foreground));
+    }
+
+    .archive-panel {
+        display: grid;
+        gap: 1rem;
+        padding: 1.25rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: 1.25rem;
+        background: linear-gradient(180deg, hsl(var(--surface)) 0%, hsl(var(--background)) 100%);
+    }
+
+    .panel-title {
+        margin: 0;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: hsl(var(--foreground));
+    }
+
+    .panel-empty {
+        margin: 0;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.9375rem;
+    }
+
+    .tag-cloud {
         display: flex;
-        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 0.625rem;
     }
 
-    .grid > div > a {
-        flex: 1;
+    .tag-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.45rem 0.75rem;
+        border-radius: 999px;
+        background: hsl(var(--surface-elevated));
+        color: hsl(var(--muted-foreground));
+        font-size: 0.875rem;
+        line-height: 1;
+    }
+
+    .archive-years {
+        display: grid;
+        gap: 3rem;
+    }
+
+    .year-block {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .year-head {
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: end;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid hsl(var(--border));
     }
 
-    /* 智能响应式网格 */
-    .weekly-grid {
-        /* 使用 CSS Grid 的 auto-fit 和 minmax 来实现智能响应式 */
+    .year-head h2 {
+        margin: 0.4rem 0 0;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1;
+        letter-spacing: -0.04em;
+    }
+
+    .year-count {
+        margin: 0;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.9375rem;
+    }
+
+    .year-grid {
+        display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
     }
 
-    /* 针对不同屏幕尺寸的优化 */
-    @media (max-width: 480px) {
-        .weekly-grid {
+    .archive-empty {
+        display: grid;
+        justify-items: center;
+        gap: 1rem;
+        padding: 4rem 1.5rem;
+        border: 1px dashed hsl(var(--border));
+        border-radius: 1.5rem;
+        text-align: center;
+    }
+
+    .archive-empty h2,
+    .archive-empty p {
+        margin: 0;
+    }
+
+    .archive-empty p {
+        max-width: 34rem;
+        color: hsl(var(--muted-foreground));
+        line-height: 1.75;
+    }
+
+    .archive-footer {
+        display: flex;
+        justify-content: center;
+        padding-top: 0.5rem;
+    }
+
+    .back-to-top {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.75rem;
+        padding: 0.625rem 1rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: 999px;
+        background: hsl(var(--surface));
+        color: hsl(var(--muted-foreground));
+        font-size: 0.9375rem;
+        font-weight: 600;
+        transition:
+            color 150ms ease,
+            background-color 150ms ease,
+            border-color 150ms ease;
+    }
+
+    .back-to-top:hover {
+        background: hsl(var(--surface-hover));
+        border-color: hsl(var(--border));
+        color: hsl(var(--foreground));
+    }
+
+    @media (max-width: 960px) {
+        .archive-hero {
             grid-template-columns: 1fr;
-            gap: 1.5rem;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            line-height: 1.1;
+        .archive-metrics {
+            grid-template-columns: 1fr;
         }
 
-        .text-xl {
-            font-size: 1.125rem;
+        .archive-aside {
+            max-width: 34rem;
         }
     }
 
-    @media (min-width: 481px) and (max-width: 640px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
+    @media (max-width: 640px) {
+        .archive-section {
+            padding: 2rem 1rem 4rem;
         }
-    }
 
-    @media (min-width: 641px) and (max-width: 768px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-    }
-
-    @media (min-width: 769px) and (max-width: 1024px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        .archive-shell {
             gap: 2rem;
         }
-    }
 
-    @media (min-width: 1025px) and (max-width: 1280px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
+        .archive-copy h1 {
+            max-width: 9ch;
+            font-size: clamp(2.3rem, 12vw, 3.5rem);
+        }
+
+        .archive-lead {
+            font-size: 1rem;
+            line-height: 1.65;
+        }
+
+        .archive-panel {
+            padding: 1rem;
+        }
+
+        .tag-cloud {
+            gap: 0.5rem;
+        }
+
+        .tag-pill {
+            font-size: 0.8125rem;
+        }
+
+        .year-head {
+            flex-direction: column;
+            align-items: start;
+        }
+
+        .year-head h2 {
+            font-size: 1.75rem;
+        }
+
+        .year-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
     }
 
-    @media (min-width: 1281px) and (max-width: 1536px) {
-        .weekly-grid {
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 2.5rem;
-            max-width: 1400px;
-        }
-    }
-
-    @media (min-width: 1537px) {
-        .weekly-grid {
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2.5rem;
-            max-width: 1600px;
-        }
-    }
-
-    /* 减少动画 */
     @media (prefers-reduced-motion: reduce) {
-        .animate-fade-in-up {
-            animation: none;
-            opacity: 1;
-            transform: none;
-        }
-
-        .animate-pulse {
-            animation: none;
-        }
-    }
-
-    /* 性能优化 */
-    .grid > div {
-        transform: translateZ(0);
-        backface-visibility: hidden;
-    }
-
-    /* 高对比度模式 */
-    @media (prefers-contrast: high) {
-        .bg-gradient-to-r,
-        .bg-gradient-to-br,
-        .bg-gradient-to-l {
-            background: hsl(var(--background)) !important;
-        }
-
-        .text-transparent {
-            color: hsl(var(--foreground)) !important;
-            background: none !important;
-            -webkit-background-clip: unset !important;
-            background-clip: unset !important;
-        }
-    }
-
-    /* 触摸设备优化 */
-    @media (hover: none) {
-        .hover\:scale-105:hover,
-        .hover\:-translate-y-1:hover {
-            transform: none;
-        }
-    }
-
-    /* 文字渲染优化 */
-    h1 {
-        text-rendering: optimizeLegibility;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-feature-settings:
-            'kern' 1,
-            'liga' 1,
-            'calt' 1;
-    }
-
-    /* 卡片悬停效果增强 */
-    [data-weekly-card]:hover {
-        z-index: 10;
-    }
-
-    /* 焦点状态增强 */
-    a:focus-visible {
-        outline: 2px solid hsl(var(--primary));
-        outline-offset: 4px;
-        border-radius: 4px;
-    }
-
-    /* 加载状态 */
-    .grid[data-loading='true'] > div {
-        opacity: 0.5;
-        pointer-events: none;
-    }
-
-    .grid[data-loading='true'] > div::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        animation: shimmer 1.5s linear infinite;
-        border-radius: inherit;
-    }
-
-    @keyframes shimmer {
-        0% {
-            transform: translateX(-100%);
-        }
-        100% {
-            transform: translateX(100%);
-        }
-    }
-
-    /* 暗色模式特殊处理 */
-    .dark .grid > div {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    /* 打印样式 */
-    @media print {
-        .animate-fade-in-up {
-            animation: none;
-            opacity: 1;
-            transform: none;
-        }
-
-        button {
-            display: none;
+        .archive-section *,
+        .archive-section *::before,
+        .archive-section *::after {
+            transition-duration: 0.01ms !important;
         }
     }
 </style>
