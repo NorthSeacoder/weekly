@@ -1,351 +1,331 @@
 ---
 import {Icon} from 'astro-icon/components';
-import {cn} from '~/utils/utils';
-import Tags from '~/components/ui/Tags.astro';
 import dayjs from 'dayjs';
+import ContentCard from '~/components/common/ContentCard.astro';
+import {CATEGORY_SORT_ORDER} from '~/constants/categories';
 
-import type {WeeklyPost} from '@/types/weekly';
+import type {WeeklyPost, Section} from '@/types/weekly';
+
+type PostNavItem = Pick<WeeklyPost, 'slug' | 'title'>;
 
 export interface Props {
     post: WeeklyPost;
-    prevPost?: WeeklyPost;
-    nextPost?: WeeklyPost;
+    prevPost?: PostNavItem;
+    nextPost?: PostNavItem;
 }
 const {post, prevPost, nextPost} = Astro.props;
 const sections = post.sections ?? [];
-// 格式化日期
 const formattedDate = dayjs(post.date).format('YYYY年MM月DD日');
 
-// 生成分类的颜色映射
-const categoryColors = {
-    技术: {
-        bg: 'bg-blue-100 dark:bg-blue-900/40',
-        text: 'text-blue-700 dark:text-blue-300',
-        icon: 'tabler:code'
-    },
-    工具: {
-        bg: 'bg-emerald-100 dark:bg-emerald-900/40',
-        text: 'text-emerald-700 dark:text-emerald-300',
-        icon: 'tabler:tool'
-    },
-    设计: {
-        bg: 'bg-purple-100 dark:bg-purple-900/40',
-        text: 'text-purple-700 dark:text-purple-300',
-        icon: 'tabler:brush'
-    },
-    资源: {
-        bg: 'bg-amber-100 dark:bg-amber-900/40',
-        text: 'text-amber-700 dark:text-amber-300',
-        icon: 'tabler:book'
-    },
-    观点: {
-        bg: 'bg-rose-100 dark:bg-rose-900/40',
-        text: 'text-rose-700 dark:text-rose-300',
-        icon: 'tabler:message-circle'
-    },
-    新闻: {
-        bg: 'bg-sky-100 dark:bg-sky-900/40',
-        text: 'text-sky-700 dark:text-sky-300',
-        icon: 'tabler:news'
-    },
-    学习: {
-        bg: 'bg-indigo-100 dark:bg-indigo-900/40',
-        text: 'text-indigo-700 dark:text-indigo-300',
-        icon: 'tabler:school'
-    }
-};
+const groupedSections = sections.reduce<Record<string, Section[]>>((acc, section) => {
+    const cat = section.category || '其他';
+    acc[cat] ||= [];
+    acc[cat].push(section);
+    return acc;
+}, {});
 
-// 默认分类样式
-const defaultCategoryStyle = {
-    bg: 'bg-gray-100 dark:bg-gray-800/60',
-    text: 'text-gray-700 dark:text-gray-300',
-    icon: 'tabler:tag'
-};
-
-// 获取分类样式
-const getCategoryStyle = (category) => {
-    return categoryColors[category] || defaultCategoryStyle;
-};
+const sortedCategories = Object.keys(groupedSections).sort((a, b) => {
+    const ia = CATEGORY_SORT_ORDER.indexOf(a);
+    const ib = CATEGORY_SORT_ORDER.indexOf(b);
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+});
 ---
 
-<section class='bg-background min-h-screen relative overflow-hidden'>
-    <article class='py-8 sm:py-12 lg:py-16 max-w-5xl mx-auto relative z-10'>
-        <!-- 页面标题区域 -->
-        <header class='mb-12 lg:mb-16 max-w-7xl mx-auto px-6 sm:px-8'>
-            <div class='text-center space-y-6'>
-                <!-- 周刊标签 -->
-                <div
-                    class='inline-flex items-center gap-2 px-3 py-1.5 rounded border border-primary/20 bg-primary/5'>
-                    <span class='relative flex h-2 w-2'>
-                        <span class='animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75'
-                        ></span>
-                        <span class='relative inline-flex rounded-full h-2 w-2 bg-primary'></span>
-                    </span>
-                    <span class='text-sm font-medium text-primary/80 tracking-wide'>技术周刊</span>
+<section class='single-post'>
+    <article class='single-post__article'>
+        <header class='single-post__header'>
+            <div class='single-post__meta'>
+                <div class='single-post__badge'>
+                    <span class='single-post__dot'></span>
+                    <span>技术周刊</span>
                 </div>
 
-                <!-- 周刊标题 -->
-                <h1
-                    class='text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.05] tracking-tight font-heading text-foreground'
-                    data-scroll-title>
-                    {post.title}
-                </h1>
+                <h1 class='single-post__title'>{post.title}</h1>
 
-                <!-- 元信息 -->
-                <div
-                    class='flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-sm text-muted-foreground pt-4'>
-                    <span class='flex items-center gap-2'>
+                <div class='single-post__info'>
+                    <span class='single-post__info-item'>
                         <Icon name='tabler:calendar' class='w-4 h-4' />
-                        <time datetime={String(post.date)} class='inline-block'>{formattedDate}</time>
+                        <time datetime={String(post.date)}>{formattedDate}</time>
                     </span>
-                    {
-                        post.wordCount && (
-                            <>
-                                <div class='w-px h-4 bg-border hidden sm:block' />
-                                <span class='flex items-center gap-2'>
-                                    <Icon name='tabler:file-word' class='w-4 h-4' />
-                                    {post.wordCount.toLocaleString()} 字
-                                </span>
-                            </>
-                        )
-                    }
-                    {
-                        post.readingTime && (
-                            <>
-                                <div class='w-px h-4 bg-border hidden sm:block' />
-                                <span class='flex items-center gap-2'>
-                                    <Icon name='tabler:clock' class='w-4 h-4' />
-                                    {post.readingTime}
-                                </span>
-                            </>
-                        )
-                    }
-                </div>
-
-                <!-- 装饰性分隔线 -->
-                <div class='flex items-center justify-center pt-8'>
-                    <div class='h-px bg-gradient-to-r from-transparent via-border to-transparent w-full max-w-md'></div>
+                    {post.wordCount && (
+                        <span class='single-post__info-item'>
+                            <Icon name='tabler:file-word' class='w-4 h-4' />
+                            {post.wordCount.toLocaleString()} 字
+                        </span>
+                    )}
+                    <span class='single-post__info-item'>
+                        <Icon name='tabler:list' class='w-4 h-4' />
+                        {sections.length} 条内容
+                    </span>
                 </div>
             </div>
         </header>
 
-        {/* 文章内容 */}
-        <div class="mx-auto max-w-7xl px-6 sm:px-8">
-            <div class="columns-1 lg:columns-2 gap-6 space-y-6">
-                {
-                    sections.map((section) => {
-                        const categoryStyle = getCategoryStyle(section.category);
-                        const hasImage = !!section.image_url;
-                        return (
-                            <article
-                            class={cn(
-                                'break-inside-avoid mb-6',
-                                'glass-panel rounded p-5', // VSCode style: 4px radius
-                                'group relative overflow-hidden',
-                                'transition-all duration-200 ease-out',
-                                'hover:border-[#505050]' // Subtle border highlight
-                            )}>
-                            <!-- Border highlight on hover -->
-                            <div class="absolute inset-0 rounded pointer-events-none border border-transparent group-hover:border-[#505050] transition-colors duration-200 z-0"></div>
-
-                            <!-- Content Wrapper -->
-                            <div class="relative z-10 h-full flex flex-col">
-                                {/* 图片区域 - 始终显示 */}
-                                <div class="relative w-full overflow-hidden rounded bg-surface border border-border">
-                                    {hasImage ? (
-                                        <div class="image-container">
-                                            <img
-                                                src={section.image_url}
-                                                alt={section.title || 'section image'}
-                                                class="w-full h-auto max-h-[220px] object-cover"
-                                                loading="lazy"
-                                                data-fallback-image
-                                            />
-                                            <div class="image-fallback hidden w-full h-[120px] flex items-center justify-center bg-surface">
-                                                <Icon name="tabler:photo-off" class="w-10 h-10 text-muted-foreground/50" />
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div class="w-full h-[120px] flex items-center justify-center bg-surface border-b border-border">
-                                            <Icon name="tabler:photo" class="w-10 h-10 text-muted-foreground/40" />
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* 内容区域 */}
-                                <div class="pt-4 space-y-3">
-                                    {/* 分类标签 + 评分 */}
-                                    <div class="flex items-center justify-between gap-3">
-                                        {section.category && (
-                                            <span class={cn(
-                                                "inline-flex px-2 py-0.5 rounded-sm text-xs font-medium items-center gap-1",
-                                                categoryStyle.bg,
-                                                categoryStyle.text
-                                            )}>
-                                                <Icon name={categoryStyle.icon} class="w-3 h-3" />
-                                                {section.category}
-                                            </span>
-                                        )}
-
-                                        {(section.original_score != null || section.summary_score != null || section.ai_metadata) && (
-                                            <div class="flex items-center gap-2 text-xs text-muted-foreground/80">
-                                                {section.original_score != null && (
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-secondary/60 border border-border/50">
-                                                        <Icon name="tabler:stars" class="w-3 h-3" />
-                                                        原文 {section.original_score}
-                                                    </span>
-                                                )}
-                                                {section.summary_score != null && (
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-secondary/60 border border-border/50">
-                                                        <Icon name="tabler:message-2" class="w-3 h-3" />
-                                                        摘要 {section.summary_score}
-                                                    </span>
-                                                )}
-                                                {section.ai_metadata && (
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-secondary/40 border border-border/40">
-                                                        <Icon name="tabler:robot" class="w-3 h-3" />
-                                                        AI
-                                                    </span>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* 标题 */}
-                                    {section.title && (
-                                        <h3 class="text-base font-semibold text-foreground leading-snug group-hover:text-primary transition-colors">
-                                            {section.title}
-                                        </h3>
-                                    )}
-
-                                    {/* 描述 - REMOVED LINE CLAMP */}
-                                    {(section.summary || section.description) && (
-                                        <p class="text-sm text-foreground/70 leading-relaxed">
-                                            {section.summary || section.description}
-                                        </p>
-                                    )}
-
-                                    {/* 底部：标签和来源 */}
-                                    <div class="flex items-center justify-between pt-2 border-t border-border/40 mt-2">
-                                        <div class="flex-1 min-w-0">
-                                            <Tags tags={section.tags} maxVisible={10} compact={true} variant="minimal" />
-                                        </div>
-                                        {section.source_url && (
-                                            <a
-                                                href={section.source_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="flex-shrink-0 ml-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium text-muted-foreground bg-secondary/50 hover:bg-secondary hover:text-foreground transition-all duration-200"
-                                            >
-                                                <span>原文</span>
-                                                <Icon name="tabler:external-link" class="w-3 h-3" />
-                                            </a>
-                                        )}
-                                    </div>
-                                </div>
-                                </div>
-                        </article>
-                        );
-                    })
-                }
-            </div>
+        <div class='single-post__content'>
+            {sortedCategories.map((category) => (
+                <section class='category-group'>
+                    <h2 class='category-group__title'>{category}</h2>
+                    <div class='category-group__cards'>
+                        {groupedSections[category].map((section) => (
+                            <ContentCard section={section} featured={section.featured || false} />
+                        ))}
+                    </div>
+                </section>
+            ))}
         </div>
 
-        {/* 文章导航 */}
-        <div class='max-w-7xl mx-auto mt-16 px-6 sm:px-8'>
-            <nav class='flex flex-col sm:flex-row justify-between items-stretch gap-4 mb-8'>
-                {
-                    prevPost ? (
-                        <a href={`/weekly/${prevPost.slug}`} class='group flex-1 sm:max-w-[calc(50%-0.5rem)]'>
-                            <div class="flex items-center h-full p-5 glass-panel rounded hover:border-[#505050] transition-all duration-200">
-                            <Icon name="tabler:chevron-left" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all group-hover:-translate-x-1 flex-shrink-0" />
-                            <div class="ml-3 overflow-hidden min-w-0">
-                                <p class="text-xs text-muted-foreground mb-1">上一期</p>
-                                <h4 class="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{prevPost.title}</h4>
-                            </div>
+        <div class='single-post__nav'>
+            <nav class='post-nav'>
+                {prevPost ? (
+                    <a href={`/weekly/${prevPost.slug}`} class='post-nav__link post-nav__link--prev'>
+                        <Icon name='tabler:chevron-left' class='w-5 h-5 post-nav__icon' />
+                        <div class='post-nav__text'>
+                            <span class='post-nav__label'>上一期</span>
+                            <span class='post-nav__title'>{prevPost.title}</span>
                         </div>
                     </a>
-                ) : (
-                    <div class="flex-1 sm:max-w-[calc(50%-0.5rem)]"></div>
-                )}
+                ) : <div />}
 
-                <a href="/weekly" class="flex items-center justify-center px-6 py-4 text-sm font-medium text-muted-foreground glass-panel rounded hover:text-foreground hover:border-[#505050] transition-all duration-200 sm:flex-shrink-0">
-                    <Icon name="tabler:layout-grid" class="w-4 h-4 mr-2" />
+                <a href='/weekly' class='post-nav__all'>
+                    <Icon name='tabler:layout-grid' class='w-4 h-4' />
                     所有周刊
                 </a>
 
                 {nextPost ? (
-                    <a href={`/weekly/${nextPost.slug}`} class="group flex-1 sm:max-w-[calc(50%-0.5rem)]">
-                        <div class="flex items-center justify-end h-full p-5 glass-panel rounded hover:border-[#505050] transition-all duration-200">
-                            <div class="mr-3 overflow-hidden text-right min-w-0">
-                                <p class="text-xs text-muted-foreground mb-1">下一期</p>
-                                <h4 class="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{nextPost.title}</h4>
-                            </div>
-                            <Icon name="tabler:chevron-right" class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1 flex-shrink-0" />
+                    <a href={`/weekly/${nextPost.slug}`} class='post-nav__link post-nav__link--next'>
+                        <div class='post-nav__text' style='text-align:right'>
+                            <span class='post-nav__label'>下一期</span>
+                            <span class='post-nav__title'>{nextPost.title}</span>
                         </div>
+                        <Icon name='tabler:chevron-right' class='w-5 h-5 post-nav__icon' />
                     </a>
-                    ) : (
-                        <div class='flex-1 sm:max-w-[calc(50%-0.5rem)]' />
-                    )
-                }
+                ) : <div />}
             </nav>
         </div>
 
-        {/* 文章页脚 */}
-        <footer class='max-w-7xl mx-auto mt-12 px-6 sm:px-8'>
-            <!-- 装饰性分隔线 -->
-            <div class='flex items-center justify-center mb-8'>
-                <div class='h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1 max-w-[200px]'>
-                </div>
-                <div class='mx-6 flex items-center gap-2 text-muted-foreground text-sm font-medium'>
-                    <span class='tracking-wide'>·</span>
-                </div>
-                <div class='h-px bg-gradient-to-l from-transparent via-border to-transparent flex-1 max-w-[200px]'>
-                </div>
-            </div>
-
-            <div class='flex justify-center items-center'>
-                <button
-                    onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-                    class='inline-flex items-center gap-2 px-6 py-3 bg-card text-foreground rounded-[2px] border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[inset_0_0_40px_-15px_rgba(255,255,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 group'
-                    aria-label='回到顶部'>
-                    <Icon
-                        name='tabler:arrow-up'
-                        class='w-4 h-4 transition-transform duration-300 group-hover:-translate-y-1'
-                    />
-                    <span class='font-medium tracking-wide text-sm'>回到顶部</span>
-                </button>
-            </div>
+        <footer class='single-post__footer'>
+            <button
+                onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+                class='single-post__back-top'
+                aria-label='回到顶部'>
+                <Icon name='tabler:arrow-up' class='w-4 h-4' />
+                <span>回到顶部</span>
+            </button>
         </footer>
     </article>
 </section>
 
-<script>
-    function initImageFallback() {
-        const images = document.querySelectorAll('[data-fallback-image]');
-
-        images.forEach((img) => {
-            const imgElement = img as HTMLImageElement;
-            const fallback = imgElement.nextElementSibling as HTMLElement;
-
-            // 处理加载失败
-            imgElement.addEventListener('error', () => {
-                imgElement.classList.add('hidden');
-                if (fallback) {
-                    fallback.classList.remove('hidden');
-                }
-            });
-
-            // 如果图片已经加载失败（缓存情况）
-            if (imgElement.complete && imgElement.naturalHeight === 0) {
-                imgElement.classList.add('hidden');
-                if (fallback) {
-                    fallback.classList.remove('hidden');
-                }
-            }
-        });
+<style>
+    .single-post {
+        min-height: 100vh;
+        background: hsl(var(--background));
     }
 
-    document.addEventListener('DOMContentLoaded', initImageFallback);
-    document.addEventListener('astro:after-swap', initImageFallback);
-</script>
+    .single-post__article {
+        max-width: 56rem;
+        margin: 0 auto;
+        padding: 5rem 1.5rem 5rem;
+    }
+
+    .single-post__header {
+        margin-bottom: 3rem;
+    }
+
+    .single-post__meta {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .single-post__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.375rem;
+        border: 1px solid hsl(var(--primary) / 0.2);
+        background: hsl(var(--primary) / 0.05);
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: hsl(var(--primary) / 0.8);
+    }
+
+    .single-post__dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: hsl(var(--primary));
+    }
+
+    .single-post__title {
+        font-size: clamp(1.75rem, 4vw, 2.75rem);
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: hsl(var(--foreground));
+        text-wrap: balance;
+        margin: 0;
+    }
+    /* PLACEHOLDER_STYLE_CHUNK_2 */
+
+    .single-post__info {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+    }
+
+    .single-post__info-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    .single-post__content {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+    }
+
+    .category-group__title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: hsl(var(--foreground));
+        margin: 0 0 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid hsl(var(--border));
+    }
+
+    .category-group__cards {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .single-post__nav {
+        margin-top: 3rem;
+    }
+
+    .post-nav {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .post-nav__link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: 0.75rem;
+        text-decoration: none;
+        color: hsl(var(--foreground));
+        transition: border-color 0.2s ease;
+    }
+
+    .post-nav__link:hover {
+        border-color: hsl(var(--primary) / 0.5);
+    }
+
+    .post-nav__link--next {
+        justify-content: flex-end;
+    }
+
+    .post-nav__icon {
+        color: hsl(var(--muted-foreground));
+        flex-shrink: 0;
+    }
+
+    .post-nav__text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-width: 0;
+    }
+
+    .post-nav__label {
+        font-size: 0.75rem;
+        color: hsl(var(--muted-foreground));
+    }
+
+    .post-nav__title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .post-nav__all {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: hsl(var(--muted-foreground));
+        text-decoration: none;
+        transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .post-nav__all:hover {
+        border-color: hsl(var(--primary) / 0.5);
+        color: hsl(var(--foreground));
+    }
+
+    .single-post__footer {
+        margin-top: 3rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .single-post__back-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: 9999px;
+        background: hsl(var(--card));
+        color: hsl(var(--muted-foreground));
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .single-post__back-top:hover {
+        color: hsl(var(--foreground));
+        border-color: hsl(var(--primary) / 0.5);
+    }
+
+    @media (max-width: 640px) {
+        .single-post__article {
+            padding: 4.75rem 1rem 4rem;
+        }
+
+        .post-nav {
+            grid-template-columns: 1fr;
+        }
+
+        .post-nav__link--next {
+            justify-content: flex-start;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .single-post *,
+        .single-post *::before,
+        .single-post *::after {
+            transition: none;
+        }
+    }
+</style>

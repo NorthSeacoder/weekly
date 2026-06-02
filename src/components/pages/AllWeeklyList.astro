@@ -2,6 +2,7 @@
 import {getWeeklyPosts} from '~/utils/contents/unified-content';
 import StatCard from '~/components/ui/StatCard.astro';
 import Button from '~/components/ui/Button.astro';
+import {parseCover} from '~/utils/contents/cover';
 
 const weeklyList = await getWeeklyPosts();
 const groupedByYear = Object.entries(
@@ -31,10 +32,8 @@ const topTags = Array.from(
         <header class='archive-hero'>
             <div class='archive-copy'>
                 <p class='archive-kicker'>Archive</p>
-                <h1>按时间回看每一期，再顺着主题继续发现。</h1>
-                <p class='archive-lead'>
-                    归档按时间展开，主题标签作为辅助线索，便于回看与检索。
-                </p>
+                <h1>周刊归档</h1>
+                <p class='archive-lead'>按时间浏览，按主题检索。</p>
 
                 <dl class='archive-metrics'>
                     <div>
@@ -97,7 +96,7 @@ const topTags = Array.from(
                                             title={weekly.title}
                                             date={weekly.date}
                                             desc={weekly.desc || '精选本周前端技术内容'}
-                                            cover={weekly.cover}
+                                            coverConfig={parseCover(weekly.cover, { issueNumber: weekly.issueNumber || 0, startDate: weekly.startDate })}
                                             tags={weekly.tags}
                                             showTags={true}
                                             eyebrow={year}
@@ -125,7 +124,7 @@ const topTags = Array.from(
 <style>
     .archive-section {
         min-height: 100vh;
-        padding: 3rem 1.5rem 5rem;
+        padding: 6rem 1.5rem 5rem;
         background:
             radial-gradient(circle at top left, hsl(var(--primary) / 0.07), transparent 24%),
             hsl(var(--background));
@@ -347,7 +346,7 @@ const topTags = Array.from(
 
     @media (max-width: 640px) {
         .archive-section {
-            padding: 2rem 1rem 4rem;
+            padding: 5.5rem 1rem 4rem;
         }
 
         .archive-shell {
