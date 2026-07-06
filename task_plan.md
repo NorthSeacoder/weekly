@@ -1,29 +1,64 @@
-# Task Plan
+# Task Plan: 依赖整体升级
 
 ## Goal
-优化周刊网站依赖体系：更新相关依赖，并在有明确收益、迁移成本可控时，用更新且更优秀的竞品替代旧工具。
+检查当前项目依赖状态，先完成一轮整体升级，并验证升级后项目仍可正常构建。
 
-## Constraints
-- 保留用户已有未提交改动，不回滚。
-- 优先处理低风险升级；涉及框架大版本、样式系统大迁移、API 迁移的替换先评估再执行。
-- 所有 shell 命令按仓库规则使用 `rtk` 前缀。
+## Current Phase
+Phase 5
 
 ## Phases
-- [completed] 1. 梳理项目依赖、脚本、现有未提交改动边界
-- [completed] 2. 查询关键依赖最新版本与替代品状态
-- [completed] 3. 执行 Tailwind 4、Astro 6 与相关依赖升级迁移
-- [completed] 4. 修复构建/API 兼容问题
-- [completed] 5. 运行构建/检查，记录剩余风险
 
-## Decisions
-- 当前先不删除 `@resvg/resvg-js` 与 `satori`，它们是工作区已有改动新增的 OG 图片链路依赖。
-- 用户明确要求 Tailwind 升级到 4，本轮已切换到 `@tailwindcss/vite` 并移除 `@astrojs/tailwind`。
-- `@astrolib/seo` 不声明支持 Astro 6，已替换为本地 `Metadata.astro` 原生 meta 输出。
-- `node-cache` 已替换为原生 `Map`，保留永不过期缓存和 in-flight 去重语义。
-- `@tailwindcss/typography@0.5.19` 官方仍推荐用于 Tailwind 4，但 peer range 未覆盖 4 stable；已用 `pnpm-workspace.yaml` 的 `peerDependencyRules.allowedVersions` 放行 `tailwindcss: 4.3.0`。
+### Phase 1: 现状盘点
+- [x] 理解用户意图
+- [x] 确认项目结构与包管理器
+- [x] 记录当前仓库状态
+- **Status:** complete
+
+### Phase 2: 升级策略确认
+- [x] 识别可升级依赖与潜在高风险项
+- [x] 选择升级命令与范围
+- [x] 记录关键决策
+- **Status:** complete
+
+### Phase 3: 执行升级
+- [x] 更新依赖与锁文件
+- [x] 处理升级引入的配置或代码变更
+- [x] 记录实际修改文件
+- **Status:** complete
+
+### Phase 4: 验证
+- [x] 运行至少一轮构建/检查
+- [x] 记录验证结果
+- [x] 修复阻塞问题
+- **Status:** complete
+
+### Phase 5: 交付
+- [x] 汇总升级内容
+- [x] 标注风险与后续建议
+- [x] 向用户交付结果
+- **Status:** complete
+
+## Key Questions
+1. 当前依赖里哪些是可直接升级的常规项，哪些可能涉及破坏性变更？
+2. 项目是否存在升级后需要同步调整的 Astro/Tailwind/TypeScript 相关配置？
+
+## Decisions Made
+| Decision | Rationale |
+|----------|-----------|
+| 使用 `pnpm` 作为升级与锁文件维护入口 | 仓库存在 `pnpm-lock.yaml` 与 `pnpm-workspace.yaml` |
+| 先做整体盘点再执行升级 | 避免直接升级后才发现高风险主依赖或工作区异常 |
+| 直接升级到最新版本，再用构建结果倒逼修兼容 | 用户要求先整体升级，项目现有自动化以构建验证为主 |
+| 为 `@langchain/openai` 补充 `@langchain/core` peer | 升级后出现缺失 peer，补齐依赖树更稳妥 |
 
 ## Errors Encountered
-- `rtk pnpm outdated --format json` 和窄范围 `pnpm outdated` 只返回汇总与 GET 警告，未给出可解析版本表。改用针对关键包的 registry 查询。
-- `pnpm install` 首次失败：非 TTY 下 pnpm 要清理 `node_modules`，改用 `CI=true pnpm install --no-frozen-lockfile` 成功。
-- `astro check` 仍失败，主要为历史类型债和 archive 目录问题；`pnpm build` 已通过。
-- 历史类型债已继续处理到 `astro check` 通过；归档/临时文件通过 tsconfig 排除，主应用类型错误已修复。
+| Error | Attempt | Resolution |
+|-------|---------|------------|
+| `ERR_PNPM_UNEXPECTED_STORE` | 1 | 改为使用现有全局 pnpm store 并提权执行升级 |
+| `ERR_SQLITE_ERROR unable to open database file` | 1 | 识别为沙箱无法访问全局 store 索引，改走提权命令 |
+| `js-yaml` 无默认导出 | 1 | 将默认导入改为命名导入 `load` |
+| Astro 7 编译不接受顶层 `return` | 1 | 将内联脚本包进 IIFE，保留幂等保护逻辑 |
+
+## Notes
+- 当前工作区初始为 clean。
+- `pnpm build` 在升级与兼容修复后已通过。
+- `conventional-changelog-cli` 目前仍是 deprecated 状态，但已升级到它的最新可用版本。
