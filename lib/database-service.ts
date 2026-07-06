@@ -1,4 +1,4 @@
-import { query, transaction, execute, type RowDataPacket } from './database';
+import { query, execute, type RowDataPacket } from './database';
 
 // 基础接口定义
 export interface ContentType extends RowDataPacket {
@@ -222,7 +222,7 @@ export class ContentService {
    * 根据slug获取内容
    */
   static async getBySlug(slug: string): Promise<Content | null> {
-    const results = await query<Content>(`
+    const results = await query<Content[]>(`
       SELECT c.*, ct.name as content_type_name, cat.name as category_name
       FROM contents c
       LEFT JOIN content_types ct ON c.content_type_id = ct.id
@@ -237,7 +237,7 @@ export class ContentService {
    * 获取精选内容
    */
   static async getFeatured(limit: number = 5): Promise<Content[]> {
-    return await query<Content>(`
+    return await query<Content[]>(`
       SELECT c.*, ct.name as content_type_name, cat.name as category_name
       FROM contents c
       LEFT JOIN content_types ct ON c.content_type_id = ct.id
@@ -542,14 +542,14 @@ export class WeeklyService {
       }
     }
 
-    return await query<WeeklyIssue>(sql, params);
+    return await query<WeeklyIssue[]>(sql, params);
   }
 
   /**
    * 根据期号获取周刊
    */
   static async getByIssueNumber(issueNumber: number): Promise<WeeklyIssue | null> {
-    const results = await query<WeeklyIssue>(`
+    const results = await query<WeeklyIssue[]>(`
       SELECT * FROM weekly_issues 
       WHERE issue_number = ? AND status = 'published'
       LIMIT 1
@@ -561,7 +561,7 @@ export class WeeklyService {
    * 根据slug获取周刊
    */
   static async getBySlug(slug: string): Promise<WeeklyIssue | null> {
-    const results = await query<WeeklyIssue>(`
+    const results = await query<WeeklyIssue[]>(`
       SELECT * FROM weekly_issues 
       WHERE slug = ? AND status = 'published'
       LIMIT 1
@@ -573,7 +573,7 @@ export class WeeklyService {
    * 获取最新周刊
    */
   static async getLatest(): Promise<WeeklyIssue | null> {
-    const results = await query<WeeklyIssue>(`
+    const results = await query<WeeklyIssue[]>(`
       SELECT * FROM weekly_issues 
       WHERE status = 'published' 
       ORDER BY issue_number DESC 

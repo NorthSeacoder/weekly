@@ -14,7 +14,7 @@ const {
     color = 'white',
     speed = '6s',
     ...rest
-} = Astro.props;
+} = Astro.props as Props;
 
 const containerClasses = cn(
     'relative inline-block py-[1px] overflow-hidden rounded-[20px]',

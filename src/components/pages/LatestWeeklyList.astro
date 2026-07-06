@@ -2,280 +2,217 @@
 import {getWeeklyPosts} from '~/utils/contents/unified-content';
 import StatCard from '~/components/ui/StatCard.astro';
 import Button from '~/components/ui/Button.astro';
+import {parseCover} from '~/utils/contents/cover';
 
 const weekly = await getWeeklyPosts();
-const latestWeeklyList = weekly.slice(0, 12);
-const featuredWeekly = latestWeeklyList[0];
-const latestWeeklyGrid = latestWeeklyList.slice(1);
+const gridWeekly = weekly.slice(0, 6);
 ---
 
-<section class='latest-section'>
-    <div class='latest-shell'>
-        <div class='latest-section-head'>
-            <div class='latest-title-group'>
-                <p class='section-kicker'>Recent Issues</p>
-                <h2>最近几期集中在这里，便于快速浏览，也便于继续回看。</h2>
+<section class='bento-section'>
+    <div class='bento-shell'>
+        <!-- Section header -->
+        <div class='bento-header' data-reveal>
+            <div>
+                <p class='bento-kicker'>Recent Issues</p>
+                <h2 class='bento-title'>最近几期</h2>
             </div>
-
-            <div class='section-summary'>
-                <p>先看最近更新，再按时间回看归档。</p>
-                <Button href='/weekly' variant='secondary' size='lg'>查看全部归档</Button>
-            </div>
+            <Button href='/weekly' variant='secondary' size='md' icon='tabler:archive' iconPosition='left'>
+                全部归档
+            </Button>
         </div>
 
-        {
-            latestWeeklyList.length > 0 ? (
-                <>
-                    {
-                        featuredWeekly && (
-                            <article class='featured-issue'>
-                                <div class='featured-copy'>
-                                    <p class='featured-label'>最近更新</p>
-                                    <h3>{featuredWeekly.title}</h3>
-                                    <p class='featured-desc'>
-                                        {featuredWeekly.desc || '本期整理了近期值得阅读与留意的内容。'}
-                                    </p>
-                                    <div class='featured-actions'>
-                                        <Button href={featuredWeekly.permalink} variant='primary' size='lg'>打开本期</Button>
-                                        <span>先浏览本期，再按兴趣进入具体条目。</span>
-                                    </div>
-                                </div>
-
-                                <a href={featuredWeekly.permalink} class='featured-card-link' aria-label={`阅读 ${featuredWeekly.title}`}>
-                                    <StatCard
-                                        title={featuredWeekly.title}
-                                        date={featuredWeekly.date}
-                                        desc={featuredWeekly.desc || '精选本周前端技术内容'}
-                                        cover={featuredWeekly.cover}
-                                        showTags={true}
-                                        eyebrow='Latest weekly'
-                                    />
-                                </a>
-                            </article>
-                        )
-                    }
-
-                    <div class='latest-grid' aria-label='最近周刊列表'>
-                        {latestWeeklyGrid.map((weekly, index) => (
-                            <div class='latest-card-wrap' style={`animation-delay: ${index * 0.04}s;`} data-weekly-card>
-                                <a href={weekly.permalink} class='block h-full focus:outline-none rounded-lg'>
-                                    <StatCard
-                                        title={weekly.title}
-                                        date={weekly.date}
-                                        desc={weekly.desc || '精选本周前端技术内容'}
-                                        cover={weekly.cover}
-                                        showTags={true}
-                                        eyebrow='Archive'
-                                    />
-                                </a>
-                            </div>
-                        ))}
-                    </div>
-                </>
-            ) : (
-                <div class='latest-empty'>
-                    <p>暂无周刊数据</p>
-                    <span>内容仍在整理中，稍后再来。</span>
-                </div>
-            )
-        }
+        {weekly.length > 0 ? (
+            <div class='bento-grid' data-reveal>
+                {gridWeekly.map((item, index) => (
+                    <a
+                        href={item.permalink}
+                        class='bento-card'
+                        style={`--reveal-delay: ${(index + 1) * 60}ms`}
+                        aria-label={`阅读 ${item.title}`}
+                    >
+                        <StatCard
+                            title={item.title}
+                            date={item.date}
+                            desc={item.desc || '精选本周前端技术内容'}
+                            coverConfig={parseCover(item.cover, { issueNumber: item.issueNumber || 0, startDate: item.startDate })}
+                            showTags={true}
+                            eyebrow={`第 ${item.issueNumber || '?'} 期`}
+                        />
+                    </a>
+                ))}
+            </div>
+        ) : (
+            <div class='bento-empty' data-reveal>
+                <p>暂无周刊数据</p>
+                <span>内容仍在整理中，稍后再来。</span>
+            </div>
+        )}
     </div>
 </section>
 
 <style>
-    .latest-section {
-        padding: 1rem 1.5rem 5rem;
-        background: hsl(var(--background));
+    .bento-section {
+        padding: 1.25rem 1.5rem 5rem;
+        background: transparent;
     }
 
-    .latest-shell {
+    .bento-shell {
         max-width: 72rem;
         margin: 0 auto;
-        display: grid;
-        gap: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
     }
 
-    .latest-section-head {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
-        gap: 2rem;
+    .bento-header {
+        display: flex;
         align-items: end;
+        justify-content: space-between;
+        gap: 1rem;
     }
 
-    .latest-title-group h2 {
-        margin: 0.5rem 0 0;
-        max-width: 15ch;
-        font-size: clamp(2rem, 4vw, 3.35rem);
-        line-height: 1.04;
-        letter-spacing: -0.04em;
-        text-wrap: balance;
-    }
-
-    .section-kicker {
+    .bento-kicker {
         margin: 0;
         color: hsl(var(--primary));
-        font-size: 0.875rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .section-summary {
-        display: grid;
-        gap: 1rem;
-        color: hsl(var(--muted-foreground));
-        line-height: 1.75;
-    }
-
-    .section-summary p {
-        margin: 0;
-    }
-
-    .featured-issue {
-        display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-        gap: 1.5rem;
-        padding: 1.5rem;
-        border: 1px solid hsl(var(--border));
-        border-radius: 1.5rem;
-        background: linear-gradient(180deg, hsl(var(--surface)) 0%, hsl(var(--background)) 100%);
-    }
-
-    .featured-copy {
-        display: grid;
-        align-content: start;
-        gap: 1rem;
-        padding: 0.5rem 0;
-    }
-
-    .featured-label {
-        margin: 0;
-        color: hsl(var(--muted-foreground));
         font-size: 0.8125rem;
         font-weight: 700;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
     }
 
-    .featured-copy h3 {
-        margin: 0;
-        max-width: 14ch;
-        font-size: clamp(1.9rem, 4vw, 3rem);
-        line-height: 1.06;
-        text-wrap: balance;
+    .bento-title {
+        margin: 0.375rem 0 0;
+        font-size: clamp(1.75rem, 4vw, 2.75rem);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
     }
 
-    .featured-desc {
-        margin: 0;
-        max-width: 34rem;
-        color: hsl(var(--muted-foreground));
-        line-height: 1.8;
-    }
-
-    .featured-actions {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid hsl(var(--border));
-    }
-
-    .featured-actions span {
-        color: hsl(var(--muted-foreground));
-        font-size: 0.875rem;
-    }
-
-    .featured-card-link {
-        display: block;
-        min-width: 0;
-    }
-
-    .latest-grid {
+    .bento-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.1rem;
     }
 
-    .latest-card-wrap {
-        min-width: 0;
+    .bento-card {
+        display: block;
+        text-decoration: none;
+        border-radius: 0.75rem;
+        transition: transform 0.2s ease;
     }
 
-    .latest-empty {
+    .bento-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .bento-empty {
         display: grid;
         gap: 0.5rem;
-        padding: 3rem 1.5rem;
+        padding: 4rem 1.5rem;
         border: 1px dashed hsl(var(--border));
-        border-radius: 1.25rem;
+        border-radius: 1rem;
         text-align: center;
     }
 
-    .latest-empty p {
+    .bento-empty p {
         margin: 0;
         font-size: 1.25rem;
         font-weight: 700;
     }
 
-    .latest-empty span {
+    .bento-empty span {
         color: hsl(var(--muted-foreground));
     }
 
-    @media (max-width: 960px) {
-        .latest-section-head,
-        .featured-issue {
-            grid-template-columns: 1fr;
-        }
+    /* Scroll reveal */
+    [data-reveal] {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
 
-        .section-summary {
-            max-width: 32rem;
+    [data-reveal].revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .bento-grid .bento-card {
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        transition-delay: var(--reveal-delay, 0ms);
+    }
+
+    .bento-grid.revealed .bento-card {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .bento-grid .bento-card:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+        .bento-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 
     @media (max-width: 640px) {
-        .latest-section {
-            padding: 0.5rem 1rem 4rem;
+        .bento-section {
+            padding: 1rem 1rem 4rem;
         }
 
-        .latest-section-head {
-            gap: 1rem;
-        }
-
-        .latest-title-group h2 {
-            max-width: 12ch;
-            font-size: clamp(1.7rem, 9vw, 2.4rem);
-        }
-
-        .featured-issue {
-            padding: 1rem;
-            gap: 1rem;
-        }
-
-        .featured-actions {
-            align-items: start;
+        .bento-header {
             flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
         }
 
-        .featured-copy h3 {
-            max-width: 100%;
-            font-size: clamp(1.5rem, 8vw, 2.1rem);
-        }
-
-        .featured-desc,
-        .section-summary {
-            line-height: 1.65;
-        }
-
-        .latest-grid {
+        .bento-grid {
             grid-template-columns: 1fr;
             gap: 1rem;
         }
+
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .latest-section *,
-        .latest-section *::before,
-        .latest-section *::after {
-            transition-duration: 0.01ms !important;
+        [data-reveal],
+        .bento-grid .bento-card,
+        .bento-grid .bento-card:hover {
+            opacity: 1;
+            transform: none;
+            transition: none;
         }
     }
 </style>
+
+<script>
+    function initReveal() {
+        const elements = document.querySelectorAll('[data-reveal]');
+        if (!elements.length) return;
+
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            elements.forEach(el => el.classList.add('revealed'));
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+        );
+
+        elements.forEach((el) => observer.observe(el));
+    }
+
+    document.addEventListener('astro:page-load', initReveal);
+</script>

@@ -1,5 +1,23 @@
 # Findings
 
+## Dependency Upgrade 2026-06-01
+- 项目是 Astro 5 静态周刊站，核心链路为 `astro build`、MDX 内容、Tailwind 样式、搜索 modal、RSS、OG 图片生成。
+- 工作区已有大量未提交改动；`package.json` 里 `@resvg/resvg-js` 与 `satori` 是已有 diff 新增依赖，不能视为可删除旧包。
+- `pnpm` 版本为 11.1.3，提示 `package.json` 的 `pnpm.overrides` 已不再读取，应迁移到 `pnpm-workspace.yaml` 或对应新配置位置。
+- `astro.config.ts` 已有改动：Sentry 集成变成只有 DSN 存在时才启用，这是合理的构建稳定性优化。
+- `@sentry/replay` 在源码中没有直接导入；`sentry.client.config.js` 使用的是 `@sentry/astro` 暴露的 `replayIntegration()`，因此 `@sentry/replay` 很可能是冗余依赖。
+- `node-cache` 只在 `lib/cache.ts` 使用，功能是进程内永不过期缓存 + in-flight 去重；可用原生 `Map` 替代，减少运行时依赖。
+- `lodash.merge` 只在 `src/components/common/Metadata.astro` 与 `integration/utils/configBuilder.ts` 使用；可替代为更现代的小型 deep merge 包，或保留以降低风险。
+- `unpic` 用于远程图片 URL 转换；若继续需要 CDN 图片优化，先保留更稳妥。
+- `@astrojs/tailwind` 与 Tailwind 3 是当前样式体系核心；Tailwind 4/Vite 插件迁移会牵涉配置、PostCSS 与大量 `@apply`，不适合作为无确认的顺手替换。
+- 用户要求不保守后，Tailwind 已迁移到 v4：Astro 配置改用 `@tailwindcss/vite`，CSS 入口改为 `@import "tailwindcss"` + `@config` 复用旧 TS 配置。
+- Astro 6 移除了旧内容配置路径，`src/content/config.ts` 已迁移为 `src/content.config.ts`，源码引用同步更新。
+- 旧 `postcss.config.js` 会加载已移除的 `autoprefixer`，Tailwind 4 Vite 插件不需要该配置，已删除。
+- Tailwind 4 不允许在 `@apply` 中应用自定义组件类（如 `linear-badge`），已将相关类展开为原子 utility。
+- `@astrolib/seo` 未声明支持 Astro 6，已替换为项目内原生 meta 输出；构建通过。
+- `pnpm build` 通过；构建日志仍会出现数据库连接 `EPERM 100.113.231.101:3306`，这是当前沙箱网络限制，代码兜底后仍能完成静态构建。
+- `astro check` 仍失败，错误集中在历史 archive、缺失 React/react-icons、数据库泛型、若干严格类型问题；不属于本次依赖迁移的构建阻塞。
+
 ## Initial
 - 当前仓库是单包 `Astro` 站点，不是大型 monorepo。
 - 目前可见模块集中在 `src/pages`、`src/components`、`src/utils`、`src/content`。

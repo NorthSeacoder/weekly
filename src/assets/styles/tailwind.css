@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@config "../../../tailwind.config.ts";
+@import "tailwindcss";
 
 /* ============================================
    Linear/Raycast Style - Base Layer
@@ -10,7 +9,7 @@
   html {
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 100%;
+    min-height: 100%;
     margin: 0;
     padding: 0;
   }
@@ -18,7 +17,7 @@
   body {
     overflow-y: visible;
     overflow-x: hidden;
-    height: 100%;
+    min-height: 100%;
     margin: 0;
     padding: 0;
   }
@@ -118,26 +117,26 @@
   }
 
   .btn-primary {
-    @apply btn;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border font-medium text-sm transition-all duration-200 py-2.5 px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer;
     @apply bg-primary text-primary-foreground border-transparent;
     @apply hover:bg-primary-hover;
     @apply shadow-sm hover:shadow-md;
   }
 
   .btn-secondary {
-    @apply btn;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border font-medium text-sm transition-all duration-200 py-2.5 px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer;
     @apply bg-secondary text-secondary-foreground border-border;
     @apply hover:bg-secondary-hover hover:border-border;
   }
 
   .btn-tertiary {
-    @apply btn;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border font-medium text-sm transition-all duration-200 py-2.5 px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer;
     @apply bg-transparent text-muted-foreground border-transparent;
     @apply hover:bg-secondary hover:text-foreground;
   }
 
   .btn-ghost {
-    @apply btn;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border font-medium text-sm transition-all duration-200 py-2.5 px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer;
     @apply bg-transparent text-muted-foreground border-transparent;
     @apply hover:bg-secondary/50 hover:text-foreground;
   }
@@ -175,7 +174,7 @@
   }
 
   .linear-badge-primary {
-    @apply linear-badge;
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border;
     @apply bg-primary/10 text-primary border-primary/20;
   }
 }

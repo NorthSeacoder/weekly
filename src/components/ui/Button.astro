@@ -1,7 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
 import { cn } from '~/utils/utils';
-import type { CallToAction } from '~/types';
 
 export interface Props {
   variant?: 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'destructive' | 'link';
@@ -41,10 +40,11 @@ const {
 const baseClasses = cn(
   'relative inline-flex items-center justify-center gap-2',
   'font-medium',
-  'rounded border', // VSCode style: 4px radius
+  'rounded-lg border border-transparent',
   'transition-all duration-200',
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary focus-visible:ring-offset-background',
   'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
+  'neu-pressable',
   {
     'w-full': fullWidth,
     'cursor-not-allowed opacity-50': disabled || loading,
@@ -62,26 +62,27 @@ const sizeVariants = {
 // Style variants - Linear/Raycast inspired
 const variants = {
   primary: cn(
-    'bg-primary text-primary-foreground border-transparent',
-    'hover:bg-primary-hover',
-    'shadow-sm hover:shadow-md'
+    'btn-primary-soft',
+    'text-primary-foreground',
+    'bg-primary hover:bg-primary-hover',
+    'shadow-md shadow-primary/20'
   ),
   secondary: cn(
-    'bg-secondary text-secondary-foreground border-border/50',
-    'hover:bg-secondary-hover hover:border-border'
+    'btn-soft text-secondary-foreground',
+    'hover:text-foreground'
   ),
   tertiary: cn(
-    'bg-transparent text-muted-foreground border-transparent',
-    'hover:bg-secondary hover:text-foreground'
+    'text-muted-foreground',
+    'hover:text-foreground hover:bg-surface-hover'
   ),
   ghost: cn(
-    'bg-transparent text-muted-foreground border-transparent',
-    'hover:bg-secondary/50 hover:text-foreground'
+    'text-muted-foreground',
+    'hover:text-foreground hover:bg-surface-hover'
   ),
   destructive: cn(
     'bg-destructive text-destructive-foreground border-transparent',
     'hover:bg-destructive/90',
-    'shadow-sm'
+    'shadow-md'
   ),
   link: cn(
     'bg-transparent text-primary border-transparent p-0 h-auto',
@@ -112,7 +113,7 @@ const elementProps = href
 
 <Element class={buttonClasses} {...elementProps}>
   {loading && (
-    <div class="absolute inset-0 flex items-center justify-center bg-inherit rounded">
+    <div class="absolute inset-0 flex items-center justify-center bg-inherit rounded-lg">
       <svg class="animate-spin h-5 w-5 text-current" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -142,6 +143,15 @@ const elementProps = href
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  .btn-soft {
+    background: var(--neu-surface-gradient);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary-soft {
+    box-shadow: 5px 5px 10px hsl(var(--primary) / 0.22), -5px -5px 10px var(--neu-shadow-light);
   }
 
   /* Disabled link styles */

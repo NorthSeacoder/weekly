@@ -20,7 +20,6 @@ const {
 
 const encodedUrl = encodeURIComponent(url);
 const encodedTitle = encodeURIComponent(title);
-const encodedDesc = encodeURIComponent(description);
 ---
 
 <div class={`flex items-center gap-2 ${className}`} data-share-buttons>
@@ -92,7 +91,7 @@ const encodedDesc = encodeURIComponent(description);
       this.copyButton?.addEventListener('click', () => this.copyLink());
 
       // Web Share API 检测
-      if (navigator.share && this.nativeButton) {
+      if ('share' in navigator && this.nativeButton) {
         this.nativeButton.classList.remove('hidden');
         this.nativeButton.addEventListener('click', () => this.shareNative());
       }

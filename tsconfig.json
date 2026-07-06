@@ -9,6 +9,6 @@
             "~/*": ["src/*"] 
         },
     },
-    "include": [".astro/types.d.ts", "**/*","./types/**/*"],
-    "exclude": ["node_modules", "extension/**/*", "scripts/**/*","dist/"]
+    "include": [".astro/types.d.ts", "src/**/*", "lib/**/*", "integration/**/*", "types/**/*", "config/**/*", "astro.config.ts", "tailwind.config.ts"],
+    "exclude": ["node_modules", "archive/**/*", "src/archive/**/*", "extension/**/*", "scripts/**/*", "dist/", "types/tempCodeRunnerFile.ts", "lib/tag.ts"]
 }

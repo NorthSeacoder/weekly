@@ -129,40 +129,36 @@ import { Icon } from 'astro-icon/components';
 </div>
 
 <script>
-  import Fuse from 'fuse.js';
+  interface SearchItem {
+    title: string;
+    description: string;
+    tags: string[];
+    date: string;
+    permalink: string;
+    category: string;
+  }
 
-  /**
-   * @typedef {Object} SearchItem
-   * @property {string} title
-   * @property {string} description
-   * @property {string[]} tags
-   * @property {string} date
-   * @property {string} permalink
-   * @property {string} category
-   */
-
-  /**
-   * @typedef {'empty' | 'loading' | 'no-results' | 'results' | 'error'} SearchState
-   */
+  type SearchState = 'empty' | 'loading' | 'no-results' | 'results' | 'error';
+  type SearchResult = { item: SearchItem };
 
   class SearchModal {
-    constructor() {
-      this.modal = null;
-      this.overlay = null;
-      this.input = null;
-      this.resultsContainer = null;
-      this.emptyState = null;
-      this.loadingState = null;
-      this.noResultsState = null;
-      this.errorState = null;
-      this.resultsList = null;
-      this.closeBtn = null;
-      this.fuse = null;
-      this.searchData = [];
-      this.currentIndex = -1;
-      this.debounceTimer = null;
-      this.controller = new AbortController();
+    private modal: HTMLElement | null = null;
+    private overlay: HTMLElement | null = null;
+    private input: HTMLInputElement | null = null;
+    private resultsContainer: HTMLElement | null = null;
+    private emptyState: HTMLElement | null = null;
+    private loadingState: HTMLElement | null = null;
+    private noResultsState: HTMLElement | null = null;
+    private errorState: HTMLElement | null = null;
+    private resultsList: HTMLElement | null = null;
+    private closeBtn: HTMLButtonElement | null = null;
+    private fuse: any = null;
+    private searchData: SearchItem[] = [];
+    private currentIndex = -1;
+    private debounceTimer: number | null = null;
+    private controller = new AbortController();
 
+    constructor() {
       this.bindElements();
       this.registerGlobalShortcuts();
     }
@@ -292,6 +288,8 @@ import { Icon } from 'astro-icon/components';
           tags: item.tags || []
         }));
 
+        const { default: Fuse } = await import('fuse.js');
+
         this.fuse = new Fuse(this.searchData, {
           keys: ['title', 'description', 'tags'],
           threshold: 0.35,
@@ -306,7 +304,7 @@ import { Icon } from 'astro-icon/components';
       }
     }
 
-    handleSearch(query) {
+    handleSearch(query: string) {
       if (this.debounceTimer) {
         clearTimeout(this.debounceTimer);
       }
@@ -316,7 +314,7 @@ import { Icon } from 'astro-icon/components';
       }, 200);
     }
 
-    performSearch(query) {
+    performSearch(query: string) {
       if (!query.trim()) {
         this.showState('empty');
         return;
@@ -338,7 +336,7 @@ import { Icon } from 'astro-icon/components';
       this.currentIndex = -1;
     }
 
-    renderResults(results) {
+    renderResults(results: SearchResult[]) {
       if (!this.resultsList) return;
 
       const markup = results
@@ -362,7 +360,7 @@ import { Icon } from 'astro-icon/components';
       this.showState('results');
     }
 
-    renderResultItem(item, index) {
+    renderResultItem(item: SearchItem, index: number) {
       const date = new Date(item.date).toLocaleDateString('zh-CN', {
         year: 'numeric',
         month: 'short',
@@ -401,8 +399,8 @@ import { Icon } from 'astro-icon/components';
       `;
     }
 
-    handleKeyboard(event) {
-      const items = this.resultsList?.querySelectorAll('[data-result-item]') || [];
+    handleKeyboard(event: KeyboardEvent) {
+      const items = Array.from(this.resultsList?.querySelectorAll('[data-result-item]') ?? []);
       if (items.length === 0) return;
 
       switch (event.key) {
@@ -429,13 +427,13 @@ import { Icon } from 'astro-icon/components';
       }
     }
 
-    setActiveItem(index) {
+    setActiveItem(index: number) {
       this.currentIndex = index;
-      const items = this.resultsList?.querySelectorAll('[data-result-item]') || [];
+      const items = Array.from(this.resultsList?.querySelectorAll('[data-result-item]') ?? []);
       this.updateActiveItem(items);
     }
 
-    updateActiveItem(items) {
+    updateActiveItem(items: Element[]) {
       items.forEach((item, index) => {
         if (index === this.currentIndex) {
           item.classList.add('bg-gray-50', 'dark:bg-gray-800');
@@ -449,7 +447,7 @@ import { Icon } from 'astro-icon/components';
       });
     }
 
-    showState(state) {
+    showState(state: SearchState) {
       this.emptyState?.classList.add('hidden');
       this.loadingState?.classList.add('hidden');
       this.noResultsState?.classList.add('hidden');
@@ -477,15 +475,16 @@ import { Icon } from 'astro-icon/components';
   }
 
   const SEARCH_MODAL_KEY = '__search_modal_instance__';
+  const searchModalWindow = window as unknown as Window & Record<typeof SEARCH_MODAL_KEY, SearchModal | undefined>;
 
   const initSearchModal = () => {
-    if (window[SEARCH_MODAL_KEY]) {
-      window[SEARCH_MODAL_KEY].refresh();
+    if (searchModalWindow[SEARCH_MODAL_KEY]) {
+      searchModalWindow[SEARCH_MODAL_KEY].refresh();
       return;
     }
 
     const instance = new SearchModal();
-    window[SEARCH_MODAL_KEY] = instance;
+    searchModalWindow[SEARCH_MODAL_KEY] = instance;
   };
 
   if (typeof window !== 'undefined') {

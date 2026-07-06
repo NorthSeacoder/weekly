@@ -479,7 +479,7 @@ export default {
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: theme('borderRadius.lg'),
-                    fontSize: theme('fontSize.sm'),
+                    'font-size': theme('fontSize.sm'),
                     fontWeight: '600',
                     transition: 'all 0.2s',
                     '&:focus': {

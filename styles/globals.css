@@ -2,9 +2,8 @@
 @import './mobile-enhancements.css';
 @import url('https://cdn.bootcdn.net/ajax/libs/lxgw-wenkai-webfont/1.6.0/style.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@config "../tailwind.config.ts";
+@import "tailwindcss";
 
 html {
   scroll-behavior: smooth !important;
@@ -25,18 +24,18 @@ html {
     --accent-cool: 198, 82%, 68%;
 
     /* Enhanced Neutral Palette - 更丰富的灰色层次 */
-    --background: 0 0% 100%;
+    --background: 218 22% 91%;
     --foreground: 220 15% 8%;
-    --surface: 214 25% 98%;
-    --surface-elevated: 214 30% 96%;
-    --surface-hover: 214 35% 94%;
+    --surface: 218 22% 91%;
+    --surface-elevated: 218 24% 94%;
+    --surface-hover: 218 20% 88%;
 
-    --card: 0 0% 100%;
+    --card: 218 22% 91%;
     --card-foreground: 220 15% 8%;
-    --card-border: 214 18% 88%;
-    --card-shadow: 214 18% 85%;
+    --card-border: 218 18% 82%;
+    --card-shadow: 218 18% 74%;
  
-    --popover: 0 0% 100%;
+    --popover: 218 24% 94%;
     --popover-foreground: 220 15% 8%;
  
     --primary: 214 88% 62%;
@@ -45,21 +44,21 @@ html {
     --primary-soft: 214 88% 72%;
     --primary-muted: 214 45% 82%;
  
-    --secondary: 214 25% 94%;
+    --secondary: 218 22% 91%;
     --secondary-foreground: 220 15% 22%;
-    --secondary-hover: 214 25% 90%;
+    --secondary-hover: 218 20% 88%;
  
-    --muted: 214 25% 94%;
+    --muted: 218 20% 88%;
     --muted-foreground: 214 18% 45%;
  
-    --accent: 214 25% 94%;
+    --accent: 218 20% 88%;
     --accent-foreground: 220 15% 22%;
  
     --destructive: 0 82% 58%;
     --destructive-foreground: 214 100% 98%;
 
-    --border: 214 18% 88%;
-    --input: 214 18% 88%;
+    --border: 218 18% 80%;
+    --input: 218 18% 80%;
     --ring: 214 88% 62%;
     --ring-offset: 0 0% 100%;
 
@@ -106,13 +105,19 @@ html {
     --radius-3xl: 2rem;
 
     /* Enhanced Shadow System */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    --shadow-3xl: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
-    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    --shadow-sm: 4px 4px 8px hsl(218 14% 72% / 0.82), -4px -4px 8px hsl(0 0% 100% / 0.92);
+    --shadow-md: 8px 8px 16px hsl(218 14% 72% / 0.72), -8px -8px 16px hsl(0 0% 100% / 0.92);
+    --shadow-lg: 12px 12px 28px hsl(218 14% 72% / 0.68), -12px -12px 28px hsl(0 0% 100% / 0.88);
+    --shadow-xl: 18px 18px 40px hsl(218 14% 68% / 0.62), -18px -18px 40px hsl(0 0% 100% / 0.84);
+    --shadow-2xl: 24px 24px 56px hsl(218 14% 66% / 0.6), -24px -24px 56px hsl(0 0% 100% / 0.8);
+    --shadow-3xl: 32px 32px 72px hsl(218 14% 64% / 0.58), -32px -32px 72px hsl(0 0% 100% / 0.76);
+    --shadow-inner: inset 4px 4px 8px hsl(218 14% 72% / 0.72), inset -4px -4px 8px hsl(0 0% 100% / 0.9);
+
+    --neu-shadow-dark: hsl(218 14% 72% / 0.72);
+    --neu-shadow-light: hsl(0 0% 100% / 0.9);
+    --neu-shadow-dark-strong: hsl(218 14% 68% / 0.82);
+    --neu-surface-gradient: linear-gradient(145deg, hsl(var(--surface-elevated)), hsl(var(--surface)));
+    --neu-inset-gradient: linear-gradient(145deg, hsl(var(--surface-hover)), hsl(var(--surface-elevated)));
 
     /* Animation Durations */
     --duration-fast: 150ms;
@@ -135,11 +140,11 @@ html {
     --accent-cool: 198, 82%, 75%;
 
     /* Dark Mode Neutrals */
-    --background: 220 18% 14%;
+    --background: 220 18% 18%;
       --foreground: 220 15% 94%;
       --surface: 220 18% 18%;
-      --surface-elevated: 220 18% 20%;
-      --surface-hover: 220 18% 22%;
+      --surface-elevated: 220 18% 21%;
+      --surface-hover: 220 18% 15%;
 
     --card: 220 18% 18%;
       --card-foreground: 220 15% 94%;
@@ -184,13 +189,19 @@ html {
     --info-foreground: 214 100% 3%;
 
     /* Dark Mode Enhanced Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-    --shadow-3xl: 0 35px 60px -12px rgba(0, 0, 0, 0.8);
-    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4);
+    --shadow-sm: 4px 4px 8px hsl(220 24% 8% / 0.5), -4px -4px 8px hsl(220 16% 30% / 0.54);
+    --shadow-md: 8px 8px 16px hsl(220 24% 8% / 0.5), -8px -8px 16px hsl(220 16% 30% / 0.52);
+    --shadow-lg: 12px 12px 28px hsl(220 24% 8% / 0.5), -12px -12px 28px hsl(220 16% 30% / 0.48);
+    --shadow-xl: 18px 18px 40px hsl(220 24% 8% / 0.52), -18px -18px 40px hsl(220 16% 30% / 0.44);
+    --shadow-2xl: 24px 24px 56px hsl(220 24% 8% / 0.56), -24px -24px 56px hsl(220 16% 30% / 0.42);
+    --shadow-3xl: 32px 32px 72px hsl(220 24% 8% / 0.58), -32px -32px 72px hsl(220 16% 30% / 0.4);
+    --shadow-inner: inset 4px 4px 8px hsl(220 24% 8% / 0.5), inset -4px -4px 8px hsl(220 16% 30% / 0.5);
+
+    --neu-shadow-dark: hsl(220 24% 8% / 0.5);
+    --neu-shadow-light: hsl(220 16% 30% / 0.5);
+    --neu-shadow-dark-strong: hsl(220 24% 7% / 0.6);
+    --neu-surface-gradient: linear-gradient(145deg, hsl(var(--surface-elevated)), hsl(var(--surface)));
+    --neu-inset-gradient: linear-gradient(145deg, hsl(var(--surface-hover)), hsl(var(--surface-elevated)));
   }
 }
 
@@ -202,6 +213,9 @@ html {
   
   body {
     @apply bg-background text-foreground;
+    background:
+      radial-gradient(ellipse 80% 46% at 20% -12%, hsl(var(--primary) / 0.09), transparent 58%),
+      linear-gradient(145deg, hsl(var(--surface-elevated)), hsl(var(--surface)));
     font-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -250,6 +264,38 @@ html {
 
 /* Enhanced Utility Classes */
 @layer utilities {
+  .neu-raised {
+    background: var(--neu-surface-gradient);
+    box-shadow: var(--shadow-md);
+  }
+
+  .neu-raised-sm {
+    background: var(--neu-surface-gradient);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .neu-inset {
+    background: var(--neu-inset-gradient);
+    box-shadow: var(--shadow-inner);
+  }
+
+  .neu-flat {
+    background: var(--neu-surface-gradient);
+  }
+
+  .neu-pressable {
+    transition: transform var(--duration-fast) ease-out, box-shadow var(--duration-fast) ease-out, color var(--duration-fast) ease-out, background var(--duration-fast) ease-out;
+  }
+
+  .neu-pressable:hover {
+    transform: translateY(-1px);
+  }
+
+  .neu-pressable:active {
+    transform: translateY(1px);
+    box-shadow: inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light);
+  }
+
   /* Gradient Text Effects */
   .text-gradient {
     @apply bg-gradient-to-r from-primary via-primary-hover to-primary bg-clip-text text-transparent;
@@ -367,6 +413,11 @@ html {
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
+    }
+
+    .neu-pressable:hover,
+    .neu-pressable:active {
+      transform: none;
     }
   }
 

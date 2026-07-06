@@ -1,5 +1,15 @@
 import type { AiMetadata, ImageSource } from './ai';
 
+export type CoverTemplate = 'default' | 'gradient-blue' | 'gradient-purple' | 'gradient-orange';
+
+export interface WeeklyCoverConfig {
+    type: 'template';
+    template: CoverTemplate;
+    title: string;
+    subtitle?: string;
+    issueNumber: number;
+}
+
 export type StructuredContent =
     | string
     | number
@@ -21,6 +31,8 @@ export type WeeklyPost = {
     readingTime?: string;
     wordCount?: number;
     lastUpdated?: string;
+    issueNumber?: number;
+    startDate?: string | Date;
     screenshot_api?: 'ScreenshotLayer' | 'HCTI' | 'manual';
     sections: Section[];
     desc?:string;
@@ -42,6 +54,7 @@ export type Section = {
     original_score?: number | null;
     summary_score?: number | null;
     ai_metadata?: AiMetadata | unknown | null;
+    featured?: boolean;
     wordCount?: number;
     readingTime?: number | string;
     screenshot_api?: 'ScreenshotLayer' | 'HCTI' | 'manual';

@@ -16,7 +16,7 @@
 | `database.ts` | MySQL数据库连接池 | mysql2 |
 | `database-service.ts` | 数据库服务封装 | database.ts |
 | `content-service.ts` | 内容服务（博客/周刊） | database.ts, cache.ts |
-| `cache.ts` | 内存缓存服务 | node-cache |
+| `cache.ts` | 内存缓存服务 | 原生 Map |
 | `structured-content.ts` | 结构化内容解析 | - |
 | `weekly.ts` | 周刊数据处理 | - |
 | `blogs.ts` | 博客数据处理 | - |

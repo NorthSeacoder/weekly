@@ -28,8 +28,28 @@ const { prevPost, nextPost } = Astro.props as Props;
 const rawSlug = Astro.params.slug;
 const slug = Array.isArray(rawSlug) ? rawSlug.join('/') : rawSlug;
 const post = slug ? await getWeeklyPostWithSectionsBySlug(slug) : null;
+
+const ogImageUrl = post?.issueNumber
+  ? new URL(`/og/weekly/${post.issueNumber}.png`, Astro.site).toString()
+  : undefined;
+
+const metadata = post
+  ? {
+      title: post.title,
+      description: post.desc || `第 ${post.issueNumber} 期周刊`,
+      openGraph: {
+        type: 'article',
+        images: ogImageUrl
+          ? [{ url: ogImageUrl, width: 1200, height: 630 }]
+          : [],
+      },
+      twitter: {
+        cardType: ogImageUrl ? 'summary_large_image' : 'summary',
+      },
+    }
+  : undefined;
 ---
 
-<Layout>
+<Layout metadata={metadata}>
   {post && <SinglePost post={post} prevPost={prevPost} nextPost={nextPost} />}
 </Layout>

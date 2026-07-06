@@ -26,26 +26,26 @@ const latestWeekly = await getLatestWeeklyPost();
 ---
 
 <header
-    class='fixed top-0 left-0 right-0 z-50 mx-auto w-full'
+    class='fixed top-0 left-0 right-0 z-50 mx-auto w-full site-header'
     {...id ? {id} : {}}
     data-header
     transition:persist="main-header"
 >
-    <div class='mx-auto max-w-5xl px-4 pt-2' data-header-inner>
+    <div class='site-header-inner mx-auto w-full max-w-[68rem] px-4' data-header-inner>
         <!-- 导航容器 -->
-        <div class='rounded bg-card/95 backdrop-blur-md border border-border shadow-lg header-bg px-3 sm:px-4 py-1.5'>
-            <div class='flex items-center justify-between gap-4'>
+        <div class='site-header-shell relative w-full px-0 py-2'>
+            <div class='flex min-h-12 items-center justify-between gap-3 sm:gap-4'>
                 <!-- 左侧: Logo + 导航 -->
-                <div class='flex items-center gap-6'>
+                <div class='flex min-w-0 items-center gap-4 sm:gap-6'>
                     <!-- Logo -->
                     <a
-                        class='flex items-center gap-2 group/logo'
+                        class='flex shrink-0 items-center gap-2 rounded-md px-1 py-1 transition-colors hover:bg-surface-hover/45 group/logo'
                         href={getHomePermalink()}
                         aria-label='回到首页'>
-                        <div class='w-7 h-7 flex items-center justify-center rounded bg-primary group-hover/logo:bg-primary-hover transition-colors'>
-                            <Icon name='tabler:code' class='w-3.5 h-3.5 text-white' />
+                        <div class='w-7 h-7 flex items-center justify-center rounded-md bg-primary/90 transition-colors group-hover/logo:bg-primary'>
+                            <Icon name='tabler:code' class='w-3.5 h-3.5 text-primary-foreground' />
                         </div>
-                        <span class='hidden sm:block text-sm font-semibold text-foreground'>
+                        <span class='hidden whitespace-nowrap sm:block text-sm font-semibold text-foreground'>
                             我不知道的周刊
                         </span>
                     </a>
@@ -56,10 +56,10 @@ const latestWeekly = await getLatestWeeklyPost();
                             links.map(({text, href, icon}) => (
                                 <a
                                     class:list={[
-                                        'flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors',
+                                        'flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
                                         href === currentPath
-                                            ? 'text-foreground bg-surface'
-                                            : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover'
+                                            ? 'text-primary bg-primary/10'
+                                            : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover/45'
                                     ]}
                                     href={href}
                                     data-nav-link>
@@ -72,14 +72,14 @@ const latestWeekly = await getLatestWeeklyPost();
                 </div>
 
                 <!-- 右侧: 工具栏 -->
-                <div class='flex items-center gap-2'>
+                <div class='flex shrink-0 items-center gap-2'>
                     <!-- 最新周刊 (大屏幕) -->
                     {
                         latestWeekly && (
                             <a
                                 href={latestWeekly.permalink}
-                                class='hidden lg:flex items-center gap-2 px-3 py-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors mr-1'>
-                                <span class='w-2 h-2 rounded-full bg-primary animate-pulse' />
+                                class='hidden xl:flex items-center gap-2 px-2.5 py-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors mr-1'>
+                                <span class='h-1.5 w-1.5 rounded-full bg-primary/75' />
                                 <span class='text-xs font-medium max-w-[120px] truncate'>
                                     {latestWeekly.title}
                                 </span>
@@ -90,19 +90,19 @@ const latestWeekly = await getLatestWeeklyPost();
                     <!-- 搜索按钮 -->
                     <button
                         type='button'
-                        class='flex items-center gap-1.5 h-8 px-2.5 rounded bg-surface text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors cursor-pointer'
+                        class='flex shrink-0 items-center gap-1.5 h-8 px-2.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface-hover/45 transition-colors cursor-pointer'
                         aria-label='搜索'
                         data-search-trigger
                         id='header-search-btn'>
                         <Icon name='tabler:search' class='w-3.5 h-3.5' />
-                        <kbd class='hidden sm:inline text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded'>
+                        <kbd class='hidden sm:inline text-[10px] font-mono text-muted-foreground bg-surface-hover/55 px-1.5 py-0.5 rounded'>
                             ⌘K
                         </kbd>
                     </button>
 
                     <!-- GitHub -->
                     <a
-                        class='flex items-center justify-center w-8 h-8 rounded bg-surface text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors'
+                        class='flex shrink-0 items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface-hover/45 transition-colors'
                         aria-label='GitHub'
                         href='https://github.com/NorthSeacoder/weekly'
                         target='_blank'
@@ -113,7 +113,7 @@ const latestWeekly = await getLatestWeeklyPost();
                     <!-- 移动端菜单按钮 -->
                     <div class='md:hidden'>
                         <ToggleMenu
-                            class='flex items-center justify-center w-8 h-8 rounded bg-surface text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors'
+                            class='group flex h-8 w-8 flex-col items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-surface-hover/45 transition-colors'
                         />
                     </div>
                 </div>
@@ -121,15 +121,15 @@ const latestWeekly = await getLatestWeeklyPost();
 
             <!-- 移动端导航菜单 -->
             <nav
-                class='md:hidden hidden absolute top-full left-4 right-4 mt-2 p-2 rounded bg-card border border-border shadow-xl'
+                class='md:hidden hidden absolute top-full left-0 right-0 mt-2 p-2 rounded-md bg-background/95 border border-border/60 shadow-lg backdrop-blur-md'
                 data-mobile-menu>
                 {
                     links.map(({text, href, icon}) => (
                         <a
                             class:list={[
-                                'flex items-center gap-3 px-4 py-3 rounded text-sm font-medium transition-colors',
+                                'flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors',
                                 href === currentPath
-                                    ? 'text-foreground bg-surface'
+                                    ? 'text-primary bg-primary/10'
                                     : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover'
                             ]}
                             href={href}
@@ -144,7 +144,7 @@ const latestWeekly = await getLatestWeeklyPost();
 
                 <button
                     type='button'
-                    class='w-full flex items-center gap-3 px-4 py-3 rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors'
+                    class='w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors'
                     data-search-trigger
                     id='mobile-search-btn'>
                     <Icon name='tabler:search' class='w-5 h-5' />
@@ -155,8 +155,8 @@ const latestWeekly = await getLatestWeeklyPost();
                     latestWeekly && (
                         <a
                             href={latestWeekly.permalink}
-                            class='flex items-center gap-3 px-4 py-3 rounded text-sm font-medium text-primary hover:bg-primary/10 transition-colors'>
-                            <span class='w-2 h-2 rounded-full bg-primary animate-pulse' />
+                            class='flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-primary hover:bg-primary/10 transition-colors'>
+                            <span class='h-1.5 w-1.5 rounded-full bg-primary/75' />
                             <span class='truncate'>{latestWeekly.title}</span>
                         </a>
                     )
@@ -173,6 +173,7 @@ const latestWeekly = await getLatestWeeklyPost();
         function initHeader() {
             if (abortController) abortController.abort();
             abortController = new AbortController();
+            const signal = abortController.signal;
 
             const headerInner = document.querySelector('[data-header-inner]') as HTMLElement | null;
             const mobileMenu = document.querySelector('[data-mobile-menu]') as HTMLElement | null;
@@ -192,10 +193,10 @@ const latestWeekly = await getLatestWeeklyPost();
                     const isActive = href === normalizedTarget;
 
                     if (isActive) {
-                        link.classList.add('text-foreground', 'bg-surface');
+                        link.classList.add('text-primary', 'bg-primary/10');
                         link.classList.remove('text-muted-foreground');
                     } else {
-                        link.classList.remove('text-foreground', 'bg-surface');
+                        link.classList.remove('text-primary', 'bg-primary/10');
                         link.classList.add('text-muted-foreground');
                     }
                 });
@@ -212,7 +213,7 @@ const latestWeekly = await getLatestWeeklyPost();
                         const href = link.getAttribute('href');
                         if (href) setActiveLinks(href);
                     },
-                    { signal: abortController.signal }
+                    { signal }
                 );
             });
 
@@ -241,7 +242,7 @@ const latestWeekly = await getLatestWeeklyPost();
             }
 
             if (toggleButton) {
-                toggleButton.addEventListener('click', toggleMobileMenu, { signal: abortController.signal });
+                toggleButton.addEventListener('click', toggleMobileMenu, { signal });
             }
 
             // 点击外部关闭菜单
@@ -254,7 +255,7 @@ const latestWeekly = await getLatestWeeklyPost();
                         }
                     }
                 },
-                { signal: abortController.signal }
+                { signal }
             );
 
             // 搜索触发
@@ -265,7 +266,7 @@ const latestWeekly = await getLatestWeeklyPost();
                         const searchModalBtn = document.querySelector('[data-aw-search-modal-trigger]');
                         if (searchModalBtn) (searchModalBtn as HTMLElement).click();
                     },
-                    { signal: abortController.signal }
+                    { signal }
                 );
             });
 
@@ -279,7 +280,7 @@ const latestWeekly = await getLatestWeeklyPost();
                         searchBtn?.click();
                     }
                 },
-                { signal: abortController.signal }
+                { signal }
             );
         }
 
@@ -288,7 +289,21 @@ const latestWeekly = await getLatestWeeklyPost();
 </script>
 
 <style>
+    .site-header {
+        background-color: hsl(var(--background) / 0.78);
+        border-bottom: 1px solid hsl(var(--border) / 0.48);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 1px 0 hsl(var(--foreground) / 0.03);
+    }
+
+    .site-header-shell {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+
     .header-bg {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 1px 1px hsl(var(--foreground) / 0.04);
     }
 </style>

@@ -3,20 +3,22 @@ import {cn} from '~/utils/utils';
 import Tags from './Tags.astro';
 import dayjs from 'dayjs';
 import {Icon} from 'astro-icon/components';
+import WeeklyCover from '~/components/widgets/WeeklyCover.astro';
+import type {WeeklyCoverConfig} from '../../../types/weekly';
 
 interface StatCardProps {
     title: string;
     date: string | Date;
     tags?: string[];
     desc?: string;
-    cover?: string;
+    coverConfig?: WeeklyCoverConfig;
     showTags?: boolean;
     eyebrow?: string;
+    featured?: boolean;
 }
 
-const {title, date, desc, tags = [], cover, showTags = true, eyebrow = 'Weekly'} = Astro.props as StatCardProps;
+const {title, date, desc, tags = [], coverConfig, showTags = true, eyebrow = 'Weekly', featured = false} = Astro.props as StatCardProps;
 
-// 格式化日期
 const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
     month: 'short',
     day: 'numeric',
@@ -24,30 +26,25 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
 });
 
 const isNew = dayjs(date).isAfter(dayjs().subtract(2, 'week'));
-const defaultCover = '/images/weekly-default-cover.svg';
-const coverSrc = cover || defaultCover;
 
 const cardClasses = cn(
-    'group relative h-full',
-    'rounded overflow-hidden', // VSCode style: 4px radius
-    'glass-panel', // Solid panel style
+    'weekly-stat-card group relative h-full',
+    'rounded-lg overflow-hidden',
     'transition-all duration-200 ease-out',
-    'hover:border-[#505050]', // Subtle border highlight on hover
     'cursor-pointer',
     'focus-within:ring-2 focus-within:ring-primary/50 focus-within:ring-offset-2 focus-within:ring-offset-background'
 );
 ---
 
 <div class={cardClasses}>
-    <!-- Border highlight on hover -->
     <div
-        class='absolute inset-0 rounded pointer-events-none border border-transparent group-hover:border-[#505050] transition-colors duration-200 z-20'>
+        class='absolute inset-0 rounded-lg pointer-events-none ring-1 ring-inset ring-white/35 dark:ring-white/5 transition-colors duration-200 z-20 group-hover:ring-primary/20'>
     </div>
 
     {
         isNew && (
             <div class='absolute top-3 right-3 z-30'>
-                <span class='inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-primary text-white shadow-lg shadow-primary/20'>
+                <span class='inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase bg-primary text-primary-foreground shadow-md shadow-primary/20'>
                     New
                 </span>
             </div>
@@ -55,32 +52,25 @@ const cardClasses = cn(
     }
 
     <!-- 内容区域 -->
-    <div class='relative z-10 h-full flex flex-col'>
-        <!-- Cover image -->
-        <div class='relative aspect-[16/9] overflow-hidden'>
-            <div
-                class='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-300'>
-            </div>
-            <img
-                src={coverSrc}
-                alt=''
-                class='w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
-                loading='lazy'
-                decoding='async'
-                onerror={`this.onerror=null;this.src='${defaultCover}';`}
-            />
+    <div class:list={['relative z-10 h-full flex flex-col', { 'min-h-full': featured }]}>
+        <!-- Cover -->
+        <div class:list={['stat-card-cover relative overflow-hidden bg-surface', featured ? 'aspect-[16/9]' : 'aspect-[40/21]']}>
+            {coverConfig ? (
+                <WeeklyCover config={coverConfig} variant="card" />
+            ) : (
+                <div class="w-full h-full bg-gradient-to-br from-[hsl(var(--primary)/0.2)] to-[hsl(var(--primary)/0.05)]"></div>
+            )}
         </div>
 
-        <div class='flex flex-col flex-1 p-5 gap-3'>
+        <div class='flex flex-col flex-1 p-4 gap-3'>
             <!-- Eyebrow -->
             <div class='flex items-center gap-2 text-xs text-muted-foreground/80'>
-                <div class='w-1.5 h-1.5 rounded-full bg-primary shadow shadow-primary/50'></div>
-                <span class='font-medium uppercase tracking-wider'>{eyebrow}</span>
+                <span class='issue-eyebrow inline-flex rounded-md px-2 py-1 font-semibold tracking-[0.08em]'>{eyebrow}</span>
             </div>
 
             <!-- Title -->
             <h3
-                class='text-lg font-bold text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200'>
+                class='text-base font-bold text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200'>
                 {title}
             </h3>
 
@@ -103,7 +93,7 @@ const cardClasses = cn(
                 }
 
                 <!-- Footer -->
-                <div class='flex items-center justify-between pt-3 border-t border-border text-sm'>
+                <div class='flex items-center justify-between pt-3 border-t border-border/45 text-sm'>
                     <time datetime={date.toString()} class='text-muted-foreground/70 font-mono text-xs'
                         >{formattedDate}</time
                     >
@@ -128,6 +118,29 @@ const cardClasses = cn(
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    }
+
+    .weekly-stat-card {
+        background: var(--neu-surface-gradient);
+        box-shadow: var(--shadow-md);
+    }
+
+    .weekly-stat-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stat-card-cover {
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+
+    .stat-card-cover :global(.weekly-cover),
+    .stat-card-cover :global(.weekly-cover__svg) {
+        border-radius: inherit;
+    }
+
+    .issue-eyebrow {
+        background: var(--neu-inset-gradient);
+        box-shadow: var(--shadow-inner);
     }
 
     /* Text truncation */

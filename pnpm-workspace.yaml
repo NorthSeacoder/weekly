@@ -1,0 +1,12 @@
+allowBuilds:
+  '@sentry/cli': true
+  esbuild: true
+  puppeteer: true
+  sharp: true
+
+overrides:
+  tmp: ^0.2.3
+
+peerDependencyRules:
+  allowedVersions:
+    tailwindcss: 4.3.0

@@ -48,7 +48,7 @@ const tocHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 <script>
   class TableOfContents {
     private links: NodeListOf<Element> | null = null;
-    private headings: Element[] = [];
+    private headings: HTMLElement[] = [];
     private observer: IntersectionObserver | null = null;
 
     constructor() {
@@ -60,7 +60,7 @@ const tocHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
           const target = link.getAttribute('data-target');
           return target ? document.getElementById(target) : null;
         })
-        .filter((el): el is Element => el !== null);
+        .filter((el): el is HTMLElement => el !== null);
 
       if (this.headings.length > 0) {
         this.init();

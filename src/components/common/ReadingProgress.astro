@@ -7,7 +7,7 @@
 
 <div
   id="reading-progress"
-  class="fixed top-0 left-0 right-0 z-50 h-1 bg-primary/20 dark:bg-primary/10"
+  class="fixed top-0 left-0 right-0 z-[60] h-[2px] bg-primary/12 dark:bg-primary/10 pointer-events-none"
   role="progressbar"
   aria-label="阅读进度"
   aria-valuenow="0"
@@ -27,6 +27,7 @@
     private progressBar: HTMLElement | null = null;
     private container: HTMLElement | null = null;
     private ticking = false;
+    private controller = new AbortController();
 
     constructor() {
       this.progressBar = document.querySelector('[data-progress-bar]');
@@ -38,8 +39,15 @@
     }
 
     private init() {
-      window.addEventListener('scroll', () => this.handleScroll(), { passive: true });
+      window.addEventListener('scroll', () => this.handleScroll(), {
+        passive: true,
+        signal: this.controller.signal
+      });
       this.updateProgress();
+    }
+
+    destroy() {
+      this.controller.abort();
     }
 
     private handleScroll() {
@@ -64,34 +72,33 @@
       const progress = (scrollTop / scrollableHeight) * 100;
       const clampedProgress = Math.max(0, Math.min(100, progress));
 
-      // 更新进度条宽度
-      this.progressBar.style.width = `${clampedProgress}%`;
+      this.progressBar.style.transform = `scaleX(${clampedProgress / 100})`;
       this.container.setAttribute('aria-valuenow', clampedProgress.toFixed(0));
-
-      // 当进度为 0 时隐藏进度条
-      if (clampedProgress === 0) {
-        this.container.style.opacity = '0';
-      } else {
-        this.container.style.opacity = '1';
-      }
     }
   }
 
-  // 初始化阅读进度条
   if (typeof window !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', () => {
-      new ReadingProgressBar();
-    });
+    const READING_PROGRESS_KEY = '__reading_progress_instance__';
+    const readingProgressWindow = window as unknown as Window & Record<typeof READING_PROGRESS_KEY, ReadingProgressBar | undefined>;
 
-    document.addEventListener('astro:page-load', () => {
-      new ReadingProgressBar();
-    });
+    const initReadingProgress = () => {
+      readingProgressWindow[READING_PROGRESS_KEY]?.destroy();
+      readingProgressWindow[READING_PROGRESS_KEY] = new ReadingProgressBar();
+    };
+
+    document.addEventListener('astro:page-load', initReadingProgress);
   }
 </script>
 
 <style>
   #reading-progress {
-    transition: opacity 0.3s ease;
+    box-shadow: 0 1px 0 hsl(var(--primary) / 0.08);
+  }
+
+  [data-progress-bar] {
+    transform: scaleX(0);
+    transform-origin: left center;
+    width: 100%;
   }
 
   /* 渐变动画 */

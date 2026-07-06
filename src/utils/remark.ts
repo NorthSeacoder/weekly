@@ -7,7 +7,7 @@ import rehypeHighlight from 'rehype-highlight'; // 代码高亮
 import rehypeStringify from 'rehype-stringify'; // HTML AST 转为字符串
 // import rehypeStarryNight from 'rehype-starry-night'
 
-export async function processMarkdown(markdownString) {
+export async function processMarkdown(markdownString: string) {
     const result = await unified()
         .use(remarkParse) // 解析 Markdown
         .use(remarkGemoji) // 处理 emoji

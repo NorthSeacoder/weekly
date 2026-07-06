@@ -1,7 +1,6 @@
 import rss from '@astrojs/rss';
 import type {APIContext} from 'astro';
 import {getLatestWeeklyPostsWithSections} from '@/src/utils/contents/unified-content';
-import {structuredContentToText} from '@/lib/structured-content';
 
 export async function GET(context: APIContext) {
     const latestPosts = await getLatestWeeklyPostsWithSections(12);
@@ -15,9 +14,16 @@ export async function GET(context: APIContext) {
             pubDate: new Date(post.date),
             description: post.desc || post.title,
             link: `/weekly/${post.slug}/`,
-            content: post.sections?.map((section) => structuredContentToText(section.content)).join('\n\n')
+            content: post.sections
+                ?.map((section) => {
+                    const heading = section.title ? `## ${section.title}\n\n` : '';
+                    const body = section.summary || section.description || '';
+                    return heading + body;
+                })
+                .filter(Boolean)
+                .join('\n\n'),
         })),
         customData: `<language>zh-CN</language>`,
-        stylesheet: '/pretty-feed-v3.xsl'
+        stylesheet: '/pretty-feed-v3.xsl',
     });
 }

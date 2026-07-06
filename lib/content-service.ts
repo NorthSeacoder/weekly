@@ -59,7 +59,6 @@ interface WeeklyIssueRouteRow extends RowDataPacket {
 
 interface WeeklyIssueAggregatesRow extends RowDataPacket {
     issue_id: number;
-    cover_image_url: string | null;
     tags: string | null;
     sources: string | null;
 }
@@ -122,17 +121,6 @@ export class WeeklyService {
                     const aggregatesSql = `
                         SELECT
                             wci.weekly_issue_id as issue_id,
-                            SUBSTRING_INDEX(
-                                GROUP_CONCAT(
-                                    CASE
-                                        WHEN c.image_url IS NOT NULL AND c.image_url <> '' THEN c.image_url
-                                        ELSE NULL
-                                    END
-                                    ORDER BY wci.sort_order SEPARATOR ','
-                                ),
-                                ',',
-                                1
-                            ) as cover_image_url,
                             GROUP_CONCAT(DISTINCT t.name SEPARATOR ',') as tags,
                             GROUP_CONCAT(
                                 DISTINCT COALESCE(NULLIF(c.source, ''), c.source_url)
@@ -177,7 +165,9 @@ export class WeeklyService {
                         slug: issue.slug,
                         title: issue.title,
                         date: issue.end_date,
-                        cover: issue.cover || agg?.cover_image_url || undefined,
+                        issueNumber: issue.issue_number,
+                        startDate: issue.start_date || undefined,
+                        cover: issue.cover || undefined,
                         desc: issue.desc || issue.description || undefined,
                         sections: [],
                         tags,
@@ -216,6 +206,7 @@ export class WeeklyService {
                         SELECT
                             wci.weekly_issue_id as issue_id,
                             wci.sort_order,
+                            wci.featured as wci_featured,
                             c.id as content_id,
                             c.title,
                             c.content,
@@ -266,6 +257,7 @@ export class WeeklyService {
                                 original_score: normalizeScore(row.original_score),
                                 summary_score: normalizeScore(row.summary_score),
                                 ai_metadata: parseJsonField(row.ai_metadata),
+                                featured: row.wci_featured === 1 || row.wci_featured === true,
                                 wordCount: row.word_count,
                                 readingTime: row.reading_time,
                                 screenshot_api: row.screenshot_api
@@ -323,7 +315,6 @@ export class WeeklyService {
                         issue.reading_time ||
                         sectionsReading ||
                         (totalWordCount ? Math.max(1, Math.ceil(totalWordCount / 200)) : undefined);
-                    const computedCover = issue.cover || sections.find(s => !!s.image_url)?.image_url || undefined;
                     const computedDesc = issue.desc || issue.description || undefined;
 
                     return {
@@ -331,7 +322,9 @@ export class WeeklyService {
                         slug: issue.slug,
                         title: issue.title,
                         date: issue.end_date,
-                        cover: computedCover,
+                        issueNumber: issue.issue_number,
+                        startDate: issue.start_date || undefined,
+                        cover: issue.cover || undefined,
                         desc: computedDesc,
                         sections,
                         tags,
@@ -373,6 +366,7 @@ export class WeeklyService {
                         SELECT
                             wci.weekly_issue_id as issue_id,
                             wci.sort_order,
+                            wci.featured as wci_featured,
                             c.id as content_id,
                             c.title,
                             c.content,
@@ -422,6 +416,7 @@ export class WeeklyService {
                             original_score: normalizeScore(row.original_score),
                             summary_score: normalizeScore(row.summary_score),
                             ai_metadata: parseJsonField(row.ai_metadata),
+                            featured: row.wci_featured === 1 || row.wci_featured === true,
                             wordCount: row.word_count,
                             readingTime: row.reading_time,
                             screenshot_api: row.screenshot_api
@@ -485,16 +480,16 @@ export class WeeklyService {
                             issue.reading_time ||
                             sectionsReading ||
                             (totalWordCount ? Math.max(1, Math.ceil(totalWordCount / 200)) : undefined);
-                        const computedCover = issue.cover || sections.find(s => !!s.image_url)?.image_url || undefined;
-                        const computedDesc = issue.desc || issue.description || undefined;
 
                         posts.push({
                             id: issue.id.toString(),
                             slug: issue.slug,
                             title: issue.title,
                             date: issue.end_date,
-                            cover: computedCover,
-                            desc: computedDesc,
+                            cover: issue.cover || undefined,
+                            desc: issue.desc || issue.description || undefined,
+                            issueNumber: issue.issue_number,
+                            startDate: issue.start_date || undefined,
                             sections,
                             tags,
                             source: sources,
@@ -536,17 +531,6 @@ export class WeeklyService {
                     const aggregatesSql = `
                         SELECT
                             wci.weekly_issue_id as issue_id,
-                            SUBSTRING_INDEX(
-                                GROUP_CONCAT(
-                                    CASE
-                                        WHEN c.image_url IS NOT NULL AND c.image_url <> '' THEN c.image_url
-                                        ELSE NULL
-                                    END
-                                    ORDER BY wci.sort_order SEPARATOR ','
-                                ),
-                                ',',
-                                1
-                            ) as cover_image_url,
                             GROUP_CONCAT(DISTINCT t.name SEPARATOR ',') as tags,
                             GROUP_CONCAT(
                                 DISTINCT COALESCE(NULLIF(c.source, ''), c.source_url)
@@ -594,8 +578,10 @@ export class WeeklyService {
                             slug: issue.slug,
                             title: issue.title,
                             date: issue.end_date,
-                            cover: issue.cover || agg?.cover_image_url || undefined,
+                            cover: issue.cover || undefined,
                             desc: issue.desc || issue.description || undefined,
+                            issueNumber: issue.issue_number,
+                            startDate: issue.start_date || undefined,
                             sections: [],
                             tags,
                             source: sources,
@@ -643,6 +629,7 @@ export class WeeklyService {
                         SELECT
                             wci.weekly_issue_id as issue_id,
                             wci.sort_order,
+                            wci.featured as wci_featured,
                             c.id as content_id,
                             c.title,
                             c.content,
@@ -692,6 +679,7 @@ export class WeeklyService {
                             original_score: normalizeScore(row.original_score),
                             summary_score: normalizeScore(row.summary_score),
                             ai_metadata: parseJsonField(row.ai_metadata),
+                            featured: row.wci_featured === 1 || row.wci_featured === true,
                             wordCount: row.word_count,
                             readingTime: row.reading_time,
                             screenshot_api: row.screenshot_api
@@ -755,18 +743,18 @@ export class WeeklyService {
                             issue.reading_time ||
                             sectionsReading ||
                             (totalWordCount ? Math.max(1, Math.ceil(totalWordCount / 200)) : undefined);
-                        const computedCover = issue.cover || sections.find(s => !!s.image_url)?.image_url || undefined;
-                        const computedDesc = issue.desc || issue.description || undefined;
 
                         posts.push({
                             id: issue.id.toString(),
                             slug: issue.slug,
                             title: issue.title,
                             date: issue.end_date,
-                            cover: computedCover,
-                            desc: computedDesc,
-                            sections: sections,
-                            tags: tags,
+                            cover: issue.cover || undefined,
+                            desc: issue.desc || issue.description || undefined,
+                            issueNumber: issue.issue_number,
+                            startDate: issue.start_date || undefined,
+                            sections,
+                            tags,
                             source: sources,
                             permalink: getPermalink(issue.slug, 'weekly'),
                             readingTime: readingMinutes ? `${readingMinutes} 分钟` : undefined,
@@ -778,6 +766,32 @@ export class WeeklyService {
 
                 } catch (error) {
                     console.error('Error getting weekly posts from database:', error);
+                    return [];
+                }
+            },
+            { debug: process.env.NODE_ENV === 'development' }
+        );
+    }
+
+    static async getCategories(): Promise<Array<{ id: number; name: string; slug: string; sort_order: number }>> {
+        return getCachedData(
+            'categories-db',
+            async () => {
+                try {
+                    const sql = `
+                        SELECT id, name, slug, sort_order
+                        FROM categories
+                        ORDER BY sort_order ASC, name ASC
+                    `;
+                    const rows = await query<RowDataPacket[]>(sql);
+                    return rows.map(row => ({
+                        id: row.id as number,
+                        name: row.name as string,
+                        slug: (row.slug || '') as string,
+                        sort_order: (row.sort_order || 0) as number,
+                    }));
+                } catch (error) {
+                    console.error('Error getting categories from database:', error);
                     return [];
                 }
             },

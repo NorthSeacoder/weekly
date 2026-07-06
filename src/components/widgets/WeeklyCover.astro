@@ -1,0 +1,223 @@
+---
+import type { WeeklyCoverConfig } from '../../../types/weekly';
+
+interface Props {
+    config: WeeklyCoverConfig;
+    variant?: 'card' | 'hero';
+}
+
+const { config, variant = 'card' } = Astro.props;
+
+const isHero = variant === 'hero';
+const width = isHero ? 1200 : 600;
+const height = isHero ? 630 : 315;
+const uid = `cover-${config.issueNumber}`;
+
+const palettes: Record<string, { base: string; panel: string; line: string; ink: string; muted: string; accent: string; accentSoft: string }> = {
+    default: {
+        base: 'oklch(17% 0.01 250)',
+        panel: 'oklch(22% 0.015 250)',
+        line: 'oklch(42% 0.018 250)',
+        ink: 'oklch(88% 0.018 250)',
+        muted: 'oklch(66% 0.032 250)',
+        accent: 'oklch(66% 0.18 253)',
+        accentSoft: 'oklch(66% 0.18 253 / 0.16)'
+    },
+    'gradient-blue': {
+        base: 'oklch(17% 0.012 245)',
+        panel: 'oklch(23% 0.026 245)',
+        line: 'oklch(43% 0.03 248)',
+        ink: 'oklch(88% 0.02 248)',
+        muted: 'oklch(67% 0.04 248)',
+        accent: 'oklch(64% 0.2 252)',
+        accentSoft: 'oklch(64% 0.2 252 / 0.16)'
+    },
+    'gradient-purple': {
+        base: 'oklch(17% 0.012 280)',
+        panel: 'oklch(23% 0.024 285)',
+        line: 'oklch(43% 0.03 292)',
+        ink: 'oklch(88% 0.018 292)',
+        muted: 'oklch(68% 0.036 292)',
+        accent: 'oklch(66% 0.19 300)',
+        accentSoft: 'oklch(66% 0.19 300 / 0.14)'
+    },
+    'gradient-orange': {
+        base: 'oklch(17% 0.012 64)',
+        panel: 'oklch(23% 0.024 68)',
+        line: 'oklch(43% 0.028 72)',
+        ink: 'oklch(88% 0.018 70)',
+        muted: 'oklch(67% 0.035 72)',
+        accent: 'oklch(71% 0.18 54)',
+        accentSoft: 'oklch(71% 0.18 54 / 0.14)'
+    }
+};
+
+const colors = palettes[config.template] || palettes.default;
+const titleSize = isHero ? 62 : 36;
+const pad = isHero ? 70 : 26;
+const issueNumber = String(config.issueNumber).padStart(3, '0');
+
+function splitTitle(title: string, maxChars: number) {
+    const chars = Array.from(title.trim());
+    if (chars.length <= maxChars) return [title.trim()];
+
+    const lines = [chars.slice(0, maxChars).join(''), chars.slice(maxChars, maxChars * 2).join('')];
+    if (chars.length > maxChars * 2) {
+        lines[1] = `${Array.from(lines[1]).slice(0, Math.max(0, maxChars - 1)).join('')}…`;
+    }
+    return lines;
+}
+
+const titleLines = splitTitle(config.title, isHero ? 16 : 11);
+const titleStartY = isHero ? height * 0.45 : height * 0.41;
+const titleLineHeight = titleSize * 1.08;
+const titleX = pad;
+const frameInset = isHero ? pad * 0.62 : 0;
+const topRuleY = isHero ? 132 : 58;
+const bottomRuleY = isHero ? height - pad : height - 30;
+---
+
+<div class:list={['weekly-cover', `weekly-cover--${variant}`]}>
+    <svg
+        viewBox={`0 0 ${width} ${height}`}
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        preserveAspectRatio="xMidYMid meet"
+        aria-label={config.title}
+        class="weekly-cover__svg"
+    >
+        <defs>
+            <linearGradient id={`${uid}-bg`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color={colors.panel} />
+                <stop offset="58%" stop-color={colors.base} />
+                <stop offset="100%" stop-color={colors.panel} />
+            </linearGradient>
+            <pattern id={`${uid}-grid`} width={isHero ? 40 : 20} height={isHero ? 40 : 20} patternUnits="userSpaceOnUse">
+                <path d={`M ${isHero ? 40 : 20} 0 L 0 0 0 ${isHero ? 40 : 20}`} fill="none" stroke={colors.line} stroke-opacity="0.18" stroke-width="1" />
+            </pattern>
+            <filter id={`${uid}-paper`}>
+                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+                <feColorMatrix type="saturate" values="0" />
+                <feComponentTransfer>
+                    <feFuncA type="table" tableValues="0 0.025" />
+                </feComponentTransfer>
+            </filter>
+        </defs>
+
+        <rect width={width} height={height} fill={`url(#${uid}-bg)`} />
+        <rect width={width} height={height} fill={`url(#${uid}-grid)`} />
+        <rect width={width} height={height} filter={`url(#${uid}-paper)`} opacity="0.7" />
+
+        <rect x={frameInset} y={frameInset} width={width - frameInset * 2} height={height - frameInset * 2} fill="none" stroke={colors.line} stroke-opacity="0.32" />
+        <path
+            d={`M ${width * 0.64} ${frameInset} H ${width - frameInset} V ${height - frameInset} H ${width * 0.52} Z`}
+            fill={colors.accentSoft}
+        />
+        <circle cx={width * 0.86} cy={height * 0.24} r={height * 0.24} fill={colors.accent} opacity="0.08" />
+
+        <text
+            x={pad}
+            y={isHero ? 94 : 42}
+            font-family="system-ui, -apple-system, sans-serif"
+            font-size={isHero ? 18 : 10}
+            font-weight="760"
+            letter-spacing={isHero ? 4 : 2.2}
+            fill={colors.accent}
+        >
+            WEEKLY
+        </text>
+
+        <text
+            x={width - pad}
+            y={isHero ? 100 : 44}
+            text-anchor="end"
+            font-family="system-ui, -apple-system, sans-serif"
+            font-size={isHero ? 18 : 10}
+            font-weight="760"
+            letter-spacing={isHero ? 3 : 1.8}
+            fill={colors.muted}
+        >
+            ISSUE {issueNumber}
+        </text>
+
+        <text
+            x={width - pad}
+            y={height - (isHero ? 70 : 34)}
+            text-anchor="end"
+            font-family="system-ui, -apple-system, sans-serif"
+            font-size={isHero ? 96 : 48}
+            font-weight="860"
+            fill={colors.ink}
+            opacity="0.06"
+        >
+            {issueNumber}
+        </text>
+
+        <line x1={pad} y1={topRuleY} x2={width - pad} y2={topRuleY} stroke={colors.line} stroke-opacity="0.44" />
+        <line x1={pad} y1={bottomRuleY} x2={width - pad} y2={bottomRuleY} stroke={colors.line} stroke-opacity="0.44" />
+
+        <text
+            x={titleX}
+            y={height - (isHero ? 94 : 48)}
+            font-family="system-ui, -apple-system, sans-serif"
+            font-size={isHero ? 18 : 10}
+            font-weight="750"
+            letter-spacing={isHero ? 3.8 : 2}
+            fill={colors.accent}
+        >
+            CURATED TECH NOTES
+        </text>
+
+        <text
+            x={titleX}
+            y={titleStartY}
+            font-family="system-ui, -apple-system, sans-serif"
+            font-size={titleSize}
+            font-weight="820"
+            fill={colors.ink}
+        >
+            {titleLines.map((line, index) => (
+                <tspan x={titleX} dy={index === 0 ? 0 : titleLineHeight}>{line}</tspan>
+            ))}
+        </text>
+
+        {config.subtitle && isHero && (
+            <text
+                x={titleX}
+                y={titleStartY + titleLineHeight * titleLines.length + 34}
+                font-family="system-ui, -apple-system, sans-serif"
+                font-size="24"
+                font-weight="650"
+                fill={colors.muted}
+            >
+                {config.subtitle}
+            </text>
+        )}
+
+        <line x1={pad} y1={height - (isHero ? 64 : 32)} x2={pad + (isHero ? 160 : 78)} y2={height - (isHero ? 64 : 32)} stroke={colors.accent} stroke-width={isHero ? 4 : 2} />
+    </svg>
+</div>
+
+<style>
+    .weekly-cover {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: hsl(var(--surface));
+    }
+
+    .weekly-cover__svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: contain;
+    }
+
+    .weekly-cover--card {
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+
+    .weekly-cover--hero {
+        border-radius: 0.75rem;
+    }
+</style>

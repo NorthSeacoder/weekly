@@ -1,5 +1,3 @@
-import { IconType } from "react-icons"
-
 export type AuthorsConfig = {
   name: string
   url: string
@@ -12,7 +10,7 @@ export type ProductLink = {
 export type Link = {
   name: string
   href: string
-  icon: IconType
+  icon: string
 }
 export type ThemeColor = {
   media: string

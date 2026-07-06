@@ -2,9 +2,9 @@ import {defineConfig} from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import weekly from './integration';
 import icon from 'astro-icon';
-import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
 import sentry from '@sentry/astro';
+import tailwindcss from '@tailwindcss/vite';
 // import {readingTimeRemarkPlugin} from './src/utils/frontmatter';
 
 function parseRate(value: string | undefined, fallback: number) {
@@ -12,14 +12,13 @@ function parseRate(value: string | undefined, fallback: number) {
     return Number.isFinite(num) ? num : fallback;
 }
 
+const sentryDsn = process.env.PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN;
+
 export default defineConfig({
     site: 'https://weekly.mengpeng.tech',
     output: 'static',
 
     integrations: [
-        tailwind({
-            applyBaseStyles: false
-        }),
         sitemap(),
         mdx(),
         icon({
@@ -28,25 +27,29 @@ export default defineConfig({
             }
         }),
         weekly(),
-        sentry({
-            dsn: process.env.PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN,
-            tracesSampleRate:
-                process.env.NODE_ENV === 'development'
-                    ? 1.0
-                    : parseRate(process.env.PUBLIC_SENTRY_TRACES_SAMPLE_RATE, 0.1),
-            
-            // 可选:添加浏览器跟踪集成
-            sourceMapsUploadOptions: {
-                project: 'weekly', // 在 Sentry 中设置的项目名称
-                org: 'nsea',
-                authToken: process.env.SENTRY_AUTH_TOKEN // 用于上传 source maps 的 token
-            }
-        })
+        ...(sentryDsn
+            ? [
+                  sentry({
+                      dsn: sentryDsn,
+                      tracesSampleRate:
+                          process.env.NODE_ENV === 'development'
+                              ? 1.0
+                              : parseRate(process.env.PUBLIC_SENTRY_TRACES_SAMPLE_RATE, 0.1),
+
+                      sourceMapsUploadOptions: {
+                          project: 'weekly',
+                          org: 'nsea',
+                          authToken: process.env.SENTRY_AUTH_TOKEN
+                      }
+                  })
+              ]
+            : [])
     ],
     markdown: {
         // remarkPlugins: [readingTimeRemarkPlugin]
     },
     vite: {
+        plugins: [tailwindcss()],
         define: {
             'import.meta.env.BUILD_TIME': JSON.stringify(new Date().toISOString())
         }

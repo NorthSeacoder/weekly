@@ -1,12 +1,4 @@
-import NodeCache from 'node-cache';
-
-// 创建一个全局的缓存实例
-const cache = new NodeCache({
-    stdTTL: 0, // 永不过期
-    checkperiod: 0, // 禁用清理检查
-    useClones: false // 禁用克隆以提高性能
-});
-
+const cache = new Map<string, unknown>();
 const inFlight = new Map<string, Promise<unknown>>();
 
 export async function getCachedData<T>(
@@ -15,12 +7,11 @@ export async function getCachedData<T>(
     options: {debug?: boolean} = {}
 ): Promise<T> {
     // 尝试从缓存获取数据
-    const cachedData = cache.get<T>(key);
-    if (cachedData !== undefined) {
+    if (cache.has(key)) {
         if (options.debug) {
             console.log(`[cache] hit: ${key}`);
         }
-        return cachedData;
+        return cache.get(key) as T;
     }
 
     const existingPromise = inFlight.get(key);

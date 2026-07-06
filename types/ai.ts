@@ -26,6 +26,7 @@ export interface AiMetadata {
     summary_scoring?: SummaryScoring;
     suggested_category?: string;
     suggested_tags?: string[];
+    key_points?: string[];
 }
 
 export interface ContentAiFields {

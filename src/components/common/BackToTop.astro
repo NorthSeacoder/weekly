@@ -19,6 +19,8 @@
   class BackToTopButton {
     private button: HTMLButtonElement | null = null;
     private scrollThreshold = 300;
+    private ticking = false;
+    private controller = new AbortController();
 
     constructor() {
       this.button = document.querySelector('[data-back-to-top]');
@@ -28,13 +30,28 @@
     }
 
     private init() {
-      window.addEventListener('scroll', () => this.handleScroll(), { passive: true });
-      this.button?.addEventListener('click', () => this.scrollToTop());
+      window.addEventListener('scroll', () => this.handleScroll(), {
+        passive: true,
+        signal: this.controller.signal
+      });
+      this.button?.addEventListener('click', () => this.scrollToTop(), {
+        signal: this.controller.signal
+      });
       this.updateVisibility();
     }
 
     private handleScroll() {
-      this.updateVisibility();
+      if (this.ticking) return;
+
+      requestAnimationFrame(() => {
+        this.updateVisibility();
+        this.ticking = false;
+      });
+      this.ticking = true;
+    }
+
+    destroy() {
+      this.controller.abort();
     }
 
     private updateVisibility() {
@@ -55,9 +72,14 @@
   }
 
   if (typeof window !== 'undefined') {
-    const initBackToTop = () => new BackToTopButton();
+    const BACK_TO_TOP_KEY = '__back_to_top_instance__';
+    const backToTopWindow = window as unknown as Window & Record<typeof BACK_TO_TOP_KEY, BackToTopButton | undefined>;
 
-    document.addEventListener('DOMContentLoaded', initBackToTop);
-    document.addEventListener('astro:after-swap', initBackToTop);
+    const initBackToTop = () => {
+      backToTopWindow[BACK_TO_TOP_KEY]?.destroy();
+      backToTopWindow[BACK_TO_TOP_KEY] = new BackToTopButton();
+    };
+
+    document.addEventListener('astro:page-load', initBackToTop);
   }
 </script>

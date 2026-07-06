@@ -9,59 +9,45 @@ import 'highlight.js/styles/github-dark.min.css';
         --aw-font-serif: 'Inter Variable', serif;
         --aw-font-heading: 'Inter Variable', sans-serif;
 
-        /* ============================================
-       VSCode Dark Modern Theme
-       设计理念: 技术向、代码风格、极简主义、锋利边角
-       圆角规范: 统一 4px (rounded)
-       ============================================ */
-
-        /* Primary: VSCode Blue */
+        /* Soft UI theme: tactile surfaces, restrained radius */
         --primary: 207 90% 54%;
         --primary-foreground: 0 0% 100%;
         --primary-hover: 207 90% 48%;
-        --primary-soft: 207 50% 15%;
-        --primary-muted: 207 30% 20%;
+        --primary-soft: 207 82% 66%;
+        --primary-muted: 207 38% 72%;
 
-        /* Secondary: VSCode Surface */
-        --secondary: 0 0% 15%;
-        --secondary-foreground: 0 0% 80%;
-        --secondary-hover: 0 0% 18%;
+        --secondary: 218 22% 91%;
+        --secondary-foreground: 220 15% 22%;
+        --secondary-hover: 218 20% 88%;
 
-        /* Accent: Code syntax colors */
-        --accent: 0 0% 15%;
-        --accent-foreground: 0 0% 100%;
+        --accent: 218 20% 88%;
+        --accent-foreground: 220 15% 22%;
         --accent-warm: 24 80% 55%;
         --accent-cool: 207 90% 54%;
         --accent-purple: 261 100% 75%;
         --accent-teal: 174 63% 50%;
 
-        /* Muted: Subtle details */
-        --muted: 0 0% 13%;
-        --muted-foreground: 0 0% 62%;
+        --muted: 218 20% 88%;
+        --muted-foreground: 218 16% 43%;
 
-        /* Background: VSCode Dark - #1f1f1f */
-        --background: 0 0% 12%;
-        --foreground: 0 0% 80%;
+        --background: 218 22% 91%;
+        --foreground: 220 15% 9%;
 
-        /* Surface: Panel colors - slightly lighter than background */
-        --surface: 0 0% 15%;
-        --surface-elevated: 0 0% 18%;
-        --surface-hover: 0 0% 22%;
+        --surface: 218 22% 91%;
+        --surface-elevated: 218 24% 94%;
+        --surface-hover: 218 20% 88%;
 
-        /* Card: VSCode Surface - #2d2d2d (more visible) */
-        --card: 0 0% 18%;
-        --card-foreground: 0 0% 80%;
-        --card-border: 0 0% 24%;
-        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        --card: 218 22% 91%;
+        --card-foreground: 220 15% 9%;
+        --card-border: 218 18% 80%;
+        --card-shadow: 218 18% 74%;
 
-        /* Borders: VSCode Border - #3c3c3c */
-        --border: 0 0% 24%;
-        --input: 0 0% 15%;
+        --border: 218 18% 80%;
+        --input: 218 18% 80%;
         --ring: 207 90% 54%;
 
-        /* Popover */
-        --popover: 0 0% 15%;
-        --popover-foreground: 0 0% 80%;
+        --popover: 218 24% 94%;
+        --popover-foreground: 220 15% 9%;
 
         /* Destructive */
         --destructive: 0 84% 60%;
@@ -115,22 +101,26 @@ import 'highlight.js/styles/github-dark.min.css';
         --text-6xl: 3.75rem;
         --text-7xl: 4.5rem;
 
-        /* Border radius - VSCode Style: Sharp corners (4px) */
-        --radius-sm: 2px;
-        --radius: 4px;
-        --radius-lg: 4px;
-        --radius-xl: 4px;
-        --radius-2xl: 4px;
-        --radius-3xl: 4px;
+        /* Border radius - keep current restrained scale */
+        --radius-sm: 0.375rem;
+        --radius: 0.5rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        --radius-2xl: 0.75rem;
+        --radius-3xl: 0.75rem;
 
-        /* Shadows - Deep & Soft */
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
-        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
-        --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        --shadow-3xl: 0 35px 60px -15px rgba(0, 0, 0, 0.6);
-        --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+        /* Soft UI shadows */
+        --shadow-sm: 4px 4px 8px hsl(218 14% 72% / 0.82), -4px -4px 8px hsl(0 0% 100% / 0.92);
+        --shadow-md: 8px 8px 16px hsl(218 14% 72% / 0.72), -8px -8px 16px hsl(0 0% 100% / 0.92);
+        --shadow-lg: 12px 12px 28px hsl(218 14% 72% / 0.68), -12px -12px 28px hsl(0 0% 100% / 0.88);
+        --shadow-xl: 18px 18px 40px hsl(218 14% 68% / 0.62), -18px -18px 40px hsl(0 0% 100% / 0.84);
+        --shadow-2xl: 24px 24px 56px hsl(218 14% 66% / 0.6), -24px -24px 56px hsl(0 0% 100% / 0.8);
+        --shadow-3xl: 32px 32px 72px hsl(218 14% 64% / 0.58), -32px -32px 72px hsl(0 0% 100% / 0.76);
+        --shadow-inner: inset 4px 4px 8px hsl(218 14% 72% / 0.72), inset -4px -4px 8px hsl(0 0% 100% / 0.9);
+        --neu-shadow-dark: hsl(218 14% 72% / 0.72);
+        --neu-shadow-light: hsl(0 0% 100% / 0.9);
+        --neu-surface-gradient: linear-gradient(145deg, hsl(var(--surface-elevated)), hsl(var(--surface)));
+        --neu-inset-gradient: linear-gradient(145deg, hsl(var(--surface-hover)), hsl(var(--surface-elevated)));
 
         /* Glow effects - Enhanced */
         --glow-primary: 0 0 20px hsl(24 95% 58% / 0.15);
@@ -152,12 +142,44 @@ import 'highlight.js/styles/github-dark.min.css';
         }
     }
 
-    /* Dark mode (Always on) - VSCode Dark */
+    /* Dark mode */
     .dark {
         --primary: 207 90% 54%;
         --primary-foreground: 0 0% 100%;
-        --background: 0 0% 12%;
-        --foreground: 0 0% 80%;
+        --primary-hover: 207 90% 62%;
+        --primary-soft: 207 42% 22%;
+        --primary-muted: 207 30% 26%;
+        --secondary: 220 18% 18%;
+        --secondary-foreground: 220 15% 90%;
+        --secondary-hover: 220 18% 22%;
+        --accent: 220 18% 20%;
+        --accent-foreground: 220 15% 90%;
+        --muted: 220 18% 16%;
+        --muted-foreground: 220 10% 66%;
+        --background: 220 18% 18%;
+        --foreground: 220 15% 92%;
+        --surface: 220 18% 18%;
+        --surface-elevated: 220 18% 21%;
+        --surface-hover: 220 18% 15%;
+        --card: 220 18% 18%;
+        --card-foreground: 220 15% 92%;
+        --card-border: 220 15% 26%;
+        --border: 220 15% 26%;
+        --input: 220 15% 22%;
+        --ring: 207 90% 54%;
+        --popover: 220 18% 21%;
+        --popover-foreground: 220 15% 92%;
+        --shadow-sm: 4px 4px 8px hsl(220 24% 8% / 0.5), -4px -4px 8px hsl(220 16% 30% / 0.54);
+        --shadow-md: 8px 8px 16px hsl(220 24% 8% / 0.5), -8px -8px 16px hsl(220 16% 30% / 0.52);
+        --shadow-lg: 12px 12px 28px hsl(220 24% 8% / 0.5), -12px -12px 28px hsl(220 16% 30% / 0.48);
+        --shadow-xl: 18px 18px 40px hsl(220 24% 8% / 0.52), -18px -18px 40px hsl(220 16% 30% / 0.44);
+        --shadow-2xl: 24px 24px 56px hsl(220 24% 8% / 0.56), -24px -24px 56px hsl(220 16% 30% / 0.42);
+        --shadow-3xl: 32px 32px 72px hsl(220 24% 8% / 0.58), -32px -32px 72px hsl(220 16% 30% / 0.4);
+        --shadow-inner: inset 4px 4px 8px hsl(220 24% 8% / 0.5), inset -4px -4px 8px hsl(220 16% 30% / 0.5);
+        --neu-shadow-dark: hsl(220 24% 8% / 0.5);
+        --neu-shadow-light: hsl(220 16% 30% / 0.5);
+        --neu-surface-gradient: linear-gradient(145deg, hsl(var(--surface-elevated)), hsl(var(--surface)));
+        --neu-inset-gradient: linear-gradient(145deg, hsl(var(--surface-hover)), hsl(var(--surface-elevated)));
     }
 
     /* ============================================
@@ -167,6 +189,7 @@ import 'highlight.js/styles/github-dark.min.css';
     /* Smooth scrolling */
     html {
         scroll-behavior: smooth;
+        background: hsl(var(--background));
     }
 
     /* Body base styles */
@@ -174,7 +197,11 @@ import 'highlight.js/styles/github-dark.min.css';
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        background-color: hsl(var(--background));
+        min-height: 100vh;
+        background:
+            radial-gradient(ellipse 80% 46% at 20% -12%, hsl(var(--primary) / 0.09), transparent 58%),
+            linear-gradient(145deg, hsl(var(--surface-elevated)), hsl(var(--surface)));
+        background-attachment: fixed;
         color: hsl(var(--foreground));
     }
 

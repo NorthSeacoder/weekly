@@ -13,7 +13,7 @@ interface Props {
   layout?: 'horizontal' | 'sidebar';
 }
 
-const { categories = [], className = '', layout = 'sidebar' } = Astro.props;
+const { categories = [], className = '' } = Astro.props;
 
 // 移动端下拉菜单样式
 const dropdownButtonClass = cn(
@@ -53,9 +53,6 @@ const sidebarClasses = cn(
   'hidden md:block', // 在移动端隐藏侧边栏
   className
 );
-
-// 标题样式
-const titleClasses = 'flex items-center font-semibold text-gray-700 dark:text-gray-300';
 
 // 获取当前激活的分类名称
 const activeCategory = categories.length > 0 ? categories[0].name : '全部分类';

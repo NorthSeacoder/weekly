@@ -57,20 +57,20 @@ export function getDatabase(): mysql.Pool {
 }
 
 // 执行查询
-export async function query<T extends RowDataPacket[]>(
+export async function query<T = RowDataPacket[]>(
     sql: string, 
     params?: any[]
 ): Promise<T> {
     const db = getDatabase();
     const start = performance.now();
-    const [rows] = await db.query<T>(sql, params);
+    const [rows] = await db.query<RowDataPacket[]>(sql, params);
     const durationMs = performance.now() - start;
     const slowThresholdMs = Number(process.env.DB_LOG_SLOW_QUERIES_MS || '');
     if (Number.isFinite(slowThresholdMs) && slowThresholdMs > 0 && durationMs >= slowThresholdMs) {
         const preview = sql.replace(/\s+/g, ' ').trim().slice(0, 160);
         console.warn(`[db] slow query ${durationMs.toFixed(1)}ms: ${preview}`);
     }
-    return rows;
+    return rows as T;
 }
 
 // 执行插入、更新、删除操作

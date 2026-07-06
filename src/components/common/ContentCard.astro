@@ -1,0 +1,210 @@
+---
+import type { Section } from '../../../types/weekly';
+import type { AiMetadata } from '../../../types/ai';
+
+interface Props {
+    section: Section;
+    featured?: boolean;
+}
+
+const { section, featured = false } = Astro.props;
+
+const summary = section.summary || section.description || '';
+const metadata = section.ai_metadata as AiMetadata | null | undefined;
+const keyPoints = metadata?.key_points?.slice(0, 3) ?? [];
+const tags = section.tags?.slice(0, 4) ?? [];
+const sourceUrl = section.source_url || '';
+const sourceDomain = sourceUrl ? new URL(sourceUrl).hostname.replace('www.', '') : '';
+---
+
+<article class:list={['content-card', { 'content-card--featured': featured }]}>
+    {featured && <div class="content-card__accent" aria-hidden="true"></div>}
+
+    <div class="content-card__body">
+        <div class="content-card__header">
+            {section.category && (
+                <span class="content-card__category">{section.category}</span>
+            )}
+            {featured && <span class="content-card__badge">精选</span>}
+        </div>
+
+        {section.title && (
+            <h3 class="content-card__title">
+                {sourceUrl ? (
+                    <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+                        {section.title}
+                    </a>
+                ) : (
+                    section.title
+                )}
+            </h3>
+        )}
+
+        {summary && (
+            <p class="content-card__summary">{summary}</p>
+        )}
+
+        {keyPoints.length > 0 && (
+            <ul class="content-card__points">
+                {keyPoints.map((point) => (
+                    <li>{point}</li>
+                ))}
+            </ul>
+        )}
+
+        {tags.length > 0 && (
+            <div class="content-card__tags">
+                {tags.map((tag) => (
+                    <span class="content-card__tag">{tag}</span>
+                ))}
+            </div>
+        )}
+
+        <div class="content-card__meta">
+            {sourceDomain && <span class="content-card__source">{sourceDomain}</span>}
+        </div>
+    </div>
+</article>
+
+<style>
+    .content-card {
+        position: relative;
+        padding: 1.25rem 1.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid hsl(var(--border));
+        background: hsl(var(--card));
+        transition: border-color 0.2s ease;
+    }
+
+    .content-card:hover {
+        border-color: hsl(var(--border) / 0.8);
+    }
+
+    .content-card--featured {
+        padding-left: 2rem;
+    }
+
+    .content-card__accent {
+        position: absolute;
+        left: 0;
+        top: 0.75rem;
+        bottom: 0.75rem;
+        width: 3px;
+        border-radius: 2px;
+        background: hsl(var(--primary));
+    }
+
+    .content-card__header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .content-card__category {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: hsl(var(--primary));
+        padding: 0.125rem 0.5rem;
+        border-radius: 0.25rem;
+        background: hsl(var(--primary) / 0.1);
+    }
+
+    .content-card__badge {
+        font-size: 0.625rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: white;
+        padding: 0.125rem 0.375rem;
+        border-radius: 0.25rem;
+        background: hsl(var(--primary));
+    }
+
+    .content-card__title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        line-height: 1.4;
+        color: hsl(var(--foreground));
+        margin-bottom: 0.5rem;
+    }
+
+    .content-card__title a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.15s ease;
+    }
+
+    .content-card__title a:hover {
+        color: hsl(var(--primary));
+    }
+
+    .content-card__summary {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: hsl(var(--muted-foreground));
+        margin-bottom: 0.75rem;
+    }
+
+    .content-card__points {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+    }
+
+    .content-card__points li {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: hsl(var(--muted-foreground));
+        padding-left: 1rem;
+        position: relative;
+    }
+
+    .content-card__points li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: hsl(var(--primary) / 0.6);
+        font-size: 0.75rem;
+    }
+
+    .content-card__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .content-card__tag {
+        font-size: 0.6875rem;
+        color: hsl(var(--muted-foreground) / 0.8);
+        padding: 0.125rem 0.5rem;
+        border-radius: 9999px;
+        border: 1px solid hsl(var(--border));
+        background: hsl(var(--surface, var(--card)));
+    }
+
+    .content-card__meta {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.75rem;
+        color: hsl(var(--muted-foreground) / 0.6);
+    }
+
+    .content-card__source::before {
+        content: '↗';
+        margin-right: 0.25rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .content-card {
+            transition: none;
+        }
+    }
+</style>

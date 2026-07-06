@@ -1,7 +1,4 @@
-import {SiteConfig} from '@/types/siteConfig';
-import {BsGithub} from 'react-icons/bs';
-import {MdEmail} from 'react-icons/md';
-import {SiJuejin} from 'react-icons/si';
+import type {SiteConfig} from '@/types/siteConfig';
 
 const baseSiteConfig = {
     name: "'What I Don't Know' Weekly",
@@ -24,14 +21,14 @@ const baseSiteConfig = {
         apple: '/logo.png'
     },
     headerLinks: [
-        {name: 'repo', href: 'https://github.com/northseacoder/weekly', icon: BsGithub}
+        {name: 'repo', href: 'https://github.com/northseacoder/weekly', icon: 'github'}
         // {name: 'twitter', href: 'https://x.com/noethseacoder', icon: BsTwitterX},
     ],
     footerLinks: [
-        {name: 'email', href: 'mailto:mengpeng_bj@foxmail.com', icon: MdEmail},
+        {name: 'email', href: 'mailto:mengpeng_bj@foxmail.com', icon: 'email'},
         // {name: 'twitter', href: 'https://x.com/noethseacoder', icon: BsTwitterX},
-        {name: 'github', href: 'https://github.com/weijunext/', icon: BsGithub},
-        {name: 'juejin', href: 'https://juejin.cn/user/2101921962025421', icon: SiJuejin}
+        {name: 'github', href: 'https://github.com/weijunext/', icon: 'github'},
+        {name: 'juejin', href: 'https://juejin.cn/user/2101921962025421', icon: 'juejin'}
     ],
     footerProducts: []
 };
