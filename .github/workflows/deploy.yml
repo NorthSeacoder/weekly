@@ -119,7 +119,7 @@ jobs:
 
             - name: Install pnpm
               if: steps.changes.outputs.content_changed == 'true'
-              run: npm install -g pnpm@8
+              run: npm install -g pnpm@10
 
             - name: Install pnpm dependencies
               if: steps.changes.outputs.content_changed == 'true'
