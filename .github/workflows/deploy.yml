@@ -3,6 +3,12 @@ name: CI
 on:
     push:
         branches: [main,astro-doc]
+    workflow_dispatch:
+        inputs:
+            reason:
+                description: 'Why this build was triggered'
+                required: false
+                default: 'manual'
 
 jobs:
     # setup:
@@ -102,6 +108,10 @@ jobs:
             - name: Check changes
               id: changes
               run: |
+                if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                  echo "content_changed=true" >> $GITHUB_OUTPUT
+                  exit 0
+                fi
                 # 获取当前分支最新的两次提交
                 if git rev-parse HEAD^1 >/dev/null 2>&1; then
                   # 如果存在上一次提交，比较最近两次提交的差异
@@ -135,6 +145,7 @@ jobs:
                 PUBLIC_UMAMI_ID: ${{ vars.PUBLIC_UMAMI_ID }}
                 PUBLIC_CLARITY_ID: ${{ vars.PUBLIC_CLARITY_ID }}
             - name: Deploy to Server
+              if: steps.changes.outputs.content_changed == 'true'
               uses: easingthemes/ssh-deploy@main
               with:
                   SSH_PRIVATE_KEY: ${{ secrets.ALIYUN_SERVER_ACCESS_TOKEN }}
