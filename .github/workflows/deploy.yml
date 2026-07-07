@@ -70,6 +70,8 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4.1.1
+              with:
+                  fetch-depth: 2
             # 添加环境变量检查
             - name: Check env
               run: |
